@@ -1,28 +1,28 @@
 "use client";
-import dynamic from "next/dynamic";
-import { useSearchParams } from "next/navigation";
-import { openAppView, readAppView } from "@/lib/appLocation";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import type { User } from "@supabase/supabase-js";
 import LoginScreen from "@/components/auth/LoginScreen";
 import { AppIcon } from "@/components/ui/AppIcon";
 import AvatarImage from "@/components/ui/AvatarImage";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useJourneyStore } from "@/store/useJourneyStore";
-import { useFocusTimerStore } from "@/store/useFocusTimerStore";
+import SectionSkeleton from "@/components/ui/SectionSkeleton";
+import { openAppView, readAppView } from "@/lib/appLocation";
 import { getLevelForXP } from "@/lib/constants";
-import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/supabase";
-import type { SectionKey } from "./SectionView";
-import WelcomeGuide from "./WelcomeGuide";
-import CommandPalette from "./CommandPalette";
-import MilestoneCelebration, { type Milestone } from "./MilestoneCelebration";
+import { supabase } from "@/lib/supabase";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useFocusTimerStore } from "@/store/useFocusTimerStore";
+import { useJourneyStore } from "@/store/useJourneyStore";
+import type { User } from "@supabase/supabase-js";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import AwarenessProfileSummary from "./AwarenessProfileSummary";
+import CommandPalette from "./CommandPalette";
+import type { GrowthNavigationCue } from "./GrowthTree";
+import MilestoneCelebration, { type Milestone } from "./MilestoneCelebration";
 import ProfessionProfileSummary from "./ProfessionProfileSummary";
 import SectionErrorBoundary from "./SectionErrorBoundary";
-import SectionSkeleton from "@/components/ui/SectionSkeleton";
-import type { GrowthNavigationCue } from "./GrowthTree";
+import type { SectionKey } from "./SectionView";
+import WelcomeGuide from "./WelcomeGuide";
 
 const DashboardView = dynamic(() => import("./DashboardView"), {
   loading: () => <SectionSkeleton shape="scene" />,

@@ -1,27 +1,26 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
-import FocusTimeline from "./FocusTimeline";
-import FocusHistoryDashboard from "./FocusHistoryDashboard";
+import FocusHistoryDashboard from "@/components/core/FocusHistoryDashboard";
+import FocusTimeline from "@/components/core/FocusTimeline";
+import SectionTagline from "@/components/core/SectionTagline";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { useJourneyStore } from "@/store/useJourneyStore";
+import { formatFocusDuration, formatTimer } from "@/lib/focus";
+import {
+  FOCUS_SOUNDS,
+  FocusAudioEngine,
+  type FocusSoundId,
+} from "@/lib/focusAudio";
+import { getAdaptiveFocusSuggestion } from "@/lib/focusInsights";
+import { finalizeFocusSession } from "@/lib/focusRuntime";
 import {
   getFocusDisplaySeconds,
   getFocusElapsedSeconds,
   useFocusTimerStore,
 } from "@/store/useFocusTimerStore";
-import { formatFocusDuration, formatTimer } from "@/lib/focus";
-import {
-  FocusAudioEngine,
-  FOCUS_SOUNDS,
-  type FocusSoundId,
-} from "@/lib/focusAudio";
-import { finalizeFocusSession } from "@/lib/focusRuntime";
-import { getAdaptiveFocusSuggestion } from "@/lib/focusInsights";
+import { useJourneyStore } from "@/store/useJourneyStore";
 import type { FocusTimerType } from "@/types";
-import SectionTagline from "./SectionTagline";
-
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 type Modal = "timer-type" | "sound" | "stop" | null;
 
 export default function FocusTimerView({
@@ -218,16 +217,29 @@ export default function FocusTimerView({
       <div className="focus-background" aria-hidden />
       <main className="focus-stage">
         <header className="focus-topbar">
-          <div className="focus-window-actions">
+          <div 
+						className="focus-window-actions"
+					>
             <button onClick={minimise} aria-label="Odak ekranını küçült">
               <AppIcon name="chevron-down" />
             </button>
-            <button
-              onClick={popOut}
-              aria-label="Odak ekranını ayrı pencerede aç"
-            >
-              <AppIcon name="external-link" />
-            </button>
+						<button 
+							onClick={openTimerModal} 
+							disabled={timer.isActive}
+							title="Zamanlayıcı Türü"
+						>
+							<span>
+								<AppIcon name="hourglass" />
+							</span>
+						</button>
+						<button 
+							onClick={openSoundModal}
+							title="Arka Plan Sesi"
+						>
+							<span>
+								<AppIcon name="headphones" />
+							</span>
+						</button>
           </div>
           <div className="focus-top-center">
             <nav className="focus-view-tabs" aria-label="Odak bölümü">
@@ -244,7 +256,7 @@ export default function FocusTimerView({
                 <AppIcon name="chart-histogram" /> Geçmişim
               </button>
             </nav>
-            {focusView === "timer" && (
+            {/* {focusView === "timer" && (
               <div className="focus-task-slot">
                 {timer.taskLabel ? (
                   <span className="focus-task-chip">
@@ -281,14 +293,21 @@ export default function FocusTimerView({
                   </form>
                 )}
               </div>
-            )}
+            )} */}
           </div>
-          {focusView === "timer" ? (
+          <div 
+            // className="focus-windows-"
+            className="focus-window-actions"
+            style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
+            // style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px" }}
+          >
+						{focusView === "timer" ? (
             <button
               className="focus-timeline-toggle"
               onClick={() => setTimelineOpen((value) => !value)}
               aria-expanded={timelineOpen}
               aria-label="Bugünün kayıtlarını aç veya kapat"
+							title={timelineOpen ? "Zaman çizelgesini kapat" : "Zaman çizelgesini aç"}
             >
               <AppIcon
                 name={
@@ -298,11 +317,30 @@ export default function FocusTimerView({
                 }
               />
             </button>
-          ) : (
-            <span />
-          )}
+						) : (
+							<span />
+						)}
+            <button
+							className="focus-timeline-toggle"
+              onClick={popOut}
+              aria-label="Odak ekranını ayrı pencerede aç"
+							title="Odak ekranını ayrı pencerede aç"
+            >
+              <AppIcon name="external-link" />
+            </button>
+						<button 
+							className="focus-timeline-toggle"
+							onClick={() => void toggleFullscreen()}
+							title={"Tam ekran modu"}
+						>
+							<span>
+								<AppIcon name="maximize" />
+							</span>
+						</button>
+						</div>
+
         </header>
-        <SectionTagline section="focus" compact inverse />
+        {/* <SectionTagline section="focus" compact inverse /> */}
 
         {focusView === "timer" ? (
           <>
@@ -310,7 +348,7 @@ export default function FocusTimerView({
               <span className="focus-mode-eyebrow">
                 <i className={phase === "running" ? "live" : ""} /> {dialLabel}
               </span>
-              {timer.taskLabel && !timer.isActive && (
+              {/* {timer.taskLabel && !timer.isActive && (
                 <label className="focus-intention">
                   <span>
                     <AppIcon name="flag" /> Oturum niyeti{" "}
@@ -326,7 +364,7 @@ export default function FocusTimerView({
                     placeholder="Bu oturumda neyi başarmayı hedefliyorsun?"
                   />
                 </label>
-              )}
+              )} */}
               {timer.isActive && timer.intentionText && (
                 <p className="focus-active-intention">
                   <AppIcon name="flag" /> {timer.intentionText}
@@ -404,9 +442,107 @@ export default function FocusTimerView({
                       ? "GERİ SAYIM"
                       : "SERBEST ZAMAN"}
                   </span>
+{focusView === "timer" && (
+  <div className="focus-task-slot">
+    {timer.taskLabel ? (
+      <div 
+        className="focus-task-chip" 
+        style={{ 
+          display: "flex", 
+          alignItems: "center",
+          gap: "8px",          
+          border: "none",      
+          boxShadow: "none",   
+          background: "transparent" 
+        }}
+      >
+        <span style={{ 
+          fontWeight: 500, 
+          fontSize: "1rem", 
+          flex: 1,
+          minWidth: 0,         
+          overflow: "hidden",  
+          textOverflow: "ellipsis", 
+          whiteSpace: "nowrap",
+          color: "white"
+        }}>
+          {timer.taskLabel}
+        </span>
+        
+        {!timer.isActive && (
+          <button
+            style={{ flexShrink: 0 }} 
+            onClick={() => timer.setTaskLabel("")}
+            aria-label="Görevi ayır"
+          >
+            ×
+          </button>
+        )}
+      </div>
+    ) : (
+      <form
+        className="focus-task-chip"
+        style={{ 
+          display: "flex", 
+          alignItems: "center",
+          gap: "3px",          
+          border: "none",      
+          boxShadow: "none",   
+          background: "transparent" 
+        }}
+        onSubmit={(event) => {
+          event.preventDefault();
+          attachTask();
+        }}                        
+      >
+        <input  
+          style={{ 
+            fontWeight: 500, 
+            fontSize: "1rem", 
+            fontFamily: "inherit",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            alignItems: "center",
+            padding: 0,
+            margin: 0,
+            width: "140px",      /* <-- Controls how short the input box is (adjust as needed) */
+            minWidth: 0 
+          }}
+          value={taskDraft}
+          onChange={(event) => setTaskDraft(event.target.value)}
+          maxLength={120}
+          placeholder="Odağın ne?"
+          aria-label="Odak görevi"
+        />
+        <button 
+          type="submit" 
+          style={{ 
+            flexShrink: 0,
+            width: "26px",
+            height: "26px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid white", 
+            background: "#b0e3d6",          
+            color: "#000000",
+            padding: 0,
+            cursor: "pointer"
+          }}
+          aria-label="Görevi ekle"
+        >
+          ✓
+        </button>
+      </form>
+    )}
+  </div>
+)}
                 </div>
               </div>
 
+              {/*   -----------   add focus topic ----------------------------               */}
               <div className="focus-primary-actions">
                 {phase === "idle" && (
                   <button
@@ -446,28 +582,33 @@ export default function FocusTimerView({
               </div>
 
               <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
-                <button onClick={() => void toggleFullscreen()}>
+
+								{/* --------- TAM EKRAN -------------------- */}
+                {/* <button onClick={() => void toggleFullscreen()}>
                   <span>
                     <AppIcon name="maximize" />
                   </span>
                   <strong>Tam Ekran</strong>
                   <small>Dikkat dağıtanları gizle</small>
-                </button>
-                <button onClick={openTimerModal} disabled={timer.isActive}>
+                </button> */}
+                {/* <button onClick={openTimerModal} disabled={timer.isActive}>
                   <span>
                     <AppIcon name="hourglass" />
                   </span>
                   <strong>Zamanlayıcı Türü</strong>
                   <small>{durationLabel}</small>
-                </button>
-                <button onClick={openSoundModal}>
+                </button> */}
+                {/* <button onClick={openSoundModal}>
                   <span>
                     <AppIcon name="headphones" />
                   </span>
                   <strong>Arka Plan Sesi</strong>
                   <small>{soundLabel}</small>
-                </button>
+                </button> */}
               </nav>
+							{/* bottom part----------------------------------- */}
+        			<SectionTagline section="focus" compact inverse />
+
             </section>
             <p className="focus-privacy">
               <AppIcon name="shield-lock" /> Oturumun kök uygulamada yaşar;
