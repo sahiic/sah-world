@@ -66,6 +66,7 @@ type ViewKey =
 type NavigationItem = { id: ViewKey; label: string; icon: string };
 
 const navigationItems: NavigationItem[] = [
+  { id: "dashboard", label: "Evrenim", icon: "compass" },
   { id: "focus", label: "Odaklanma", icon: "target-arrow" },
   { id: "quran-companion", label: "Kur’an’ı Kerim Kardeşim", icon: "book-2" },
   { id: "mescidim", label: "Mescidim", icon: "building-mosque" },
@@ -355,13 +356,14 @@ export default function SahApp({
         >
           <span className="brand-mark">S</span>
           <span>
-            <strong>SAH</strong>
+            <strong>SAH World</strong>
+            <small>TEFEKKÜR VAHASI</small>
           </span>
         </button>
 
         <nav className="sidebar-nav">
-          <section aria-label="Ana bölümler">
-            <p>ANA BÖLÜMLER</p>
+          <section aria-label="Manevi rota">
+            <p>MANEVİ ROTA</p>
             {navigationItems.map((item) => (
               <button
                 key={item.id}
@@ -377,17 +379,13 @@ export default function SahApp({
         </nav>
 
         <div className="sidebar-support">
-          <button onClick={() => openPage("/feedback")}>
-            <AppIcon name="message-heart" />
-            <span>Görüş ve Öneri</span>
-          </button>
           <p>
-            <AppIcon name="lock" /> Özel kayıtların yalnızca sana görünür.
+            <AppIcon name="lock" /> Zahmetsiz tefekkür ve emanet bilinciyle korunan veri havuzu.
           </p>
           <div className="sidebar-legal">
-            <a href="/gizlilik">Gizlilik</a>
+            <a href="/gizlilik">Gizlilik Politikası</a>
             <span>·</span>
-            <a href="/kullanim-kosullari">Koşullar</a>
+            <a href="/feedback">Geri Bildirim</a>
           </div>
         </div>
       </aside>
@@ -410,18 +408,18 @@ export default function SahApp({
             <button
               className="global-search-button"
               onClick={() => setSearchOpen(true)}
-              aria-label="Her yerde ara"
+              aria-label="Ayet, niyet, ders veya kavram ara"
             >
               <AppIcon name="search" />
-              <span>Her yerde ara</span>
+              <span>Ayet, niyet, ders veya kavram ara...</span>
               <kbd>Ctrl K</kbd>
             </button>
             <button
-              className="header-feedback"
-              onClick={() => openPage("/feedback")}
+              className="primary-button header-intent-button"
+              onClick={() => navigate("journal")}
             >
-              <AppIcon name="message-heart" />
-              <span>Görüş bırak</span>
+              <AppIcon name="plus" />
+              <span>Hızlı Niyet</span>
             </button>
             <button
               className="profile-button"

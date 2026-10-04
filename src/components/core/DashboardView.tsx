@@ -20,6 +20,15 @@ const quickActions = [
   { id: 'mescidim', icon: 'building-mosque', title: 'Mescidim', note: 'Kısa bir farkındalık molası' },
 ]
 
+const satelliteCards = [
+  { id: 'mescidim', icon: 'building-mosque', title: 'Mescidim & Vakitler', note: 'Ezan saatini takip et, cemaate hazırlan.', badge: 'Sıradaki Vakit', badgeColor: 'gold' as const, cta: 'Vakitleri Gör' },
+  { id: 'quran-companion', icon: 'book-2', title: "Kur'an'ı Kerim Kardeşim", note: 'Tertil üzere derin okuma sırası.', badge: 'Günlük Sayfa', badgeColor: 'teal' as const, cta: 'Tilavete Devam Et' },
+  { id: 'focus', icon: 'target-arrow', title: 'Odaklanma & Tefekkür', note: 'Zihni gürültüden arındırıp ilme teksif ol.', badge: 'Huzur Seansı', badgeColor: 'emerald' as const, cta: 'Zamanlayıcıyı Başlat' },
+  { id: 'sukur', icon: 'sparkles', title: 'Şükür Defteri', note: 'Bugün kalbini sevindiren neydi?', badge: 'Nimet İdrak', badgeColor: 'gold' as const, cta: 'Şükür Ekle' },
+  { id: 'journal', icon: 'notebook', title: 'Günlük Muhasebe', note: 'Ömür sermayesinin bugünkü hasılatı.', badge: 'Akşam Muhasebesi', badgeColor: 'blue' as const, cta: 'Muhasebeyi Aç' },
+  { id: 'profession-school', icon: 'certificate', title: 'Meslek & Ahlak Okulu', note: 'Kul hakkı, temiz kod ve adil ticaret ilkeleri.', badge: 'Liyakat', badgeColor: 'teal' as const, cta: 'Ders Külliyatı' },
+]
+
 export default function DashboardView({ onNavigate }: { onNavigate: (view: string, cue?: GrowthNavigationCue) => void }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [introVisible, setIntroVisible] = useState(true)
@@ -30,7 +39,8 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   const counts = getCategoryCounts(store)
   const tasks = Object.values(store.eisenhower).flat()
   const done = tasks.filter((task) => task.done).length
-  const { level } = getLevelForXP(store.xp)
+  const { level, index: levelIndex, nextLevel } = getLevelForXP(store.xp)
+  const xpEnd = nextLevel?.xp ?? level.xp + 500
   const weekStart = new Date()
   weekStart.setHours(0, 0, 0, 0)
   weekStart.setDate(weekStart.getDate() - 6)
@@ -69,11 +79,12 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
       const context = gsap.context(() => {
         const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } })
         timeline
-          .from('.dashboard-heading .eyebrow', { opacity: 0, y: 10, duration: .38 })
+          .from('.dashboard-heading .hijri-badge', { opacity: 0, y: 10, duration: .38 })
           .from('.dashboard-heading .hero-word', { opacity: 0, yPercent: 85, rotate: 2, duration: .62, stagger: .055 }, '-=.18')
-          .from('.dashboard-heading p, .dashboard-heading .primary-button', { opacity: 0, y: 12, duration: .42, stagger: .08 }, '-=.3')
-          .from('.dashboard-growth-stack', { opacity: 0, scale: .975, y: 18, duration: .72 }, '-=.18')
-          .from('.today-card .quick-actions button', { opacity: 0, x: 16, duration: .42, stagger: .06 }, '-=.52')
+          .from('.dashboard-heading p, .dashboard-heading .glance-row', { opacity: 0, y: 12, duration: .42, stagger: .08 }, '-=.3')
+          .from('.niyet-card', { opacity: 0, x: 24, duration: .6 }, '-=.4')
+          .from('.filiz-constellation', { opacity: 0, scale: .975, y: 18, duration: .72 }, '-=.18')
+          .from('.filiz-constellation .satellite-card', { opacity: 0, y: 16, duration: .42, stagger: .06 }, '-=.42')
           .from('.dashboard-metrics .metric-card', { opacity: 0, y: 14, duration: .44, stagger: .07 }, '-=.32')
         gsap.utils.toArray<HTMLElement>('.dashboard-reveal').forEach((element) => {
           gsap.from(element, { opacity: 0, y: 28, duration: .7, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 90%', once: true } })
@@ -90,47 +101,102 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   return (
     <div className="view-stack dashboard-view dashboard-cinematic" ref={rootRef}>
       {introVisible && <DashboardPreloader />}
-      <header className="page-heading dashboard-heading">
-        <div><span className="eyebrow">{today.toLocaleUpperCase('tr-TR')}</span><h1>{`Tekrar hoş geldin, ${firstName}.`.split(' ').map((word, index) => <span className="hero-word-wrap" key={`${word}-${index}`}><span className="hero-word">{word}&nbsp;</span></span>)}</h1><p>Bugün küçük bir adımla devam edebilirsin. Alanın, yargılamadan ilerlemeni görünür kılar.</p></div>
-        <button className="primary-button" onClick={() => onNavigate('journal')}><AppIcon name="plus" /> Yeni kayıt</button>
-      </header>
 
-      {!hasActivityToday && <motion.section className={`daily-ritual-card ${streakAtRisk ? 'at-risk' : ''}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} aria-label="Bugünün küçük niyeti">
-        <span className="ritual-accent" aria-hidden="true" />
-        <span className="ritual-icon"><AppIcon name={streakAtRisk ? 'flame' : 'sunrise'} /></span><div className="ritual-copy"><span className="eyebrow">{streakAtRisk ? 'SERİNİ KORUMAK İÇİN' : 'BUGÜNÜN KÜÇÜK NİYETİ'}</span><h2>{streakAtRisk ? 'Bugün için tek bir küçük kayıt yeter.' : intentionMessage}</h2><p>{streakAtRisk ? 'Bunu bir görev gibi değil, günün içinde kendine dönmek için kısa bir durak gibi düşün.' : `${suggested.title}, son dönemde en sık kullandığın alanlardan biri.`}</p></div>
-        <button onClick={() => onNavigate(suggested.id)}>{suggested.title}<AppIcon name="arrow-right" /></button>
-      </motion.section>}
-
-      <div className="dashboard-hero-grid">
-        <div className="dashboard-growth-stack">
-          <GrowthTree xp={store.xp} trigger={store.xpOrbTrigger} lastAmount={store.lastXPAmount} events={events} loading={remoteActivity.loading} onNavigate={onNavigate} />
+      {/* Hero Greeting + Günün Niyeti */}
+      <div className="dashboard-hero-row dashboard-heading">
+        <div className="hero-greeting">
+          <div className="hijri-badge">
+            <i className="hijri-pulse" aria-hidden="true" />
+            <span className="eyebrow">{today.toLocaleUpperCase('tr-TR')} · Günün Tefekkür Vakti</span>
+          </div>
+          <h1>{`Gecenin ve Gündüzün Sahibi'ne hamd ile, ${firstName}.`.split(' ').map((word, index) => <span className="hero-word-wrap" key={`${word}-${index}`}><span className="hero-word">{word}&nbsp;</span></span>)}</h1>
+          <p>Zihnini sadeleştir, niyetini tazele. Yeryüzünün hengamesinden sıyrılıp kalbini hakikate rabt etme anı; her nefes yeni bir başlangıçtır.</p>
+          <div className="glance-row">
+            <div className="glance-chip"><AppIcon name="sparkles" /><div><small>Ruhani Gayret</small><strong>{store.xp} XH</strong></div></div>
+            <div className="glance-chip"><AppIcon name="flame" /><div><small>Günlük Seri</small><strong>{store.streak.current} gün</strong></div></div>
+            <div className="glance-chip"><AppIcon name="leaf" /><div><small>Seviye</small><strong>{level.name}</strong></div></div>
+          </div>
         </div>
-
-        <aside className="surface-card today-card" aria-labelledby="today-actions-title">
-          <div className="card-heading"><div><span className="eyebrow">BUGÜN</span><h2 id="today-actions-title">Neye alan açacaksın?</h2><p>Ritmini korumak için tek bir seçim yap.</p></div><span className="quiet-chip today-intention"><i aria-hidden="true" />1 adım yeter</span></div>
-          <div className="quick-actions">
-            {[quickActions[0], quickActions[1], ...personalizedActions].map((action, index) => <button key={action.id} className={`${index === 0 ? 'primary-quick' : ''} action-${action.id}`} onClick={() => onNavigate(action.id)}>
-              <span className="quick-action-icon"><AppIcon name={action.icon} /></span>
-              <span><strong>{action.title}</strong><small>{action.note}</small></span>
-              <AppIcon name="arrow-right" />
-            </button>)}
+        <aside className="niyet-card" aria-label="Günün mühürlü niyeti">
+          <div className="niyet-gold-accent" aria-hidden="true" />
+          <div className="niyet-header">
+            <span><AppIcon name="sparkles" /><span className="eyebrow">GÜNÜN MÜHÜRLÜ NİYETİ</span></span>
+            <span className="niyet-tag">İhlas & Amel</span>
+          </div>
+          <div className="niyet-body">
+            <span className="niyet-quote-mark" aria-hidden="true">"</span>
+            <p>{intentionMessage}</p>
+            <span className="niyet-quote-mark niyet-quote-end" aria-hidden="true">"</span>
+          </div>
+          <div className="niyet-footer">
+            <small>Kalp tasdiki bekleniyor</small>
+            <button className="primary-button" onClick={() => onNavigate('journal')}><AppIcon name="rosette-discount-check" /> Niyeti Mühürle</button>
           </div>
         </aside>
       </div>
 
+      {/* Streak risk banner */}
+      {!hasActivityToday && <motion.section className={`daily-ritual-card ${streakAtRisk ? 'at-risk' : ''}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} aria-label="Bugünün küçük niyeti">
+        <span className="ritual-accent" aria-hidden="true" />
+        <span className="ritual-icon"><AppIcon name={streakAtRisk ? 'flame' : 'sunrise'} /></span><div className="ritual-copy"><span className="eyebrow">{streakAtRisk ? 'SERİNİ KORUMAK İÇİN' : 'BUGÜNÜN KÜÇÜK NİYETİ'}</span><h2>{streakAtRisk ? 'Bugün için tek bir küçük kayıt yeter.' : `${suggested.title}, son dönemde en sık kullandığın alanlardan biri.`}</h2><p>{streakAtRisk ? 'Bunu bir görev gibi değil, günün içinde kendine dönmek için kısa bir durak gibi düşün.' : intentionMessage}</p></div>
+        <button onClick={() => onNavigate(suggested.id)}>{suggested.title}<AppIcon name="arrow-right" /></button>
+      </motion.section>}
+
+      {/* Canlı Filiz Constellation */}
+      <section className="filiz-constellation" aria-label="Yaşayan filiz ve manevi çekirdek">
+        <div className="filiz-header">
+          <div className="filiz-status">
+            <div className="filiz-ring">
+              <svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="currentColor" strokeWidth="3" opacity=".2" /><circle cx="28" cy="28" r="24" fill="none" stroke="var(--brand-emerald)" strokeWidth="3.5" strokeDasharray="150" strokeDashoffset={150 - Math.min(1, (store.xp - level.xp) / (xpEnd - level.xp)) * 150} strokeLinecap="round" /></svg>
+              <AppIcon name="leaf" />
+            </div>
+            <div>
+              <h2>Canlı {level.name} <span className="filiz-level-badge">Seviye {levelIndex + 1} / 10</span></h2>
+              <p>Manevi kökler toprağa emanet, göğe doğru yöneldi.</p>
+            </div>
+          </div>
+          <div className="filiz-xp-badge">
+            <div><small>İLERLEME HACMİ</small><strong>{store.xp} / {xpEnd} XH</strong></div>
+            <span><AppIcon name="trending-up" /></span>
+          </div>
+        </div>
+        <div className="filiz-grid">
+          {satelliteCards.map((card) => (
+            <button key={card.id} className="satellite-card" onClick={() => onNavigate(card.id)}>
+              <div className="satellite-top">
+                <span className={`satellite-icon ${card.badgeColor}`}><AppIcon name={card.icon} /></span>
+                <span className={`satellite-badge ${card.badgeColor}`}>{card.badge}</span>
+              </div>
+              <div className="satellite-body">
+                <h3>{card.title}</h3>
+                <p>{card.note}</p>
+              </div>
+              <div className="satellite-cta">
+                <span>{card.cta}</span>
+                <AppIcon name="arrow-right" />
+              </div>
+            </button>
+          ))}
+        </div>
+        <GrowthTree xp={store.xp} trigger={store.xpOrbTrigger} lastAmount={store.lastXPAmount} events={events} loading={remoteActivity.loading} onNavigate={onNavigate} />
+      </section>
+
+      {/* Awareness invitation */}
       <button className="awareness-invitation dashboard-reveal dashboard-parallax" onClick={() => onNavigate('awareness')}>
         <span className="invitation-symbol"><AppIcon name="world-heart" /></span>
-        <span><small>YENİ FARKINDALIK ALANI</small><strong>Mazlum Coğrafyaları kültürleri ve kaynaklarıyla tanı</strong><em>Filistin ve Doğu Türkistan için kaynaklı anlatılar, güvenilir eylem rehberi ve 10’ar soruluk bilgi testleri.</em></span>
+        <span><small>YENİ FARKINDALIK ALANI</small><strong>Mazlum Coğrafyaları kültürleri ve kaynaklarıyla tanı</strong><em>Filistin ve Doğu Türkistan için kaynaklı anlatılar, güvenilir eylem rehberi ve 10'ar soruluk bilgi testleri.</em></span>
         <b>Alanı keşfet <AppIcon name="arrow-right" /></b>
       </button>
 
+      {/* Metrics */}
       <section className="dashboard-metrics" aria-label="Bugünkü gelişim özeti">
         <Metric icon="flame" value={store.streak.current} label="Günlük seri" detail="İstikrar günün" tone="amber" />
         <Metric icon="calendar-check" value={activeDays} suffix="/7" label="Bu hafta aktif" detail="Son yedi gün" tone="green" />
-        <Metric icon="sparkles" value={store.xp} label="Toplam XH" detail={`${level.name} seviyesi`} tone="indigo" />
-        <Metric icon="circle-check" value={done} suffix={`/${tasks.length}`} label="Tamamlanan görev" detail="Tüm matris" tone="blue" />
+        <Metric icon="sparkles" value={store.xp} label="Toplam XH" detail={`${level.name} seviyesi`} tone="emerald" />
+        <Metric icon="circle-check" value={done} suffix={`/${tasks.length}`} label="Tamamlanan görev" detail="Tüm matris" tone="teal" />
       </section>
 
+      {/* Activity & Insight */}
       <div className="dashboard-lower-grid dashboard-reveal">
         <section className="surface-card activity-card">
           <div className="card-heading"><div><span className="eyebrow">SON HAREKETLER</span><h2>Faaliyetlerin</h2></div><button className="text-button" onClick={() => onNavigate('reports')}>Tüm raporlar <AppIcon name="arrow-right" /></button></div>
