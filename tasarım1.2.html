@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>SAH World • Vitrin &amp; Önizleme</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&amp;family=Noto+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#faf8f5",
+            "parchment": "#f6f3ee",
+            "parchment-border": "#e8e3d9",
+            "forest-deep": "#0d2b1d",
+            "night-deep": "#081c13",
+            "emerald-mid": "#009B77",
+            "emerald-light": "#1ab38f",
+            "gold-traditional": "#c5a059",
+            "gold-hover": "#dfb76c",
+            "turquoise-glow": "#40E0D0",
+            "ink": "#111a16",
+            "ink-soft": "#3a4742",
+            "ink-muted": "#6a7b74",
+            "primary": "#006950",
+            "primary-container": "#008565",
+            "islamic-border": "rgba(0, 155, 119, 0.2)"
+          },
+          fontFamily: {
+            "serif": ["Amiri", "Noto Serif", "serif"],
+            "noto": ["Noto Serif", "serif"],
+            "sans": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          boxShadow: {
+            "thuluth": "0 20px 45px -10px rgba(13, 43, 29, 0.08), 0 8px 20px -6px rgba(0, 35, 102, 0.06)",
+            "thuluth-lg": "0 28px 60px -15px rgba(13, 43, 29, 0.14), 0 10px 28px -8px rgba(197, 160, 89, 0.12)",
+            "subtle-card": "0 4px 20px -2px rgba(17, 26, 22, 0.04)"
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #faf8f5;
+        color: #111a16;
+        font-family: 'Noto Serif', serif;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #faf8f5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #dfd8cc;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c5a059;
+    }
+  </style>
+</head>
+<body class="bg-surface antialiased text-ink">
+<!-- SOL KÜTÜPHANE VE EVREN MENÜSÜ -->
+<aside class="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-forest-deep via-[#092217] to-night-deep z-50 flex flex-col justify-between shadow-[0_12px_40px_rgba(0,20,12,0.3)] border-r border-[#009B77]/20">
+<div class="flex flex-col flex-1 overflow-y-auto">
+<div class="p-6 flex items-center gap-3.5 border-b border-white/5">
+<img alt="SAH World Amblem Logo" class="h-9 w-auto object-contain drop-shadow-[0_2px_8px_rgba(197,160,89,0.3)]" src="https://lh3.googleusercontent.com/aida/AEtjO1WEgaziEvknxmcW-88YsSGTvLfKzp3bzshjggU4k_nmE1p8wOeZ-dm6LjwhM8HpG68ETQCdHg3fyqIAjDryi5q5R6ZKRkfBtc7JT1n48K7LtST1yvUx7JC60uDhJBKfch-WO8TpMM_Y1lh9yEcecv2Xk6snIo8cisJMVtm4wJgzhTGIakDvLqYpjGa7KSPcghqdBzVVlOUu3NMVxdN8wFPwcexuzyZS4BPBhSfXn17VlLgk5fhOMBPOHn8"/>
+<div class="flex flex-col">
+<span class="font-serif text-[21px] text-white tracking-wide font-bold leading-tight">SAH World</span>
+<span class="text-[10px] tracking-[0.2em] uppercase text-gold-traditional font-medium">Niyetini hayata taşı</span>
+</div>
+</div>
+<nav class="flex flex-col gap-1 px-3 mt-4">
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-emerald-mid/20 text-white font-medium shadow-[0_4px_12px_rgba(0,155,119,0.25)] border border-emerald-mid/30 transition-all" data-path="evrenim" href="#">
+<span class="material-symbols-outlined text-gold-traditional text-[20px]">spa</span>
+<span class="text-[14px]">Evrenim</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="odaklanma" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">timer</span>
+<span class="text-[14px]">Odaklanma</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="kuran-i-kerim-kardesim" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">menu_book</span>
+<span class="text-[14px]">Kur’an’ı Kerim Kardeşim</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="mescidim" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">mosque</span>
+<span class="text-[14px]">Mescidim</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="gunluk" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">auto_stories</span>
+<span class="text-[14px]">Günlük</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="mazlum-cografyalar" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">public</span>
+<span class="text-[14px]">Mazlum Coğrafyalar</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="raporlarim" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">insights</span>
+<span class="text-[14px]">Raporlarım</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" data-path="meslek-ve-ahlak-okulu" href="#">
+<span class="material-symbols-outlined text-white/60 text-[20px]">school</span>
+<span class="text-[14px]">Meslek ve Ahlak Okulu</span>
+</a>
+</nav>
+</div>
+<div class="p-4 border-t border-white/5 flex flex-col gap-2.5 bg-black/15">
+<button class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/[0.07] hover:bg-white/[0.12] text-white/90 text-[13px] font-sans transition-all" type="button">
+<span class="material-symbols-outlined text-gold-traditional text-[18px]">campaign</span>
+<span>Görüş ve Öneri</span>
+</button>
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] text-[11px] text-white/60 font-sans">
+<span class="material-symbols-outlined text-gold-traditional text-[15px]">lock</span>
+<span>Özel kayıtların yalnızca sana görünür.</span>
+</div>
+</div>
+</aside>
+<!-- SAĞ İÇERİK ALANI -->
+<div class="pl-72">
+<!-- ÜST ÇUBUK / HEADER -->
+<header class="fixed top-0 left-72 right-0 h-16 bg-[#faf8f5]/90 backdrop-blur-md z-40 border-b border-parchment-border flex items-center justify-between px-8">
+<div class="flex items-center gap-3 w-full max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted text-[19px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-white border border-parchment-border rounded-xl text-[14px] text-ink placeholder:text-ink-muted/70 focus:outline-none focus:ring-2 focus:ring-emerald-mid/40 shadow-sm font-sans" placeholder="Her yerde ara... (Ctrl + K)" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-forest-deep text-white text-[13px] font-medium shadow-[0_4px_14px_rgba(0,105,80,0.22)] transition-all font-sans" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Yeni Kayıt</span>
+</button>
+<div class="flex items-center gap-3 px-3 py-1.5 rounded-full bg-white border border-parchment-border hover:border-gold-traditional/50 transition-all cursor-pointer shadow-sm">
+<img alt="Profile" class="w-7 h-7 rounded-full object-cover ring-1 ring-gold-traditional/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArW0yJcpoCpfnUUk10ArufrROdh8hJgmTlPOAk3KxTUR51Bm-HRK0MdVBLDFb7iu2KZldAZR9OCc2cHZU7RmDnZOVljNutSc2UNlGAJuHafSZX1MDoCWbm9RGnIFIjDQsfwWYtDs-6IQ6FnE4SDFmh22YRMh8GjmuxvzQP36KiLCCGMqnlJmw42vEE3ffztx2v7fmAUCw1PQOjQDAPW7snMNvY7smIi0J0fmbZspQih0j0HcO6VjFjNA"/>
+<div class="flex flex-col text-left font-sans">
+<span class="text-[12px] font-semibold text-ink leading-tight">yusufaasirek</span>
+<span class="text-[10px] text-emerald-mid font-medium tracking-wide uppercase">Filiz • 290 XH</span>
+</div>
+<span class="material-symbols-outlined text-ink-muted text-[17px]">expand_more</span>
+</div>
+</div>
+</header>
+<!-- ANA VİTRİN İÇERİĞİ -->
+<main class="relative pt-20 px-8 pb-20 max-w-7xl mx-auto flex flex-col gap-16">
+<!-- 1. HERO & VİTRİN GİRİŞİ -->
+<section class="relative pt-6 pb-2 text-center flex flex-col items-center">
+<!-- Zümrüt & Altın Çift Katmanlı Üst Rozet -->
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-forest-deep border border-gold-traditional/40 shadow-sm mb-5 text-white">
+<span class="inline-block w-2 h-2 rounded-full bg-turquoise-glow animate-pulse"></span>
+<span class="font-serif text-[11px] tracking-[0.25em] text-gold-traditional font-bold uppercase">SAH WORLD • KADİM ERDEM &amp; MODERN ERGONOMİ</span>
+</div>
+<!-- Amiri Serif Zarif Başlık -->
+<h1 class="font-serif text-4xl sm:text-5xl lg:text-[54px] font-bold text-ink tracking-tight leading-[1.15] max-w-3xl">
+          Niyetini Hayata Taşıyan Dijital İklim
+        </h1>
+<!-- Açıklama Metni -->
+<p class="font-noto text-lg text-ink-soft max-w-2xl mt-4 leading-relaxed font-normal">
+          Osmanlı sülüs hat aurası, dingin parşömen ferahlığı ve modern yazılım mimarisiyle ekranınızda.
+        </p>
+<!-- Vitrin Perspektif Butonları -->
+<div class="flex items-center gap-2 mt-7 p-1.5 rounded-2xl bg-white border border-parchment-border shadow-sm">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-forest-deep text-white text-[13px] font-medium shadow-sm transition-all">
+<span class="material-symbols-outlined text-[17px] text-gold-traditional">desktop_windows</span>
+<span>Geniş Ekran Masaüstü</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl text-ink-soft hover:text-ink text-[13px] font-medium transition-all">
+<span class="material-symbols-outlined text-[17px]">mosque</span>
+<span>Mescidim Pusulası</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl text-ink-soft hover:text-ink text-[13px] font-medium transition-all">
+<span class="material-symbols-outlined text-[17px]">self_improvement</span>
+<span>Tefekkür &amp; Odak</span>
+</button>
+</div>
+</section>
+<!-- 2. GERÇEKÇİ CANLI CİHAZ / BROWSER MOCKUP'I (Sülüs Gölgesi & Altın/Zümrüt Kılavuz Çerçevesi) -->
+<section class="relative w-full">
+<!-- Çift Hatlı Altın & Zümrüt Kılavuz Çerçevesi ile Paketlenmiş Mockup -->
+<div class="p-1 rounded-[26px] bg-gradient-to-b from-gold-traditional/40 via-emerald-mid/30 to-gold-traditional/20 shadow-thuluth-lg">
+<div class="w-full rounded-[22px] bg-surface overflow-hidden border border-white/60">
+<!-- macOS / Tarayıcı Minimalist Üst Barı -->
+<div class="h-11 bg-[#f3ede3] border-b border-parchment-border px-5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#ec6a5e] inline-block border border-black/10"></span>
+<span class="w-3 h-3 rounded-full bg-[#f4bf4f] inline-block border border-black/10"></span>
+<span class="w-3 h-3 rounded-full bg-[#62c554] inline-block border border-black/10"></span>
+</div>
+<div class="flex items-center gap-2 px-6 py-1 rounded-lg bg-white/90 border border-parchment-border text-[12px] font-sans text-ink-soft max-w-sm w-full mx-auto shadow-sm">
+<span class="material-symbols-outlined text-emerald-mid text-[14px]">lock</span>
+<span class="font-semibold text-ink">https://sah-world.app</span>
+<span class="text-ink-muted">/evrenim</span>
+</div>
+<div class="flex items-center gap-2.5 text-ink-muted">
+<span class="material-symbols-outlined text-[17px] hover:text-ink cursor-pointer">tune</span>
+<span class="material-symbols-outlined text-[17px] hover:text-ink cursor-pointer">refresh</span>
+</div>
+</div>
+<!-- Mockup Sahnesi (Evrenim Canlı Paneli) -->
+<div class="relative bg-surface p-6 lg:p-8 flex flex-col lg:flex-row gap-6">
+<!-- Mockup Sol Mini Zümrüt Menüsü -->
+<div class="w-full lg:w-56 bg-forest-deep rounded-2xl p-4 text-white flex flex-col justify-between shadow-md border border-emerald-mid/20 shrink-0">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2.5 pb-3 border-b border-white/10">
+<div class="w-7 h-7 rounded-lg bg-emerald-mid flex items-center justify-center text-white text-[16px] shadow-sm">
+<span class="material-symbols-outlined text-[18px]">spa</span>
+</div>
+<div>
+<div class="font-serif text-[14px] font-bold text-white leading-tight">SAH World</div>
+<div class="text-[9px] uppercase tracking-wider text-gold-traditional font-sans">Evrenim</div>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 font-sans text-[12px]">
+<div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-mid/30 text-white font-medium border border-emerald-mid/40">
+<span class="material-symbols-outlined text-gold-traditional text-[16px]">home</span>
+<span>Evrenim Ana Sayfa</span>
+</div>
+<div class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/70 hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[16px] text-white/50">timer</span>
+<span>Odaklanma</span>
+</div>
+<div class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/70 hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[16px] text-white/50">menu_book</span>
+<span>Hatm-i Şerif</span>
+</div>
+<div class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/70 hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[16px] text-white/50">mosque</span>
+<span>Mescidim</span>
+</div>
+<div class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/70 hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[16px] text-white/50">school</span>
+<span>Meslek &amp; Ahlak</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center gap-2 text-[10px] text-white/60 font-sans">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
+<span>Şifreli &amp; Güvenli Alan</span>
+</div>
+</div>
+<!-- Mockup Sağ İçerik Izgarası -->
+<div class="flex-1 flex flex-col gap-5">
+<!-- Üst Satır: Günün Niyeti & Bursa Osmangazi Vakit Sayacı -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+<!-- Günün Niyeti Paneli (Ortada Mahya Niyet Alanı) -->
+<div class="md:col-span-7 bg-white rounded-2xl p-6 border border-parchment-border shadow-subtle-card relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 left-0 bottom-0 w-1.5 bg-gradient-to-b from-gold-traditional via-emerald-mid to-gold-traditional"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-serif text-[11px] font-bold text-gold-traditional uppercase tracking-widest">GÜNÜN NİYETİ • SAH KELAMI</span>
+<span class="material-symbols-outlined text-gold-traditional text-[18px]">auto_awesome</span>
+</div>
+<p class="font-serif italic text-lg sm:text-[19px] text-ink leading-relaxed">
+                        “Gözün değdiği her zerreye hürmetle, amelimin her safhasına merhamet ve ihlâsla niyet ettim.”
+                      </p>
+</div>
+<div class="flex items-center justify-between pt-4 mt-2 border-t border-parchment-border/70 text-xs font-sans text-ink-muted">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-mid text-[15px]">verified</span>
+<span>Daimi Ahlak &amp; Amel Disiplini</span>
+</span>
+<span class="px-2.5 py-1 rounded-md bg-emerald-mid/10 text-emerald-mid font-semibold text-[11px]">
+                        Niyet Tazelendi
+                      </span>
+</div>
+</div>
+<!-- Bursa Osmangazi İkindi Vakti Sayacı (Sağ Kart) -->
+<div class="md:col-span-5 bg-gradient-to-br from-forest-deep via-[#0d2e20] to-night-deep rounded-2xl p-6 text-white shadow-md border border-emerald-mid/20 flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="text-[11px] uppercase tracking-wider font-sans font-semibold text-gold-traditional flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]">location_on</span>
+                        Bursa • Osmangazi
+                      </span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-light/20 text-emerald-light text-[10px] font-mono tracking-wider">CANLI</span>
+</div>
+<div class="my-3">
+<div class="text-[12px] text-white/70 font-sans">Sıradaki Vakit: <span class="text-white font-medium">İkindi</span></div>
+<div class="font-mono text-3xl sm:text-[34px] font-bold text-turquoise-glow tracking-tight mt-1">
+                        02:49:46
+                      </div>
+<div class="text-[11px] text-gold-traditional/90 mt-0.5 font-sans">Ezan-ı Muhammediye Yaklaşıyor</div>
+</div>
+<!-- İlerleme Çubuğu -->
+<div class="w-full bg-black/30 h-2 rounded-full overflow-hidden p-0.5 border border-white/10">
+<div class="h-full bg-gradient-to-r from-emerald-mid to-gold-traditional rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+</div>
+<!-- Alt Satır: Yaşayan Gelişim Vahası & Filiz Seviyesi & Halkalar -->
+<div class="bg-white rounded-2xl p-6 border border-parchment-border shadow-subtle-card flex flex-col gap-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-parchment-border">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-serif text-lg font-bold text-ink">Yaşayan Gelişim Vahası</h3>
+<span class="px-2.5 py-0.5 rounded-full bg-gold-traditional/15 text-gold-traditional text-[11px] font-semibold font-sans">Filiz Seviyesi (2 / 10)</span>
+</div>
+<p class="text-xs text-ink-muted mt-0.5 font-noto">İhlâs ve amelle sulanan manevi ağaç ve vaha çekirdekleri.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-forest-deep text-white font-sans text-xs">
+<span class="w-2 h-2 rounded-full bg-turquoise-glow"></span>
+<span>Mevcut: <strong class="text-gold-traditional">290 XH</strong></span>
+</div>
+<span class="text-xs font-semibold text-emerald-mid font-sans">+15 XH Bugün</span>
+</div>
+</div>
+<!-- 4 Vaha Halkası -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+<div class="p-3.5 rounded-xl bg-parchment/60 border border-parchment-border flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-emerald-mid/15 text-emerald-mid flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">water_drop</span>
+</div>
+<div>
+<div class="text-[12px] font-bold text-ink font-sans">İhlâs Bağı</div>
+<div class="text-[11px] text-emerald-mid font-medium">%82 Diri &amp; Bereketli</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-parchment/60 border border-parchment-border flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gold-traditional/15 text-gold-traditional flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</div>
+<div>
+<div class="text-[12px] font-bold text-ink font-sans">Kur’an Halkası</div>
+<div class="text-[11px] text-gold-traditional font-medium">14. Cüz • 12. Sayfa</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-parchment/60 border border-parchment-border flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+</div>
+<div>
+<div class="text-[12px] font-bold text-ink font-sans">Odak Vakti</div>
+<div class="text-[11px] text-primary font-medium">150 Dakika / Bugün</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-parchment/60 border border-parchment-border flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-[#435b9f]/15 text-[#435b9f] flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">volunteer_activism</span>
+</div>
+<div>
+<div class="text-[12px] font-bold text-ink font-sans">İnfak &amp; Dua</div>
+<div class="text-[11px] text-[#435b9f] font-medium">Gazze &amp; Doğu Türkistan</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. YAŞAM MİMARİSİ & MODÜLLER (3 Sütunlu Kartlar - style.css mahya/goal kartı disiplini) -->
+<section class="flex flex-col gap-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="font-serif text-[11px] font-bold text-emerald-mid tracking-widest uppercase">KADİM DEĞERLER • ÇAĞDAŞ UYGULAMA</span>
+<h2 class="font-serif text-3xl font-bold text-ink tracking-tight mt-1">Üç Boyutlu Yaşam Mimarisi</h2>
+</div>
+<p class="font-noto text-sm text-ink-soft max-w-md leading-relaxed">
+            style.css mahya ve amel kartı disipliniyle hazırlanan; vakit, dikkat ve meslek ahlakını birleştiren bütünsel nizam.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Kart 1: Mescidim & Canlı Vakit Pusulası -->
+<div class="group relative rounded-2xl bg-white border border-parchment-border p-7 shadow-thuluth hover:shadow-thuluth-lg hover:border-emerald-mid/50 transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-xl bg-forest-deep text-gold-traditional flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[26px]">mosque</span>
+</div>
+<div>
+<span class="font-sans text-[11px] font-bold tracking-wider uppercase text-gold-traditional">DİSİPLİN VE HUZUR</span>
+<h3 class="font-serif text-xl font-bold text-ink mt-1 group-hover:text-emerald-mid transition-colors">
+                  Mescidim &amp; Canlı Vakit Pusulası
+                </h3>
+</div>
+<p class="font-noto text-sm text-ink-soft leading-relaxed">
+                Diyanet usulü astronomik hesap, hassas şehir sayacı ve kalbi mescitlere bağlayan cemaatle buluşma motivasyonu.
+              </p>
+</div>
+<div class="pt-5 mt-6 border-t border-parchment-border/70 flex items-center justify-between text-xs font-sans">
+<span class="text-emerald-mid font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-mid"></span>
+                Astronomik Hassasiyet
+              </span>
+<span class="material-symbols-outlined text-emerald-mid group-hover:translate-x-1 transition-transform text-[18px]">east</span>
+</div>
+</div>
+<!-- Kart 2: Odaklanma & Tefekkür Seansı -->
+<div class="group relative rounded-2xl bg-white border border-parchment-border p-7 shadow-thuluth hover:shadow-thuluth-lg hover:border-emerald-mid/50 transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-xl bg-emerald-mid text-white flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[26px]">timer</span>
+</div>
+<div>
+<span class="font-sans text-[11px] font-bold tracking-wider uppercase text-emerald-mid">DİKKAT VE İHLÂS</span>
+<h3 class="font-serif text-xl font-bold text-ink mt-1 group-hover:text-emerald-mid transition-colors">
+                  Odaklanma &amp; Tefekkür Seansı
+                </h3>
+</div>
+<p class="font-noto text-sm text-ink-soft leading-relaxed">
+                Dijital gürültüyü perdeleyen, hadis-i şerif alıntılarıyla zihni tazeleyen Pomodoro ve derin çalışma odası.
+              </p>
+</div>
+<div class="pt-5 mt-6 border-t border-parchment-border/70 flex items-center justify-between text-xs font-sans">
+<span class="text-ink-soft font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-gold-traditional"></span>
+                Zihni Tazeleyen Fasıla
+              </span>
+<span class="material-symbols-outlined text-emerald-mid group-hover:translate-x-1 transition-transform text-[18px]">east</span>
+</div>
+</div>
+<!-- Kart 3: Meslek & Ahlak Okulu -->
+<div class="group relative rounded-2xl bg-white border border-parchment-border p-7 shadow-thuluth hover:shadow-thuluth-lg hover:border-emerald-mid/50 transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-xl bg-gold-traditional text-white flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[26px]">school</span>
+</div>
+<div>
+<span class="font-sans text-[11px] font-bold tracking-wider uppercase text-gold-traditional">LİYAKAT VE ADALET</span>
+<h3 class="font-serif text-xl font-bold text-ink mt-1 group-hover:text-emerald-mid transition-colors">
+                  Meslek &amp; Ahlak Okulu
+                </h3>
+</div>
+<p class="font-noto text-sm text-ink-soft leading-relaxed">
+                Mühendislikten tıbba mesleki ahlak modülleri ve liyakat ilkeleriyle her sanatı ibadet nezafetinde icra etme bilinci.
+              </p>
+</div>
+<div class="pt-5 mt-6 border-t border-parchment-border/70 flex items-center justify-between text-xs font-sans">
+<span class="text-gold-traditional font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-gold-traditional"></span>
+                Mesleki Liyakat Modülü
+              </span>
+<span class="material-symbols-outlined text-gold-traditional group-hover:translate-x-1 transition-transform text-[18px]">east</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. STYLE.CSS 60-30-10 VE DOKU ANATOMİSİ -->
+<section class="flex flex-col gap-8 bg-parchment/60 border border-parchment-border rounded-3xl p-8 lg:p-10 shadow-sm">
+<div class="text-center max-w-xl mx-auto">
+<span class="font-serif text-[11px] font-bold text-gold-traditional tracking-widest uppercase">STYLE.CSS GELENEĞİ &amp; KANONİK ORAN</span>
+<h2 class="font-serif text-3xl font-bold text-ink tracking-tight mt-1">60-30-10 Renk ve Doku Anatomisi</h2>
+<p class="font-noto text-sm text-ink-soft mt-2 leading-relaxed">
+            Kadim tezhip ve sülüs ölçülerinden beslenen, dijital ekranda zihni dinlendiren altın denge.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- %60 Zemin -->
+<div class="bg-white rounded-2xl p-6 border border-parchment-border shadow-subtle-card flex flex-col gap-4">
+<div class="h-20 rounded-xl bg-[#faf8f5] border border-parchment-border flex items-end p-3 shadow-inner">
+<span class="text-xs font-mono font-bold text-ink">#faf8f5 • Ham Krem</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold font-sans px-2 py-0.5 rounded bg-emerald-mid/10 text-emerald-mid">%60 Zemin</span>
+<h4 class="font-serif text-lg font-bold text-ink">Ham Krem &amp; Parşömen</h4>
+</div>
+<p class="font-noto text-xs text-ink-soft mt-2 leading-relaxed">
+                Saatlerce süren dingin odak. Ham kağıt dinginliğinde, mavi ışıktan arındırılmış göz dostu taban.
+              </p>
+</div>
+</div>
+<!-- %30 Denge -->
+<div class="bg-white rounded-2xl p-6 border border-parchment-border shadow-subtle-card flex flex-col gap-4">
+<div class="h-20 rounded-xl bg-forest-deep flex items-end p-3 shadow-inner">
+<span class="text-xs font-mono font-bold text-white">#0d2b1d &amp; #009B77</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold font-sans px-2 py-0.5 rounded bg-forest-deep text-white">%30 Denge</span>
+<h4 class="font-serif text-lg font-bold text-ink">Orman &amp; Gece Zümrütü</h4>
+</div>
+<p class="font-noto text-xs text-ink-soft mt-2 leading-relaxed">
+                Güven veren manevi kökler. Selçuklu çinisinin ve sülüs hat gölgelerinin arayüz mimarisine kattığı vakar.
+              </p>
+</div>
+</div>
+<!-- %10 Vurgu -->
+<div class="bg-white rounded-2xl p-6 border border-parchment-border shadow-subtle-card flex flex-col gap-4">
+<div class="h-20 rounded-xl bg-gradient-to-r from-gold-traditional to-turquoise-glow flex items-end p-3 shadow-inner">
+<span class="text-xs font-mono font-bold text-white drop-shadow">#c5a059 &amp; #40E0D0</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold font-sans px-2 py-0.5 rounded bg-gold-traditional/20 text-gold-traditional">%10 Vurgu</span>
+<h4 class="font-serif text-lg font-bold text-ink">Tezhip Altını &amp; Turkuaz</h4>
+</div>
+<p class="font-noto text-xs text-ink-soft mt-2 leading-relaxed">
+                Rozetler, niyet çizgisi ve seviye halkalarında kullanılan geleneksel altın tezhip parıltısı.
+              </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. ALT DAVET BÖLÜMÜ (style.css join-section - Zümrüt & Gece Mavisi Degrade + Çift Altın Bordür) -->
+<section class="relative w-full rounded-3xl overflow-hidden p-1 bg-gradient-to-r from-gold-traditional/50 via-gold-traditional/30 to-gold-traditional/50 shadow-thuluth-lg">
+<div class="rounded-[22px] bg-gradient-to-r from-forest-deep via-[#072418] to-[#041624] p-8 sm:p-12 text-white relative overflow-hidden border border-gold-traditional/30 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+<!-- Sol Yazı Alanı -->
+<div class="max-w-2xl z-10 flex flex-col gap-3">
+<div class="inline-flex items-center gap-2 text-gold-traditional">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-serif text-[11px] font-bold tracking-[0.25em] uppercase">HAYATA NİYET MÜHRÜ</span>
+</div>
+<h3 class="font-serif text-3xl sm:text-4xl font-bold text-white tracking-tight leading-snug">
+              Niyetinizi Dijital Hayatınıza Taşımaya Hazır mısınız?
+            </h3>
+<p class="font-noto text-sm sm:text-base text-white/80 leading-relaxed max-w-xl">
+              Günün niyetini belirleyin, astronomik namaz vakitleriyle ritminizi koruyun ve mesleki erdemlerinizi diri tutun.
+            </p>
+</div>
+<!-- Sağ Eylem Butonu -->
+<div class="z-10 shrink-0">
+<button class="px-8 py-4 rounded-2xl bg-gradient-to-r from-gold-traditional to-gold-hover hover:from-gold-hover hover:to-gold-traditional text-forest-deep font-sans font-bold text-[15px] shadow-[0_8px_25px_rgba(197,160,89,0.35)] transition-all flex items-center gap-3 active:scale-95 cursor-pointer">
+<span>Evrenim Paneline Geçiş Yap</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<!-- Arka Plan Dekoratif Işık İzi -->
+<div class="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-emerald-mid/20 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-gold-traditional/10 blur-2xl pointer-events-none"></div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

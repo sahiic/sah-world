@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-tertiary-fixed-variant":"#005049","on-secondary-fixed-variant":"#2a4386","on-background":"#1b1c1a","outline-variant":"#bccac2","surface-container-highest":"#e4e2df","surface-container-high":"#eae8e5","on-surface":"#1b1c1a","on-secondary-container":"#2a4486","primary":"#006950","emerald-mid":"#008263","error":"#ba1a1a","on-error":"#ffffff","on-secondary":"#ffffff","surface-container-lowest":"#ffffff","on-primary-fixed-variant":"#00513d","surface":"#fbf9f6","on-error-container":"#93000a","primary-fixed":"#81f8ce","on-primary":"#ffffff","on-secondary-fixed":"#00174a","ink":"#111a16","on-tertiary-container":"#f4fffc","gold-traditional":"#c5a059","thuluth-shadow-color":"rgba(0, 35, 102, 0.05)","surface-tint":"#006c52","on-surface-variant":"#3d4944","secondary-fixed":"#dbe1ff","on-primary-fixed":"#002117","surface-dim":"#dbdad7","tertiary-fixed":"#61f9e9","surface-variant":"#e4e2df","secondary-fixed-dim":"#b3c5ff","inverse-primary":"#63dbb3","on-tertiary-fixed":"#00201d","inverse-surface":"#30312f","inverse-on-surface":"#f2f0ed","ink-soft":"#3a4742","gold-hover":"#dfb76c","outline":"#6d7a73","night-deep":"#081c13","surface-container-low":"#f5f3f0","error-container":"#ffdad6","secondary-container":"#9cb4fe","surface-container":"#efeeeb","tertiary-container":"#008379","primary-fixed-dim":"#63dbb3","on-primary-container":"#f5fff8","secondary":"#435b9f","on-tertiary":"#ffffff","primary-container":"#008565","islamic-border":"rgba(0, 155, 119, 0.2)","emerald-light":"#1ab38f","surface-bright":"#fbf9f6","background":"#fbf9f6","forest-deep":"#0d2b1d","tertiary-fixed-dim":"#3adccc","tertiary":"#00685f"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1.5rem","space-xl":"2.5rem","margin":"2rem","space-xs":"0.25rem","space-lg":"1.5rem","space-md":"1rem","space-sm":"0.5rem"},"fontFamily":{"display-hero-mobile":["Noto Serif"],"label-badge":["Noto Serif"],"display-hero":["Noto Serif"],"headline-sm":["Noto Serif"],"headline-lg":["Noto Serif"],"body-lead":["Noto Serif"],"label-uppercase":["Noto Serif"],"headline-lg-mobile":["Noto Serif"],"body-sm":["Noto Serif"],"body-default":["Noto Serif"],"headline-md":["Noto Serif"]},"fontSize":{"display-hero-mobile":["34px",{"lineHeight":"42px","fontWeight":"700"}],"label-badge":["12px",{"lineHeight":"16px","fontWeight":"600"}],"display-hero":["56px",{"lineHeight":"68px","fontWeight":"700"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"46px","fontWeight":"700"}],"body-lead":["18px",{"lineHeight":"30px","fontWeight":"400"}],"label-uppercase":["11px",{"lineHeight":"16px","letterSpacing":"0.15em","fontWeight":"700"}],"headline-lg-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"body-sm":["13px",{"lineHeight":"20px","fontWeight":"400"}],"body-default":["15px",{"lineHeight":"26px","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}]}}}};</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-night-deep text-on-primary z-50 flex flex-col justify-between shadow-[0_12px_35px_rgba(0,35,102,0.15)]"><div class="flex flex-col flex-1 min-h-0"><div class="h-20 px-space-lg flex items-center gap-space-sm bg-forest-deep/60"><img alt="Brand logo emblem without text, featuring an emerald and navy gradient circular badge with gold stitched border and white sprout/seed calligraphic motif" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VyRlzunye2QBBMZCfvOetsqrJaJEzDWvRZY5N8ALk5pNF5PaE0Yw0t7_yKy-Puj1Rrfap6GtfSONr0IBXvlXTRxBYQSrzO7dHi4VB7Iw3Hy76K4VbXCsDiTi-F5AKBHTvGym8ypVtB-MjInEK2x0tOTNvuQjBCH5eENL__NYcsxUDrr52wG4s69GajAtQmGzN-yPl43EXIa8NjH4NCpeog1od0QS4l8N2JEploYT6YuyM612Bx3LWLG_A-"/><div class="flex flex-col ml-space-xs"><span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">SAH World</span><span class="font-label-badge text-label-badge text-gold-traditional tracking-wider uppercase">Ahlak ve Hayat Nizamı</span></div></div><div class="px-space-md py-space-sm overflow-y-auto flex-1"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary text-on-primary font-headline-sm text-body-default rounded-lg"><a aria-current="page" class="group relative flex items-center gap-space-sm px-space-md py-space-sm transition-all duration-200 bg-primary text-on-primary font-headline-sm text-body-default rounded-lg" data-path="evrenim" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional"></span><span class="flex-1">Evrenim</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="odaklanma-tefekkur" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Odaklanma &amp; Tefekkür</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="kuran-i-kerim-kardesim" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Kur'an-ı Kerim Kardeşim</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="mescidim-vakitler" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Mescidim &amp; Vakitler</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="gunluk-muhasebe" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Günlük &amp; Muhasebe</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="mazlum-cografyalar-atlasi" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Mazlum Coğrafyalar Atlası</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="meslek-ve-ahlak-okulu" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Meslek ve Ahlak Okulu</span></a><a class="group relative flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-outline-variant hover:bg-forest-deep hover:text-on-primary transition-all duration-200 font-body-default text-body-default" data-path="raporlarim" href="#"><span class="w-1.5 h-1.5 rounded-full bg-gold-traditional/30 group-hover:bg-gold-traditional"></span><span class="flex-1">Raporlarım</span></a></nav></div></div><div class="p-space-md bg-forest-deep/80 flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm px-space-sm py-space-xs rounded bg-night-deep/70"><span class="material-symbols-outlined text-gold-traditional text-body-default">verified_user</span><div class="flex flex-col"><span class="font-label-uppercase text-label-uppercase text-surface">Selçuklu Kalkanı</span><span class="font-label-badge text-label-badge text-outline-variant">Mahremiyet Korumalı</span></div></div><button class="flex items-center justify-center gap-space-xs w-full py-space-xs px-space-sm rounded-lg bg-surface-container-highest/10 hover:bg-surface-container-highest/20 text-surface text-body-sm font-body-sm transition-colors" type="button"><span class="material-symbols-outlined text-body-sm text-gold-traditional">rate_review</span><span>Geri Bildirim</span></button></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface-container-low/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,35,102,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md flex-1 max-w-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline text-body-lead">search</span><input class="w-full pl-12 pr-16 py-space-xs rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary font-body-default text-body-default shadow-[0_2px_8px_rgba(0,35,102,0.03)]" placeholder="Arama yap veya emir ver..." type="text"/><div class="absolute right-space-sm top-1/2 -translate-y-1/2 flex items-center gap-space-xs pointer-events-none"><kbd class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-badge text-label-badge shadow-sm">Ctrl</kbd><kbd class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-badge text-label-badge shadow-sm">K</kbd></div></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-primary text-on-primary hover:bg-forest-deep transition-all duration-200 shadow-[0_4px_14px_rgba(0,155,119,0.2)] font-body-default text-body-default" type="button"><span class="material-symbols-outlined text-body-lead">add_circle</span><span>Vird &amp; Amel Ekle</span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="flex flex-col text-right"><span class="font-body-default text-body-default font-bold text-on-surface">yusufaasirek</span><span class="font-label-badge text-label-badge text-emerald-mid">Filiz • Seviye 2 • 290 XH</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1VISKfgppewc5lZKEuhB0T9fQC8ega3BDirptyef_U07HenHVZKt67_rimtzE8Xr0R7O7Z23BJBifvdC0bfzMAxROOXOkHYd_YxYVxMc_jsdZraqtuMMhqNpwSXp2mOiFZ6xyVnKPuVBpSca5ck8lpVjqa4JPcujqfk6ZwfQRJav74-LBK_BnneR2-eWl3hRBTxvwSZSHXw4B1uHSVxV8GXBxdYiM8lpckoVi-cdBm1Vw9qcFuy8bArxWE"/></div></div></header><main class="relative pt-20 w-full min-h-screen bg-surface"><div class="flex flex-col w-full">
+<div class="px-gutter py-space-lg flex flex-col gap-space-xl max-w-7xl mx-auto w-full">
+<!-- 1. HEADER GREETING & DAILY MIHRAB -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<!-- Left Editorial Greeting -->
+<div class="lg:col-span-7 flex flex-col justify-between bg-surface-container-lowest p-space-xl rounded-xl shadow-sm relative overflow-hidden">
+<!-- Subtly placed decorative prayer-arch aura behind text -->
+<div class="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-tl from-gold-traditional/10 via-primary/5 to-transparent pointer-events-none blur-2xl"></div>
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="inline-flex items-center gap-space-xs self-start px-space-sm py-1 rounded bg-surface-container text-gold-traditional font-label-badge text-label-badge shadow-sm">
+<span class="material-symbols-outlined text-body-sm" style="font-variation-settings: 'FILL' 1;">mosque</span>
+<span>4 Ekim Pazar • 23 Rebiülahir 1448 • İkindi Vakti Tefekkürü</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-forest-deep tracking-tight mt-space-xs">
+            Kalbin Sükuneti, Amelin İhlası ile Hoş Geldin, <span class="text-primary italic">yusufaasirek</span>.
+          </h1>
+<p class="font-body-lead text-body-lead text-ink-soft max-w-2xl mt-space-xs leading-relaxed">
+            Günün hengamesini kapıda bırak; vaktin, niyetin ve mesleki emanetin bilinciyle avluya adım at. Burası ruhun dinlenme ve toparlanma makamıdır.
+          </p>
+</div>
+<!-- Metric micro-ribbon -->
+<div class="flex items-center gap-space-lg pt-space-lg mt-space-md bg-surface-container-low/60 -mx-space-xl -mb-space-xl px-space-xl py-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-light animate-pulse"></span>
+<span class="font-label-badge text-label-badge text-ink uppercase tracking-wider">Huzur Nabzı: Yüksek</span>
+</div>
+<span class="text-outline-variant font-label-badge">•</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-gold-traditional text-body-sm">balance</span>
+<span class="font-label-badge text-label-badge text-on-surface-variant">Vird Tamamlanma: %68</span>
+</div>
+<span class="text-outline-variant font-label-badge">•</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-body-sm">nature_people</span>
+<span class="font-label-badge text-label-badge text-on-surface-variant">Topluluk Safı: 1.420 Mümin</span>
+</div>
+</div>
+</div>
+<!-- Right Mihrab / Sealed Intention Card -->
+<div class="lg:col-span-5 relative flex flex-col justify-between p-space-xl rounded-xl bg-night-deep text-on-primary shadow-xl overflow-hidden">
+<!-- Mihrab Decorative Arch SVG Silhouette -->
+<svg class="absolute top-0 right-0 w-64 h-full opacity-10 pointer-events-none text-gold-traditional" fill="currentColor" viewbox="0 0 200 400">
+<path d="M100,0 C160,0 200,60 200,140 L200,400 L0,400 L0,140 C0,60 40,0 100,0 Z M100,20 C50,20 20,70 20,140 L20,380 L180,380 L180,140 C180,70 150,20 100,20 Z"></path>
+</svg>
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-1.5 h-6 bg-gold-traditional rounded-full"></span>
+<span class="font-label-uppercase text-label-uppercase text-gold-traditional tracking-widest">Günün Mühürlü Niyeti</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-forest-deep text-tertiary-fixed font-label-badge text-label-badge shadow-inner">
+              İhlas Mührü Bekleniyor
+            </span>
+</div>
+<div class="mt-space-md p-space-md rounded-lg bg-forest-deep/80 relative shadow-sm">
+<span class="text-gold-traditional/40 text-display-hero absolute -top-4 -left-1 font-serif pointer-events-none select-none">“</span>
+<p class="font-body-lead text-body-lead text-surface italic relative z-10 leading-relaxed pl-space-xs">
+              Her baktığım yüzde hakkı gözetmeye, yaptığım her işe hüsn-i zan ve adaletle dokunmaya niyet ettim.
+            </p>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between gap-space-sm relative z-10 mt-space-md">
+<div class="flex items-center gap-space-xs text-outline-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-gold-traditional text-body-default">history_edu</span>
+<span>Sabah 05:42 mühürlendi</span>
+</div>
+<button class="group flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-gold-traditional hover:bg-gold-hover text-night-deep font-body-default text-body-default font-bold transition-all shadow-md active:scale-95" id="sealBtn" onclick="toggleSeal()" type="button">
+<span class="material-symbols-outlined text-body-lead group-hover:rotate-12 transition-transform">verified</span>
+<span id="sealText">Niyeti Kalbe Mühürle</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 2. YAŞAYAN FİLİZ & MANEVİ AVLU (Seljuk 8-Point Star & Arcaded Grid) -->
+<section class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<!-- Section Emerald Bar Header -->
+<div class="p-space-lg bg-forest-deep text-on-primary flex flex-col md:flex-row md:items-center justify-between gap-space-md relative overflow-hidden">
+<div class="flex items-center gap-space-md relative z-10">
+<div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-gold-traditional shadow-md">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm">
+<h2 class="font-headline-md text-headline-md text-surface tracking-tight">Manevi İklim &amp; Yaşayan Filiz</h2>
+<span class="px-space-sm py-0.5 rounded-full bg-gold-traditional/20 text-gold-traditional font-label-badge text-label-badge">
+                Aşama 2 / 10 • Filiz Çekirdeği
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-outline-variant mt-0.5">
+              İçsel niyetler, amel istikrarı ve virdlerin beslediği canlı nefis bahçesi.
+            </p>
+</div>
+</div>
+<!-- XP & Bar -->
+<div class="flex flex-col gap-1 w-full md:w-72 relative z-10">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-surface font-semibold">290 / 500 XH</span>
+<span class="text-gold-traditional font-label-badge text-label-badge tracking-wider">%58 Gelişim</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-night-deep/80 overflow-hidden p-0.5 shadow-inner">
+<div class="h-full rounded-full bg-gradient-to-r from-gold-traditional to-emerald-light transition-all duration-700" style="width: 58%;"></div>
+</div>
+<span class="text-outline-variant font-label-badge text-label-badge text-right">Fidan Aşamasına 210 XH</span>
+</div>
+</div>
+<!-- Main Central Interactive Stage -->
+<div class="p-space-xl flex flex-col gap-space-xl">
+<!-- Living Sprout Showcase Emblem & Visual Centerpiece -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center bg-gradient-to-b from-surface to-surface-container-low/40 p-space-lg rounded-xl">
+<!-- Centerpiece Vector Emblem Graphic -->
+<div class="lg:col-span-5 flex flex-col items-center justify-center relative min-h-[260px] p-space-md">
+<!-- Seljuk Geometrics Orbit Lines -->
+<svg class="w-64 h-64 absolute inset-0 m-auto text-primary/10 animate-[spin_60s_linear_infinite]" viewbox="0 0 200 200">
+<polygon fill="none" points="100,5 125,75 195,100 125,125 100,195 75,125 5,100 75,75" stroke="currentColor" stroke-dasharray="4,4" stroke-width="1.5"></polygon>
+<circle cx="100" cy="100" fill="none" r="70" stroke="currentColor" stroke-width="1"></circle>
+<circle cx="100" cy="100" fill="none" r="45" stroke="currentColor" stroke-width="0.75"></circle>
+</svg>
+<!-- Organic Botanical Emblem Node -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-32 h-32 rounded-full bg-forest-deep flex items-center justify-center shadow-xl relative group">
+<div class="absolute inset-0 rounded-full bg-primary/20 blur-xl group-hover:scale-110 transition-transform"></div>
+<!-- Inline Botanical Sprout SVG -->
+<svg class="w-16 h-16 text-gold-traditional relative z-10 transition-transform duration-500 group-hover:scale-105" fill="currentColor" viewbox="0 0 64 64">
+<path d="M32,4 C32,4 20,20 20,36 C20,44 26,50 32,54 C38,50 44,44 44,36 C44,20 32,4 32,4 Z" fill="#008263" opacity="0.9"></path>
+<path d="M32,18 C32,18 25,28 25,37 C25,41 28,45 32,48 C36,45 39,41 39,37 C39,28 32,18 32,18 Z" fill="#c5a059"></path>
+<path d="M30,38 C28,34 22,32 18,34 C16,36 17,40 21,41 C25,42 28,40 30,38 Z" fill="#1ab38f"></path>
+<path d="M34,38 C36,34 42,32 46,34 C48,36 47,40 43,41 C39,42 36,40 34,38 Z" fill="#1ab38f"></path>
+<circle cx="32" cy="56" fill="#c5a059" r="3"></circle>
+</svg>
+</div>
+<div class="mt-space-sm text-center">
+<span class="font-headline-sm text-headline-sm text-forest-deep font-bold block">Filiz-i Şerif</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Toprağa saçılan niyet kök saldı</span>
+</div>
+</div>
+</div>
+<!-- Sprout Insights & Micro-Wisdom -->
+<div class="lg:col-span-7 flex flex-col justify-center gap-space-sm pl-space-md">
+<span class="font-label-uppercase text-label-uppercase text-primary tracking-widest">Nefis Terbiyesi &amp; Tabiat Aynası</span>
+<h3 class="font-headline-md text-headline-md text-ink leading-snug">
+              “Tohum karanlık topraktan korksaydı, hiçbir orman göğe yükselemezdi.”
+            </h3>
+<p class="font-body-default text-body-default text-on-surface-variant leading-relaxed">
+              Manevi derecen her amel, her ihlaslı niyet ve her mesleki emanetle sulanır. Bugünün zikirleri ve tefekkürü, yarının çınar gölgesini inşa eden gizli damlalardır.
+            </p>
+<div class="flex flex-wrap gap-space-sm pt-space-xs">
+<span class="px-space-sm py-1 rounded bg-surface-container text-primary font-body-sm text-body-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-body-sm">water_drop</span> 3 Vird Tamamlandı
+              </span>
+<span class="px-space-sm py-1 rounded bg-surface-container text-gold-traditional font-body-sm text-body-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-body-sm">psychology</span> 50 Dk Tefekkür
+              </span>
+<span class="px-space-sm py-1 rounded bg-surface-container text-secondary font-body-sm text-body-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-body-sm">menu_book</span> 1 Cüz Tilavet
+              </span>
+</div>
+</div>
+</div>
+<!-- 6 ARCHITECTURAL GATEWAYS (Courtyard Arcades / Kemerler) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+<!-- Gateway 1: Mescidim & Vakitler -->
+<div class="group flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm relative overflow-hidden">
+<div class="w-full h-1.5 bg-gradient-to-r from-emerald-mid to-gold-traditional absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-body-lead">schedule</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-primary/10 text-primary font-label-badge text-label-badge">Vakit Takibi</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-forest-deep mt-space-xs">Mescidim &amp; Vakitler</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sıradaki farz namazı cemaat safında karşıla.</p>
+<div class="my-space-xs p-space-sm rounded bg-surface-container-lowest flex items-center justify-between shadow-inner">
+<div>
+<span class="font-label-badge text-label-badge text-gold-traditional uppercase block">Sıradaki Vakit</span>
+<span class="font-headline-sm text-headline-sm text-ink font-bold">İkindi 16:14</span>
+</div>
+<div class="text-right">
+<span class="font-label-badge text-label-badge text-outline block">Kalan Süre</span>
+<span class="font-body-default text-body-default text-primary font-semibold">02:49:40</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-xs px-space-sm rounded-lg bg-primary hover:bg-forest-deep text-on-primary font-body-default text-body-default transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-default">notifications_active</span>
+<span>Cemaatle Buluşma Çağrısı</span>
+</button>
+</div>
+<!-- Gateway 2: Kur'an-ı Kerim Kardeşim -->
+<div class="group flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm relative overflow-hidden">
+<div class="w-full h-1.5 bg-gradient-to-r from-secondary to-primary absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary shadow-sm">
+<span class="material-symbols-outlined text-body-lead">auto_stories</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-secondary/10 text-secondary font-label-badge text-label-badge">Günlük Tilavet</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-forest-deep mt-space-xs">Kur'an-ı Kerim Kardeşim</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Kelam-ı Kadim ile kalbi diriltme saati.</p>
+<div class="my-space-xs p-space-sm rounded bg-surface-container-lowest flex items-center justify-between shadow-inner">
+<div>
+<span class="font-label-badge text-label-badge text-secondary uppercase block">Kaldığın Sayfa</span>
+<span class="font-headline-sm text-headline-sm text-ink font-bold">14. Cüz • Hicr</span>
+</div>
+<div class="text-right">
+<span class="font-label-badge text-label-badge text-outline block">Hedef Süre</span>
+<span class="font-body-default text-body-default text-emerald-mid font-semibold">15 Dk Kalan</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-xs px-space-sm rounded-lg bg-secondary hover:bg-forest-deep text-on-secondary font-body-default text-body-default transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-default">import_contacts</span>
+<span>Günün Tilavetine Devam Et</span>
+</button>
+</div>
+<!-- Gateway 3: Odaklanma & İtikaf -->
+<div class="group flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm relative overflow-hidden">
+<div class="w-full h-1.5 bg-gradient-to-r from-gold-traditional to-tertiary absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-gold-traditional shadow-sm">
+<span class="material-symbols-outlined text-body-lead">hourglass_top</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-gold-traditional/10 text-gold-traditional font-label-badge text-label-badge">Sükun Odası</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-forest-deep mt-space-xs">Odaklanma &amp; İtikaf</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dünyanın bildirimlerini sustur, derin tefekküre dal.</p>
+<div class="my-space-xs p-space-sm rounded bg-surface-container-lowest flex items-center justify-between shadow-inner">
+<div>
+<span class="font-label-badge text-label-badge text-gold-traditional uppercase block">Önerilen Seans</span>
+<span class="font-headline-sm text-headline-sm text-ink font-bold">50 Dakika</span>
+</div>
+<div class="text-right">
+<span class="font-label-badge text-label-badge text-outline block">Manevi Ortam</span>
+<span class="font-body-default text-body-default text-tertiary font-semibold">Su &amp; Ney Sesi</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-xs px-space-sm rounded-lg bg-forest-deep hover:bg-ink text-gold-traditional font-body-default text-body-default transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-default">play_arrow</span>
+<span>Zamanlayıcıyı Başlat</span>
+</button>
+</div>
+<!-- Gateway 4: Şükür Defteri -->
+<div class="group flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm relative overflow-hidden">
+<div class="w-full h-1.5 bg-gradient-to-r from-emerald-light to-secondary absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-body-lead">favorite</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-primary/10 text-primary font-label-badge text-label-badge">Nimet İdrakı</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-forest-deep mt-space-xs">Şükür Defteri</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sıradan görünen gizli ihsanları fark et ve kaydet.</p>
+<div class="my-space-xs p-space-sm rounded bg-surface-container-lowest flex items-center justify-between shadow-inner">
+<div>
+<span class="font-label-badge text-label-badge text-primary uppercase block">Bugün Kaydedilen</span>
+<span class="font-headline-sm text-headline-sm text-ink font-bold">3 Gizli Nimet</span>
+</div>
+<div class="text-right">
+<span class="font-label-badge text-label-badge text-outline block">Bereket</span>
+<span class="font-body-default text-body-default text-emerald-mid font-semibold">+10 XH Eklendi</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-xs px-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-container text-forest-deep font-body-default text-body-default transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-default">note_add</span>
+<span>Yeni Nimet İtirafı Ekle</span>
+</button>
+</div>
+<!-- Gateway 5: Nefis Muhasebesi -->
+<div class="group flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm relative overflow-hidden">
+<div class="w-full h-1.5 bg-gradient-to-r from-gold-traditional to-error absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-ink-soft shadow-sm">
+<span class="material-symbols-outlined text-body-lead">balance</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-ink-soft font-label-badge text-label-badge">Öz Eleştiri</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-forest-deep mt-space-xs">Nefis Muhasebesi</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Günün amel defteri, helal kazanç ve vicdan terazisi.</p>
+<div class="my-space-xs p-space-sm rounded bg-surface-container-lowest flex items-center justify-between shadow-inner">
+<div>
+<span class="font-label-badge text-label-badge text-ink uppercase block">Günün Terazisi</span>
+<span class="font-headline-sm text-headline-sm text-ink font-bold">5 Soru Hazır</span>
+</div>
+<div class="text-right">
+<span class="font-label-badge text-label-badge text-outline block">Durum</span>
+<span class="font-body-default text-body-default text-gold-traditional font-semibold">Akşam Bekleniyor</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-xs px-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-container text-forest-deep font-body-default text-body-default transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-default">checklist</span>
+<span>Muhasebe Defterini Aç</span>
+</button>
+</div>
+<!-- Gateway 6: Meslek & Ahlak Okulu -->
+<div class="group flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm relative overflow-hidden">
+<div class="w-full h-1.5 bg-gradient-to-r from-primary to-emerald-mid absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-body-lead">school</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-primary/10 text-primary font-label-badge text-label-badge">Liyakat &amp; İtkan</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-forest-deep mt-space-xs">Meslek &amp; Ahlak Okulu</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Yaptığın işi en güzel surette, emanet şuuruyla yap.</p>
+<div class="my-space-xs p-space-sm rounded bg-surface-container-lowest flex items-center justify-between shadow-inner">
+<div>
+<span class="font-label-badge text-label-badge text-primary uppercase block">Aktif Ders</span>
+<span class="font-headline-sm text-headline-sm text-ink font-bold truncate max-w-[150px] block">Mühendislik Etiği</span>
+</div>
+<div class="text-right">
+<span class="font-label-badge text-label-badge text-outline block">Konu</span>
+<span class="font-body-default text-body-default text-ink-soft font-semibold">Temiz Kod Emaneti</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-space-xs px-space-sm rounded-lg bg-primary hover:bg-forest-deep text-on-primary font-body-default text-body-default transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-default">local_library</span>
+<span>Ders Kaydına Katıl</span>
+</button>
+</div>
+</div>
+<!-- 10 Aşamalı Manevi Yolculuk Çizelgesi (10-Stage Spiritual Progress Stepper) -->
+<div class="p-space-lg rounded-xl bg-surface-container-low flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-gold-traditional text-body-lead">timeline</span>
+<span class="font-headline-sm text-headline-sm text-forest-deep">10 Aşamalı Kalp ve Amel Mertebeleri</span>
+</div>
+<span class="font-label-badge text-label-badge text-on-surface-variant">Tohumdan Vuslata Hakikat Yolculuğu</span>
+</div>
+<!-- Interactive Stepper -->
+<div class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-space-xs pt-space-xs">
+<!-- Stage 1 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-lowest shadow-sm text-center">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary text-label-badge font-label-badge flex items-center justify-center">✓</span>
+<span class="font-body-sm text-body-sm font-bold text-forest-deep mt-1">Tohum</span>
+<span class="text-label-badge font-label-badge text-emerald-mid">Tamam</span>
+</div>
+<!-- Stage 2 (Current) -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-gold-traditional/15 ring-2 ring-gold-traditional shadow-md text-center relative">
+<span class="w-6 h-6 rounded-full bg-gold-traditional text-night-deep text-label-badge font-label-badge flex items-center justify-center font-bold">2</span>
+<span class="font-body-sm text-body-sm font-bold text-forest-deep mt-1">Filiz</span>
+<span class="text-label-badge font-label-badge text-gold-traditional font-bold">Şu An (290 XH)</span>
+</div>
+<!-- Stage 3 (Locked) -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">3</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Fidan</span>
+<span class="text-label-badge font-label-badge text-outline">500 XH</span>
+</div>
+<!-- Stage 4 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">4</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Ağaç</span>
+<span class="text-label-badge font-label-badge text-outline">1000 XH</span>
+</div>
+<!-- Stage 5 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">5</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Orman</span>
+<span class="text-label-badge font-label-badge text-outline">2000 XH</span>
+</div>
+<!-- Stage 6 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">6</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Dağ</span>
+<span class="text-label-badge font-label-badge text-outline">3500 XH</span>
+</div>
+<!-- Stage 7 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">7</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Yıldız</span>
+<span class="text-label-badge font-label-badge text-outline">5000 XH</span>
+</div>
+<!-- Stage 8 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">8</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Güneş</span>
+<span class="text-label-badge font-label-badge text-outline">7500 XH</span>
+</div>
+<!-- Stage 9 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">9</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Halka</span>
+<span class="text-label-badge font-label-badge text-outline">10K XH</span>
+</div>
+<!-- Stage 10 -->
+<div class="flex flex-col items-center p-space-xs rounded-lg bg-surface-container-high/40 opacity-70 text-center">
+<span class="w-6 h-6 rounded-full bg-surface-container text-outline text-label-badge font-label-badge flex items-center justify-center">10</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Vuslat</span>
+<span class="text-label-badge font-label-badge text-outline">Kemâl</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. QUICK ACTION STRIPS & TOOLS (4 Marble-Style Horizontal Cards) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Action 1 -->
+<div class="flex items-center gap-space-md p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all shadow-sm cursor-pointer group">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-body-lead">timer</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-bold text-ink">Hızlı Odaklanma</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">50 Dk Blok Başlat</span>
+</div>
+</div>
+<!-- Action 2 -->
+<div class="flex items-center gap-space-md p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all shadow-sm cursor-pointer group">
+<div class="w-12 h-12 rounded-lg bg-gold-traditional/10 flex items-center justify-center text-gold-traditional group-hover:bg-gold-traditional group-hover:text-night-deep transition-colors">
+<span class="material-symbols-outlined text-body-lead">cyclone</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-bold text-ink">Hikmet &amp; Ayet Çarkı</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Günün Ayetini Aç</span>
+</div>
+</div>
+<!-- Action 3 -->
+<div class="flex items-center gap-space-md p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all shadow-sm cursor-pointer group">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-body-lead">edit_note</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-bold text-ink">Akşam Tefekkürü</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Zihnini Boşalt &amp; Yaz</span>
+</div>
+</div>
+<!-- Action 4 -->
+<div class="flex items-center gap-space-md p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all shadow-sm cursor-pointer group">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary group-hover:bg-tertiary group-hover:text-on-tertiary transition-colors">
+<span class="material-symbols-outlined text-body-lead">volunteer_activism</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-bold text-ink">Sadaka &amp; Nimet</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Gizli Hayır Kaydet</span>
+</div>
+</div>
+</section>
+<!-- 4. MAHYA & AWARENESS BANNER (Mazlum Coğrafyalar Kültür & Hafıza Atlası) -->
+<section class="relative rounded-xl overflow-hidden shadow-lg bg-night-deep text-on-primary">
+<div class="grid grid-cols-1 lg:grid-cols-12 items-center">
+<!-- Visual Map/Image Block -->
+<div class="lg:col-span-4 h-64 lg:h-full relative overflow-hidden bg-forest-deep">
+<img class="w-full h-full object-cover opacity-75 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700" data-alt="An ethereal high-angle architectural photograph of the Dome of the Rock and old stone courtyard of Al-Aqsa at dawn, bathed in mystical morning golden light with serene emerald reflections and deep ink shadows, symbolizing historic memory and Islamic brotherhood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfG5ou-22r75OTAmDFCAt2IL_cu1H9d4XMze3SeKJKUMhXlf1f9GyuVXt1FgxrpbtZ2q46yeGHv1BRCK5BDuAQPdBjJPYYOwnJhztEsW6pC6zWzg2Lf66i8l6GIYTpKaZm_MhBDFgFwHMnWMl_7tweVnW0NYMew8-UBfX8die6w7rbthe6gTAaAhXLuM6G5nI6ztKZd7ZrBrGHmhcXPz8b-R-p5Kd0CnZbE5uVOvmtBkjgLyr4Q72DUw"/>
+<div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-transparent via-night-deep/60 to-night-deep"></div>
+<span class="absolute bottom-space-md left-space-md px-space-sm py-0.5 rounded bg-forest-deep/80 text-gold-traditional font-label-badge text-label-badge backdrop-blur">
+            Kudüs • Gazze • Kaşgar
+          </span>
+</div>
+<!-- Calligraphic Message Content -->
+<div class="lg:col-span-8 p-space-xl flex flex-col gap-space-sm relative z-10">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-gold-traditional text-body-lead">public</span>
+<span class="font-label-uppercase text-label-uppercase text-gold-traditional tracking-widest">
+              Mazlum Coğrafyalar Kültür &amp; Hafıza Atlası
+            </span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-surface tracking-tight mt-space-xs">
+            “Kardeşinin derdiyle dertlenmeyen, emaneti omuzlayamaz.”
+          </h3>
+<p class="font-body-lead text-body-lead text-outline-variant max-w-2xl leading-relaxed">
+            Unutulmuş beldelerin vakfını, mazlumun ahını ve kardeşlik nöbetini diri tutmak her müminin vefa borcudur. Tarihinden kopan akıl, istikamet çizemez.
+          </p>
+<div class="pt-space-md flex flex-wrap items-center gap-space-md">
+<button class="flex items-center gap-space-xs px-space-lg py-space-sm rounded-lg bg-primary hover:bg-forest-deep text-on-primary font-body-default text-body-default font-bold transition-all shadow-md" type="button">
+<span class="material-symbols-outlined text-body-lead">explore</span>
+<span>Atlası Aç &amp; Bilinç Testine Katıl</span>
+</button>
+<span class="font-body-sm text-body-sm text-gold-traditional">Bugün 8.420 Mümin Fatiha İttifakında Buluştu</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. DUAL INSIGHTS COLUMNS -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg pb-space-xl">
+<!-- Left Column: Son Manevi Adımlar (Amel & Vird Geçmişi) -->
+<div class="lg:col-span-6 flex flex-col p-space-xl rounded-xl bg-surface-container-lowest shadow-sm gap-space-md">
+<div class="flex items-center justify-between pb-space-sm border-b-0">
+<div class="flex items-center gap-space-xs">
+<span class="w-1.5 h-5 bg-primary rounded-full"></span>
+<h3 class="font-headline-sm text-headline-sm text-forest-deep">Son Manevi Adımlar</h3>
+</div>
+<span class="font-label-badge text-label-badge text-outline">Bugün</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-body-default">menu_book</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-semibold text-ink">Kur'an-ı Kerim Tilaveti</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">14. Cüz • 8 Sayfa ikmal edildi</span>
+</div>
+</div>
+<span class="font-body-default text-body-default font-bold text-primary">+35 XH</span>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-gold-traditional/10 text-gold-traditional flex items-center justify-center">
+<span class="material-symbols-outlined text-body-default">wb_twilight</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-semibold text-ink">Sabah Niyeti &amp; Dua Virdi</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Güne istikamet şuuruyla başlandı</span>
+</div>
+</div>
+<span class="font-body-default text-body-default font-bold text-gold-traditional">+20 XH</span>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-body-default">groups</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-semibold text-ink">Öğle Namazı Cemaat Ameli</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mescid safında birlik</span>
+</div>
+</div>
+<span class="font-body-default text-body-default font-bold text-secondary">+30 XH</span>
+</div>
+<!-- Item 4 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-body-default">code</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-default text-body-default font-semibold text-ink">Mesleki Ahlak &amp; İtkan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mühendislik Etiği 3. Seviye Sınavı</span>
+</div>
+</div>
+<span class="font-body-default text-body-default font-bold text-tertiary">+30 XH</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Haftalık Manevi Seyir & İstikrar İntibası -->
+<div class="lg:col-span-6 flex flex-col p-space-xl rounded-xl bg-surface-container-lowest shadow-sm gap-space-md">
+<div class="flex items-center justify-between pb-space-sm border-b-0">
+<div class="flex items-center gap-space-xs">
+<span class="w-1.5 h-5 bg-gold-traditional rounded-full"></span>
+<h3 class="font-headline-sm text-headline-sm text-forest-deep">Haftalık Manevi Seyir</h3>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-primary/10 text-primary font-label-badge text-label-badge">İstikrar: 8.8 / 10</span>
+</div>
+<!-- Inline SVG Sparkline / Activity Graph -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-ink font-semibold">7 Günlük Amel Devamlılığı</span>
+<span class="text-emerald-mid font-bold">+18% Geçen Haftaya Göre</span>
+</div>
+<svg class="w-full h-24 text-primary pt-space-xs" fill="none" viewbox="0 0 350 90">
+<!-- Shaded background beneath sparkline curve -->
+<path d="M10,70 Q55,40 100,55 T180,30 T260,45 T340,15 L340,90 L10,90 Z" fill="currentColor" fill-opacity="0.08"></path>
+<!-- Line Stroke -->
+<path d="M10,70 Q55,40 100,55 T180,30 T260,45 T340,15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle class="fill-gold-traditional" cx="10" cy="70" r="3.5"></circle>
+<circle class="fill-gold-traditional" cx="95" cy="55" r="3.5"></circle>
+<circle class="fill-gold-traditional" cx="180" cy="30" r="3.5"></circle>
+<circle class="fill-gold-traditional" cx="260" cy="45" r="3.5"></circle>
+<circle class="fill-primary ring-4 ring-primary-fixed" cx="340" cy="15" r="5"></circle>
+</svg>
+<div class="flex justify-between text-label-badge font-label-badge text-outline pt-1">
+<span>Pzt</span>
+<span>Sal</span>
+<span>Çar</span>
+<span>Per</span>
+<span>Cum</span>
+<span>Cmt</span>
+<span class="text-primary font-bold">Paz</span>
+</div>
+</div>
+<!-- Weekly Wisdom Admonition Card -->
+<div class="p-space-md rounded-lg bg-forest-deep text-on-primary flex items-start gap-space-sm mt-auto shadow-md">
+<span class="material-symbols-outlined text-gold-traditional text-headline-sm">lightbulb</span>
+<div class="flex flex-col">
+<span class="font-label-uppercase text-label-uppercase text-gold-traditional tracking-wider">Haftalık Kalp Tavsiyesi</span>
+<p class="font-body-sm text-body-sm text-surface mt-1 leading-relaxed">
+              “Az da olsa devamlı olan amel makbuldür.” İkindi vaktindeki tefekkür ve akşam öncesi tilavetini 10 dakika bile olsa terk etmeme intizamını muhafaza et.
+            </p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<script>
+  function toggleSeal() {
+    const sealBtn = document.getElementById('sealBtn');
+    const sealText = document.getElementById('sealText');
+    if (!sealBtn || !sealText) return;
+
+    if (sealText.innerText === 'Niyeti Kalbe Mühürle') {
+      sealText.innerText = 'İhlas ile Mühürlendi ✓';
+      sealBtn.classList.remove('bg-gold-traditional', 'text-night-deep');
+      sealBtn.classList.add('bg-primary', 'text-on-primary');
+    } else {
+      sealText.innerText = 'Niyeti Kalbe Mühürle';
+      sealBtn.classList.remove('bg-primary', 'text-on-primary');
+      sealBtn.classList.add('bg-gold-traditional', 'text-night-deep');
+    }
+  }
+</script></main></div></body></html>
