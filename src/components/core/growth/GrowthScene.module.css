@@ -1,8 +1,8 @@
 /* Component-local tokens: layout uses an 8px rhythm, botanical colors share one light source. */
 .root {
-  --paper:#f5f8f1; --surface:rgba(255,255,255,.89); --glass:rgba(255,255,255,.82);
-  --ink:#203e33; --muted:#526b60; --line:rgba(55,87,66,.14); --brand:#6550cf;
-  --shadow: #16372b; --haze:#fffced; --cloud:#fffdf0; --sun-core:#fff6c4;
+  --paper:#0d2b1d; --surface:rgba(19,65,53,.94); --glass:rgba(9,46,36,.9);
+  --ink:#f5fff8; --muted:#b7ccc2; --line:rgba(129,248,206,.14); --brand:#63dbb3;
+  --shadow:#001b13; --haze:#fffced; --cloud:#fffdf0; --sun-core:#fff6c4;
   --sky-top:#b8d2cb; --sky-mid:#e3e8d4; --sky-low:#f3e7b9;
   --hill-far:#bacabb; --hill-middle:#94b3a2; --hill-near:#648e79;
   --meadow-light:#a8b985; --meadow-dark:#597d4e; --grass:#406344; --path:#e5d4a7;
@@ -10,11 +10,11 @@
   --bark-shadow:#47392c; --bark-mid:#866444; --bark-light:#b79966; --bark-rim:#d7c393;
   --leaf-rim:#d2df91; --leaf-light:#9eb76a; --leaf-mid:#507d43; --leaf-shadow:#264c35;
   --stone:#85897a; --stone-light:#b3b5a0; --pollen:#f7e4a1; --grain:#263f2d; --bird:#475d4c;
-  --habitat-quran:#926818; --habitat-focus:#575ac1; --habitat-sukur:#92611e;
-  --habitat-lessons:#a24d61; --habitat-journal:#7555b2; --habitat-profession:#6758a4; --habitat-mescidim:#277a5c;
+  --habitat-quran:#e4bd68; --habitat-focus:#9cb4fe; --habitat-sukur:#dfb76c;
+  --habitat-lessons:#eda7b7; --habitat-journal:#c2a7ee; --habitat-profession:#b3c5ff; --habitat-mescidim:#63dbb3;
   color:var(--ink); background:var(--paper); border-radius:24px; isolation:isolate;
   display:grid; grid-template-columns:minmax(280px,31%) minmax(0,1fr); min-width:0;
-  box-shadow:0 24px 64px color-mix(in srgb,var(--shadow) 10%,transparent),inset 0 0 0 1px var(--line);
+  box-shadow:0 24px 64px rgba(9,54,42,.2),inset 0 0 0 1px var(--line);
   font-variant-numeric:tabular-nums; position:relative;
 }
 .root[data-time="dawn"] {--sky-top:#c5cdd0;--sky-mid:#f0ddd0;--sky-low:#f6e7bf;--hill-far:#c5bdb1}

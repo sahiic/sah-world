@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Noto_Serif } from "next/font/google";
 import "./globals.css";
 import FocusTimerFloatingWidget from "@/components/core/FocusTimerRoot";
 import MotionPreferences from "@/components/ui/MotionPreferences";
@@ -14,6 +14,13 @@ const inter = Inter({
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const notoSerif = Noto_Serif({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-noto-serif",
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
@@ -80,7 +87,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#4f46e5",
+  themeColor: "#006950",
   colorScheme: "light dark",
 };
 
@@ -90,7 +97,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${jetbrains.variable}`}>
+    <html
+      lang="tr"
+      className={`${inter.variable} ${jetbrains.variable} ${notoSerif.variable}`}
+    >
       <head>
         {/* Tabler Icons */}
         <link

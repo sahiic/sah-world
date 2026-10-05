@@ -92,8 +92,8 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
       {introVisible && <DashboardPreloader />}
       <section className="dashboard-welcome-shell" aria-labelledby="dashboard-welcome-title">
         <header className="page-heading dashboard-heading">
-          <div><span className="eyebrow">{today.toLocaleUpperCase('tr-TR')}</span><h1 id="dashboard-welcome-title">{`Tekrar hoş geldin, ${firstName}.`.split(' ').map((word, index) => <span className="hero-word-wrap" key={`${word}-${index}`}><span className="hero-word">{word}&nbsp;</span></span>)}</h1><p>Bugün küçük bir adımla devam edebilirsin. Alanın, yargılamadan ilerlemeni görünür kılar.</p></div>
-          <button className="primary-button" onClick={() => onNavigate('journal')}><AppIcon name="plus" /> Yeni kayıt</button>
+          <div><span className="eyebrow">{today.toLocaleUpperCase('tr-TR')}</span><h1 id="dashboard-welcome-title">{`Selam ve afiyetle, ${firstName}.`.split(' ').map((word, index) => <span className="hero-word-wrap" key={`${word}-${index}`}><span className="hero-word">{word}&nbsp;</span></span>)}</h1><p>Niyetini sakin adımlarla hayata taşı. Bugünün küçük ameli, yarının yaşayan filizine dönüşsün.</p></div>
+          <button className="primary-button" onClick={() => onNavigate('journal')}><AppIcon name="plus" /> Hızlı niyet</button>
         </header>
 
         {!hasActivityToday && <motion.section className={`daily-ritual-card ${streakAtRisk ? 'at-risk' : ''}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} aria-label="Bugünün küçük niyeti">
@@ -103,15 +103,20 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
         </motion.section>}
       </section>
 
+      <header className="dashboard-section-heading">
+        <div><span className="eyebrow">MANEVİ İKLİM</span><h2>Yaşayan Filiz</h2></div>
+        <p>Her küçük amel, gelişim bahçende görünür bir iz bırakır.</p>
+      </header>
+
       <div className="dashboard-hero-grid">
         <div className="dashboard-growth-stack">
           <GrowthTree xp={store.xp} trigger={store.xpOrbTrigger} lastAmount={store.lastXPAmount} events={events} loading={remoteActivity.loading} onNavigate={onNavigate} />
         </div>
 
         <aside className="surface-card today-card" aria-labelledby="today-actions-title">
-          <div className="card-heading"><div><span className="eyebrow">BUGÜN</span><h2 id="today-actions-title">Neye alan açacaksın?</h2><p>Ritmini korumak için tek bir seçim yap.</p></div><span className="quiet-chip today-intention"><i aria-hidden="true" />1 adım yeter</span></div>
+          <div className="card-heading"><div><span className="eyebrow">HIZLI AMEL ADIMLARI</span><h2 id="today-actions-title">Bugün neye alan açacaksın?</h2><p>Ritmini korumak için tek bir seçim yap.</p></div><span className="quiet-chip today-intention"><i aria-hidden="true" />1 adım yeter</span></div>
           <div className="quick-actions">
-            {[quickActions[0], quickActions[1], quickActions[2]].map((action, index) => <button key={action.id} className={`${index === 0 ? 'primary-quick' : ''} action-${action.id}`} onClick={() => onNavigate(action.id)}>
+            {quickActions.map((action, index) => <button key={action.id} className={`${index === 0 ? 'primary-quick' : ''} action-${action.id}`} onClick={() => onNavigate(action.id)}>
               <span className="quick-action-icon"><AppIcon name={action.icon} /></span>
               <span><strong>{action.title}</strong><small>{action.note}</small></span>
               <AppIcon name="arrow-right" />
@@ -132,15 +137,18 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
       </button>
 
       <section className="dashboard-metrics" aria-label="Bugünkü gelişim özeti">
+        <header><span className="eyebrow">GÜNLÜK DENGE</span><h2>Altı Fazilet Makamı</h2></header>
         <Metric icon="flame" value={store.streak.current} label="Günlük seri" detail="İstikrar günün" tone="amber" />
         <Metric icon="calendar-check" value={activeDays} suffix="/7" label="Bu hafta aktif" detail="Son yedi gün" tone="green" />
         <Metric icon="sparkles" value={store.xp} label="Toplam XH" detail={`${level.name} seviyesi`} tone="indigo" />
         <Metric icon="circle-check" value={done} suffix={`/${tasks.length}`} label="Tamamlanan görev" detail="Tüm matris" tone="blue" />
+        <Metric icon="notebook" value={counts.journal} label="Günlük izi" detail="Kaydedilen not" tone="green" />
+        <Metric icon="target-arrow" value={counts.focus} label="Odak mührü" detail="Tamamlanan seans" tone="indigo" />
       </section>
 
       <div className="dashboard-lower-grid dashboard-reveal">
         <section className="surface-card activity-card">
-          <div className="card-heading"><div><span className="eyebrow">SON HAREKETLER</span><h2>Faaliyetlerin</h2></div><button className="text-button" onClick={() => onNavigate('reports')}>Tüm raporlar <AppIcon name="arrow-right" /></button></div>
+          <div className="card-heading"><div><span className="eyebrow">YOLCULUK KAYITLARI</span><h2>Son Manevi Mühürler</h2></div><button className="text-button" onClick={() => onNavigate('reports')}>Tüm raporlar <AppIcon name="arrow-right" /></button></div>
           {events.length === 0 ? <Empty /> : (
             <motion.ol className="activity-list" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: .045 } } }}>
               {events.slice(0, 7).map((event) => { const meta = CATEGORY_META[event.category]; return <motion.li key={`${event.category}-${event.id}`} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
