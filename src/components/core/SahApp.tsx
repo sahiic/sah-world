@@ -66,6 +66,7 @@ type ViewKey =
 type NavigationItem = { id: ViewKey; label: string; icon: string };
 
 const navigationItems: NavigationItem[] = [
+  { id: "dashboard", label: "Evrenim", icon: "home" },
   { id: "focus", label: "Odaklanma", icon: "target-arrow" },
   { id: "quran-companion", label: "Kur’an’ı Kerim Kardeşim", icon: "book-2" },
   { id: "mescidim", label: "Mescidim", icon: "building-mosque" },
@@ -78,6 +79,16 @@ const navigationItems: NavigationItem[] = [
     icon: "certificate",
   },
 ];
+
+const mobileNavigationIds: ViewKey[] = [
+  "dashboard",
+  "focus",
+  "mescidim",
+  "journal",
+];
+const mobileNavigationItems = mobileNavigationIds
+  .map((id) => navigationItems.find((item) => item.id === id))
+  .filter((item): item is NavigationItem => Boolean(item));
 
 const viewLabels: Partial<Record<ViewKey, string>> = Object.fromEntries(
   navigationItems.map((item) => [item.id, item.label]),
@@ -353,9 +364,10 @@ export default function SahApp({
           onClick={() => navigate("dashboard")}
           aria-label="SAH ana sayfa"
         >
-          <span className="brand-mark">S</span>
+          <span className="brand-mark"><AppIcon name="leaf" /></span>
           <span>
-            <strong>SAH</strong>
+            <strong>SAH World</strong>
+            <small>Tefekkür Vahası</small>
           </span>
         </button>
 
@@ -399,22 +411,31 @@ export default function SahApp({
             onClick={() => navigate("dashboard")}
             aria-label="SAH ana sayfa"
           >
-            <span className="brand-mark">S</span>
-            <strong>SAH</strong>
+            <span className="brand-mark"><AppIcon name="leaf" /></span>
+            <strong>SAH World</strong>
           </button>
-          <div className="route-context">
-            <span>SAH World</span>
-            <strong>{viewLabels[view] ?? "Kişisel alan"}</strong>
-          </div>
-          <div className="header-actions" ref={profileMenuRef}>
+          <div className="header-search-area">
+            <div className="route-context">
+              <span>SAH World</span>
+              <strong>{viewLabels[view] ?? "Kişisel alan"}</strong>
+            </div>
             <button
               className="global-search-button"
               onClick={() => setSearchOpen(true)}
               aria-label="Her yerde ara"
             >
               <AppIcon name="search" />
-              <span>Her yerde ara</span>
+              <span>Ayet, niyet, ders veya kavram ara…</span>
               <kbd>Ctrl K</kbd>
+            </button>
+          </div>
+          <div className="header-actions" ref={profileMenuRef}>
+            <button
+              className="header-quick-add"
+              onClick={() => navigate("journal")}
+            >
+              <AppIcon name="plus" />
+              <span>Vird &amp; Amel Ekle</span>
             </button>
             <button
               className="header-feedback"
@@ -558,7 +579,7 @@ export default function SahApp({
       </div>
 
       <nav className="mobile-nav" aria-label="Mobil navigasyon">
-        {navigationItems.slice(0, 4).map((item) => (
+        {mobileNavigationItems.map((item) => (
           <button
             key={item.id}
             className={view === item.id ? "active" : ""}
@@ -583,7 +604,7 @@ export default function SahApp({
 
       {moreOpen && (
         <div className="mobile-more" role="dialog" aria-label="Diğer bölümler">
-          {navigationItems.slice(4).map((item) => (
+          {navigationItems.filter((item) => !mobileNavigationIds.includes(item.id)).map((item) => (
             <button key={item.id} onClick={() => navigate(item.id)}>
               <AppIcon name={item.icon} />
               <span>{item.label}</span>
