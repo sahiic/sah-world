@@ -13,7 +13,7 @@ import { useJourneyStore } from "@/store/useJourneyStore";
 import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import AwarenessProfileSummary from "./AwarenessProfileSummary";
 import CommandPalette from "./CommandPalette";
@@ -107,6 +107,7 @@ export default function SahApp({
   const { session, user, isAuthLoading, profile } = useAuthStore();
   const store = useJourneyStore();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const view = readAppView(searchParams);
   const setView = useCallback((next: string) => {
     openAppView(readAppView(new URLSearchParams({ view: next })));
@@ -296,7 +297,10 @@ export default function SahApp({
       setTransitionCue({ ...cue, nonce: Date.now() });
       transitionCueTimer.current = window.setTimeout(() => setTransitionCue(null), 520);
     }
-    if (next === "quran" || next === "hadis") {
+    if (next === "focus") {
+      router.push("/focus");
+      return;
+    } else if (next === "quran" || next === "hadis") {
       openAppView("quran-companion", "wheel", { wisdom: "archive", archive: next === "quran" ? "verse" : "hadith" });
     } else if (next === "daily-wheel") {
       openAppView("quran-companion", "wheel", { wisdom: "verse" });
