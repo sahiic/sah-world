@@ -12,6 +12,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { isValidUUID, useJourneyStore } from "@/store/useJourneyStore";
 import type {
   AppointmentRow,
+  QuranAppointmentView,
   ChatMessageRow,
   HocaAvailabilityRow,
   HocaProfileRow,
@@ -22,6 +23,8 @@ import type {
 } from "@/types/database";
 import type { WisdomEntry } from "./DailyWisdomWheel";
 import SectionTagline from "./SectionTagline";
+import AppointmentReview from "./AppointmentReview";
+import AppointmentChat from "./AppointmentChat";
 
 type CompanionTab =
   | "home"
@@ -34,13 +37,7 @@ type CompanionTab =
 const DailyWisdomWheel = dynamic(() => import("./DailyWisdomWheel"), {
   loading: () => <CompanionSkeleton />,
 });
-type AppointmentView = AppointmentRow & {
-  hoca_name: string;
-  hoca_title: string;
-  hoca_photo: string | null;
-  student_name: string;
-  student_avatar: string | null;
-};
+type AppointmentView = QuranAppointmentView;
 type PeerView = {
   id: string;
   partner_id: string;
@@ -478,7 +475,10 @@ export default function QuranCompanionView({
         <AppointmentsView
           appointments={appointments}
           userId={userId}
+          isHoca={isHoca}
+          teachers={teachers}
           onReload={load}
+          onSaved={() => flash("Ders notun güvenle kaydedildi.")}
           onReminders={() => void enableReminders()}
         />
       ) : tab === "peers" ? (
@@ -1030,16 +1030,24 @@ function BookingFlow({
 function AppointmentsView({
   appointments,
   userId,
+  isHoca,
+  teachers,
   onReload,
   onReminders,
+  onSaved,
 }: {
   appointments: AppointmentView[];
   userId: string;
+  isHoca: boolean;
+  teachers: HocaProfileRow[];
   onReload: () => Promise<void>;
   onReminders: () => void;
+  onSaved: () => void;
 }) {
   const [filter, setFilter] = useState<"upcoming" | "past">("upcoming");
   const [now] = useState(() => Date.now());
+  const [reviewAppointment, setReviewAppointment] = useState<AppointmentView | null>(null);
+  const [chatAppointment, setChatAppointment] = useState<AppointmentView | null>(null);
   const items = appointments
     .filter((item) =>
       filter === "upcoming"
@@ -1153,14 +1161,18 @@ function AppointmentsView({
                     <blockquote>“{item.topic_notes}”</blockquote>
                   )}
                 </div>
-                {["pending", "confirmed"].includes(item.status) && (
-                  <button onClick={() => void cancel(item)}>İptal et</button>
-                )}
+                <div className="quran-appointment-actions">
+                  {item.status === "completed" && <button type="button" onClick={() => setReviewAppointment(item)}><AppIcon name="notebook" /> Ders notu</button>}
+                  {["confirmed", "completed"].includes(item.status) && <button type="button" onClick={() => setChatAppointment(item)}><AppIcon name="message" /> Mesajlaş</button>}
+                  {["pending", "confirmed"].includes(item.status) && <button className="cancel" type="button" onClick={() => void cancel(item)}>İptal et</button>}
+                </div>
               </article>
             );
           })}
         </div>
       )}
+      {reviewAppointment && <AppointmentReview key={reviewAppointment.id} appointment={reviewAppointment} isHoca={isHoca || reviewAppointment.student_id !== userId} userId={userId} onClose={() => setReviewAppointment(null)} onSaved={() => { setReviewAppointment(null); onSaved(); void onReload(); }} />}
+      {chatAppointment && <AppointmentChat key={chatAppointment.id} appointment={chatAppointment} currentUserId={userId} isHoca={isHoca || chatAppointment.student_id !== userId} hocaUserId={teachers.find((teacher) => teacher.id === chatAppointment.hoca_id)?.user_id || null} onClose={() => setChatAppointment(null)} />}
     </section>
   );
 }
@@ -1597,6 +1609,7 @@ function HocaManagement({
   const managed = teachers.find((item) => item.id === effectiveManagedId);
   const [availability, setAvailability] = useState<HocaAvailabilityRow[]>([]);
   const [timeOff, setTimeOff] = useState<HocaTimeOffRow[]>([]);
+  const [scheduleFeedback, setScheduleFeedback] = useState<{ message: string; error: boolean } | null>(null);
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<
     Array<{
@@ -1654,7 +1667,7 @@ function HocaManagement({
     event.preventDefault();
     if (!managed) return;
     const fd = new FormData(event.currentTarget);
-    await supabase
+    const { error } = await supabase
       .from("hoca_profiles")
       .update({
         display_name: String(fd.get("name")),
@@ -1668,40 +1681,72 @@ function HocaManagement({
         is_active: fd.get("active") === "on",
       })
       .eq("id", managed.id);
+    if (error) {
+      setScheduleFeedback({ message: "Profil kaydedilemedi. Yetkini ve bağlantını kontrol et.", error: true });
+      return;
+    }
+    setScheduleFeedback({ message: "Hoca profili güncellendi.", error: false });
     await onReload();
   };
   const addAvailability = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!managed) return;
     const fd = new FormData(event.currentTarget);
-    await supabase.from("hoca_availability").insert({
+    const start = String(fd.get("start"));
+    const end = String(fd.get("end"));
+    if (end <= start) {
+      setScheduleFeedback({ message: "Bitiş saati başlangıçtan sonra olmalı.", error: true });
+      return;
+    }
+    const { error } = await supabase.from("hoca_availability").insert({
       hoca_id: managed.id,
       day_of_week: Number(fd.get("day")),
-      start_time: String(fd.get("start")),
-      end_time: String(fd.get("end")),
+      start_time: start,
+      end_time: end,
       slot_duration_minutes: Number(fd.get("duration")),
       is_recurring: true,
       specific_date: null,
     });
+    if (error) {
+      setScheduleFeedback({ message: "Müsaitlik eklenemedi. Saatlerin çakışmadığını ve yetkini kontrol et.", error: true });
+      return;
+    }
     event.currentTarget.reset();
     await loadSchedule();
+    setScheduleFeedback({ message: "Haftalık müsaitlik kaydedildi.", error: false });
   };
   const addTimeOff = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!managed) return;
     const fd = new FormData(event.currentTarget);
-    await supabase.from("hoca_time_off").insert({
+    const start = new Date(String(fd.get("start")));
+    const end = new Date(String(fd.get("end")));
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
+      setScheduleFeedback({ message: "Kapalı zamanın bitişi başlangıcından sonra olmalı.", error: true });
+      return;
+    }
+    const { error } = await supabase.from("hoca_time_off").insert({
       hoca_id: managed.id,
-      start_datetime: new Date(String(fd.get("start"))).toISOString(),
-      end_datetime: new Date(String(fd.get("end"))).toISOString(),
+      start_datetime: start.toISOString(),
+      end_datetime: end.toISOString(),
       reason: String(fd.get("reason")),
     });
+    if (error) {
+      setScheduleFeedback({ message: "Kapalı zaman kaydedilemedi.", error: true });
+      return;
+    }
     event.currentTarget.reset();
     await loadSchedule();
+    setScheduleFeedback({ message: "Kapalı zaman takvime eklendi.", error: false });
   };
   const updateStatus = async (id: string, status: "completed" | "no_show") => {
-    await supabase.from("appointments").update({ status }).eq("id", id);
+    const { error } = await supabase.from("appointments").update({ status }).eq("id", id);
+    if (error) {
+      setScheduleFeedback({ message: "Randevu durumu güncellenemedi.", error: true });
+      return;
+    }
     await onReload();
+    setScheduleFeedback({ message: status === "completed" ? "Ders tamamlandı; şimdi ders notunu açabilirsin." : "Randevu katılmadı olarak işaretlendi.", error: false });
   };
   return (
     <section className="quran-management">
@@ -1777,6 +1822,7 @@ function HocaManagement({
       )}
       {managed ? (
         <div className="management-grid">
+          {scheduleFeedback && <p className={`quran-schedule-feedback ${scheduleFeedback.error ? "error" : ""}`} role={scheduleFeedback.error ? "alert" : "status"}>{scheduleFeedback.message}</p>}
           <form
             className="manage-profile-card"
             onSubmit={(event) => void saveProfile(event)}
@@ -1830,8 +1876,10 @@ function HocaManagement({
               <select name="duration" defaultValue="30">
                 <option value="20">20 dk</option>
                 <option value="30">30 dk</option>
+                <option value="40">40 dk</option>
                 <option value="45">45 dk</option>
                 <option value="60">60 dk</option>
+                <option value="90">90 dk</option>
               </select>
               <button>
                 <AppIcon name="plus" /> Ekle
@@ -1846,13 +1894,20 @@ function HocaManagement({
                     {item.slot_duration_minutes} dk
                   </span>
                   <button
-                    onClick={async () => {
-                      await supabase
+                    type="button"
+                    aria-label={`${DAYS[item.day_of_week]} müsaitliğini sil`}
+                    onClick={() => void (async () => {
+                      const { error } = await supabase
                         .from("hoca_availability")
                         .delete()
                         .eq("id", item.id);
+                      if (error) {
+                        setScheduleFeedback({ message: "Müsaitlik silinemedi.", error: true });
+                        return;
+                      }
                       await loadSchedule();
-                    }}
+                      setScheduleFeedback({ message: "Müsaitlik kaldırıldı.", error: false });
+                    })()}
                   >
                     <AppIcon name="trash" />
                   </button>
@@ -1877,13 +1932,20 @@ function HocaManagement({
                   <small>{item.reason || "Müsait değil"}</small>
                 </span>
                 <button
-                  onClick={async () => {
-                    await supabase
+                  type="button"
+                  aria-label="Kapalı zamanı sil"
+                  onClick={() => void (async () => {
+                    const { error } = await supabase
                       .from("hoca_time_off")
                       .delete()
                       .eq("id", item.id);
+                    if (error) {
+                      setScheduleFeedback({ message: "Kapalı zaman silinemedi.", error: true });
+                      return;
+                    }
                     await loadSchedule();
-                  }}
+                    setScheduleFeedback({ message: "Kapalı zaman kaldırıldı.", error: false });
+                  })()}
                 >
                   <AppIcon name="trash" />
                 </button>
