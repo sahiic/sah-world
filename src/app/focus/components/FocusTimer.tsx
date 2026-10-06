@@ -81,7 +81,7 @@ export default function FocusTimer({
       aria-label="Odaklanma zamanlayıcısı"
     >
       <div className={styles.timerAura} aria-hidden />
-      <div className={styles.timerEyebrow}>
+      <div className={`focus-mode-eyebrow ${styles.timerEyebrow}`}>
         {timerKind === "stopwatch" ? (
           <Timer aria-hidden />
         ) : (
@@ -124,11 +124,13 @@ export default function FocusTimer({
         )}
       </div>
 
-      <div className={styles.timerDial}>
+      <div
+        className={`focus-dial ${isRunning ? "is-running" : ""} ${styles.timerDial}`}
+      >
         <svg viewBox="0 0 340 340" aria-hidden>
           <circle className={styles.timerTrack} cx="170" cy="170" r={radius} />
           <circle
-            className={styles.timerProgress}
+            className={`focus-progress-ring ${styles.timerProgress}`}
             cx="170"
             cy="170"
             r={radius}

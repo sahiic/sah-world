@@ -91,7 +91,7 @@ export default function FocusExperience() {
   };
 
   return (
-    <main className={`${styles.focusPage} ${styles[`${mode}Page`]}`}>
+    <main className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
       <div className="focus-background" aria-hidden>
         <div
           className="focus-bg-gradient"
@@ -118,7 +118,7 @@ export default function FocusExperience() {
         <div className="focus-bg-overlay" />
         <div className={styles.geometricBackdrop} />
       </div>
-      <header className={styles.topbar}>
+      <header className={`focus-topbar ${styles.topbar}`}>
         <Link
           href="/"
           className={styles.backLink}

@@ -32,7 +32,7 @@ export default function TimerControls({
   return (
     <div className={styles.timerControls} aria-label="Zamanlayıcı kontrolleri">
       <button
-        className={styles.primaryControl}
+        className={`focus-main-btn ${styles.primaryControl}`}
         onClick={handlePrimary}
         aria-label={isRunning ? "Zamanlayıcıyı duraklat" : "Zamanlayıcıyı başlat"}
       >
@@ -40,7 +40,7 @@ export default function TimerControls({
         <span>{isRunning ? "Duraklat" : isPaused ? "Devam Et" : "Başla"}</span>
       </button>
       <button
-        className={styles.roundControl}
+        className={`focus-secondary-btn ${styles.roundControl}`}
         onClick={reset}
         aria-label="Zamanlayıcıyı sıfırla"
         title="Sıfırla (R)"
@@ -49,7 +49,7 @@ export default function TimerControls({
       </button>
       {sessionStartTime ? (
         <button
-          className={`${styles.roundControl} ${styles.dangerControl}`}
+          className={`focus-secondary-btn ${styles.roundControl} ${styles.dangerControl}`}
           onClick={() => completeSession({ completed: true })}
           aria-label="Oturumu şimdi tamamla"
           title="Oturumu şimdi tamamla"
@@ -58,7 +58,7 @@ export default function TimerControls({
         </button>
       ) : (
         <button
-          className={styles.roundControl}
+          className={`focus-secondary-btn ${styles.roundControl}`}
           onClick={skip}
           aria-label="Sonraki oturum türüne geç"
           title="Sonraki aşamaya geç"
