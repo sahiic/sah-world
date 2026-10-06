@@ -121,35 +121,66 @@
 .topActions button { width: 42px; padding: 0; }
 .topActions button span { display: none; }
 
+.viewTabs {
+  justify-self: center;
+  padding: 4px;
+  border: 1px solid rgba(247, 243, 237, 0.09);
+  border-radius: 999px;
+  display: flex;
+  gap: 3px;
+  background: rgba(5, 17, 26, 0.46);
+  backdrop-filter: blur(16px);
+}
+
+.viewTabs button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #8fa0ae;
+  background: transparent;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 750;
+  transition: 200ms ease;
+}
+
+.viewTabs button:hover,
+.viewTabs .viewTabActive {
+  color: #10382e;
+  background: #b8eee1;
+  box-shadow: 0 8px 22px rgba(22, 199, 154, 0.13);
+}
+
+.viewTabs svg { width: 15px; height: 15px; }
+
 .focusLayout {
   position: relative;
   z-index: 1;
-  width: min(1260px, calc(100% - 28px));
+  width: min(960px, 100%);
   margin: 0 auto;
-  padding: 24px 0 80px;
+  padding: 8px 18px 70px;
   display: grid;
-  gap: 18px;
 }
 
-.mainColumn,
-.sideColumn { min-width: 0; display: grid; align-content: start; gap: 16px; }
+.mainColumn { min-width: 0; display: grid; align-content: start; gap: 16px; }
 
 .timerCard {
   position: relative;
   overflow: hidden;
-  min-height: 590px;
-  padding: 32px 18px 26px;
-  border: 1px solid rgba(247, 243, 237, 0.09);
-  border-radius: 26px;
+  min-height: calc(100svh - 96px);
+  padding: 24px 18px 30px;
+  border: 0;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   isolation: isolate;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.045), transparent 58%),
-    rgba(18, 30, 45, 0.82);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.24), inset 0 1px rgba(255, 255, 255, 0.04);
+  background: transparent;
 }
 
 .timerAura {
@@ -163,7 +194,7 @@
 }
 
 .timerEyebrow {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -177,7 +208,7 @@
 
 .timerDial {
   position: relative;
-  width: min(78vw, 350px);
+  width: min(78vw, 390px);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -208,11 +239,11 @@
 .timerRunning .timerDial { animation: timerStart 600ms ease-out 1; }
 @keyframes timerStart { 50% { filter: drop-shadow(0 0 18px rgba(22, 199, 154, 0.34)); transform: scale(1.015); } }
 
-.timerValue { position: absolute; z-index: 2; display: grid; gap: 8px; text-align: center; }
+.timerValue { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 10px; text-align: center; }
 .timerValue strong { font: 600 clamp(48px, 13vw, 68px)/1 var(--font-mono), monospace; letter-spacing: -0.07em; text-shadow: 0 0 30px rgba(22, 199, 154, 0.1); }
 .timerValue span { color: var(--focus-accent); font: 700 11px/1 var(--font-noto-serif), serif; letter-spacing: 0.16em; text-transform: uppercase; }
 
-.rounds { margin-top: 2px; display: flex; align-items: center; gap: 7px; color: var(--focus-muted); font-size: 11px; }
+.rounds { display: flex; align-items: center; gap: 7px; color: var(--focus-muted); font-size: 10px; }
 .rounds > span { margin-right: 3px; }
 .rounds i { width: 7px; height: 7px; border: 1px solid #67778a; border-radius: 50%; }
 .rounds .roundDone { border-color: var(--focus-accent); background: var(--focus-accent); box-shadow: 0 0 10px rgba(22, 199, 154, 0.4); }
@@ -233,7 +264,7 @@
 .activeIntention span { overflow: hidden; font: 500 14px/1.3 var(--font-noto-serif), serif; text-overflow: ellipsis; white-space: nowrap; }
 .activeIntention small { color: #7fbba8; font-size: 9px; }
 
-.timerControls { margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.timerControls { margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 .timerControls button { min-height: 50px; border: 0; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; color: var(--focus-text); cursor: pointer; transition: 200ms ease; }
 .timerControls button:hover { transform: translateY(-2px); }
 .timerControls svg { width: 19px; height: 19px; }
@@ -241,6 +272,134 @@
 .primaryControl:hover { box-shadow: 0 17px 34px rgba(0, 0, 0, 0.27), 0 0 0 1px rgba(22, 199, 154, 0.23); }
 .roundControl { width: 50px; background: rgba(255, 255, 255, 0.055); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.09); }
 .dangerControl { color: #ff9f9f !important; }
+
+.timerCard :global(.focus-task-slot) {
+  width: min(100%, 520px);
+  margin-bottom: 10px;
+}
+
+.timerCard :global(.focus-task-slot form) {
+  width: 100%;
+}
+
+.timerCard :global(.focus-controls) {
+  margin-top: 20px;
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  background: rgba(3, 10, 16, 0.78);
+  backdrop-filter: blur(16px);
+  animation: backdropIn 180ms ease-out both;
+}
+
+.modalShell {
+  position: relative;
+  width: min(100%, 720px);
+  max-height: min(88svh, 780px);
+  overflow: auto;
+  border: 1px solid rgba(247, 243, 237, 0.1);
+  border-radius: 24px;
+  background: rgba(16, 28, 42, 0.97);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+
+.modalShell > .panelCard {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.modalHeader {
+  min-height: 76px;
+  padding: 16px 64px 16px 20px;
+  border-bottom: 1px solid rgba(247, 243, 237, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modalHeader > span {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: var(--focus-accent);
+  background: rgba(22, 199, 154, 0.09);
+}
+
+.modalHeader > span svg { width: 19px; }
+.modalHeader div { display: grid; gap: 3px; }
+.modalHeader small { color: var(--focus-gold); font-size: 8px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.modalHeader h2 { margin: 0; font: 600 19px/1.1 var(--font-noto-serif), serif; }
+
+.modalClose {
+  position: absolute;
+  z-index: 3;
+  top: 16px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(247, 243, 237, 0.09);
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: #bdc9d1;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.modalClose svg { width: 18px; }
+
+.historyStage {
+  min-height: calc(100svh - 112px);
+  padding: 24px 0;
+  display: grid;
+  align-content: start;
+}
+
+.historyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.timelineBackdrop {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: grid;
+  justify-items: end;
+}
+
+.timelineScrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(3, 10, 16, 0.54);
+  backdrop-filter: blur(8px);
+}
+
+.timelinePanel {
+  position: relative;
+  width: min(92vw, 410px);
+  height: 100%;
+  padding: 72px 18px 18px;
+  overflow-y: auto;
+  background: rgba(13, 26, 39, 0.98);
+  box-shadow: -22px 0 70px rgba(0, 0, 0, 0.34);
+}
 
 .soundMixer,
 .panelCard,
@@ -272,7 +431,8 @@
 .soundToggle > svg { width: 18px; transition: transform 200ms ease; }
 .soundMixerOpen .soundToggle > svg { transform: rotate(180deg); }
 
-.soundPanel { padding: 0 15px 16px; border-top: 1px solid rgba(247, 243, 237, 0.07); }
+.soundMixer { width: min(100%, 780px); }
+.soundPanel { padding: 14px 18px 20px; }
 .masterVolume { min-height: 58px; display: grid; grid-template-columns: auto 1fr 38px; align-items: center; gap: 11px; }
 .masterVolume label { display: flex; align-items: center; gap: 7px; color: #cbd5dd; font-size: 11px; }
 .masterVolume svg { width: 16px; }
@@ -282,11 +442,12 @@
 .placeholderNote { margin: 0 0 14px; padding: 9px 11px; border-radius: 10px; display: flex; align-items: center; gap: 8px; color: #9fb0bd; background: rgba(197, 165, 78, 0.07); font-size: 9px; line-height: 1.45; }
 .placeholderNote svg { width: 15px; color: var(--focus-gold); }
 .soundCategories { display: grid; gap: 12px; }
-.soundCategory { padding: 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.025); }
+.soundCategory { min-width: 0; padding: 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.025); }
 .soundCategory h3 { margin: 0 0 8px; display: flex; align-items: center; gap: 7px; color: #ccd6de; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
 .soundCategory h3 svg { width: 15px; color: var(--focus-accent); }
-.soundRow { min-height: 36px; display: grid; grid-template-columns: minmax(98px, 0.8fr) 1fr 24px; align-items: center; gap: 8px; color: #d6dee4; font-size: 10px; }
+.soundRow { min-height: 36px; display: grid; grid-template-columns: minmax(72px, 0.8fr) minmax(64px, 1fr) 24px; align-items: center; gap: 8px; color: #d6dee4; font-size: 10px; }
 .soundRow > span { display: flex; align-items: center; gap: 7px; }
+.soundRow input { min-width: 0; width: 100%; }
 .soundRow i { width: 6px; height: 6px; border-radius: 50%; background: #405064; }
 .soundRow small { color: #b78850; font-size: 7px; }
 .mixSaver { margin-top: 13px; display: grid; grid-template-columns: 1fr auto; gap: 8px; }
@@ -326,15 +487,21 @@
 .goalBlock { margin: 16px 0 18px; }
 .goalBlock > div:first-child { display: flex; justify-content: space-between; color: #d4dce3; font-size: 10px; }
 .goalBlock > small { margin-top: 6px; display: block; color: var(--focus-muted); font-size: 8px; text-align: right; }
-.goalTrack { height: 6px; margin-top: 8px; overflow: hidden; border-radius: 99px; background: rgba(255, 255, 255, 0.07); }
-.goalTrack i { height: 100%; display: block; border-radius: inherit; background: linear-gradient(90deg, var(--focus-primary), var(--focus-accent)); transition: width 500ms ease; }
+.goalTrack { width: 100%; height: 6px; margin-top: 8px; overflow: hidden; border: 0; border-radius: 99px; appearance: none; background: rgba(255, 255, 255, 0.07); }
+.goalTrack::-webkit-progress-bar { border-radius: inherit; background: rgba(255, 255, 255, 0.07); }
+.goalTrack::-webkit-progress-value { border-radius: inherit; background: linear-gradient(90deg, var(--focus-primary), var(--focus-accent)); transition: width 500ms ease; }
+.goalTrack::-moz-progress-bar { border-radius: inherit; background: linear-gradient(90deg, var(--focus-primary), var(--focus-accent)); }
 .weekChart { height: 150px; padding: 8px 5px 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; border-bottom: 1px solid rgba(247, 243, 237, 0.07); }
 .weekChart > div { min-width: 0; display: grid; grid-template-rows: 18px 1fr 24px; align-items: end; justify-items: center; gap: 4px; }
 .weekChart output { color: #94a4b1; font: 600 7px var(--font-mono), monospace; }
 .weekChart > div > span { width: min(24px, 80%); height: 100%; display: flex; align-items: end; }
-.weekChart i { width: 100%; min-height: 4px; border-radius: 5px 5px 2px 2px; background: linear-gradient(#24caa0, #087354); }
+.weekChart meter { width: 100%; height: 100%; min-height: 4px; border: 0; border-radius: 5px 5px 2px 2px; appearance: none; writing-mode: vertical-lr; direction: rtl; background: transparent; }
+.weekChart meter::-webkit-meter-bar { border: 0; border-radius: inherit; background: rgba(255, 255, 255, 0.035); }
+.weekChart meter::-webkit-meter-optimum-value { border-radius: inherit; background: linear-gradient(#24caa0, #087354); }
+.weekChart meter::-moz-meter-bar { border-radius: inherit; background: linear-gradient(#24caa0, #087354); }
 .weekChart small { color: var(--focus-muted); font-size: 7px; text-transform: uppercase; }
-.weekChart .bestBar i { background: linear-gradient(#e0c777, var(--focus-gold)); box-shadow: 0 0 16px rgba(197, 165, 78, 0.22); }
+.weekChart .bestBar meter::-webkit-meter-optimum-value { background: linear-gradient(#e0c777, var(--focus-gold)); box-shadow: 0 0 16px rgba(197, 165, 78, 0.22); }
+.weekChart .bestBar meter::-moz-meter-bar { background: linear-gradient(#e0c777, var(--focus-gold)); }
 .weekChart .bestBar small { color: #e5cc87; }
 .weekSummary { padding: 14px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .weekSummary span { display: grid; gap: 4px; text-align: center; }
@@ -481,9 +648,8 @@
 @media (min-width: 720px) {
   .topbar { padding-inline: 24px; }
   .backLink span { display: inline; }
-  .focusLayout { width: min(1260px, calc(100% - 42px)); padding-top: 32px; }
-  .timerCard { min-height: 650px; }
-  .timerDial { width: 380px; }
+  .focusLayout { width: min(960px, 100%); padding-top: 8px; }
+  .timerDial { width: 390px; }
   .soundCategories { grid-template-columns: repeat(3, 1fr); }
   .mixSaver { grid-template-columns: 1fr auto minmax(150px, auto); }
   .mixSaver select { grid-column: auto; }
@@ -493,25 +659,21 @@
 
 @media (min-width: 1040px) {
   .topbar { padding-inline: 34px; }
-  .focusBrand { justify-self: center; }
-  .focusLayout { grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.75fr); gap: 20px; }
-  .timerCard { min-height: 690px; }
-  .sideColumn { position: sticky; top: 94px; }
-  .mobilePanelTabs { display: none; }
-  .topActions button { width: auto; padding: 0 12px; }
-  .topActions button span { display: inline; }
   .shortcutHint { display: flex; }
-  .soundCategories { grid-template-columns: 1fr; }
-  .mixSaver { grid-template-columns: 1fr auto; }
-  .mixSaver select { grid-column: 1 / -1; }
 }
 
 @media (max-width: 430px) {
-  .focusBrand small { display: none; }
-  .topActions button:nth-child(-n + 3) { display: none; }
-  .timerCard { min-height: calc(100svh - 112px); border-radius: 22px; }
-  .timerDial { width: min(88vw, 340px); }
-  .timerValue strong { font-size: 52px; }
+  .topbar { padding-inline: 10px; }
+  .backLink { width: 42px; padding: 0; }
+  .backLink span,
+  .viewTabs svg { display: none; }
+  .viewTabs button { min-height: 34px; padding-inline: 10px; font-size: 9px; }
+  .timerCard { min-height: calc(100svh - 92px); padding-inline: 4px; }
+  .timerDial { width: min(92vw, 350px); }
+  .timerValue strong { font-size: 54px; }
+  .historyGrid { grid-template-columns: 1fr; }
+  .modalBackdrop { padding: 0; align-items: end; }
+  .modalShell { max-height: 90svh; border-radius: 24px 24px 0 0; }
   .todayStats strong { font-size: 11px; }
   .completeActions { grid-template-columns: 1fr 1fr; }
   .completeActions .completeGhost { grid-column: 1 / -1; }

@@ -3,13 +3,13 @@
 import {
   AudioLines,
   BookOpen,
-  ChevronDown,
   CloudRain,
   Headphones,
   Leaf,
   Save,
   Volume2,
   VolumeX,
+  X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useAmbientSound } from "@/hooks/useAmbientSound";
@@ -24,10 +24,10 @@ const categoryIcons = {
 
 export default function AmbientSoundMixer({
   open,
-  onToggle,
+  onClose,
 }: {
   open: boolean;
-  onToggle: () => void;
+  onClose: () => void;
 }) {
   const {
     sounds,
@@ -51,19 +51,27 @@ export default function AmbientSoundMixer({
   );
   const activeCount = Object.values(soundVolumes).filter((volume) => volume > 0).length;
 
+  if (!open) return null;
+
   return (
-    <section className={`${styles.soundMixer} ${open ? styles.soundMixerOpen : ""}`}>
-      <button
-        className={styles.soundToggle}
-        onClick={onToggle}
-        aria-expanded={open}
-        aria-controls="ambient-sound-panel"
-      >
-        <span><Headphones aria-hidden /><span><strong>Ambient Sesler</strong><small>{activeCount ? `${activeCount} katman etkin` : "Sakin bir arka plan kur"}</small></span></span>
-        <ChevronDown aria-hidden />
-      </button>
-      {open && (
-        <div id="ambient-sound-panel" className={styles.soundPanel}>
+    <div
+      className={styles.modalBackdrop}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ambient-sound-title"
+    >
+      <section className={`${styles.modalShell} ${styles.soundMixer}`}>
+        <header className={styles.modalHeader}>
+          <span><Headphones aria-hidden /></span>
+          <div>
+            <small>{activeCount ? `${activeCount} katman etkin` : "Sakin bir arka plan kur"}</small>
+            <h2 id="ambient-sound-title">Arka Plan Sesi</h2>
+          </div>
+          <button className={styles.modalClose} onClick={onClose} aria-label="Arka plan sesi penceresini kapat">
+            <X aria-hidden />
+          </button>
+        </header>
+        <div className={styles.soundPanel}>
           <div className={styles.masterVolume}>
             <label htmlFor="master-volume">{masterVolume > 0 ? <Volume2 aria-hidden /> : <VolumeX aria-hidden />} Ana ses</label>
             <input id="master-volume" type="range" min="0" max="100" value={Math.round(masterVolume * 100)} onChange={(event) => setMasterVolume(Number(event.target.value) / 100)} />
@@ -105,8 +113,8 @@ export default function AmbientSoundMixer({
             )}
           </div>
         </div>
-      )}
-    </section>
+      </section>
+    </div>
   );
 }
 

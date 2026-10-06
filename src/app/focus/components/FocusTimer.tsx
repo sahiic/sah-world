@@ -1,6 +1,16 @@
 "use client";
 
-import { Timer, Waves } from "lucide-react";
+import {
+  Expand,
+  Headphones,
+  Hourglass,
+  Target,
+  Timer,
+  Waves,
+  X,
+} from "lucide-react";
+import { FormEvent, useState } from "react";
+import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
 import { useFocusStore } from "@/stores/focusStore";
 import { formatTimer } from "@/utils/timerUtils";
 import TimerControls from "./TimerControls";
@@ -14,8 +24,14 @@ const modeLabels = {
 
 export default function FocusTimer({
   onNeedNiyet,
+  onOpenTimerSettings,
+  onOpenSound,
+  onToggleFullscreen,
 }: {
   onNeedNiyet: () => void;
+  onOpenTimerSettings: () => void;
+  onOpenSound: () => void;
+  onToggleFullscreen: () => void;
 }) {
   const mode = useFocusStore((state) => state.mode);
   const timerKind = useFocusStore((state) => state.timerKind);
@@ -25,7 +41,9 @@ export default function FocusTimer({
   const currentRound = useFocusStore((state) => state.currentRound);
   const totalRounds = useFocusStore((state) => state.totalRounds);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
-  const currentTags = useFocusStore((state) => state.currentTags);
+  const soundVolumes = useFocusStore((state) => state.soundVolumes);
+  const setNiyet = useFocusStore((state) => state.setNiyet);
+  const [taskDraft, setTaskDraft] = useState("");
 
   const radius = 150;
   const circumference = 2 * Math.PI * radius;
@@ -35,6 +53,21 @@ export default function FocusTimer({
       : totalTime > 0
         ? (totalTime - timeLeft) / totalTime
         : 0;
+  const activeSound = AMBIENT_SOUNDS.find(
+    (sound) => (soundVolumes[sound.id] ?? 0) > 0,
+  );
+  const durationLabel =
+    timerKind === "stopwatch"
+      ? "Serbest sayaç"
+      : `${Math.max(1, Math.round(totalTime / 60))} dk`;
+
+  const attachTask = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const task = taskDraft.trim();
+    if (!task) return;
+    setNiyet(task);
+    setTaskDraft("");
+  };
 
   return (
     <section
@@ -43,8 +76,46 @@ export default function FocusTimer({
     >
       <div className={styles.timerAura} aria-hidden />
       <div className={styles.timerEyebrow}>
-        {timerKind === "stopwatch" ? <Timer aria-hidden /> : <Waves aria-hidden />}
-        <span>{timerKind === "stopwatch" ? "Serbest çalışma" : "Pomodoro ritmi"}</span>
+        {timerKind === "stopwatch" ? (
+          <Timer aria-hidden />
+        ) : (
+          <Waves aria-hidden />
+        )}
+        <span>
+          {timerKind === "stopwatch" ? "Serbest çalışma" : "Pomodoro ritmi"}
+        </span>
+      </div>
+
+      <div className="focus-task-slot">
+        {currentNiyet ? (
+          <span className="focus-task-chip">
+            <i aria-hidden />
+            <strong>{currentNiyet}</strong>
+            {isRunning && <b aria-label="Oturum etkin" />}
+            {!isRunning && (
+              <button
+                onClick={() => setNiyet("")}
+                aria-label="Odak görevini kaldır"
+              >
+                <X aria-hidden />
+              </button>
+            )}
+          </span>
+        ) : (
+          <form onSubmit={attachTask}>
+            <span>
+              <Target aria-hidden />
+            </span>
+            <input
+              value={taskDraft}
+              onChange={(event) => setTaskDraft(event.target.value)}
+              maxLength={100}
+              placeholder="Şu an neye odaklanacaksın?"
+              aria-label="Odak görevi"
+            />
+            <button type="submit">Ekle</button>
+          </form>
+        )}
       </div>
 
       <div className={styles.timerDial}>
@@ -61,31 +132,51 @@ export default function FocusTimer({
         </svg>
         <div className={styles.timerValue} aria-live="polite" aria-atomic="true">
           <strong>{formatTimer(timeLeft)}</strong>
+          <div
+            className={styles.rounds}
+            aria-label={`Tur ${currentRound} / ${totalRounds}`}
+          >
+            <span>Tur</span>
+            {Array.from({ length: totalRounds }, (_, index) => (
+              <i
+                key={index}
+                className={index < currentRound ? styles.roundDone : ""}
+                aria-hidden
+              />
+            ))}
+            <b>
+              {currentRound}/{totalRounds}
+            </b>
+          </div>
           <span>{modeLabels[mode]}</span>
         </div>
       </div>
 
-      <div className={styles.rounds} aria-label={`Tur ${currentRound} / ${totalRounds}`}>
-        <span>Tur</span>
-        {Array.from({ length: totalRounds }, (_, index) => (
-          <i
-            key={index}
-            className={index < currentRound ? styles.roundDone : ""}
-            aria-hidden
-          />
-        ))}
-        <b>{currentRound}/{totalRounds}</b>
-      </div>
-
-      {currentNiyet && (
-        <button className={styles.activeIntention} onClick={onNeedNiyet}>
-          <span>{currentNiyet}</span>
-          {currentTags.length > 0 && <small>{currentTags.join(" · ")}</small>}
-        </button>
-      )}
-
       <TimerControls onNeedNiyet={onNeedNiyet} />
+
+      <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
+        <button onClick={onOpenTimerSettings} disabled={isRunning}>
+          <span>
+            <Hourglass aria-hidden />
+          </span>
+          <strong>Zamanlayıcı</strong>
+          <small>{durationLabel}</small>
+        </button>
+        <button onClick={onOpenSound}>
+          <span>
+            <Headphones aria-hidden />
+          </span>
+          <strong>Arka Plan Sesi</strong>
+          <small>{activeSound?.name ?? "Sessiz"}</small>
+        </button>
+        <button onClick={onToggleFullscreen}>
+          <span>
+            <Expand aria-hidden />
+          </span>
+          <strong>Tam Ekran</strong>
+          <small>Dikkat dağıtanları gizle</small>
+        </button>
+      </nav>
     </section>
   );
 }
-
