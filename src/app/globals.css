@@ -1202,11 +1202,22 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 
 /* ── Animated Background ── */
 .focus-background {
-  position: absolute !important;
+  position: fixed !important;
   inset: 0 !important;
   z-index: 0 !important;
   overflow: hidden !important;
-  background: #080e17 !important;
+  background:
+    linear-gradient(rgba(3, 12, 18, 0.18), rgba(3, 12, 18, 0.42)),
+    url("/images/focus-forest-ambient.webp") center / cover no-repeat !important;
+  transform: scale(1.015);
+}
+
+.focus-bg-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.42;
+  mix-blend-mode: color;
 }
 
 .focus-background::before {
@@ -1220,7 +1231,8 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
     radial-gradient(ellipse 500px 500px at 75% 60%, rgba(22, 199, 154, 0.08) 0%, transparent 70%),
     radial-gradient(ellipse 800px 400px at 50% 80%, rgba(197, 165, 78, 0.06) 0%, transparent 70%);
   animation: focusBgDrift 25s ease-in-out infinite alternate;
-  z-index: 0;
+  z-index: 1;
+  mix-blend-mode: screen;
 }
 
 .focus-background::after {
@@ -1241,7 +1253,7 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
     radial-gradient(1.5px 1.5px at 80% 10%, rgba(255,255,255,0.25) 50%, transparent 50%),
     radial-gradient(1px 1px at 40% 40%, rgba(255,255,255,0.15) 50%, transparent 50%);
   animation: focusStarsTwinkle 8s ease-in-out infinite alternate;
-  z-index: 1;
+  z-index: 2;
 }
 
 @keyframes focusBgDrift {
