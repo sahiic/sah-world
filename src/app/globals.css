@@ -1198,3 +1198,293 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] :is(.surface-card,.stat-card,.metric-card,.today-card,.profile-popover,.command-dialog,.mobile-more){color:#effaf4;background:#10261d;box-shadow:inset 0 0 0 1px rgba(129,248,206,.1),0 16px 44px rgba(0,0,0,.18)}
 [data-theme="dark"] .dashboard-welcome-shell{background:linear-gradient(145deg,#102c21,#0b2119);border-color:rgba(129,248,206,.1)}[data-theme="dark"] .dashboard-welcome-shell .dashboard-heading h1,[data-theme="dark"] .dashboard-section-heading h2,[data-theme="dark"] .dashboard-metrics>header h2,[data-theme="dark"] .card-heading h2{color:#effaf4}
 
+/* === FOCUS PREMIUM VISUAL OVERHAUL — START === */
+
+/* ── Animated Background ── */
+.focus-background {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+  background: #080e17 !important;
+}
+
+.focus-background::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(ellipse 600px 600px at 20% 30%, rgba(10, 104, 71, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 75% 60%, rgba(22, 199, 154, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 800px 400px at 50% 80%, rgba(197, 165, 78, 0.06) 0%, transparent 70%);
+  animation: focusBgDrift 25s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+.focus-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.3) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,255,255,0.35) 50%, transparent 50%),
+    radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.25) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 85% 80%, rgba(255,255,255,0.3) 50%, transparent 50%),
+    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.2) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 45% 90%, rgba(255,255,255,0.35) 50%, transparent 50%),
+    radial-gradient(1px 1px at 90% 25%, rgba(255,255,255,0.25) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 60% 55%, rgba(255,255,255,0.2) 50%, transparent 50%),
+    radial-gradient(1px 1px at 25% 85%, rgba(255,255,255,0.3) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 80% 10%, rgba(255,255,255,0.25) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 40%, rgba(255,255,255,0.15) 50%, transparent 50%);
+  animation: focusStarsTwinkle 8s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes focusBgDrift {
+  0% { transform: translate(0%, 0%) rotate(0deg); }
+  33% { transform: translate(-3%, 2%) rotate(0.5deg); }
+  66% { transform: translate(2%, -2%) rotate(-0.3deg); }
+  100% { transform: translate(-1%, 1%) rotate(0.2deg); }
+}
+
+@keyframes focusStarsTwinkle {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* ── Timer Dial Glow ── */
+.focus-dial {
+  filter: drop-shadow(0 0 60px rgba(22, 199, 154, 0.12)) drop-shadow(0 0 120px rgba(10, 104, 71, 0.08)) !important;
+}
+
+.focus-dial svg circle[stroke] {
+  filter: drop-shadow(0 0 6px rgba(22, 199, 154, 0.5)) !important;
+}
+
+.focus-dial > div > strong {
+  text-shadow: 0 0 40px rgba(22, 199, 154, 0.2), 0 0 80px rgba(22, 199, 154, 0.1) !important;
+}
+
+/* ── Breathing glow on the progress ring when timer is running ── */
+.focus-dial.is-running .focus-progress-ring {
+  animation: focusRingPulse 4s ease-in-out infinite;
+}
+
+@keyframes focusRingPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(22, 199, 154, 0.4)); }
+  50% { filter: drop-shadow(0 0 16px rgba(22, 199, 154, 0.7)); }
+}
+
+/* ── Task Input Pill — Glassmorphism ── */
+.focus-task-slot form {
+  background: rgba(22, 199, 154, 0.06) !important;
+  border: 1px solid rgba(22, 199, 154, 0.2) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.focus-task-slot form:focus-within {
+  border-color: rgba(22, 199, 154, 0.5) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(22, 199, 154, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.focus-task-slot form button[type="submit"] {
+  background: rgba(22, 199, 154, 0.2) !important;
+  border: 1px solid rgba(22, 199, 154, 0.3) !important;
+  color: #16C79A !important;
+  font-weight: 600 !important;
+  transition: all 200ms ease !important;
+}
+
+.focus-task-slot form button[type="submit"]:hover {
+  background: rgba(22, 199, 154, 0.35) !important;
+  border-color: rgba(22, 199, 154, 0.5) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(22, 199, 154, 0.2) !important;
+}
+
+/* ── Task Chip — when task is set ── */
+.focus-task-chip {
+  background: rgba(22, 199, 154, 0.1) !important;
+  border: 1px solid rgba(22, 199, 154, 0.25) !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ── Main Action Button — Bigger, Glowing ── */
+.focus-main-btn {
+  min-width: 200px !important;
+  padding: 18px 48px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 24px rgba(22, 199, 154, 0.3), 0 0 60px rgba(22, 199, 154, 0.1) !important;
+  transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.focus-main-btn:hover {
+  transform: translateY(-3px) scale(1.03) !important;
+  box-shadow: 0 8px 32px rgba(22, 199, 154, 0.4), 0 0 80px rgba(22, 199, 154, 0.15) !important;
+}
+
+.focus-main-btn:active {
+  transform: translateY(-1px) scale(1.01) !important;
+}
+
+/* ── Secondary Buttons (reset, skip) ── */
+.focus-secondary-btn,
+.focus-center nav[aria-label] button:not(.focus-main-btn) {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px) !important;
+  transition: all 200ms ease !important;
+}
+
+.focus-secondary-btn:hover,
+.focus-center nav[aria-label] button:not(.focus-main-btn):hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ── Bottom Control Cards — Glass ── */
+.focus-controls {
+  gap: 10px !important;
+}
+
+.focus-controls button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-radius: 14px !important;
+  padding: 16px 12px !important;
+  transition: all 250ms ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.focus-controls button:hover {
+  background: rgba(22, 199, 154, 0.06) !important;
+  border-color: rgba(22, 199, 154, 0.25) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba(22, 199, 154, 0.08) !important;
+}
+
+.focus-controls button > span {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(22, 199, 154, 0.1) !important;
+  margin-bottom: 8px !important;
+}
+
+.focus-controls button > strong {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.focus-controls button > small {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  margin-top: 2px !important;
+}
+
+/* ── Top Bar — Floating Glass ── */
+.focus-topbar {
+  background: rgba(15, 25, 35, 0.6) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── Mode Eyebrow Label ── */
+.focus-mode-eyebrow {
+  backdrop-filter: blur(12px) !important;
+  background: rgba(22, 199, 154, 0.08) !important;
+  border: 1px solid rgba(22, 199, 154, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ── Completed Session Screen ── */
+.focus-completed {
+  backdrop-filter: blur(24px) !important;
+}
+
+/* ── Round Indicators ── */
+.focus-dial span[style*="gap"] {
+  letter-spacing: 3px !important;
+}
+
+/* ── Scrollbar ── */
+.focus-root::-webkit-scrollbar {
+  width: 4px;
+}
+.focus-root::-webkit-scrollbar-track {
+  background: transparent;
+}
+.focus-root::-webkit-scrollbar-thumb {
+  background: rgba(22, 199, 154, 0.2);
+  border-radius: 2px;
+}
+
+/* ── Video background (if video files exist) ── */
+.focus-bg-video {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 2 !important;
+  filter: brightness(0.3) saturate(0.7) !important;
+  transform: scale(1.05) !important;
+}
+
+.focus-bg-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(8, 14, 23, 0.2) 0%,
+    rgba(8, 14, 23, 0.6) 50%,
+    rgba(8, 14, 23, 0.9) 100%
+  ) !important;
+  pointer-events: none !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .focus-controls {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .focus-main-btn {
+    min-width: 160px !important;
+    padding: 14px 36px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .focus-background::before,
+  .focus-background::after {
+    animation: none !important;
+  }
+  .focus-dial.is-running .focus-progress-ring {
+    animation: none !important;
+  }
+}
+
+/* === FOCUS PREMIUM VISUAL OVERHAUL — END === */
+
