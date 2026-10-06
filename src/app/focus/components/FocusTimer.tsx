@@ -6,11 +6,13 @@ import {
   Hourglass,
   Target,
   Timer,
+  Video,
   Waves,
   X,
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
+import { getFocusBackground } from "@/lib/focusBackgrounds";
 import { useFocusStore } from "@/stores/focusStore";
 import { formatTimer } from "@/utils/timerUtils";
 import TimerControls from "./TimerControls";
@@ -26,11 +28,13 @@ export default function FocusTimer({
   onNeedNiyet,
   onOpenTimerSettings,
   onOpenSound,
+  onOpenBackground,
   onToggleFullscreen,
 }: {
   onNeedNiyet: () => void;
   onOpenTimerSettings: () => void;
   onOpenSound: () => void;
+  onOpenBackground: () => void;
   onToggleFullscreen: () => void;
 }) {
   const mode = useFocusStore((state) => state.mode);
@@ -42,6 +46,7 @@ export default function FocusTimer({
   const totalRounds = useFocusStore((state) => state.totalRounds);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
   const soundVolumes = useFocusStore((state) => state.soundVolumes);
+  const backgroundId = useFocusStore((state) => state.backgroundId);
   const setNiyet = useFocusStore((state) => state.setNiyet);
   const [taskDraft, setTaskDraft] = useState("");
 
@@ -60,6 +65,7 @@ export default function FocusTimer({
     timerKind === "stopwatch"
       ? "Serbest sayaç"
       : `${Math.max(1, Math.round(totalTime / 60))} dk`;
+  const activeBackground = getFocusBackground(backgroundId);
 
   const attachTask = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -168,6 +174,13 @@ export default function FocusTimer({
           </span>
           <strong>Arka Plan Sesi</strong>
           <small>{activeSound?.name ?? "Sessiz"}</small>
+        </button>
+        <button onClick={onOpenBackground}>
+          <span>
+            <Video aria-hidden />
+          </span>
+          <strong>Arka Plan</strong>
+          <small>{activeBackground.label}</small>
         </button>
         <button onClick={onToggleFullscreen}>
           <span>
