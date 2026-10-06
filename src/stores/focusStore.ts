@@ -40,6 +40,7 @@ export interface FocusState extends FocusSettings {
   activeSound: string | null;
   soundVolume: number;
   soundVolumes: Record<string, number>;
+  backgroundId: string;
   favoriteMixes: Record<string, Record<string, number>>;
   sessions: FocusSession[];
   recentNiyets: string[];
@@ -66,6 +67,7 @@ export interface FocusState extends FocusSettings {
   saveShukurNote: (sessionId: string, note: string) => void;
   setSoundVolume: (soundId: string, volume: number) => void;
   setMasterVolume: (volume: number) => void;
+  setBackgroundId: (id: string) => void;
   saveFavoriteMix: (name: string) => void;
   loadFavoriteMix: (name: string) => void;
 }
@@ -162,6 +164,7 @@ export const useFocusStore = create<FocusState>()(
       activeSound: null,
       soundVolume: 0.65,
       soundVolumes: {},
+      backgroundId: "kaaba-night",
       favoriteMixes: {},
       sessions: [],
       recentNiyets: [],
@@ -374,6 +377,7 @@ export const useFocusStore = create<FocusState>()(
       },
       setMasterVolume: (soundVolume) =>
         set({ soundVolume: Math.min(1, Math.max(0, soundVolume)) }),
+      setBackgroundId: (backgroundId) => set({ backgroundId }),
       saveFavoriteMix: (name) => {
         const cleanName = name.trim().slice(0, 32);
         if (!cleanName) return;
@@ -416,6 +420,7 @@ export const useFocusStore = create<FocusState>()(
         activeSound: state.activeSound,
         soundVolume: state.soundVolume,
         soundVolumes: state.soundVolumes,
+        backgroundId: state.backgroundId,
         favoriteMixes: state.favoriteMixes,
         sessions: state.sessions,
         recentNiyets: state.recentNiyets,

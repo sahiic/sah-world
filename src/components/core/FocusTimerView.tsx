@@ -10,6 +10,10 @@ import {
   FocusAudioEngine,
   type FocusSoundId,
 } from "@/lib/focusAudio";
+import {
+  FOCUS_BACKGROUNDS,
+  getFocusBackground,
+} from "@/lib/focusBackgrounds";
 import { getAdaptiveFocusSuggestion } from "@/lib/focusInsights";
 import { finalizeFocusSession } from "@/lib/focusRuntime";
 import {
@@ -21,7 +25,7 @@ import { useJourneyStore } from "@/store/useJourneyStore";
 import type { FocusTimerType } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-type Modal = "timer-type" | "sound" | "stop" | null;
+type Modal = "timer-type" | "sound" | "background" | "stop" | null;
 
 export default function FocusTimerView({
   onExit,
@@ -48,6 +52,7 @@ export default function FocusTimerView({
   const [timelineOpen, setTimelineOpen] = useState(false);
   const [focusView, setFocusView] = useState<"timer" | "history">("timer");
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
+  const [failedBackgrounds, setFailedBackgrounds] = useState<string[]>([]);
   const lastBeepSecondRef = useRef<number | null>(null);
   const audioRef = useRef<FocusAudioEngine | null>(null);
   const clockNow = now || timer.startedAt || timer.sessionStartedAt || 0;
@@ -66,6 +71,10 @@ export default function FocusTimerView({
       : "idle";
   const circleRadius = 154;
   const circumference = 2 * Math.PI * circleRadius;
+  const activeBackground = getFocusBackground(timer.backgroundId);
+  const showBackgroundVideo =
+    Boolean(activeBackground.src) &&
+    !failedBackgrounds.includes(activeBackground.id);
 
   useEffect(() => {
     timer.setFullscreen(true);
@@ -214,7 +223,31 @@ export default function FocusTimerView({
     <div
       className={`focus-shell ${focusView === "timer" && timelineOpen ? "with-timeline" : ""} ${focusView === "history" ? "focus-history-mode" : ""}`}
     >
-      <div className="focus-background" aria-hidden />
+      <div className="focus-background" aria-hidden>
+        <div
+          className="focus-bg-gradient"
+          style={{ background: activeBackground.fallbackGradient }}
+        />
+        {showBackgroundVideo && (
+          <video
+            key={activeBackground.id}
+            className="focus-bg-video"
+            src={activeBackground.src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            onError={() =>
+              setFailedBackgrounds((current) =>
+                current.includes(activeBackground.id)
+                  ? current
+                  : [...current, activeBackground.id],
+              )
+            }
+          />
+        )}
+        <div className="focus-bg-overlay" />
+      </div>
       <main className="focus-stage">
         <header className="focus-topbar">
           <div className="focus-window-actions">
@@ -468,6 +501,13 @@ export default function FocusTimerView({
                   <strong>Arka Plan Sesi</strong>
                   <small>{soundLabel}</small>
                 </button>
+                <button onClick={() => setModal("background")}>
+                  <span>
+                    <AppIcon name="video" />
+                  </span>
+                  <strong>Arka Plan</strong>
+                  <small>{activeBackground.label}</small>
+                </button>
                 <button onClick={() => void toggleFullscreen()}>
                   <span>
                     <AppIcon name="maximize" />
@@ -680,6 +720,34 @@ export default function FocusTimerView({
               onCancel={() => setModal(null)}
               onConfirm={() => void confirmSound()}
             />
+          </FocusModal>
+        )}
+
+        {modal === "background" && (
+          <FocusModal title="Arka Plan Seç" onClose={() => setModal(null)}>
+            <div className="focus-bg-grid">
+              {FOCUS_BACKGROUNDS.map((background) => (
+                <button
+                  key={background.id}
+                  type="button"
+                  className={`focus-bg-option ${timer.backgroundId === background.id ? "active" : ""}`}
+                  onClick={() => {
+                    timer.setBackgroundId(background.id);
+                    setModal(null);
+                  }}
+                >
+                  <span className="focus-bg-option-emoji" aria-hidden>
+                    {background.emoji}
+                  </span>
+                  <span className="focus-bg-option-label">
+                    {background.label}
+                  </span>
+                  {timer.backgroundId === background.id && (
+                    <AppIcon name="check" />
+                  )}
+                </button>
+              ))}
+            </div>
           </FocusModal>
         )}
 

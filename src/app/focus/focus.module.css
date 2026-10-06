@@ -212,6 +212,7 @@
   aspect-ratio: 1;
   display: grid;
   place-items: center;
+  filter: drop-shadow(0 0 42px rgba(52, 211, 153, 0.2));
 }
 
 .timerDial::before {
@@ -359,6 +360,25 @@
 }
 
 .modalClose svg { width: 18px; }
+
+.modalShell :global(.focus-bg-grid) > button {
+  color: #cbd7df;
+  border-color: rgba(247, 243, 237, 0.09);
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.025));
+  box-shadow: 0 12px 30px rgba(0,0,0,0.16);
+}
+
+.modalShell :global(.focus-bg-grid) > button:hover {
+  border-color: rgba(22, 199, 154, 0.36);
+  background: rgba(22, 199, 154, 0.08);
+}
+
+.modalShell :global(.focus-bg-grid) > button.active {
+  color: #dffff5;
+  border-color: var(--focus-accent);
+  background: linear-gradient(145deg, rgba(22,199,154,0.2), rgba(10,104,71,0.16));
+  box-shadow: 0 0 0 2px rgba(22,199,154,0.1), 0 16px 38px rgba(0,0,0,0.22);
+}
 
 .historyStage {
   min-height: calc(100svh - 112px);

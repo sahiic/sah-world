@@ -26,11 +26,13 @@ export interface FocusTimerState {
   positionInitialized: boolean
   sound: FocusSoundId
   volume: number
+  backgroundId: string
   completedSession: FocusSession | null
   setTaskLabel: (taskLabel: string) => void
   setIntentionText: (intentionText: string) => void
   configure: (input: { timerType: FocusTimerType; plannedDurationSeconds: number }) => void
   setSound: (sound: FocusSoundId, volume: number) => void
+  setBackgroundId: (backgroundId: string) => void
   start: () => void
   pause: (at?: number) => void
   resume: (at?: number) => void
@@ -81,6 +83,7 @@ const initialState = {
   positionInitialized: false,
   sound: 'none' as FocusSoundId,
   volume: .35,
+  backgroundId: 'kaaba-night',
   completedSession: null,
 }
 
@@ -100,6 +103,7 @@ export const useFocusTimerStore = create<FocusTimerState>()(
         })
       },
       setSound: (sound, volume) => set({ sound, volume: Math.min(1, Math.max(0, volume)) }),
+      setBackgroundId: (backgroundId) => set({ backgroundId }),
       start: () => {
         const taskLabel = get().taskLabel.trim()
         if (!taskLabel || get().isActive) return
@@ -197,6 +201,7 @@ export const useFocusTimerStore = create<FocusTimerState>()(
         positionInitialized: state.positionInitialized,
         sound: state.sound,
         volume: state.volume,
+        backgroundId: state.backgroundId,
         completedSession: state.completedSession,
       }),
     },

@@ -3,15 +3,21 @@
 import {
   ArrowLeft,
   CalendarDays,
+  Check,
   Expand,
   Headphones,
   PanelRightClose,
   PanelRightOpen,
   Timer,
+  Video,
   X,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import {
+  FOCUS_BACKGROUNDS,
+  getFocusBackground,
+} from "@/lib/focusBackgrounds";
 import { useFocusStore } from "@/stores/focusStore";
 import AmbientSoundMixer from "./AmbientSoundMixer";
 import FocusHistory from "./FocusHistory";
@@ -31,14 +37,22 @@ export default function FocusExperience() {
   const pauseTimer = useFocusStore((state) => state.pauseTimer);
   const resetTimer = useFocusStore((state) => state.resetTimer);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
+  const backgroundId = useFocusStore((state) => state.backgroundId);
+  const setBackgroundId = useFocusStore((state) => state.setBackgroundId);
   const pendingCompletedSession = useFocusStore(
     (state) => state.pendingCompletedSession,
   );
   const [focusView, setFocusView] = useState<FocusView>("session");
   const [showNiyet, setShowNiyet] = useState(false);
   const [soundOpen, setSoundOpen] = useState(false);
+  const [backgroundOpen, setBackgroundOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [timelineOpen, setTimelineOpen] = useState(false);
+  const [failedBackgrounds, setFailedBackgrounds] = useState<string[]>([]);
+  const activeBackground = getFocusBackground(backgroundId);
+  const showBackgroundVideo =
+    Boolean(activeBackground.src) &&
+    !failedBackgrounds.includes(activeBackground.id);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -58,6 +72,7 @@ export default function FocusExperience() {
       }
       if (event.key === "Escape") {
         setSoundOpen(false);
+        setBackgroundOpen(false);
         setSettingsOpen(false);
         setTimelineOpen(false);
       }
@@ -77,7 +92,32 @@ export default function FocusExperience() {
 
   return (
     <main className={`${styles.focusPage} ${styles[`${mode}Page`]}`}>
-      <div className={styles.geometricBackdrop} aria-hidden />
+      <div className="focus-background" aria-hidden>
+        <div
+          className="focus-bg-gradient"
+          style={{ background: activeBackground.fallbackGradient }}
+        />
+        {showBackgroundVideo && (
+          <video
+            key={activeBackground.id}
+            className="focus-bg-video"
+            src={activeBackground.src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            onError={() =>
+              setFailedBackgrounds((current) =>
+                current.includes(activeBackground.id)
+                  ? current
+                  : [...current, activeBackground.id],
+              )
+            }
+          />
+        )}
+        <div className="focus-bg-overlay" />
+        <div className={styles.geometricBackdrop} />
+      </div>
       <header className={styles.topbar}>
         <Link
           href="/"
@@ -136,6 +176,7 @@ export default function FocusExperience() {
               onNeedNiyet={() => setShowNiyet(true)}
               onOpenTimerSettings={() => setSettingsOpen(true)}
               onOpenSound={() => setSoundOpen(true)}
+              onOpenBackground={() => setBackgroundOpen(true)}
               onToggleFullscreen={() => void toggleFullscreen()}
             />
             <MotivationQuote seed={pendingCompletedSession?.id.length ?? 0} />
@@ -186,6 +227,55 @@ export default function FocusExperience() {
               <X aria-hidden />
             </button>
             <SessionConfig />
+          </section>
+        </div>
+      )}
+
+      {backgroundOpen && (
+        <div
+          className={styles.modalBackdrop}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Odak arka planını seç"
+        >
+          <section className={styles.modalShell}>
+            <header className={styles.modalHeader}>
+              <span>
+                <Video aria-hidden />
+              </span>
+              <div>
+                <h2>Arka Plan Seç</h2>
+                <small>Sana iyi gelen manzarayla odaklan.</small>
+              </div>
+            </header>
+            <button
+              className={styles.modalClose}
+              onClick={() => setBackgroundOpen(false)}
+              aria-label="Arka plan seçiciyi kapat"
+            >
+              <X aria-hidden />
+            </button>
+            <div className="focus-bg-grid">
+              {FOCUS_BACKGROUNDS.map((background) => (
+                <button
+                  key={background.id}
+                  type="button"
+                  className={`focus-bg-option ${backgroundId === background.id ? "active" : ""}`}
+                  onClick={() => {
+                    setBackgroundId(background.id);
+                    setBackgroundOpen(false);
+                  }}
+                >
+                  <span className="focus-bg-option-emoji" aria-hidden>
+                    {background.emoji}
+                  </span>
+                  <span className="focus-bg-option-label">
+                    {background.label}
+                  </span>
+                  {backgroundId === background.id && <Check aria-hidden />}
+                </button>
+              ))}
+            </div>
           </section>
         </div>
       )}
