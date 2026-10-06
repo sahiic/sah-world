@@ -26,14 +26,26 @@ export default function FocusStats() {
       </div>
       <div className={styles.goalBlock}>
         <div><span>Günlük hedef</span><strong>{stats.goalProgress}%</strong></div>
-        <div className={styles.goalTrack}><i style={{ width: `${stats.goalProgress}%` }} /></div>
+        <progress
+          className={styles.goalTrack}
+          max="100"
+          value={stats.goalProgress}
+          aria-label={`Günlük hedefin yüzde ${stats.goalProgress} kadarı tamamlandı`}
+        />
         <small>{formatMinutes(stats.today.totalFocusMinutes)} / {formatMinutes(stats.dailyGoalMinutes)}</small>
       </div>
       <div className={styles.weekChart} aria-label="Haftalık odaklanma grafiği">
         {stats.week.map((day) => (
           <div key={day.date} className={day.date === stats.bestDay.date && day.totalFocusMinutes > 0 ? styles.bestBar : ""}>
             <output>{day.totalFocusMinutes || ""}</output>
-            <span><i style={{ height: `${Math.max(4, (day.totalFocusMinutes / maximum) * 100)}%` }} /></span>
+            <span>
+              <meter
+                min="0"
+                max={maximum}
+                value={day.totalFocusMinutes}
+                aria-label={`${day.totalFocusMinutes} dakika`}
+              />
+            </span>
             <small>{dayFormatter.format(new Date(`${day.date}T12:00:00`)).slice(0, 3)}</small>
           </div>
         ))}

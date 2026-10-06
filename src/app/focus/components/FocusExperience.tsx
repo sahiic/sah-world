@@ -2,12 +2,13 @@
 
 import {
   ArrowLeft,
-  BarChart3,
+  CalendarDays,
   Expand,
   Headphones,
-  History,
-  Leaf,
-  Settings,
+  PanelRightClose,
+  PanelRightOpen,
+  Timer,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -22,7 +23,7 @@ import SessionComplete from "./SessionComplete";
 import SessionConfig from "./SessionConfig";
 import styles from "../focus.module.css";
 
-type SidePanel = "settings" | "stats" | "history";
+type FocusView = "session" | "history";
 
 export default function FocusExperience() {
   const mode = useFocusStore((state) => state.mode);
@@ -30,15 +31,21 @@ export default function FocusExperience() {
   const pauseTimer = useFocusStore((state) => state.pauseTimer);
   const resetTimer = useFocusStore((state) => state.resetTimer);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
-  const pendingCompletedSession = useFocusStore((state) => state.pendingCompletedSession);
-  const [showNiyet, setShowNiyet] = useState(!currentNiyet);
+  const pendingCompletedSession = useFocusStore(
+    (state) => state.pendingCompletedSession,
+  );
+  const [focusView, setFocusView] = useState<FocusView>("session");
+  const [showNiyet, setShowNiyet] = useState(false);
   const [soundOpen, setSoundOpen] = useState(false);
-  const [sidePanel, setSidePanel] = useState<SidePanel>("stats");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [timelineOpen, setTimelineOpen] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
+      if (target?.matches("input, textarea, select, [contenteditable='true']")) {
+        return;
+      }
       if (event.code === "Space") {
         event.preventDefault();
         if (isRunning) pauseTimer();
@@ -46,7 +53,14 @@ export default function FocusExperience() {
         else useFocusStore.getState().startTimer();
       }
       if (event.key.toLowerCase() === "r") resetTimer();
-      if (event.key.toLowerCase() === "s") setSoundOpen((value) => !value);
+      if (event.key.toLowerCase() === "s") {
+        setSoundOpen((value) => !value);
+      }
+      if (event.key === "Escape") {
+        setSoundOpen(false);
+        setSettingsOpen(false);
+        setTimelineOpen(false);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -65,36 +79,132 @@ export default function FocusExperience() {
     <main className={`${styles.focusPage} ${styles[`${mode}Page`]}`}>
       <div className={styles.geometricBackdrop} aria-hidden />
       <header className={styles.topbar}>
-        <Link href="/" className={styles.backLink} aria-label="SAH World ana sayfasına dön"><ArrowLeft aria-hidden /><span>Geri</span></Link>
-        <div className={styles.focusBrand}><span><Leaf aria-hidden /></span><div><strong>Odaklanma</strong><small>SAH WORLD · DERİN ÇALIŞMA ALANI</small></div></div>
+        <Link
+          href="/"
+          className={styles.backLink}
+          aria-label="SAH World ana sayfasına dön"
+        >
+          <ArrowLeft aria-hidden />
+          <span>Geri</span>
+        </Link>
+
+        <nav className={styles.viewTabs} aria-label="Odak bölümü">
+          <button
+            className={focusView === "session" ? styles.viewTabActive : ""}
+            onClick={() => setFocusView("session")}
+          >
+            <Timer aria-hidden /> Oturum
+          </button>
+          <button
+            className={focusView === "history" ? styles.viewTabActive : ""}
+            onClick={() => setFocusView("history")}
+          >
+            <CalendarDays aria-hidden /> Geçmişim
+          </button>
+        </nav>
+
         <nav className={styles.topActions} aria-label="Odak ekranı araçları">
-          <button className={sidePanel === "stats" ? styles.topActionActive : ""} onClick={() => setSidePanel("stats")} aria-label="İstatistikleri göster"><BarChart3 aria-hidden /><span>İstatistik</span></button>
-          <button className={sidePanel === "history" ? styles.topActionActive : ""} onClick={() => setSidePanel("history")} aria-label="Geçmişi göster"><History aria-hidden /><span>Geçmiş</span></button>
-          <button className={sidePanel === "settings" ? styles.topActionActive : ""} onClick={() => setSidePanel("settings")} aria-label="Oturum ayarlarını göster"><Settings aria-hidden /><span>Ayarlar</span></button>
-          <button onClick={() => void toggleFullscreen()} aria-label="Tam ekranı aç veya kapat"><Expand aria-hidden /></button>
+          <button
+            className={timelineOpen ? styles.topActionActive : ""}
+            onClick={() => setTimelineOpen((value) => !value)}
+            aria-expanded={timelineOpen}
+            aria-label={
+              timelineOpen
+                ? "Zaman çizelgesini kapat"
+                : "Zaman çizelgesini aç"
+            }
+          >
+            {timelineOpen ? (
+              <PanelRightClose aria-hidden />
+            ) : (
+              <PanelRightOpen aria-hidden />
+            )}
+          </button>
+          <button
+            onClick={() => void toggleFullscreen()}
+            aria-label="Tam ekranı aç veya kapat"
+          >
+            <Expand aria-hidden />
+          </button>
         </nav>
       </header>
 
       <div className={styles.focusLayout}>
-        <section className={styles.mainColumn}>
-          <FocusTimer onNeedNiyet={() => setShowNiyet(true)} />
-          <AmbientSoundMixer open={soundOpen} onToggle={() => setSoundOpen((value) => !value)} />
-          <MotivationQuote seed={pendingCompletedSession?.id.length ?? 0} />
-        </section>
-        <aside className={styles.sideColumn} aria-label="Odaklanma ayrıntıları">
-          <div className={styles.mobilePanelTabs}>
-            <button className={sidePanel === "stats" ? styles.mobileTabActive : ""} onClick={() => setSidePanel("stats")}><BarChart3 aria-hidden /> İstatistik</button>
-            <button className={sidePanel === "history" ? styles.mobileTabActive : ""} onClick={() => setSidePanel("history")}><History aria-hidden /> Geçmiş</button>
-            <button className={sidePanel === "settings" ? styles.mobileTabActive : ""} onClick={() => setSidePanel("settings")}><Settings aria-hidden /> Ayar</button>
-          </div>
-          {sidePanel === "settings" && <SessionConfig />}
-          {sidePanel === "stats" && <FocusStats />}
-          {sidePanel === "history" && <FocusHistory />}
-        </aside>
+        {focusView === "session" ? (
+          <section className={styles.mainColumn}>
+            <FocusTimer
+              onNeedNiyet={() => setShowNiyet(true)}
+              onOpenTimerSettings={() => setSettingsOpen(true)}
+              onOpenSound={() => setSoundOpen(true)}
+              onToggleFullscreen={() => void toggleFullscreen()}
+            />
+            <MotivationQuote seed={pendingCompletedSession?.id.length ?? 0} />
+          </section>
+        ) : (
+          <section className={styles.historyStage} aria-label="Odak geçmişi">
+            <div className={styles.historyGrid}>
+              <FocusStats />
+              <FocusHistory />
+            </div>
+          </section>
+        )}
       </div>
 
-      <div className={styles.shortcutHint}><Headphones aria-hidden /><span><kbd>Space</kbd> başlat/durdur · <kbd>R</kbd> sıfırla · <kbd>S</kbd> sesler</span></div>
-      {showNiyet && !isRunning && !pendingCompletedSession && <NiyetCard onClose={() => setShowNiyet(false)} />}
+      {timelineOpen && (
+        <div className={styles.timelineBackdrop}>
+          <button
+            className={styles.timelineScrim}
+            onClick={() => setTimelineOpen(false)}
+            aria-label="Zaman çizelgesini kapat"
+          />
+          <aside className={styles.timelinePanel} aria-label="Zaman çizelgesi">
+            <button
+              className={styles.modalClose}
+              onClick={() => setTimelineOpen(false)}
+              aria-label="Zaman çizelgesini kapat"
+            >
+              <X aria-hidden />
+            </button>
+            <FocusHistory />
+          </aside>
+        </div>
+      )}
+
+      {settingsOpen && (
+        <div
+          className={styles.modalBackdrop}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Zamanlayıcı ayarları"
+        >
+          <section className={styles.modalShell}>
+            <button
+              className={styles.modalClose}
+              onClick={() => setSettingsOpen(false)}
+              aria-label="Zamanlayıcı ayarlarını kapat"
+            >
+              <X aria-hidden />
+            </button>
+            <SessionConfig />
+          </section>
+        </div>
+      )}
+
+      <AmbientSoundMixer
+        open={soundOpen}
+        onClose={() => setSoundOpen(false)}
+      />
+
+      <div className={styles.shortcutHint}>
+        <Headphones aria-hidden />
+        <span>
+          <kbd>Space</kbd> başlat/durdur · <kbd>R</kbd> sıfırla · <kbd>S</kbd>{" "}
+          sesler
+        </span>
+      </div>
+      {showNiyet && !isRunning && !pendingCompletedSession && (
+        <NiyetCard onClose={() => setShowNiyet(false)} />
+      )}
       <SessionComplete key={pendingCompletedSession?.id ?? "no-completion"} />
     </main>
   );
