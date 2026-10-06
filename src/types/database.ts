@@ -91,6 +91,22 @@ export type AppointmentRow = {
   cancelled_at: string | null;
   cancellation_reason: string | null;
 };
+export type AppointmentNoteRow = {
+  id: string;
+  appointment_id: string;
+  author_id: string;
+  author_role: "student" | "hoca";
+  surah_name: string | null;
+  start_ayah: number | null;
+  end_ayah: number | null;
+  topics_covered: string[];
+  performance_note: string | null;
+  student_reflection: string | null;
+  next_assignment: string | null;
+  difficulty_rating: number | null;
+  created_at: string;
+  updated_at: string;
+};
 export type QuranPeerMatchRow = {
   id: string;
   requester_id: string;
@@ -482,6 +498,7 @@ export interface Database {
       hoca_availability: RowTable<HocaAvailabilityRow>;
       hoca_time_off: RowTable<HocaTimeOffRow>;
       appointments: RowTable<AppointmentRow>;
+      appointment_notes: RowTable<AppointmentNoteRow>;
       quran_peer_matches: RowTable<QuranPeerMatchRow>;
       quran_study_goals: RowTable<QuranStudyGoalRow>;
       feedback: RowTable<FeedbackRow>;
