@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MESCIDIM_TABS, openAppView, selectedValue } from '@/lib/appLocation'
 import { AppIcon } from '@/components/ui/AppIcon'
@@ -18,18 +18,26 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
     return requested === 'dua' || requested === 'asma' ? requested : 'vakitler'
   })
   const tab = selectedValue(params.get('tab'), MESCIDIM_TABS, legacyTab)
-  const setTab = (next: MescidimTab) => openAppView('mescidim', next)
   const localCommunity = tab === 'etkinlikler'
   const [initialOccasion] = useState(() => typeof window === 'undefined' ? undefined : sessionStorage.getItem('sah:mescidim:occasion') ?? undefined)
+  const openSection = useCallback((next: Exclude<MescidimTab, 'etkinlikler'>) => {
+    openAppView('mescidim', next)
+    window.requestAnimationFrame(() => document.getElementById(`mescidim-${next}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [])
   useEffect(() => {
     sessionStorage.removeItem('sah:mescidim:tab')
     sessionStorage.removeItem('sah:mescidim:occasion')
   }, [])
+  useEffect(() => {
+    if (localCommunity || tab === 'vakitler') return
+    const timer = window.setTimeout(() => document.getElementById(`mescidim-${tab}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 160)
+    return () => window.clearTimeout(timer)
+  }, [localCommunity, tab])
   return <div className="mescidim-experience">
     <header className="page-heading"><div><span className="eyebrow">MESCİDİM</span><h1>{localCommunity ? 'Yerel cami topluluğu' : 'Kişisel manevi alanım'}</h1><p>{localCommunity ? 'Bursa Teknik Üniversitesi camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.' : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p></div></header>
     <nav className="mescidim-scope-tabs" aria-label="Mescidim kapsamı">
-      <button role="tab" aria-selected={!localCommunity} onClick={() => setTab('vakitler')}><AppIcon name="lock" /> Kişisel alanım</button>
-      <button role="tab" aria-selected={localCommunity} onClick={() => setTab('etkinlikler')}><AppIcon name="building-mosque" /> BTÜ cami topluluğu</button>
+      <button role="tab" aria-selected={!localCommunity} onClick={() => openSection('vakitler')}><AppIcon name="lock" /> Kişisel alanım</button>
+      <button role="tab" aria-selected={localCommunity} onClick={() => openAppView('mescidim', 'etkinlikler')}><AppIcon name="building-mosque" /> BTÜ cami topluluğu</button>
     </nav>
     {localCommunity && <section className="mosque-identity-hero">
       <div className="mosque-identity-art" aria-hidden="true">
@@ -47,11 +55,28 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
       </div>
       <div className="mosque-identity-copy"><span className="eyebrow">BURSA TEKNİK ÜNİVERSİTESİ · MESCİDİM</span><h2>Şehit Astsubay Ömer Halisdemir Camii</h2><p>Vakitlerin, tefekkürün ve üniversite topluluğunun ortak hafızası. İbadet ritmini takip et; kaynaklı manevi kütüphaneyi ve camimizin etkinlik arşivini keşfet.</p><div><span><AppIcon name="map-pin" /> Bursa</span><span><AppIcon name="shield-check" /> Güvenli topluluk arşivi</span></div></div>
     </section>}
-    {!localCommunity && <nav className="mescidim-main-tabs" aria-label="Kişisel Mescidim alanları">
-      <button className={tab === 'vakitler' ? 'active' : ''} onClick={() => setTab('vakitler')}><AppIcon name="clock"/><span><strong>Vakitler ve zikir</strong><small>Namaz takvimi · tesbih</small></span></button>
-      <button className={tab === 'asma' ? 'active' : ''} onClick={() => setTab('asma')}><AppIcon name="sparkles"/><span><strong>Esmâü’l Hüsnâ</strong><small>99 isim · günlük tefekkür</small></span></button>
-      <button className={tab === 'dua' ? 'active' : ''} onClick={() => setTab('dua')}><AppIcon name="book-2"/><span><strong>Dua Kütüphanesi</strong><small>Kaynaklı · aranabilir</small></span></button>
-    </nav>}
-    {tab === 'vakitler' ? <PrayerTimes reward={reward} /> : tab === 'etkinlikler' ? <MosqueEventArchive /> : <MescidimLibrary initialTab={tab} initialOccasion={initialOccasion} onTabChange={setTab} key={tab} />}
+    {!localCommunity && <>
+      <section className="mescidim-today-hero">
+        <div className="mescidim-today-copy"><span className="eyebrow">BUGÜNÜN MANEVÎ AKIŞI</span><h2>Vakit, zikir ve dua.</h2><p>Günün ritmini takip et, kısa bir zikir molası ver ve duaya alan aç.</p></div>
+        <div className="mescidim-today-mark" aria-hidden="true"><span><AppIcon name="building-mosque" /></span><i/><i/><i/></div>
+        <div className="mescidim-today-promise"><AppIcon name="shield-check" /><span><strong>Kaynaklı ve kişisel</strong><small>Vakitler, Esmâ ve dualar güvenilir kaynak bilgileriyle sunulur.</small></span></div>
+      </section>
+
+      <nav className="mescidim-section-nav" aria-label="Mescidim bölümleri">
+        <button aria-current={tab === 'vakitler' ? 'page' : undefined} onClick={() => openSection('vakitler')}><span><AppIcon name="clock" /></span><strong>Namaz vakitleri</strong><small>Bugün ve takvim</small></button>
+        <button onClick={() => document.getElementById('mescidim-zikir')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><span><AppIcon name="refresh" /></span><strong>Zikir sayacı</strong><small>Sakin bir ritim</small></button>
+        <button aria-current={tab === 'asma' ? 'page' : undefined} onClick={() => openSection('asma')}><span><AppIcon name="sparkles" /></span><strong>Günün Esmâsı</strong><small>Tefekkür alanı</small></button>
+        <button aria-current={tab === 'dua' ? 'page' : undefined} onClick={() => openSection('dua')}><span><AppIcon name="book-2" /></span><strong>Dualar</strong><small>Kaynaklı kütüphane</small></button>
+      </nav>
+
+      <div className="mescidim-single-flow">
+        <section id="mescidim-vakitler" className="mescidim-flow-section">
+          <header className="mescidim-flow-heading"><span>01</span><div><small>GÜNÜN RİTMİ</small><h2>Namaz vakitleri</h2><p>Bulunduğun şehre göre sıradaki vakti ve günün tamamını tek bakışta gör.</p></div></header>
+          <PrayerTimes reward={reward} />
+        </section>
+        <MescidimLibrary stacked initialOccasion={initialOccasion} />
+      </div>
+    </>}
+    {localCommunity && <MosqueEventArchive />}
   </div>
 }
