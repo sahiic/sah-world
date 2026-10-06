@@ -16,15 +16,17 @@ test('reports invite one concrete next action before stats and navigate to journ
   await expect(page.locator('.journal-notebook')).toBeVisible();
 });
 
-test('personal mosque is default; local identity is opt-in and tabs survive refresh and Back',async({page})=>{
+test('personal mosque is a single flow; deep links and local identity survive refresh and Back',async({page})=>{
   test.setTimeout(120_000);
   await guest(page,'/?view=mescidim');
   await expect(page.getByRole('heading',{name:'Kişisel manevi alanım',exact:true})).toBeVisible();
   await expect(page.locator('.mosque-identity-hero')).toHaveCount(0);
-  await page.locator('.mescidim-main-tabs button').filter({hasText:'Dua Kütüphanesi'}).click();
+  await expect(page.locator('.mescidim-main-tabs')).toHaveCount(0);
+  await expect(page.locator('.mescidim-single-flow')).toBeVisible();
+  await page.locator('.mescidim-section-nav button').filter({hasText:'Dualar'}).click();
   await expect(page).toHaveURL(/tab=dua/);
   await page.reload();await page.getByRole('button',{name:'DEV: Misafir görünümü'}).click();
-  await expect(page.locator('.spiritual-tabs button.active')).toContainText('Dua Kütüphanesi');
+  await expect(page.locator('#mescidim-dua')).toBeVisible();
   await page.getByRole('tab',{name:'BTÜ cami topluluğu'}).click();
   await expect(page).toHaveURL(/tab=etkinlikler/);
   await expect(page.locator('.mosque-identity-hero')).toBeVisible();
@@ -33,5 +35,5 @@ test('personal mosque is default; local identity is opt-in and tabs survive refr
   await page.goBack();
   await expect(page).toHaveURL(/tab=dua/);
   await expect(page.locator('.mosque-identity-hero')).toHaveCount(0);
-  await expect(page.locator('.spiritual-tabs button.active')).toContainText('Dua Kütüphanesi');
+  await expect(page.locator('#mescidim-dua')).toBeVisible();
 });

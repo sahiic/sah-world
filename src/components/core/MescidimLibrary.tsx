@@ -13,17 +13,25 @@ type LogResult = { journal_entry_id: string; journal_content: string; xp_awarded
 const LOCAL_FAVORITES_KEY = 'sah-spiritual-favorites-v1'
 const DAILY_LIMIT = 3
 
-export default function MescidimLibrary({ initialTab = 'asma', initialOccasion, onTabChange }: { initialTab?: LibraryTab; initialOccasion?: string; onTabChange?: (tab: LibraryTab) => void }) {
+export default function MescidimLibrary({ initialTab = 'asma', initialOccasion, onTabChange, stacked = false }: { initialTab?: LibraryTab; initialOccasion?: string; onTabChange?: (tab: LibraryTab) => void; stacked?: boolean }) {
   const [tab, setTab] = useState<LibraryTab>(initialTab)
   const dailyName = getDailyAsma()
   const selectTab = (next: LibraryTab) => { setTab(next); onTabChange?.(next) }
 
-  return <div className="spiritual-library">
-    <section className="spiritual-daily-hero">
-      <div className="spiritual-orbit" aria-hidden="true"><i/><i/><i/><span>{dailyName.arabic}</span></div>
-      <div><span className="eyebrow">GÜNÜN İSMİ · {dailyName.order}/99</span><h2>{dailyName.transliteration}</h2><p>{dailyName.meaning}</p><blockquote>{dailyName.reflection}</blockquote><button onClick={() => selectTab('asma')} className="spiritual-hero-button">Bugünün ismini tefekkür et <AppIcon name="arrow-right" /></button></div>
-      <aside><strong>99</strong><span>isimlik kaynaklı kütüphane</span><small>{ASMA_SOURCE.note}</small></aside>
+  if (stacked) return <div className="spiritual-library spiritual-library-stacked">
+    <section id="mescidim-asma" className="mescidim-flow-section">
+      <header className="mescidim-flow-heading"><span>02</span><div><small>GÜNÜN TEFEKKÜRÜ</small><h2>Esmâü’l Hüsnâ</h2><p>Günün ismiyle düşünmeye başla; dilersen 99 ismin tamamını incele.</p></div></header>
+      <DailyAsmaHero dailyName={dailyName} onExplore={() => document.getElementById('mescidim-asma-library')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+      <div id="mescidim-asma-library"><AsmaLibrary dailyName={dailyName} /></div>
     </section>
+    <section id="mescidim-dua" className="mescidim-flow-section">
+      <header className="mescidim-flow-heading"><span>03</span><div><small>İHTİYACINA GÖRE</small><h2>Dualar</h2><p>Konuna göre ara, kaynağını gör ve dilediğin duayı günlüğüne ekle.</p></div></header>
+      <DuaLibrary initialOccasion={initialOccasion} />
+    </section>
+  </div>
+
+  return <div className="spiritual-library">
+    <DailyAsmaHero dailyName={dailyName} onExplore={() => selectTab('asma')} />
 
     <nav className="spiritual-tabs" aria-label="Mescidim kütüphanesi">
       <button className={tab === 'asma' ? 'active' : ''} onClick={() => selectTab('asma')}><AppIcon name="sparkles" /> Esmâü’l Hüsnâ <span>99</span></button>
@@ -31,6 +39,14 @@ export default function MescidimLibrary({ initialTab = 'asma', initialOccasion, 
     </nav>
     {tab === 'asma' ? <AsmaLibrary dailyName={dailyName} /> : <DuaLibrary initialOccasion={initialOccasion} />}
   </div>
+}
+
+function DailyAsmaHero({ dailyName, onExplore }: { dailyName: AsmaName; onExplore: () => void }) {
+  return <section className="spiritual-daily-hero">
+    <div className="spiritual-orbit" aria-hidden="true"><i/><i/><i/><span>{dailyName.arabic}</span></div>
+    <div><span className="eyebrow">GÜNÜN İSMİ · {dailyName.order}/99</span><h2>{dailyName.transliteration}</h2><p>{dailyName.meaning}</p><blockquote>{dailyName.reflection}</blockquote><button onClick={onExplore} className="spiritual-hero-button">Bugünün ismini tefekkür et <AppIcon name="arrow-right" /></button></div>
+    <aside><strong>99</strong><span>isimlik kaynaklı kütüphane</span><small>{ASMA_SOURCE.note}</small></aside>
+  </section>
 }
 
 function useSpiritualState() {

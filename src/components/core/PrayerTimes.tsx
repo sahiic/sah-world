@@ -189,7 +189,7 @@ export default function PrayerTimes({ reward }: { reward: (amount: number, label
 
   if (selectingLocation || !location) return <div className="mescid-stack">
     <LocationSetup loading={loading} error={error} onGeolocate={() => void handleUseMyLocation()} onSearch={searchCity} onCancel={location ? () => { setError(''); setSelectingLocation(false) } : undefined} />
-    <SpiritualTools count={journey.currentTespih} total={journey.totalZikir} onTap={tapTespih} onReset={journey.resetTespih} />
+    <div id="mescidim-zikir" className="mescidim-zikir-anchor"><SpiritualTools count={journey.currentTespih} total={journey.totalZikir} onTap={tapTespih} onReset={journey.resetTespih} /></div>
   </div>
 
   const period = day ? getPrayerPeriod(day, now ? new Date(now) : new Date()) : null
@@ -224,7 +224,7 @@ export default function PrayerTimes({ reward }: { reward: (amount: number, label
       {calendarView === 'today' ? <div className="prayer-today-detail"><AppIcon name="calendar-event" /><div><strong>{formatGregorianDate(day)}</strong><span>{formatHijriDate(day)} · {location.city}</span></div><small>Son güncelleme canlı API verisidir.</small></div> : <PrayerCalendarTable rows={rows} todayDate={day.date.gregorian.date} />}
     </section>}
 
-    <SpiritualTools count={journey.currentTespih} total={journey.totalZikir} onTap={tapTespih} onReset={journey.resetTespih} />
+    <div id="mescidim-zikir" className="mescidim-zikir-anchor"><SpiritualTools count={journey.currentTespih} total={journey.totalZikir} onTap={tapTespih} onReset={journey.resetTespih} /></div>
   </div>
 }
 

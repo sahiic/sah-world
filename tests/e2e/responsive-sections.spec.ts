@@ -9,7 +9,7 @@ test('seven main sections render at 375px with reduced motion and usable navigat
   await page.goto('/');
   await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
   await expect(page.locator('[data-growth-scene]')).toBeVisible();
-  for (const [view, selector] of [['journal', '.journal-notebook'], ['quran-companion', '.quran-companion'], ['mescidim', '.mescidim-main-tabs'], ['awareness', '.awareness-experience'], ['reports', '.report-next-step'], ['profession-school', '.profession-school'], ['focus', '.focus-shell']]) {
+  for (const [view, selector] of [['journal', '.journal-notebook'], ['quran-companion', '.quran-companion'], ['mescidim', '.mescidim-single-flow'], ['awareness', '.awareness-experience'], ['reports', '.report-next-step'], ['profession-school', '.profession-school'], ['focus', '.focus-shell']]) {
     await page.evaluate(view => window.history.pushState(null, '', `/?view=${view}`), view);
     await expect(page.locator(selector)).toBeVisible();
     await expect(page.locator('.view-motion-shell')).toHaveCSS('opacity', '1');
@@ -21,7 +21,7 @@ test('seven main sections render at 375px with reduced motion and usable navigat
       }).slice(0, 8).map(el => el.className.toString()) }));
     expect(overflow.width, `${view}: ${JSON.stringify(overflow)}`).toBeLessThanOrEqual(overflow.viewport);
     await page.screenshot({ path: testInfo.outputPath(`${view}-375.png`) });
-    const smallNav = await page.locator('.mobile-nav button, .quran-companion-tabs button, .journal-hub-tabs button, .mescidim-main-tabs button').evaluateAll(buttons => buttons.filter(button => {
+    const smallNav = await page.locator('.mobile-nav button, .quran-companion-tabs button, .journal-hub-tabs button, .mescidim-section-nav button').evaluateAll(buttons => buttons.filter(button => {
       const rect = button.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0 && (rect.width < 44 || rect.height < 44);
     }).map(button => button.textContent?.trim()));
@@ -34,13 +34,13 @@ test('seven main sections render at 375px with reduced motion and usable navigat
       await page.locator('.focus-side-close').click();
       await expect(page.locator('.focus-side-panel')).toHaveCount(0);
     } else {
-      await expect(page.locator('.global-search-button .app-icon')).toBeVisible();
+      await expect(page.locator('.mobile-nav')).toBeVisible();
     }
   }
   expect(errors).toEqual([]);
 });
 
-test('journal, Quran and mosque subtabs remain usable at 375px', async ({ page }) => {
+test('journal and Quran subtabs plus mosque section links remain usable at 375px', async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -49,7 +49,6 @@ test('journal, Quran and mosque subtabs remain usable at 375px', async ({ page }
   for (const [view, tabs, selector] of [
     ['journal', ['journal', 'matrix', 'sukur', 'lessons'], '.journal-hub-tabs button.active'],
     ['quran-companion', ['home', 'wheel', 'teachers', 'appointments', 'peers', 'study'], '.quran-companion-tabs button.active'],
-    ['mescidim', ['vakitler', 'asma', 'dua'], '.mescidim-main-tabs button.active'],
   ] as const) {
     for (const tab of tabs) {
       await page.evaluate(({ view, tab }) => window.history.pushState(null, '', `/?view=${view}&tab=${tab}`), { view, tab });
@@ -61,5 +60,13 @@ test('journal, Quran and mosque subtabs remain usable at 375px', async ({ page }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${view}/${tab}`).toBe(true);
       await expect(page.getByText('Bu bölüm şu anda görüntülenemiyor.')).toHaveCount(0);
     }
+  }
+  await page.evaluate(() => window.history.pushState(null, '', '/?view=mescidim'));
+  await expect(page.locator('.mescidim-single-flow')).toBeVisible();
+  for (const tab of ['vakitler', 'asma', 'dua'] as const) {
+    await page.locator('.mescidim-section-nav button').filter({ hasText: tab === 'vakitler' ? 'Namaz vakitleri' : tab === 'asma' ? 'Günün Esmâsı' : 'Dualar' }).click();
+    await expect(page).toHaveURL(new RegExp(`view=mescidim&tab=${tab}`));
+    await expect(page.locator(`#mescidim-${tab}`)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `mescidim/${tab}`).toBe(true);
   }
 });
