@@ -3,7 +3,6 @@
 import {
   ArrowLeft,
   CalendarDays,
-  Check,
   Expand,
   Headphones,
   PanelRightClose,
@@ -14,10 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import {
-  FOCUS_BACKGROUNDS,
-  getFocusBackground,
-} from "@/lib/focusBackgrounds";
+import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
+import studioStyles from "@/components/core/focusStudio.module.css";
 import { useFocusStore } from "@/stores/focusStore";
 import AmbientSoundMixer from "./AmbientSoundMixer";
 import FocusHistory from "./FocusHistory";
@@ -48,18 +45,24 @@ export default function FocusExperience() {
   const [backgroundOpen, setBackgroundOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [timelineOpen, setTimelineOpen] = useState(false);
-  const [failedBackgrounds, setFailedBackgrounds] = useState<string[]>([]);
-  const activeBackground = getFocusBackground(backgroundId);
-  const showBackgroundVideo =
-    Boolean(activeBackground.src) &&
-    !failedBackgrounds.includes(activeBackground.id);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
+      if (event.key === "Escape") {
+        setSoundOpen(false);
+        setBackgroundOpen(false);
+        setSettingsOpen(false);
+        setTimelineOpen(false);
+        setShowNiyet(false);
+        return;
+      }
+      if (soundOpen || backgroundOpen || settingsOpen || showNiyet || pendingCompletedSession) return;
       if (target?.matches("input, textarea, select, [contenteditable='true']")) {
         return;
       }
+      // Space on a focused button belongs to that button, not the timer.
+      if (target?.closest("button, a")) return;
       if (event.code === "Space") {
         event.preventDefault();
         if (isRunning) pauseTimer();
@@ -70,16 +73,10 @@ export default function FocusExperience() {
       if (event.key.toLowerCase() === "s") {
         setSoundOpen((value) => !value);
       }
-      if (event.key === "Escape") {
-        setSoundOpen(false);
-        setBackgroundOpen(false);
-        setSettingsOpen(false);
-        setTimelineOpen(false);
-      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentNiyet, isRunning, pauseTimer, resetTimer]);
+  }, [currentNiyet, isRunning, pauseTimer, resetTimer, soundOpen, backgroundOpen, settingsOpen, showNiyet, pendingCompletedSession]);
 
   const toggleFullscreen = async () => {
     try {
@@ -91,59 +88,34 @@ export default function FocusExperience() {
   };
 
   return (
-    <main className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
-      <div className="focus-background" aria-hidden>
-        <div
-          className="focus-bg-gradient"
-          style={{ background: activeBackground.fallbackGradient }}
-        />
-        {showBackgroundVideo && (
-          <video
-            key={activeBackground.id}
-            className="focus-bg-video"
-            src={activeBackground.src}
-            autoPlay
-            loop
-            muted
-            playsInline
-            onError={() =>
-              setFailedBackgrounds((current) =>
-                current.includes(activeBackground.id)
-                  ? current
-                  : [...current, activeBackground.id],
-              )
-            }
-          />
-        )}
-        <div className="focus-bg-overlay" />
-        <div className={styles.geometricBackdrop} />
-      </div>
+    <main className={`focus-root ${studioStyles.studio} ${styles.focusPage} ${styles[`${mode}Page`]}`}>
+      <FocusBackdrop backgroundId={backgroundId} />
       <header className={`focus-topbar ${styles.topbar}`}>
         <Link
           href="/"
-          className={styles.backLink}
+          className={`focus-back-button ${styles.backLink}`}
           aria-label="SAH World ana sayfasına dön"
         >
           <ArrowLeft aria-hidden />
           <span>Geri</span>
         </Link>
 
-        <nav className={styles.viewTabs} aria-label="Odak bölümü">
+        <nav className={`focus-view-nav ${styles.viewTabs}`} aria-label="Odak bölümü">
           <button
-            className={focusView === "session" ? styles.viewTabActive : ""}
+            className={focusView === "session" ? `${styles.viewTabActive} is-active` : ""}
             onClick={() => setFocusView("session")}
           >
             <Timer aria-hidden /> Oturum
           </button>
           <button
-            className={focusView === "history" ? styles.viewTabActive : ""}
+            className={focusView === "history" ? `${styles.viewTabActive} is-active` : ""}
             onClick={() => setFocusView("history")}
           >
             <CalendarDays aria-hidden /> Geçmişim
           </button>
         </nav>
 
-        <nav className={styles.topActions} aria-label="Odak ekranı araçları">
+        <nav className={`focus-window-actions ${styles.topActions}`} aria-label="Odak ekranı araçları">
           <button
             className={timelineOpen ? styles.topActionActive : ""}
             onClick={() => setTimelineOpen((value) => !value)}
@@ -255,27 +227,10 @@ export default function FocusExperience() {
             >
               <X aria-hidden />
             </button>
-            <div className="focus-bg-grid">
-              {FOCUS_BACKGROUNDS.map((background) => (
-                <button
-                  key={background.id}
-                  type="button"
-                  className={`focus-bg-option ${backgroundId === background.id ? "active" : ""}`}
-                  onClick={() => {
-                    setBackgroundId(background.id);
-                    setBackgroundOpen(false);
-                  }}
-                >
-                  <span className="focus-bg-option-emoji" aria-hidden>
-                    {background.emoji}
-                  </span>
-                  <span className="focus-bg-option-label">
-                    {background.label}
-                  </span>
-                  {backgroundId === background.id && <Check aria-hidden />}
-                </button>
-              ))}
-            </div>
+            <FocusScenePicker backgroundId={backgroundId} onSelect={(id) => {
+              setBackgroundId(id);
+              setBackgroundOpen(false);
+            }} />
           </section>
         </div>
       )}

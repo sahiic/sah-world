@@ -2,7 +2,6 @@
 
 import FocusHistoryDashboard from "@/components/core/FocusHistoryDashboard";
 import FocusTimeline from "@/components/core/FocusTimeline";
-import SectionTagline from "@/components/core/SectionTagline";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { formatFocusDuration, formatTimer } from "@/lib/focus";
 import {
@@ -10,10 +9,9 @@ import {
   FocusAudioEngine,
   type FocusSoundId,
 } from "@/lib/focusAudio";
-import {
-  FOCUS_BACKGROUNDS,
-  getFocusBackground,
-} from "@/lib/focusBackgrounds";
+import { getFocusBackground } from "@/lib/focusBackgrounds";
+import { FocusBackdrop, FocusPresets, FocusScenePicker, FocusStudioIntro } from "./FocusAmbience";
+import studioStyles from "./focusStudio.module.css";
 import { getAdaptiveFocusSuggestion } from "@/lib/focusInsights";
 import { finalizeFocusSession } from "@/lib/focusRuntime";
 import {
@@ -52,7 +50,6 @@ export default function FocusTimerView({
   const [timelineOpen, setTimelineOpen] = useState(false);
   const [focusView, setFocusView] = useState<"timer" | "history">("timer");
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
-  const [failedBackgrounds, setFailedBackgrounds] = useState<string[]>([]);
   const lastBeepSecondRef = useRef<number | null>(null);
   const audioRef = useRef<FocusAudioEngine | null>(null);
   const clockNow = now || timer.startedAt || timer.sessionStartedAt || 0;
@@ -72,9 +69,6 @@ export default function FocusTimerView({
   const circleRadius = 154;
   const circumference = 2 * Math.PI * circleRadius;
   const activeBackground = getFocusBackground(timer.backgroundId);
-  const showBackgroundVideo =
-    Boolean(activeBackground.src) &&
-    !failedBackgrounds.includes(activeBackground.id);
 
   useEffect(() => {
     timer.setFullscreen(true);
@@ -221,38 +215,14 @@ export default function FocusTimerView({
 
   return (
     <div
-      className={`focus-shell ${focusView === "timer" && timelineOpen ? "with-timeline" : ""} ${focusView === "history" ? "focus-history-mode" : ""}`}
+      className={`focus-shell ${studioStyles.studio} ${focusView === "timer" && timelineOpen ? "with-timeline" : ""} ${focusView === "history" ? "focus-history-mode" : ""}`}
     >
-      <div className="focus-background" aria-hidden>
-        <div
-          className="focus-bg-gradient"
-          style={{ background: activeBackground.fallbackGradient }}
-        />
-        {showBackgroundVideo && (
-          <video
-            key={activeBackground.id}
-            className="focus-bg-video"
-            src={activeBackground.src}
-            autoPlay
-            loop
-            muted
-            playsInline
-            onError={() =>
-              setFailedBackgrounds((current) =>
-                current.includes(activeBackground.id)
-                  ? current
-                  : [...current, activeBackground.id],
-              )
-            }
-          />
-        )}
-        <div className="focus-bg-overlay" />
-      </div>
+      <FocusBackdrop backgroundId={timer.backgroundId} />
       <main className="focus-stage">
         <header className="focus-topbar">
           <div className="focus-window-actions">
-            <button onClick={minimise} aria-label="Odak ekranını küçült">
-              <AppIcon name="chevron-down" />
+            <button className="focus-back-button" onClick={minimise} aria-label="Odak ekranını küçült">
+              <AppIcon name="arrow-left" /><span>Geri</span>
             </button>
           </div>
           <div className="focus-top-center">
@@ -312,6 +282,7 @@ export default function FocusTimerView({
         {focusView === "timer" ? (
           <>
             <section className="focus-center" aria-live="polite">
+              <FocusStudioIntro active={timer.isActive} />
               <span className="focus-mode-eyebrow">
                 <i className={phase === "running" ? "live" : ""} /> {dialLabel}
               </span>
@@ -386,12 +357,10 @@ export default function FocusTimerView({
                 )}
               </div>
               {timer.taskLabel && !timer.isActive && (
-                <label className="focus-intention">
-                  <span>
-                    <AppIcon name="flag" /> Oturum niyeti{" "}
-                    <small>isteğe bağlı</small>
-                  </span>
+                <details className="focus-intention">
+                  <summary><AppIcon name="flag" /> Oturum niyeti · isteğe bağlı</summary>
                   <textarea
+                    aria-label="Oturum niyeti"
                     value={timer.intentionText}
                     onChange={(event) =>
                       timer.setIntentionText(event.target.value)
@@ -400,8 +369,13 @@ export default function FocusTimerView({
                     rows={2}
                     placeholder="Bu oturumda neyi başarmayı hedefliyorsun?"
                   />
-                </label>
+                </details>
               )}
+              <FocusPresets
+                minutes={timer.timerType === "countdown" ? timer.plannedDurationSeconds / 60 : null}
+                disabled={timer.isActive}
+                onSelect={(minutes) => timer.configure({ timerType: "countdown", plannedDurationSeconds: minutes * 60 })}
+              />
               <div
                 className="focus-dial"
                 aria-label={
@@ -516,11 +490,11 @@ export default function FocusTimerView({
                   <small>Dikkat dağıtanları gizle</small>
                 </button>
               </nav>
-              <SectionTagline section="focus" compact inverse />
+              <FocusScenePicker compact backgroundId={timer.backgroundId} onSelect={timer.setBackgroundId} />
             </section>
             <p className="focus-privacy">
-              <AppIcon name="shield-lock" /> Oturumun kök uygulamada yaşar;
-              sayfa değiştirsen veya yenilesen de gerçek zamanla devam eder.
+              <AppIcon name="shield-lock" /> Oturumun güvende. Sayfa değiştirsen
+              veya yenilesen de kaldığın yerden devam eder.
             </p>
           </>
         ) : (
@@ -725,29 +699,10 @@ export default function FocusTimerView({
 
         {modal === "background" && (
           <FocusModal title="Arka Plan Seç" onClose={() => setModal(null)}>
-            <div className="focus-bg-grid">
-              {FOCUS_BACKGROUNDS.map((background) => (
-                <button
-                  key={background.id}
-                  type="button"
-                  className={`focus-bg-option ${timer.backgroundId === background.id ? "active" : ""}`}
-                  onClick={() => {
-                    timer.setBackgroundId(background.id);
-                    setModal(null);
-                  }}
-                >
-                  <span className="focus-bg-option-emoji" aria-hidden>
-                    {background.emoji}
-                  </span>
-                  <span className="focus-bg-option-label">
-                    {background.label}
-                  </span>
-                  {timer.backgroundId === background.id && (
-                    <AppIcon name="check" />
-                  )}
-                </button>
-              ))}
-            </div>
+            <FocusScenePicker backgroundId={timer.backgroundId} onSelect={(id) => {
+              timer.setBackgroundId(id);
+              setModal(null);
+            }} />
           </FocusModal>
         )}
 
