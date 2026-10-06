@@ -22,6 +22,8 @@ import type {
 } from "@/types/database";
 import type { WisdomEntry } from "./DailyWisdomWheel";
 import SectionTagline from "./SectionTagline";
+import AppointmentChat from "./AppointmentChat";
+import AppointmentReview from "./AppointmentReview";
 
 type CompanionTab =
   | "home"
@@ -34,7 +36,7 @@ type CompanionTab =
 const DailyWisdomWheel = dynamic(() => import("./DailyWisdomWheel"), {
   loading: () => <CompanionSkeleton />,
 });
-type AppointmentView = AppointmentRow & {
+export type AppointmentView = AppointmentRow & {
   hoca_name: string;
   hoca_title: string;
   hoca_photo: string | null;
@@ -71,6 +73,48 @@ const SAMPLE_HOCA: HocaProfileRow = {
   is_placeholder: true,
   created_at: new Date(0).toISOString(),
   updated_at: new Date(0).toISOString(),
+};
+const sampleAppointments = (studentId: string): AppointmentView[] => {
+  const upcomingStart = new Date(Date.now() + 86_400_000);
+  upcomingStart.setHours(19, 0, 0, 0);
+  const completedStart = new Date(Date.now() - 2 * 86_400_000);
+  completedStart.setHours(19, 0, 0, 0);
+  return [
+    {
+      id: "2f0fd187-0cae-43fb-aa80-79459acd7d71",
+      hoca_id: SAMPLE_HOCA.id,
+      student_id: studentId,
+      scheduled_start: upcomingStart.toISOString(),
+      scheduled_end: new Date(upcomingStart.getTime() + 30 * 60_000).toISOString(),
+      status: "confirmed",
+      topic_notes: "Fâtiha suresi ve temel mahreç çalışması",
+      created_at: new Date().toISOString(),
+      cancelled_at: null,
+      cancellation_reason: null,
+      hoca_name: SAMPLE_HOCA.display_name,
+      hoca_title: SAMPLE_HOCA.title,
+      hoca_photo: SAMPLE_HOCA.photo_url,
+      student_name: "Örnek Öğrenci",
+      student_avatar: null,
+    },
+    {
+      id: "0f3689f5-c0fd-4b65-b9e9-7829d24a7f5c",
+      hoca_id: SAMPLE_HOCA.id,
+      student_id: studentId,
+      scheduled_start: completedStart.toISOString(),
+      scheduled_end: new Date(completedStart.getTime() + 30 * 60_000).toISOString(),
+      status: "completed",
+      topic_notes: "İhlâs suresi, tecvid ve kısa tekrar",
+      created_at: new Date(completedStart.getTime() - 86_400_000).toISOString(),
+      cancelled_at: null,
+      cancellation_reason: null,
+      hoca_name: SAMPLE_HOCA.display_name,
+      hoca_title: SAMPLE_HOCA.title,
+      hoca_photo: SAMPLE_HOCA.photo_url,
+      student_name: "Örnek Öğrenci",
+      student_avatar: null,
+    },
+  ];
 };
 const LEVELS: Array<{
   value: QuranLevel;
@@ -179,6 +223,7 @@ export default function QuranCompanionView({
   const load = async () => {
     if (!isRealUser) {
       setTeachers([SAMPLE_HOCA]);
+      setAppointments(sampleAppointments(userId));
       setLoading(false);
       return;
     }
@@ -478,8 +523,10 @@ export default function QuranCompanionView({
         <AppointmentsView
           appointments={appointments}
           userId={userId}
+          isHoca={isHoca || isAdmin}
           onReload={load}
           onReminders={() => void enableReminders()}
+          onNotice={flash}
         />
       ) : tab === "peers" ? (
         <PeerMatching
@@ -1030,15 +1077,21 @@ function BookingFlow({
 function AppointmentsView({
   appointments,
   userId,
+  isHoca,
   onReload,
   onReminders,
+  onNotice,
 }: {
   appointments: AppointmentView[];
   userId: string;
+  isHoca: boolean;
   onReload: () => Promise<void>;
   onReminders: () => void;
+  onNotice: (message: string) => void;
 }) {
   const [filter, setFilter] = useState<"upcoming" | "past">("upcoming");
+  const [reviewAppointment, setReviewAppointment] = useState<AppointmentView | null>(null);
+  const [chatAppointment, setChatAppointment] = useState<AppointmentView | null>(null);
   const [now] = useState(() => Date.now());
   const items = appointments
     .filter((item) =>
@@ -1153,14 +1206,24 @@ function AppointmentsView({
                     <blockquote>“{item.topic_notes}”</blockquote>
                   )}
                 </div>
-                {["pending", "confirmed"].includes(item.status) && (
-                  <button onClick={() => void cancel(item)}>İptal et</button>
-                )}
+                <div className="appointment-actions">
+                  {["confirmed", "completed"].includes(item.status) && (
+                    <button onClick={() => setChatAppointment(item)}><AppIcon name="message" /> Mesajlaş</button>
+                  )}
+                  {item.status === "completed" && (
+                    <button onClick={() => setReviewAppointment(item)}><AppIcon name="notes" /> Ders Notu</button>
+                  )}
+                  {["pending", "confirmed"].includes(item.status) && (
+                    <button className="danger" onClick={() => void cancel(item)}>İptal et</button>
+                  )}
+                </div>
               </article>
             );
           })}
         </div>
       )}
+      {reviewAppointment && <AppointmentReview appointment={reviewAppointment} isHoca={isHoca || reviewAppointment.student_id !== userId} userId={userId} onClose={() => setReviewAppointment(null)} onSaved={() => { setReviewAppointment(null); onNotice("Ders notu kaydedildi."); }} />}
+      {chatAppointment && <AppointmentChat appointment={chatAppointment} currentUserId={userId} isHoca={isHoca || chatAppointment.student_id !== userId} onClose={() => setChatAppointment(null)} />}
     </section>
   );
 }
@@ -1589,6 +1652,8 @@ function HocaManagement({
   isAdmin: boolean;
   onReload: () => Promise<void>;
 }) {
+  const [scheduleNotice, setScheduleNotice] = useState("");
+  const [scheduleError, setScheduleError] = useState("");
   const [managedId, setManagedId] = useState(
     ownedHoca?.id || (isAdmin ? teachers[0]?.id || "" : ""),
   );
@@ -1674,17 +1739,30 @@ function HocaManagement({
     event.preventDefault();
     if (!managed) return;
     const fd = new FormData(event.currentTarget);
-    await supabase.from("hoca_availability").insert({
+    setScheduleError("");
+    setScheduleNotice("");
+    const start = String(fd.get("start"));
+    const end = String(fd.get("end"));
+    if (start >= end) {
+      setScheduleError("Bitiş saati başlangıç saatinden sonra olmalı.");
+      return;
+    }
+    const { error: availabilityError } = await supabase.from("hoca_availability").insert({
       hoca_id: managed.id,
       day_of_week: Number(fd.get("day")),
-      start_time: String(fd.get("start")),
-      end_time: String(fd.get("end")),
+      start_time: start,
+      end_time: end,
       slot_duration_minutes: Number(fd.get("duration")),
       is_recurring: true,
       specific_date: null,
     });
+    if (availabilityError) {
+      setScheduleError("Müsaitlik kaydedilemedi.");
+      return;
+    }
     event.currentTarget.reset();
     await loadSchedule();
+    setScheduleNotice("Müsaitlik takvime eklendi.");
   };
   const addTimeOff = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1830,13 +1908,17 @@ function HocaManagement({
               <select name="duration" defaultValue="30">
                 <option value="20">20 dk</option>
                 <option value="30">30 dk</option>
+                <option value="40">40 dk</option>
                 <option value="45">45 dk</option>
                 <option value="60">60 dk</option>
+                <option value="90">90 dk</option>
               </select>
               <button>
                 <AppIcon name="plus" /> Ekle
               </button>
             </form>
+            {scheduleNotice && <p className="manage-success" role="status"><AppIcon name="circle-check" /> {scheduleNotice}</p>}
+            {scheduleError && <p className="booking-error" role="alert">{scheduleError}</p>}
             <div className="availability-list">
               {availability.map((item) => (
                 <article key={item.id}>
