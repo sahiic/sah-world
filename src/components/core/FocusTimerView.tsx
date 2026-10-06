@@ -217,29 +217,10 @@ export default function FocusTimerView({
       <div className="focus-background" aria-hidden />
       <main className="focus-stage">
         <header className="focus-topbar">
-          <div 
-						className="focus-window-actions"
-					>
+          <div className="focus-window-actions">
             <button onClick={minimise} aria-label="Odak ekranını küçült">
               <AppIcon name="chevron-down" />
             </button>
-						<button 
-							onClick={openTimerModal} 
-							disabled={timer.isActive}
-							title="Zamanlayıcı Türü"
-						>
-							<span>
-								<AppIcon name="hourglass" />
-							</span>
-						</button>
-						<button 
-							onClick={openSoundModal}
-							title="Arka Plan Sesi"
-						>
-							<span>
-								<AppIcon name="headphones" />
-							</span>
-						</button>
           </div>
           <div className="focus-top-center">
             <nav className="focus-view-tabs" aria-label="Odak bölümü">
@@ -256,115 +237,51 @@ export default function FocusTimerView({
                 <AppIcon name="chart-histogram" /> Geçmişim
               </button>
             </nav>
-            {/* {focusView === "timer" && (
-              <div className="focus-task-slot">
-                {timer.taskLabel ? (
-                  <span className="focus-task-chip">
-                    <i />
-                    <strong>{timer.taskLabel}</strong>
-                    {timer.isActive && <b aria-label="Oturum etkin" />}{" "}
-                    {!timer.isActive && (
-                      <button
-                        onClick={() => timer.setTaskLabel("")}
-                        aria-label="Görevi ayır"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </span>
-                ) : (
-                  <form
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      attachTask();
-                    }}
-                  >
-                    <span>
-                      <AppIcon name="target-arrow" />
-                    </span>
-                    <input
-                      value={taskDraft}
-                      onChange={(event) => setTaskDraft(event.target.value)}
-                      maxLength={120}
-                      placeholder="Şu an neye odaklanacaksın?"
-                      aria-label="Odak görevi"
-                    />
-                    <button type="submit">Ekle</button>
-                  </form>
-                )}
-              </div>
-            )} */}
           </div>
-          <div 
-            // className="focus-windows-"
-            className="focus-window-actions"
-            style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
-            // style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px" }}
-          >
-						{focusView === "timer" ? (
-            <button
-              className="focus-timeline-toggle"
-              onClick={() => setTimelineOpen((value) => !value)}
-              aria-expanded={timelineOpen}
-              aria-label="Bugünün kayıtlarını aç veya kapat"
-							title={timelineOpen ? "Zaman çizelgesini kapat" : "Zaman çizelgesini aç"}
-            >
-              <AppIcon
-                name={
+          <div className="focus-window-actions">
+            {focusView === "timer" && (
+              <button
+                className="focus-timeline-toggle"
+                onClick={() => setTimelineOpen((value) => !value)}
+                aria-expanded={timelineOpen}
+                aria-label="Bugünün kayıtlarını aç veya kapat"
+                title={
                   timelineOpen
-                    ? "layout-sidebar-right-collapse"
-                    : "layout-sidebar-right-expand"
+                    ? "Zaman çizelgesini kapat"
+                    : "Zaman çizelgesini aç"
                 }
-              />
-            </button>
-						) : (
-							<span />
-						)}
+              >
+                <AppIcon
+                  name={
+                    timelineOpen
+                      ? "layout-sidebar-right-collapse"
+                      : "layout-sidebar-right-expand"
+                  }
+                />
+              </button>
+            )}
             <button
-							className="focus-timeline-toggle"
               onClick={popOut}
               aria-label="Odak ekranını ayrı pencerede aç"
-							title="Odak ekranını ayrı pencerede aç"
+              title="Ayrı pencerede aç"
             >
               <AppIcon name="external-link" />
             </button>
-						<button 
-							className="focus-timeline-toggle"
-							onClick={() => void toggleFullscreen()}
-							title={"Tam ekran modu"}
-						>
-							<span>
-								<AppIcon name="maximize" />
-							</span>
-						</button>
-						</div>
-
+            <button
+              onClick={() => void toggleFullscreen()}
+              title="Tam ekran"
+              aria-label="Tam ekran"
+            >
+              <AppIcon name="maximize" />
+            </button>
+          </div>
         </header>
-        {/* <SectionTagline section="focus" compact inverse /> */}
-
         {focusView === "timer" ? (
           <>
             <section className="focus-center" aria-live="polite">
               <span className="focus-mode-eyebrow">
                 <i className={phase === "running" ? "live" : ""} /> {dialLabel}
               </span>
-              {/* {timer.taskLabel && !timer.isActive && (
-                <label className="focus-intention">
-                  <span>
-                    <AppIcon name="flag" /> Oturum niyeti{" "}
-                    <small>isteğe bağlı</small>
-                  </span>
-                  <textarea
-                    value={timer.intentionText}
-                    onChange={(event) =>
-                      timer.setIntentionText(event.target.value)
-                    }
-                    maxLength={280}
-                    rows={2}
-                    placeholder="Bu oturumda neyi başarmayı hedefliyorsun?"
-                  />
-                </label>
-              )} */}
               {timer.isActive && timer.intentionText && (
                 <p className="focus-active-intention">
                   <AppIcon name="flag" /> {timer.intentionText}
@@ -399,6 +316,59 @@ export default function FocusTimerView({
                     </button>
                   </aside>
                 )}
+              <div className="focus-task-slot">
+                {timer.taskLabel ? (
+                  <span className="focus-task-chip">
+                    <i />
+                    <strong>{timer.taskLabel}</strong>
+                    {timer.isActive && <b aria-label="Oturum etkin" />}
+                    {!timer.isActive && (
+                      <button
+                        onClick={() => timer.setTaskLabel("")}
+                        aria-label="Görevi ayır"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                ) : (
+                  <form
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      attachTask();
+                    }}
+                  >
+                    <span>
+                      <AppIcon name="target-arrow" />
+                    </span>
+                    <input
+                      value={taskDraft}
+                      onChange={(event) => setTaskDraft(event.target.value)}
+                      maxLength={120}
+                      placeholder="Şu an neye odaklanacaksın?"
+                      aria-label="Odak görevi"
+                    />
+                    <button type="submit">Ekle</button>
+                  </form>
+                )}
+              </div>
+              {timer.taskLabel && !timer.isActive && (
+                <label className="focus-intention">
+                  <span>
+                    <AppIcon name="flag" /> Oturum niyeti{" "}
+                    <small>isteğe bağlı</small>
+                  </span>
+                  <textarea
+                    value={timer.intentionText}
+                    onChange={(event) =>
+                      timer.setIntentionText(event.target.value)
+                    }
+                    maxLength={280}
+                    rows={2}
+                    placeholder="Bu oturumda neyi başarmayı hedefliyorsun?"
+                  />
+                </label>
+              )}
               <div
                 className="focus-dial"
                 aria-label={
@@ -442,107 +412,9 @@ export default function FocusTimerView({
                       ? "GERİ SAYIM"
                       : "SERBEST ZAMAN"}
                   </span>
-{focusView === "timer" && (
-  <div className="focus-task-slot">
-    {timer.taskLabel ? (
-      <div 
-        className="focus-task-chip" 
-        style={{ 
-          display: "flex", 
-          alignItems: "center",
-          gap: "8px",          
-          border: "none",      
-          boxShadow: "none",   
-          background: "transparent" 
-        }}
-      >
-        <span style={{ 
-          fontWeight: 500, 
-          fontSize: "1rem", 
-          flex: 1,
-          minWidth: 0,         
-          overflow: "hidden",  
-          textOverflow: "ellipsis", 
-          whiteSpace: "nowrap",
-          color: "white"
-        }}>
-          {timer.taskLabel}
-        </span>
-        
-        {!timer.isActive && (
-          <button
-            style={{ flexShrink: 0 }} 
-            onClick={() => timer.setTaskLabel("")}
-            aria-label="Görevi ayır"
-          >
-            ×
-          </button>
-        )}
-      </div>
-    ) : (
-      <form
-        className="focus-task-chip"
-        style={{ 
-          display: "flex", 
-          alignItems: "center",
-          gap: "3px",          
-          border: "none",      
-          boxShadow: "none",   
-          background: "transparent" 
-        }}
-        onSubmit={(event) => {
-          event.preventDefault();
-          attachTask();
-        }}                        
-      >
-        <input  
-          style={{ 
-            fontWeight: 500, 
-            fontSize: "1rem", 
-            fontFamily: "inherit",
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            alignItems: "center",
-            padding: 0,
-            margin: 0,
-            width: "140px",      /* <-- Controls how short the input box is (adjust as needed) */
-            minWidth: 0 
-          }}
-          value={taskDraft}
-          onChange={(event) => setTaskDraft(event.target.value)}
-          maxLength={120}
-          placeholder="Odağın ne?"
-          aria-label="Odak görevi"
-        />
-        <button 
-          type="submit" 
-          style={{ 
-            flexShrink: 0,
-            width: "26px",
-            height: "26px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "1px solid white", 
-            background: "#b0e3d6",          
-            color: "#000000",
-            padding: 0,
-            cursor: "pointer"
-          }}
-          aria-label="Görevi ekle"
-        >
-          ✓
-        </button>
-      </form>
-    )}
-  </div>
-)}
                 </div>
               </div>
 
-              {/*   -----------   add focus topic ----------------------------               */}
               <div className="focus-primary-actions">
                 {phase === "idle" && (
                   <button
@@ -582,33 +454,29 @@ export default function FocusTimerView({
               </div>
 
               <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
-
-								{/* --------- TAM EKRAN -------------------- */}
-                {/* <button onClick={() => void toggleFullscreen()}>
-                  <span>
-                    <AppIcon name="maximize" />
-                  </span>
-                  <strong>Tam Ekran</strong>
-                  <small>Dikkat dağıtanları gizle</small>
-                </button> */}
-                {/* <button onClick={openTimerModal} disabled={timer.isActive}>
+                <button onClick={openTimerModal} disabled={timer.isActive}>
                   <span>
                     <AppIcon name="hourglass" />
                   </span>
-                  <strong>Zamanlayıcı Türü</strong>
+                  <strong>Zamanlayıcı</strong>
                   <small>{durationLabel}</small>
-                </button> */}
-                {/* <button onClick={openSoundModal}>
+                </button>
+                <button onClick={openSoundModal}>
                   <span>
                     <AppIcon name="headphones" />
                   </span>
                   <strong>Arka Plan Sesi</strong>
                   <small>{soundLabel}</small>
-                </button> */}
+                </button>
+                <button onClick={() => void toggleFullscreen()}>
+                  <span>
+                    <AppIcon name="maximize" />
+                  </span>
+                  <strong>Tam Ekran</strong>
+                  <small>Dikkat dağıtanları gizle</small>
+                </button>
               </nav>
-							{/* bottom part----------------------------------- */}
-        			<SectionTagline section="focus" compact inverse />
-
+              <SectionTagline section="focus" compact inverse />
             </section>
             <p className="focus-privacy">
               <AppIcon name="shield-lock" /> Oturumun kök uygulamada yaşar;
