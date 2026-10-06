@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { ASMA_NAMES, ASMA_SOURCE, DUA_LIBRARY, getDailyAsma, type AsmaName, type DuaCategory, type DuaItem } from '@/lib/spiritualLibrary'
 import { supabase } from '@/lib/supabase'
@@ -15,19 +16,23 @@ const DAILY_LIMIT = 3
 
 export default function MescidimLibrary({ initialTab = 'asma', initialOccasion, onTabChange, stacked = false }: { initialTab?: LibraryTab; initialOccasion?: string; onTabChange?: (tab: LibraryTab) => void; stacked?: boolean }) {
   const [tab, setTab] = useState<LibraryTab>(initialTab)
+  const state = useSpiritualState()
+  const [selected, setSelected] = useState<AsmaName | null>(null)
   const dailyName = getDailyAsma()
   const selectTab = (next: LibraryTab) => { setTab(next); onTabChange?.(next) }
+  const drawer = selected && <AsmaDrawer name={selected} reflection={state.reflections[selected.order] || ''} favorite={state.favoriteAsma.includes(selected.order)} logged={state.loggedToday.includes(`asma:${selected.order}`)} onClose={() => setSelected(null)} onFavorite={() => void state.toggleAsma(selected.order)} onSave={(value) => void state.saveReflection(selected.order, value)} onLog={(value) => void state.logToJournal('asma', String(selected.order), value, `${selected.transliteration} tefekkürü`)} />
 
   if (stacked) return <div className="spiritual-library spiritual-library-stacked">
     <section id="mescidim-asma" className="mescidim-flow-section">
       <header className="mescidim-flow-heading"><span>02</span><div><small>GÜNÜN TEFEKKÜRÜ</small><h2>Esmâü’l Hüsnâ</h2><p>Günün ismiyle düşünmeye başla; dilersen 99 ismin tamamını incele.</p></div></header>
-      <DailyAsmaHero dailyName={dailyName} onExplore={() => document.getElementById('mescidim-asma-library')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
-      <div id="mescidim-asma-library"><AsmaLibrary dailyName={dailyName} /></div>
+      <DailyAsmaHero dailyName={dailyName} onExplore={() => setSelected(dailyName)} />
+      <div id="mescidim-asma-library"><AsmaLibrary dailyName={dailyName} state={state} onSelect={setSelected} compact /></div>
     </section>
     <section id="mescidim-dua" className="mescidim-flow-section">
       <header className="mescidim-flow-heading"><span>03</span><div><small>İHTİYACINA GÖRE</small><h2>Dualar</h2><p>Konuna göre ara, kaynağını gör ve dilediğin duayı günlüğüne ekle.</p></div></header>
-      <DuaLibrary initialOccasion={initialOccasion} />
+      <DuaLibrary initialOccasion={initialOccasion} state={state} compact />
     </section>
+    {drawer}
   </div>
 
   return <div className="spiritual-library">
@@ -37,7 +42,8 @@ export default function MescidimLibrary({ initialTab = 'asma', initialOccasion, 
       <button className={tab === 'asma' ? 'active' : ''} onClick={() => selectTab('asma')}><AppIcon name="sparkles" /> Esmâü’l Hüsnâ <span>99</span></button>
       <button className={tab === 'dua' ? 'active' : ''} onClick={() => selectTab('dua')}><AppIcon name="book-2" /> Dua Kütüphanesi <span>{DUA_LIBRARY.length}</span></button>
     </nav>
-    {tab === 'asma' ? <AsmaLibrary dailyName={dailyName} /> : <DuaLibrary initialOccasion={initialOccasion} />}
+    {tab === 'asma' ? <AsmaLibrary dailyName={dailyName} state={state} onSelect={setSelected} /> : <DuaLibrary initialOccasion={initialOccasion} state={state} />}
+    {drawer}
   </div>
 }
 
@@ -145,31 +151,32 @@ function useSpiritualState() {
   return { favoriteAsma, favoriteDuas, reflections, loggedToday, notice, setNotice, toggleAsma, saveReflection, toggleDua, logToJournal }
 }
 
-function AsmaLibrary({ dailyName }: { dailyName: AsmaName }) {
-  const state = useSpiritualState()
+function AsmaLibrary({ dailyName, state, onSelect, compact = false }: { dailyName: AsmaName; state: ReturnType<typeof useSpiritualState>; onSelect: (name: AsmaName) => void; compact?: boolean }) {
   const [search, setSearch] = useState('')
   const [favoritesOnly, setFavoritesOnly] = useState(false)
-  const [selected, setSelected] = useState<AsmaName | null>(null)
+  const [expanded, setExpanded] = useState(false)
   const normalized = search.toLocaleLowerCase('tr-TR')
   const names = ASMA_NAMES.filter((name) => (!favoritesOnly || state.favoriteAsma.includes(name.order)) && (!normalized || `${name.transliteration} ${name.meaning}`.toLocaleLowerCase('tr-TR').includes(normalized)))
+  const preview = compact && !expanded && !normalized && !favoritesOnly
+  const visibleNames = preview ? [dailyName, ...names.filter((name) => name.order !== dailyName.order)].slice(0, 6) : names
 
   return <section className="spiritual-panel">
     <header className="spiritual-panel-header"><div><span className="eyebrow">TEFEKKÜR KÜTÜPHANESİ</span><h2>Allah’ın güzel isimleri</h2><p>Bir ismi aç, anlamını oku ve günlük hayatındaki karşılığını düşün.</p></div><a href={ASMA_SOURCE.url} target="_blank" rel="noreferrer">Kaynak notu <AppIcon name="external-link" /></a></header>
     <div className="spiritual-toolbar"><label><AppIcon name="search"/><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="İsim veya anlam ara…" aria-label="Esmâ ara" /></label><button className={favoritesOnly ? 'active' : ''} onClick={() => setFavoritesOnly((value) => !value)}><AppIcon name="heart" /> Favorilerim</button></div>
     {state.notice && <div className="spiritual-notice" role="status"><AppIcon name="check" /> {state.notice}</div>}
-    <div className="asma-grid">{names.map((name) => <article key={name.order} className={`asma-card ${name.order === dailyName.order ? 'daily' : ''}`}><button type="button" className="asma-card-main" onClick={() => setSelected(name)}><span>{name.order}</span><strong lang="ar" dir="rtl">{name.arabic}</strong><h3>{name.transliteration}</h3><p>{name.meaning}</p>{name.order === dailyName.order && <em>Günün ismi</em>}</button><button type="button" aria-label={`${name.transliteration} favori`} className={`asma-card-favorite ${state.favoriteAsma.includes(name.order) ? 'active' : ''}`} onClick={() => void state.toggleAsma(name.order)}><AppIcon name="heart" /></button></article>)}</div>
+    <div id="mescidim-asma-results" className="asma-grid">{visibleNames.map((name) => <article key={name.order} className={`asma-card ${name.order === dailyName.order ? 'daily' : ''}`}><button type="button" className="asma-card-main" onClick={() => onSelect(name)}><span>{name.order}</span><strong lang="ar" dir="rtl">{name.arabic}</strong><h3>{name.transliteration}</h3><p>{name.meaning}</p>{name.order === dailyName.order && <em>Günün ismi</em>}</button><button type="button" aria-label={`${name.transliteration} favori`} className={`asma-card-favorite ${state.favoriteAsma.includes(name.order) ? 'active' : ''}`} onClick={() => void state.toggleAsma(name.order)}><AppIcon name="heart" /></button></article>)}</div>
+    {compact && !normalized && !favoritesOnly && <button className="mescidim-show-more" aria-expanded={expanded} aria-controls="mescidim-asma-results" onClick={() => setExpanded((value) => !value)}>{expanded ? 'Seçkiye dön' : '99 ismin tamamını göster'} <AppIcon name={expanded ? 'chevron-up' : 'chevron-down'} /></button>}
     {names.length === 0 && <EmptyState label="Aramana uyan bir isim bulunamadı." />}
-    {selected && <AsmaDrawer name={selected} reflection={state.reflections[selected.order] || ''} favorite={state.favoriteAsma.includes(selected.order)} logged={state.loggedToday.includes(`asma:${selected.order}`)} onClose={() => setSelected(null)} onFavorite={() => void state.toggleAsma(selected.order)} onSave={(value) => void state.saveReflection(selected.order, value)} onLog={(value) => void state.logToJournal('asma', String(selected.order), value, `${selected.transliteration} tefekkürü`)} />}
   </section>
 }
 
 function AsmaDrawer({ name, reflection, favorite, logged, onClose, onFavorite, onSave, onLog }: { name: AsmaName; reflection: string; favorite: boolean; logged: boolean; onClose: () => void; onFavorite: () => void; onSave: (value: string) => void; onLog: (value: string) => void }) {
   const [value, setValue] = useState(reflection)
-  return <div className="spiritual-drawer-backdrop" onMouseDown={onClose}><aside className="spiritual-drawer" role="dialog" aria-modal="true" aria-label={name.transliteration} onMouseDown={(event) => event.stopPropagation()}><header><span>{name.order}/99</span><div><button aria-label="Favoriye ekle" className={favorite ? 'active' : ''} onClick={onFavorite}><AppIcon name="heart" /></button><button aria-label="Kapat" onClick={onClose}><AppIcon name="x" /></button></div></header><div className="asma-detail-mark" lang="ar" dir="rtl">{name.arabic}</div><span className="eyebrow">ESMÂÜ’L HÜSNÂ</span><h2>{name.transliteration}</h2><h3>{name.meaning}</h3><p>{name.reflection}</p><div className="source-assurance"><AppIcon name="shield-check"/><span><strong>Kaynak yaklaşımı</strong>{ASMA_SOURCE.note}</span></div><label><span>Kendi tefekkür notun</span><textarea rows={5} value={value} onChange={(event) => setValue(event.target.value)} placeholder="Bu ismin bugün sende uyandırdığı düşünce…"/></label><div className="spiritual-drawer-actions"><button onClick={() => onSave(value)} className="ghost-button">Notu kaydet</button><button onClick={() => onLog(value)} disabled={logged} className="primary-button"><AppIcon name="notebook" /> {logged ? 'Bugün günlüğünde' : 'Günlüğe ekle'}</button></div></aside></div>
+  return createPortal(<div className="spiritual-drawer-backdrop" onMouseDown={onClose}><aside className="spiritual-drawer" role="dialog" aria-modal="true" aria-label={name.transliteration} onMouseDown={(event) => event.stopPropagation()}><header><span>{name.order}/99</span><div><button aria-label="Favoriye ekle" className={favorite ? 'active' : ''} onClick={onFavorite}><AppIcon name="heart" /></button><button aria-label="Kapat" onClick={onClose}><AppIcon name="x" /></button></div></header><div className="asma-detail-mark" lang="ar" dir="rtl">{name.arabic}</div><span className="eyebrow">ESMÂÜ’L HÜSNÂ</span><h2>{name.transliteration}</h2><h3>{name.meaning}</h3><p>{name.reflection}</p><div className="source-assurance"><AppIcon name="shield-check"/><span><strong>Kaynak yaklaşımı</strong>{ASMA_SOURCE.note}</span></div><label><span>Kendi tefekkür notun</span><textarea rows={5} value={value} onChange={(event) => setValue(event.target.value)} placeholder="Bu ismin bugün sende uyandırdığı düşünce…"/></label><div className="spiritual-drawer-actions"><button onClick={() => onSave(value)} className="ghost-button">Notu kaydet</button><button onClick={() => onLog(value)} disabled={logged} className="primary-button"><AppIcon name="notebook" /> {logged ? 'Bugün günlüğünde' : 'Günlüğe ekle'}</button></div></aside></div>, document.body)
 }
 
-function DuaLibrary({ initialOccasion }: { initialOccasion?: string }) {
-  const state = useSpiritualState()
+function DuaLibrary({ initialOccasion, state, compact = false }: { initialOccasion?: string; state: ReturnType<typeof useSpiritualState>; compact?: boolean }) {
+  const [expanded, setExpanded] = useState(false)
   const [category, setCategory] = useState<'Tümü' | DuaCategory>('Tümü')
   const [occasion, setOccasion] = useState(initialOccasion && DUA_LIBRARY.some((item) => item.occasion === initialOccasion) ? initialOccasion : 'Tümü')
   const [query, setQuery] = useState('')
@@ -179,6 +186,8 @@ function DuaLibrary({ initialOccasion }: { initialOccasion?: string }) {
   const occasions = ['Tümü', ...Array.from(new Set(DUA_LIBRARY.map((item) => item.occasion)))]
   const normalized = query.toLocaleLowerCase('tr-TR')
   const duas = useMemo(() => DUA_LIBRARY.filter((dua) => (category === 'Tümü' || dua.category === category) && (occasion === 'Tümü' || dua.occasion === occasion) && (!favoritesOnly || state.favoriteDuas.includes(dua.id)) && (!normalized || `${dua.title} ${dua.meaning} ${dua.source}`.toLocaleLowerCase('tr-TR').includes(normalized))), [category, occasion, favoritesOnly, normalized, state.favoriteDuas])
+  const preview = compact && !expanded && !normalized && !favoritesOnly && category === 'Tümü' && occasion === 'Tümü'
+  const visibleDuas = preview ? duas.slice(0, 4) : duas
 
   return <section className="spiritual-panel">
     <header className="spiritual-panel-header"><div><span className="eyebrow">KAYNAĞIYLA BİRLİKTE</span><h2>Dua Kütüphanesi</h2><p>Kur’an âyetleri ve açık hadis künyeleriyle düzenlenmiş, aranabilir bir başvuru alanı.</p></div><span className="quiet-chip">{DUA_LIBRARY.length} dua</span></header>
@@ -186,7 +195,8 @@ function DuaLibrary({ initialOccasion }: { initialOccasion?: string }) {
     <div className="dua-filter-row" aria-label="Dua kaynağı">{categories.map((item) => <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>{item}</button>)}</div>
     <div className="dua-filter-row occasions" aria-label="Dua konusu">{occasions.map((item) => <button key={item} className={occasion === item ? 'active' : ''} onClick={() => setOccasion(item)}>{item}</button>)}</div>
     {state.notice && <div className="spiritual-notice" role="status"><AppIcon name="check" /> {state.notice}</div>}
-    <div className="dua-library-list">{duas.map((dua) => <DuaCard key={dua.id} dua={dua} favorite={state.favoriteDuas.includes(dua.id)} logged={state.loggedToday.includes(`dua:${dua.id}`)} amin={amin.includes(dua.id)} onFavorite={() => void state.toggleDua(dua.id)} onAmin={() => setAmin((current) => current.includes(dua.id) ? current.filter((id) => id !== dua.id) : [...current, dua.id])} onLog={() => void state.logToJournal('dua', dua.id, '', `${dua.title}${dua.title.toLocaleLowerCase('tr-TR').endsWith('duası') ? '' : ' duası'} okundu`)} />)}</div>
+    <div id="mescidim-dua-results" className="dua-library-list">{visibleDuas.map((dua) => <DuaCard key={dua.id} dua={dua} favorite={state.favoriteDuas.includes(dua.id)} logged={state.loggedToday.includes(`dua:${dua.id}`)} amin={amin.includes(dua.id)} onFavorite={() => void state.toggleDua(dua.id)} onAmin={() => setAmin((current) => current.includes(dua.id) ? current.filter((id) => id !== dua.id) : [...current, dua.id])} onLog={() => void state.logToJournal('dua', dua.id, '', `${dua.title}${dua.title.toLocaleLowerCase('tr-TR').endsWith('duası') ? '' : ' duası'} okundu`)} />)}</div>
+    {compact && !normalized && !favoritesOnly && category === 'Tümü' && occasion === 'Tümü' && <button className="mescidim-show-more" aria-expanded={expanded} aria-controls="mescidim-dua-results" onClick={() => setExpanded((value) => !value)}>{expanded ? 'Seçkiye dön' : `${DUA_LIBRARY.length} duanın tamamını göster`} <AppIcon name={expanded ? 'chevron-up' : 'chevron-down'} /></button>}
     {duas.length === 0 && <EmptyState label="Bu filtrelerde bir dua bulunamadı." />}
     <p className="spiritual-cap-note"><AppIcon name="info-circle" /> Günlüğe eklenen ilk {DAILY_LIMIT} farklı manevî kayıt günde 10’ar XH kazandırır. Sonrakiler günlüğe eklenir ancak XH vermez.</p>
   </section>

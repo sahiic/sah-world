@@ -57,7 +57,7 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
     </section>}
     {!localCommunity && <>
       <section className="mescidim-today-hero">
-        <div className="mescidim-today-copy"><span className="eyebrow">BUGÜNÜN MANEVÎ AKIŞI</span><h2>Vakit, zikir ve dua.<br/>Tek bir sakin alanda.</h2><p>İhtiyacın olan her şey aşağıda, günün doğal sırasına göre hazır. Sekmeler arasında kaybolmadan devam et.</p></div>
+        <div className="mescidim-today-copy"><span className="eyebrow">BUGÜNÜN MANEVÎ AKIŞI</span><h2>Vakit, zikir ve dua.</h2><p>Günün ritmini takip et, kısa bir zikir molası ver ve duaya alan aç.</p></div>
         <div className="mescidim-today-mark" aria-hidden="true"><span><AppIcon name="building-mosque" /></span><i/><i/><i/></div>
         <div className="mescidim-today-promise"><AppIcon name="shield-check" /><span><strong>Kaynaklı ve kişisel</strong><small>Vakitler, Esmâ ve dualar güvenilir kaynak bilgileriyle sunulur.</small></span></div>
       </section>
