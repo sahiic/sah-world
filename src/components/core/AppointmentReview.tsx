@@ -24,7 +24,7 @@ export default function AppointmentReview({
   onSaved: () => void;
 }) {
   const reducedMotion = useReducedMotion();
-  const demoMode = !isValidUUID(userId);
+  const demoMode = Boolean(appointment.is_demo) || !isValidUUID(userId);
   const [note, setNote] = useState<AppointmentNoteRow | null>(null);
   const [surahName, setSurahName] = useState("");
   const [startAyah, setStartAyah] = useState("");

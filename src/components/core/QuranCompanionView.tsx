@@ -42,6 +42,7 @@ export type AppointmentView = AppointmentRow & {
   hoca_photo: string | null;
   student_name: string;
   student_avatar: string | null;
+  is_demo?: boolean;
 };
 type PeerView = {
   id: string;
@@ -96,6 +97,7 @@ const sampleAppointments = (studentId: string): AppointmentView[] => {
       hoca_photo: SAMPLE_HOCA.photo_url,
       student_name: "Örnek Öğrenci",
       student_avatar: null,
+      is_demo: true,
     },
     {
       id: "0f3689f5-c0fd-4b65-b9e9-7829d24a7f5c",
@@ -113,6 +115,7 @@ const sampleAppointments = (studentId: string): AppointmentView[] => {
       hoca_photo: SAMPLE_HOCA.photo_url,
       student_name: "Örnek Öğrenci",
       student_avatar: null,
+      is_demo: true,
     },
   ];
 };
@@ -200,6 +203,7 @@ export default function QuranCompanionView({
   const journey = useJourneyStore();
   const searchParams = useSearchParams();
   const requestedTab = selectedValue(searchParams.get('tab'), QURAN_TABS, 'home');
+  const pilotDemo = searchParams.get("pilot") === "demo";
   const tab = requestedTab === 'manage' && profile?.role !== 'hoca' && profile?.role !== 'admin' ? 'home' : requestedTab;
   const setTab = (next: CompanionTab) => openAppView('quran-companion', next);
   const reducedMotion = useReducedMotion();
@@ -221,9 +225,9 @@ export default function QuranCompanionView({
     window.setTimeout(() => setNotice(""), 3500);
   };
   const load = async () => {
-    if (!isRealUser) {
+    if (pilotDemo || !isRealUser) {
       setTeachers([SAMPLE_HOCA]);
-      setAppointments(sampleAppointments(userId));
+      setAppointments(sampleAppointments(userId || "demo-student"));
       setLoading(false);
       return;
     }
@@ -273,7 +277,7 @@ export default function QuranCompanionView({
       void load();
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user?.id, pilotDemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (
