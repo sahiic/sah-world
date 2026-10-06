@@ -13,6 +13,7 @@ import {
 import { FormEvent, useState } from "react";
 import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
 import { getFocusBackground } from "@/lib/focusBackgrounds";
+import { FocusPresets, FocusScenePicker, FocusStudioIntro } from "@/components/core/FocusAmbience";
 import { useFocusStore } from "@/stores/focusStore";
 import { formatTimer } from "@/utils/timerUtils";
 import TimerControls from "./TimerControls";
@@ -42,6 +43,8 @@ export default function FocusTimer({
   const timeLeft = useFocusStore((state) => state.timeLeft);
   const totalTime = useFocusStore((state) => state.totalTime);
   const isRunning = useFocusStore((state) => state.isRunning);
+  const sessionStartTime = useFocusStore((state) => state.sessionStartTime);
+  const setBackgroundId = useFocusStore((state) => state.setBackgroundId);
   const currentRound = useFocusStore((state) => state.currentRound);
   const totalRounds = useFocusStore((state) => state.totalRounds);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
@@ -77,10 +80,11 @@ export default function FocusTimer({
 
   return (
     <section
-      className={`${styles.timerCard} ${styles[mode]} ${isRunning ? styles.timerRunning : ""}`}
+      className={`focus-timer-stage ${styles.timerCard} ${styles[mode]} ${isRunning ? styles.timerRunning : ""}`}
       aria-label="Odaklanma zamanlayıcısı"
     >
       <div className={styles.timerAura} aria-hidden />
+      <FocusStudioIntro active={Boolean(sessionStartTime)} />
       <div className={`focus-mode-eyebrow ${styles.timerEyebrow}`}>
         {timerKind === "stopwatch" ? (
           <Timer aria-hidden />
@@ -124,6 +128,16 @@ export default function FocusTimer({
         )}
       </div>
 
+      <FocusPresets
+        minutes={timerKind === "pomodoro" && mode === "focus" ? totalTime / 60 : null}
+        disabled={Boolean(sessionStartTime)}
+        onSelect={(minutes) => {
+          const store = useFocusStore.getState();
+          store.setTimerKind("pomodoro");
+          store.setMode("focus");
+          store.updateSettings({ focusDuration: minutes });
+        }}
+      />
       <div
         className={`focus-dial ${isRunning ? "is-running" : ""} ${styles.timerDial}`}
       >
@@ -163,7 +177,7 @@ export default function FocusTimer({
       <TimerControls onNeedNiyet={onNeedNiyet} />
 
       <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
-        <button onClick={onOpenTimerSettings} disabled={isRunning}>
+        <button onClick={onOpenTimerSettings} disabled={Boolean(sessionStartTime)}>
           <span>
             <Hourglass aria-hidden />
           </span>
@@ -192,6 +206,7 @@ export default function FocusTimer({
           <small>Dikkat dağıtanları gizle</small>
         </button>
       </nav>
+      <FocusScenePicker compact backgroundId={backgroundId} onSelect={setBackgroundId} />
     </section>
   );
 }

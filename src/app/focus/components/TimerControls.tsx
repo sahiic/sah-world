@@ -30,7 +30,7 @@ export default function TimerControls({
   };
 
   return (
-    <div className={styles.timerControls} aria-label="Zamanlayıcı kontrolleri">
+    <div className={`focus-action-row ${styles.timerControls}`} aria-label="Zamanlayıcı kontrolleri">
       <button
         className={`focus-main-btn ${styles.primaryControl}`}
         onClick={handlePrimary}

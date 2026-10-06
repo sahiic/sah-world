@@ -6,7 +6,7 @@ import type { TimerKind } from "@/types/focus";
 import styles from "../focus.module.css";
 
 const options = {
-  focusDuration: [15, 25, 30, 45, 60],
+  focusDuration: [15, 25, 30, 45, 50, 60, 90],
   shortBreakDuration: [3, 5, 7],
   longBreakDuration: [10, 15, 20, 30],
 } as const;
