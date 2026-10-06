@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("Quran pilot demo supports appointment chat and a completed lesson reflection", async ({ page }) => {
-  await page.goto("/?view=quran-companion&tab=appointments");
+  await page.goto("/?view=quran-companion&tab=appointments&pilot=demo");
   await page.getByRole("button", { name: "DEV: Misafir görünümü" }).click();
 
   await expect(page.getByRole("heading", { name: "İmam Hatip Ramazan Hoca" })).toBeVisible();

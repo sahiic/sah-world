@@ -20,7 +20,7 @@ export default function AppointmentChat({ appointment, currentUserId, isHoca, on
   onClose: () => void;
 }) {
   const reducedMotion = useReducedMotion();
-  const demoMode = !isValidUUID(currentUserId);
+  const demoMode = Boolean(appointment.is_demo) || !isValidUUID(currentUserId);
   const [receiverId, setReceiverId] = useState(isHoca ? appointment.student_id : "");
   const [messages, setMessages] = useState<ChatMessageRow[]>(() => demoMode ? [{ id: "demo-welcome", sender_id: "ramazan-hoca", receiver_id: null, group_id: null, content: "Selâmün aleyküm. Ders öncesinde çalışmak istediğin sureyi buradan yazabilirsin.", is_read: true, created_at: new Date().toISOString() }] : []);
   const [text, setText] = useState("");
