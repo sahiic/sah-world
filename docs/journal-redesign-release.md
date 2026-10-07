@@ -20,6 +20,7 @@ Implementation is isolated on `codex/journal-redesign`; the user's separate Qura
 - The remaining failure is the pre-existing mobile Quran appointment-chat send button being covered by the bottom navigation. Reproduced independently in an untouched baseline worktree and also present in [baseline CI](https://github.com/sahiic/sah-world/actions/runs/37536195966/job/112517621461). The failing test was not weakened or removed; no Quran product code was changed.
 - Changed-file lint: **passed**. `npm run build`: **passed**, including TypeScript and production route generation.
 - Viewports checked: 375, 390, 768, 1440 and 1920 CSS pixels. The main editor starts within the first 480px at 1440×900 and 390×844, with minimum writing heights of 220px and 170px respectively. No horizontal overflow in the checked layouts. Enlarged text, long Turkish content, dark mode and a reduced-height mobile viewport were exercised.
+- Live browser verification found navigation wrapping just above the exact 390px breakpoint. Mobile navigation now uses compact controls throughout the mobile range, with additional 391px / 412px checks and a same-row assertion. No touch targets were made smaller than 44px.
 - Network/identity and cloud acknowledgement checks use explicit test fixtures; these are **not** claims of testing real authenticated Supabase writes. No real private journal content was used in screenshots, logs or test records.
 
 ## Before / after
