@@ -1525,9 +1525,12 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .qc-hero{display:grid;grid-template-columns:1fr 340px;gap:32px;padding:clamp(28px,4vw,48px);border-radius:28px;color:#f2fbf6;background:radial-gradient(circle at 85% 5%,rgba(93,211,171,.2),transparent 32%),radial-gradient(circle at 15% 100%,rgba(197,160,89,.15),transparent 30%),linear-gradient(135deg,#082a22 0%,#0b4235 54%,#0a342b 100%);box-shadow:0 22px 56px rgba(8,54,42,.18)}
 .qc-hero h1{margin:0 0 12px;font-size:clamp(28px,3.4vw,42px);font-weight:900;letter-spacing:-.04em;line-height:1.15}
 .qc-hero .eyebrow{color:#91e0c4}
-.qc-streak-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);font-size:13px;margin-bottom:16px}
+.qc-hero-badges{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.qc-streak-badge,.qc-hasanat-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);font-size:13px}
 .qc-streak-badge .app-icon{color:#f59e0b;font-size:20px}
 .qc-streak-badge strong{font-size:22px;color:#fbbf24}
+.qc-hasanat-badge .app-icon{color:#c5a059;font-size:20px}
+.qc-hasanat-badge strong{font-size:22px;color:#fde68a}
 .qc-today-task{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.08);margin-bottom:18px}
 .qc-today-task .app-icon{font-size:22px;color:#5ec99e;flex-shrink:0;margin-top:2px}
 .qc-today-task strong{display:block;font-size:14px;color:#fff;margin-bottom:2px}
@@ -1751,6 +1754,8 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .qc-tajweed-option.correct{border-color:#22c55e;background:#f0fdf4}
 .qc-tajweed-option.wrong{border-color:#ef4444;background:#fef2f2}
 .qc-tajweed-option .app-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px}
+.qc-tajweed-explanation{display:flex;align-items:flex-start;gap:8px;padding:12px 16px;border-radius:12px;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.12);font-size:12px;color:#4c1d95;margin-top:8px;text-align:left}
+.qc-tajweed-explanation .app-icon{flex-shrink:0;color:#7c3aed;font-size:16px;margin-top:1px}
 
 /* Spaced Review */
 .qc-spaced-empty{text-align:center;padding:48px 24px}
@@ -1822,6 +1827,23 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] .qc-v2 .quran-companion-tabs button{color:#8ea89d}
 [data-theme="dark"] .qc-v2 .quran-companion-tabs button.active{color:#5ec99e;background:rgba(0,155,119,.15)}
 [data-theme="dark"] .qc-v2 .qc-progress-preview,[data-theme="dark"] .qc-v2 .qc-weekly-summary,[data-theme="dark"] .qc-v2 .qc-social-card{background:#141b2f;border-color:rgba(0,155,119,.12)}
+
+/* Admin Role Management Pro */
+.role-tag{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.04em;font-style:normal}
+.role-tag.role-admin{color:#7c3aed;background:rgba(124,58,237,.1)}
+.role-tag.role-hoca{color:#009B77;background:rgba(0,155,119,.1)}
+.role-tag.role-user{color:#6b7280;background:rgba(107,114,128,.1)}
+.admin-role-actions{display:flex;gap:6px;flex-shrink:0}
+.role-btn{padding:5px 10px;border:1px solid;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s}
+.role-btn.hoca{color:#009B77;border-color:rgba(0,155,119,.2);background:rgba(0,155,119,.05)}
+.role-btn.hoca:hover{background:rgba(0,155,119,.15)}
+.role-btn.admin{color:#7c3aed;border-color:rgba(124,58,237,.2);background:rgba(124,58,237,.05)}
+.role-btn.admin:hover{background:rgba(124,58,237,.15)}
+[data-theme="dark"] .role-tag.role-admin{color:#a78bfa;background:rgba(124,58,237,.2)}
+[data-theme="dark"] .role-tag.role-hoca{color:#5ec99e;background:rgba(0,155,119,.2)}
+[data-theme="dark"] .role-tag.role-user{color:#9ca3af;background:rgba(156,163,175,.15)}
+[data-theme="dark"] .qc-tajweed-explanation{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.2);color:#c4b5fd}
+[data-theme="dark"] .qc-hasanat-badge{background:rgba(197,160,89,.15)}
 
 /* ═══════════════════════════════════════════════════════════
    AWARENESS PLATFORM V2 — Community, Boycott, Missions, Levels

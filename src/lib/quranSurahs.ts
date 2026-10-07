@@ -152,7 +152,7 @@ export interface SpacedRepetitionItem {
 
 export interface QuranExerciseResult {
   id: string;
-  type: "completion" | "ordering" | "tajweed";
+  type: "completion" | "ordering" | "tajweed" | "spaced";
   surahId: number;
   score: number;
   totalQuestions: number;
