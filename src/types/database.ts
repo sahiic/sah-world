@@ -420,6 +420,53 @@ export type AdminFeedbackRow = Omit<FeedbackRow, "reviewed_by"> & {
   total_count: number;
 };
 
+export type QuranSurahProgressRow = {
+  id: string;
+  user_id: string;
+  surah_id: number;
+  read_status: "none" | "started" | "reading" | "completed";
+  memorize_status: "none" | "studying" | "reviewing" | "memorized";
+  completed_ayahs: number;
+  total_errors: number;
+  difficult_ayahs: number[];
+  last_study_date: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type QuranStreakRow = {
+  id: string;
+  user_id: string;
+  current_streak: number;
+  longest_streak: number;
+  last_activity_date: string | null;
+  total_days: number;
+  streak_freeze_available: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type QuranExerciseResultRow = {
+  id: string;
+  user_id: string;
+  exercise_type: "completion" | "ordering" | "tajweed" | "spaced";
+  surah_id: number | null;
+  score: number;
+  total_questions: number;
+  time_spent_seconds: number;
+  created_at: string;
+};
+
+export type QuranHasanatSource = "exercise" | "streak" | "review" | "milestone" | "appointment" | "daily";
+export type QuranHasanatRow = {
+  id: string;
+  user_id: string;
+  amount: number;
+  source: QuranHasanatSource;
+  description: string;
+  created_at: string;
+};
+
 export interface Database {
   public: {
     Tables: {
@@ -529,6 +576,10 @@ export interface Database {
         is_daily: boolean;
         shown_at: string;
       }>;
+      quran_surah_progress: RowTable<QuranSurahProgressRow>;
+      quran_streaks: RowTable<QuranStreakRow>;
+      quran_exercise_results: RowTable<QuranExerciseResultRow>;
+      quran_hasanat: RowTable<QuranHasanatRow>;
     };
     Views: {
       public_profile_summary: {
@@ -699,8 +750,16 @@ export interface Database {
         }>;
       };
       admin_set_quran_role: {
-        Args: { target_user_id: string; next_role: "user" | "hoca" };
+        Args: { target_user_id: string; next_role: "user" | "hoca" | "admin" };
         Returns: string;
+      };
+      record_quran_activity: {
+        Args: Record<string, never>;
+        Returns: QuranStreakRow;
+      };
+      get_my_hasanat_total: {
+        Args: Record<string, never>;
+        Returns: number;
       };
       get_hoca_available_slots: {
         Args: { target_hoca_id: string; target_date: string };

@@ -25,6 +25,15 @@ import {
   type SpacedRepetitionItem,
   type QuranExerciseResult,
 } from "@/lib/quranSurahs";
+import {
+  COMPLETION_QUESTIONS,
+  TAJWEED_QUESTIONS,
+  ORDERING_SURAHS,
+  HASANAT_REWARDS,
+  MILESTONE_BADGES,
+  pickQuestions,
+  shuffleArray,
+} from "@/lib/quranExercises";
 import type {
   AppointmentRow,
   ChatMessageRow,
@@ -209,6 +218,8 @@ export default function QuranCompanionView({
   const [streak, setStreak] = useState<QuranStreak>(() => getDemoStreak());
   const [weeklySummary, setWeeklySummary] = useState<WeeklySummary>(() => getDemoWeeklySummary());
   const [spacedItems, setSpacedItems] = useState<SpacedRepetitionItem[]>(() => getDemoSpacedItems());
+  const [totalHasanat, setTotalHasanat] = useState(0);
+  const [recentExercises, setRecentExercises] = useState<QuranExerciseResult[]>([]);
 
   const flash = (message: string) => {
     setNotice(message);
@@ -222,18 +233,35 @@ export default function QuranCompanionView({
       return;
     }
     setLoading(true);
-    const [teacherResult, appointmentResult, goalResult, helperResult, matchResult] = await Promise.all([
+    const [teacherResult, appointmentResult, goalResult, helperResult, matchResult, progressResult, streakResult, hasanatResult, exerciseResult] = await Promise.all([
       supabase.from("hoca_profiles").select("*").eq("is_active", true).order("created_at"),
       supabase.rpc("get_my_quran_appointments"),
       supabase.from("quran_study_goals").select("*").eq("user_id", user!.id).maybeSingle(),
       supabase.rpc("browse_quran_helpers"),
       supabase.rpc("get_my_quran_peer_matches"),
+      supabase.from("quran_surah_progress").select("*").eq("user_id", user!.id),
+      supabase.from("quran_streaks").select("*").eq("user_id", user!.id).maybeSingle(),
+      supabase.rpc("get_my_hasanat_total"),
+      supabase.from("quran_exercise_results").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(10),
     ]);
     setTeachers(teacherResult.data || []);
     setAppointments(appointmentResult.data || []);
     setGoal(goalResult.data || null);
     setHelpers(helperResult.data || []);
     setMatches(matchResult.data || []);
+    if (progressResult.data && progressResult.data.length > 0) {
+      const dbProgress: SurahProgress[] = SURAHS.map((s) => {
+        const row = progressResult.data!.find((r) => r.surah_id === s.id);
+        if (!row) return { surahId: s.id, readStatus: "none" as const, memorizeStatus: "none" as const, lastStudyDate: null, difficultAyahs: [], completedAyahs: 0, totalErrors: 0 };
+        return { surahId: s.id, readStatus: row.read_status as SurahStatus, memorizeStatus: row.memorize_status as SurahProgress["memorizeStatus"], lastStudyDate: row.last_study_date, difficultAyahs: row.difficult_ayahs || [], completedAyahs: row.completed_ayahs, totalErrors: row.total_errors };
+      });
+      setSurahProgress(dbProgress);
+    }
+    if (streakResult.data) {
+      setStreak({ current: streakResult.data.current_streak, longest: streakResult.data.longest_streak, lastDate: streakResult.data.last_activity_date || "", totalDays: streakResult.data.total_days });
+    }
+    if (hasanatResult.data != null) setTotalHasanat(Number(hasanatResult.data));
+    if (exerciseResult.data) setRecentExercises(exerciseResult.data.map((r) => ({ id: r.id, type: r.exercise_type, surahId: r.surah_id ?? 0, score: r.score, totalQuestions: r.total_questions, completedAt: r.created_at, timeSpentSeconds: r.time_spent_seconds })));
     const firstError = teacherResult.error || appointmentResult.error || goalResult.error || helperResult.error || matchResult.error;
     setError(firstError ? "Kur'an Kardeşim verileri tamamen yüklenemedi. Lütfen tekrar dene." : "");
     setLoading(false);
@@ -286,6 +314,33 @@ export default function QuranCompanionView({
     flash(permission === "granted" ? "Randevu hatırlatmaları açıldı." : "Bildirim izni verilmedi.");
   };
 
+  const saveProgressToDb = useCallback(async (progress: SurahProgress[]) => {
+    if (!isRealUser || !user) return;
+    const rows = progress.filter((p) => p.readStatus !== "none" || p.memorizeStatus !== "none").map((p) => ({
+      user_id: user.id, surah_id: p.surahId, read_status: p.readStatus, memorize_status: p.memorizeStatus,
+      completed_ayahs: p.completedAyahs, total_errors: p.totalErrors, difficult_ayahs: p.difficultAyahs,
+      last_study_date: p.lastStudyDate,
+    }));
+    if (rows.length > 0) await supabase.from("quran_surah_progress").upsert(rows, { onConflict: "user_id,surah_id" });
+  }, [isRealUser, user]);
+
+  const recordHasanat = useCallback(async (amount: number, source: "exercise" | "streak" | "review" | "milestone" | "appointment" | "daily", description: string) => {
+    if (!isRealUser || !user) return;
+    await supabase.from("quran_hasanat").insert({ user_id: user.id, amount, source, description });
+    setTotalHasanat((prev) => prev + amount);
+  }, [isRealUser, user]);
+
+  const recordExercise = useCallback(async (result: QuranExerciseResult) => {
+    if (!isRealUser || !user) return;
+    await supabase.from("quran_exercise_results").insert({
+      user_id: user.id, exercise_type: result.type, surah_id: result.surahId,
+      score: result.score, total_questions: result.totalQuestions, time_spent_seconds: result.timeSpentSeconds,
+    });
+    void supabase.rpc("record_quran_activity");
+    const reward = result.score === result.totalQuestions ? HASANAT_REWARDS.exercise_perfect : HASANAT_REWARDS.exercise_complete;
+    void recordHasanat(reward, "exercise", `${result.type} alıştırması: ${result.score}/${result.totalQuestions}`);
+  }, [isRealUser, user, recordHasanat]);
+
   const todaysReviews = spacedItems.filter((item) => item.nextReviewDate <= new Date().toISOString().slice(0, 10));
   const progressStats = useMemo(() => {
     const completed = surahProgress.filter((s) => s.readStatus === "completed" || s.readStatus === "memorized").length;
@@ -316,10 +371,17 @@ export default function QuranCompanionView({
             <div className="qc-hero-left">
               <span className="eyebrow">KUR'AN-I KERİM KARDEŞİM</span>
               <h1>Bugün ne çalışıyoruz?</h1>
-              <div className="qc-streak-badge">
-                <AppIcon name="flame" />
-                <strong>{streak.current}</strong>
-                <span>gün seri</span>
+              <div className="qc-hero-badges">
+                <div className="qc-streak-badge">
+                  <AppIcon name="flame" />
+                  <strong>{streak.current}</strong>
+                  <span>gün seri</span>
+                </div>
+                <div className="qc-hasanat-badge">
+                  <AppIcon name="sparkles" />
+                  <strong>{totalHasanat}</strong>
+                  <span>hasanat</span>
+                </div>
               </div>
               {todaysReviews.length > 0 ? (
                 <div className="qc-today-task">
@@ -599,7 +661,7 @@ export default function QuranCompanionView({
           {loading ? (
             <CompanionSkeleton />
           ) : tab === "home" ? null : tab === "progress" ? (
-            <ProgressMap surahProgress={surahProgress} onUpdate={setSurahProgress} />
+            <ProgressMap surahProgress={surahProgress} onUpdate={(p) => { setSurahProgress(p); void saveProgressToDb(p); }} />
           ) : tab === "exercises" ? (
             <ExerciseCenter
               surahProgress={surahProgress}
@@ -607,6 +669,8 @@ export default function QuranCompanionView({
               streak={streak}
               onStreakUpdate={setStreak}
               onFlash={flash}
+              onRecordExercise={recordExercise}
+              totalHasanat={totalHasanat}
             />
           ) : tab === "teachers" ? (
             <TeacherDiscovery teachers={teachers} onBooked={async () => { await load(); setTab("appointments"); flash("Randevun onaylandı."); }} realUser={isRealUser} />
@@ -760,21 +824,26 @@ function ExerciseCenter({
   streak,
   onStreakUpdate,
   onFlash,
+  onRecordExercise,
+  totalHasanat,
 }: {
   surahProgress: SurahProgress[];
   spacedItems: SpacedRepetitionItem[];
   streak: QuranStreak;
   onStreakUpdate: (s: QuranStreak) => void;
   onFlash: (msg: string) => void;
+  onRecordExercise: (r: QuranExerciseResult) => Promise<void>;
+  totalHasanat: number;
 }) {
   const [mode, setMode] = useState<"menu" | "completion" | "ordering" | "tajweed" | "spaced">("menu");
   const [exerciseResult, setExerciseResult] = useState<QuranExerciseResult | null>(null);
 
   const todaysReviews = spacedItems.filter((item) => item.nextReviewDate <= new Date().toISOString().slice(0, 10));
 
-  if (mode === "completion") return <CompletionExercise onBack={() => setMode("menu")} onComplete={(r) => { setExerciseResult(r); setMode("menu"); onFlash(`Alıştırma tamamlandı! Skor: ${r.score}/${r.totalQuestions}`); }} />;
-  if (mode === "ordering") return <OrderingExercise onBack={() => setMode("menu")} onComplete={(r) => { setExerciseResult(r); setMode("menu"); onFlash(`Sıralama tamamlandı! Skor: ${r.score}/${r.totalQuestions}`); }} />;
-  if (mode === "tajweed") return <TajweedExercise onBack={() => setMode("menu")} onComplete={(r) => { setExerciseResult(r); setMode("menu"); onFlash(`Tecvid alıştırması bitti! Skor: ${r.score}/${r.totalQuestions}`); }} />;
+  const handleComplete = (r: QuranExerciseResult) => { setExerciseResult(r); setMode("menu"); void onRecordExercise(r); onFlash(r.score === r.totalQuestions ? `Mükemmel! Tam puan: ${r.score}/${r.totalQuestions}` : `Alıştırma tamamlandı! Skor: ${r.score}/${r.totalQuestions}`); };
+  if (mode === "completion") return <CompletionExercise onBack={() => setMode("menu")} onComplete={handleComplete} />;
+  if (mode === "ordering") return <OrderingExercise onBack={() => setMode("menu")} onComplete={handleComplete} />;
+  if (mode === "tajweed") return <TajweedExercise onBack={() => setMode("menu")} onComplete={handleComplete} />;
   if (mode === "spaced") return <SpacedReview items={todaysReviews} onBack={() => setMode("menu")} onComplete={() => { setMode("menu"); onFlash("Bugünkü tekrarlar tamamlandı!"); }} />;
 
   return (
@@ -846,13 +915,7 @@ function ExerciseCenter({
 
 /* — Ayet Tamamlama Alıştırması — */
 function CompletionExercise({ onBack, onComplete }: { onBack: () => void; onComplete: (r: QuranExerciseResult) => void }) {
-  const questions = useMemo(() => [
-    { surahId: 1, ayah: 1, start: "بِسْمِ اللَّهِ", answer: "الرَّحْمَٰنِ الرَّحِيمِ", options: ["الرَّحْمَٰنِ الرَّحِيمِ", "الْعَالَمِينَ", "الْمُسْتَقِيمَ", "نَسْتَعِينُ"] },
-    { surahId: 1, ayah: 2, start: "الْحَمْدُ لِلَّهِ", answer: "رَبِّ الْعَالَمِينَ", options: ["رَبِّ الْعَالَمِينَ", "مَالِكِ يَوْمِ الدِّينِ", "الرَّحْمَٰنِ الرَّحِيمِ", "صِرَاطَ الْمُسْتَقِيمَ"] },
-    { surahId: 112, ayah: 1, start: "قُلْ هُوَ اللَّهُ", answer: "أَحَدٌ", options: ["أَحَدٌ", "الصَّمَدُ", "كُفُوًا أَحَدٌ", "يُولَدْ"] },
-    { surahId: 113, ayah: 1, start: "قُلْ أَعُوذُ بِرَبِّ", answer: "الْفَلَقِ", options: ["الْفَلَقِ", "النَّاسِ", "الْعَالَمِينَ", "الرَّحِيمِ"] },
-    { surahId: 114, ayah: 1, start: "قُلْ أَعُوذُ بِرَبِّ", answer: "النَّاسِ", options: ["النَّاسِ", "الْفَلَقِ", "الْمَلِكِ", "الْإِلَٰهِ"] },
-  ], []);
+  const questions = useMemo(() => pickQuestions(COMPLETION_QUESTIONS, 8), []);
 
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
@@ -931,17 +994,10 @@ function CompletionExercise({ onBack, onComplete }: { onBack: () => void; onComp
 
 /* — Ayet Sıralama Alıştırması — */
 function OrderingExercise({ onBack, onComplete }: { onBack: () => void; onComplete: (r: QuranExerciseResult) => void }) {
-  const verses = useMemo(() => [
-    { id: 1, text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" },
-    { id: 2, text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" },
-    { id: 3, text: "الرَّحْمَٰنِ الرَّحِيمِ" },
-    { id: 4, text: "مَالِكِ يَوْمِ الدِّينِ" },
-    { id: 5, text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ" },
-    { id: 6, text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ" },
-    { id: 7, text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ" },
-  ], []);
+  const surahData = useMemo(() => ORDERING_SURAHS[Math.floor(Math.random() * ORDERING_SURAHS.length)], []);
+  const verses = surahData.verses;
 
-  const [shuffled, setShuffled] = useState(() => [...verses].sort(() => Math.random() - 0.5));
+  const [shuffled, setShuffled] = useState(() => shuffleArray([...verses]));
   const [ordered, setOrdered] = useState<typeof verses>([]);
   const [checked, setChecked] = useState(false);
   const startTime = useRef(Date.now());
@@ -968,7 +1024,7 @@ function OrderingExercise({ onBack, onComplete }: { onBack: () => void; onComple
     <section className="qc-exercise-active">
       <header>
         <button onClick={onBack}><AppIcon name="arrow-left" /> Geri</button>
-        <h3>Fâtiha Suresi — Sıralama</h3>
+        <h3>{surahData.name} Suresi — Sıralama</h3>
       </header>
 
       <div className="qc-ordering-exercise">
@@ -1013,7 +1069,7 @@ function OrderingExercise({ onBack, onComplete }: { onBack: () => void; onComple
             <p className={score === verses.length ? "correct" : "partial"}>
               {score === verses.length ? "Hepsini doğru sıraladın! Mâşallah!" : `${score}/${verses.length} doğru sırada.`}
             </p>
-            <button className="qc-btn-primary" onClick={() => onComplete({ id: crypto.randomUUID(), type: "ordering", surahId: 1, score, totalQuestions: verses.length, completedAt: new Date().toISOString(), timeSpentSeconds: Math.round((Date.now() - startTime.current) / 1000) })}>
+            <button className="qc-btn-primary" onClick={() => onComplete({ id: crypto.randomUUID(), type: "ordering", surahId: surahData.surahId, score, totalQuestions: verses.length, completedAt: new Date().toISOString(), timeSpentSeconds: Math.round((Date.now() - startTime.current) / 1000) })}>
               Bitir <AppIcon name="arrow-right" />
             </button>
           </div>
@@ -1025,13 +1081,7 @@ function OrderingExercise({ onBack, onComplete }: { onBack: () => void; onComple
 
 /* — Tecvid Tanıma Alıştırması — */
 function TajweedExercise({ onBack, onComplete }: { onBack: () => void; onComplete: (r: QuranExerciseResult) => void }) {
-  const questions = useMemo(() => [
-    { text: "مِن رَّبِّهِمْ", rule: "idgham", surahId: 2 },
-    { text: "مِنْ خَيْرٍ", rule: "izhar", surahId: 2 },
-    { text: "أَنبِئْهُم", rule: "iqlab", surahId: 2 },
-    { text: "مِن شَرِّ", rule: "ikhfa", surahId: 113 },
-    { text: "وَلَا الضَّالِّينَ", rule: "madd", surahId: 1 },
-  ], []);
+  const questions = useMemo(() => pickQuestions(TAJWEED_QUESTIONS, 8), []);
 
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
@@ -1097,6 +1147,7 @@ function TajweedExercise({ onBack, onComplete }: { onBack: () => void; onComplet
           <p className={selected === q.rule ? "correct" : "wrong"}>
             {selected === q.rule ? `Doğru! Bu bir ${correctRule.name} kuralı.` : `Doğru cevap: ${correctRule.name} — ${correctRule.description}`}
           </p>
+          {"explanation" in q && q.explanation && <p className="qc-tajweed-explanation"><AppIcon name="info-circle" /> {q.explanation}</p>}
           <button className="qc-btn-primary" onClick={next}>
             {current + 1 >= questions.length ? "Sonuçları gör" : "Sonraki"} <AppIcon name="arrow-right" />
           </button>
@@ -1524,7 +1575,7 @@ function HocaManagement({ teachers, ownedHoca, appointments, isAdmin, onReload }
   };
   useEffect(() => { const timer = window.setTimeout(() => { void loadSchedule(); }, 0); return () => window.clearTimeout(timer); }, [effectiveManagedId]); // eslint-disable-line react-hooks/exhaustive-deps
   const searchUsers = async (event: React.FormEvent) => { event.preventDefault(); const { data } = await supabase.rpc("admin_search_quran_users", { search_text: search }); setUsers(data || []); };
-  const setRole = async (id: string, role: "user" | "hoca") => { const { error } = await supabase.rpc("admin_set_quran_role", { target_user_id: id, next_role: role }); if (!error) { const { data } = await supabase.rpc("admin_search_quran_users", { search_text: search }); setUsers(data || []); await onReload(); } };
+  const setRole = async (id: string, role: "user" | "hoca" | "admin") => { const { error } = await supabase.rpc("admin_set_quran_role", { target_user_id: id, next_role: role }); if (!error) { const { data } = await supabase.rpc("admin_search_quran_users", { search_text: search }); setUsers(data || []); await onReload(); } };
   const saveProfile = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); if (!managed) return;
     const fd = new FormData(event.currentTarget);
@@ -1555,7 +1606,7 @@ function HocaManagement({ teachers, ownedHoca, appointments, isAdmin, onReload }
         <article className="admin-role-card">
           <header><span><AppIcon name="shield-check" /></span><div><small>YALNIZCA YÖNETİCİ</small><h3>Hoca yetkisi ata</h3></div></header>
           <form onSubmit={(event) => void searchUsers(event)}><input value={search} onChange={(event) => setSearch(event.target.value)} minLength={2} placeholder="Ad veya e-posta ile ara" /><button>Ara</button></form>
-          {users.map((item) => <div className="admin-user-row" key={item.id}><AvatarImage src={avatar(item.display_name, item.avatar_url)} size={42} /><span><strong>{item.display_name}</strong><small>{item.email} · {item.role}</small></span>{item.role !== "admin" && <button onClick={() => void setRole(item.id, item.role === "hoca" ? "user" : "hoca")}>{item.role === "hoca" ? "Yetkiyi kaldır" : "Hoca yap"}</button>}</div>)}
+          {users.map((item) => <div className="admin-user-row" key={item.id}><AvatarImage src={avatar(item.display_name, item.avatar_url)} size={42} /><span><strong>{item.display_name}</strong><small>{item.email} · <em className={`role-tag role-${item.role}`}>{item.role === "admin" ? "Yönetici" : item.role === "hoca" ? "Hoca" : "Öğrenci"}</em></small></span><span className="admin-role-actions">{item.role !== "admin" && <button className="role-btn hoca" onClick={() => void setRole(item.id, item.role === "hoca" ? "user" : "hoca")}>{item.role === "hoca" ? "Hoca kaldır" : "Hoca yap"}</button>}{item.role !== "admin" && <button className="role-btn admin" onClick={() => void setRole(item.id, "admin")}>Admin yap</button>}</span></div>)}
         </article>
       )}
       {managed ? (
