@@ -55,6 +55,7 @@ async function run() {
     for (const file of [
       "034_quran_social_threads.sql",
       "035_quran_study_rooms.sql",
+      "036_quran_lesson_note_integrity.sql",
     ])
       await db.exec(fs.readFileSync("supabase/migrations/" + file, "utf8"));
   await db.query("UPDATE profiles SET quran_level='helper' WHERE id=$1", [
@@ -328,6 +329,9 @@ async function run() {
     "INSERT INTO appointment_notes(appointment_id,author_id,author_role,student_reflection) VALUES($1,$2,'student','Private mutual reflection')",
     [appt2, student],
   );
+  await assert.rejects(() => db.query("UPDATE appointment_notes SET author_role='hoca' WHERE appointment_id=$1", [appt2]));
+  await assert.rejects(() => db.query("UPDATE appointment_notes SET appointment_id=$1 WHERE appointment_id=$2", [appt1, appt2]));
+  await db.query("UPDATE appointment_notes SET student_reflection='Private mutual reflection' WHERE appointment_id=$1", [appt2]);
   await as(teacher);
   assert.equal(
     (
@@ -343,6 +347,11 @@ async function run() {
     (await db.query("SELECT * FROM appointment_notes")).rows.length,
     0,
   );
+  await db.exec("RESET ROLE");
+  await db.query("UPDATE profiles SET role='admin' WHERE id=$1", [outsider]);
+  await as(outsider);
+  assert.equal((await db.query("SELECT * FROM appointment_notes")).rows.length, 0, "platform admin role alone never exposes private participant notes");
+  await assert.rejects(() => db.query("INSERT INTO appointment_notes(appointment_id,author_id,author_role,performance_note) VALUES($1,$2,'hoca','Forged teacher note')", [appt2,outsider]));
   await db.exec("RESET ROLE;SET ROLE anon");
   await assert.rejects(() =>
     db.query("SELECT * FROM get_quran_thread_summaries()"),

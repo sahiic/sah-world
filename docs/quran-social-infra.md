@@ -25,6 +25,8 @@ Gerçek veri bulunmayan “son görülme” süresi veya birlikte çalışılan 
 
 Presence paketleri yalnızca arayüz ipucudur; yetki kaynağı değildir. Özel kanal politikaları bağlantı/kimlik yenilemesi sırasında değerlendirilir. Canlı doğrulama sırasında ilişki iptali ve yeniden bağlanma ayrıca denenmelidir. Kaynaklar: [Supabase Realtime Authorization](https://supabase.com/docs/guides/realtime/authorization), [Supabase Presence](https://supabase.com/docs/guides/realtime/presence).
 
+`036_quran_lesson_note_integrity.sql` özel not erişimini gerçek ders katılımcılarıyla sınırlar; yönetici unvanı tek başına not okuma hakkı vermez. Notun ders, yazar ve rol bilgileri sonradan değiştirilemez; yalnızca tamamlanan dersin gerçek öğrencisi/hocası kendi notunu yazabilir.
+
 ## Doğrulama
 
 - `npm run build`: başarılı.
@@ -32,20 +34,20 @@ Presence paketleri yalnızca arayüz ipucudur; yetki kaynağı değildir. Özel 
 - `npm run test:unit`: 52/52 başarılı.
 - `npx playwright test --config=playwright.social.config.ts`: masaüstü ve mobilde 14/14 başarılı. İzole yerel HTTP/WebSocket fixture kullanır; gerçek kullanıcı veya canlı veriye yazmaz.
 - Mevcut Kur’an readiness/pilot tarayıcı senaryoları: 18/18 başarılı.
-- `node scripts/test-quran-social-database.cjs`: gerçek SQL/RLS işlemleriyle izole PGlite üzerinde başarılı. 031–033 tabanı üzerinde 034–035 iki kez uygulanır. Konuşma ayrımı, yetkisiz/alakasız hesap erişimi, içerik değişmezliği, sınırlı okundu bilgisi, özel Presence yetkisi, dolu saatte geri alma, oda daveti/kod atlatma ve karşılıklı not gizliliği kontrol edilir.
+- `node scripts/test-quran-social-database.cjs`: gerçek SQL/RLS işlemleriyle izole PGlite üzerinde başarılı. 031–033 tabanı üzerinde 034–036 iki kez uygulanır. Konuşma ayrımı, yetkisiz/alakasız hesap erişimi, içerik değişmezliği, sınırlı okundu bilgisi, özel Presence yetkisi, dolu saatte geri alma, oda daveti/kod atlatma ve karşılıklı not gizliliği kontrol edilir. Yönetici rolüyle özel notları okuma, hoca rolü taklidi ve notu başka derse yönlendirme de reddedilir.
 - PGlite testi canlı Realtime sunucusu, üretim bağlantısı, üretim eşzamanlı yükü veya kriptografik grup kodu üretiminin testi değildir. Publication adımları yalnızca bu test ortamında atlanır.
 - Ekran kanıtları yalnızca kurgu hesaplar içerir: `validation/quran-social/desktop-dark.png`, `validation/quran-social/mobile-dark.png`.
 - CI, genel misafir UI testlerinden ayrı sosyal fixture testini ve iki izole veritabanı betiğini çalıştıracak şekilde güncellendi.
 
 ## Canlıya geçişte kalan somut engel
 
-Yönetim bağlantısı kimlik doğrulamasından geçmiyor; uygulama içi tarayıcıda Supabase oturumu açık değil. Güvenli, satır döndürmeyen canlı şema kontrolünde `context_id` için 42703; çalışma odası ve alıştırma anahtarı tabloları için PGRST205 alındı. Bu kontrol hiçbir kullanıcı verisini değiştirmedi veya yazdırmadı.
+Kullanıcı Supabase oturumunu açtı. Canlı SQL ön kontrolü 030–036 şema eklerinin henüz bulunmadığını, mevcut 12 mesaj ve 5 randevunun korunduğunu doğruladı. Hesap mevcut, yönetici ataması henüz yapılmadı. Bu kontrol hiçbir kullanıcı verisini değiştirmedi veya yazdırmadı.
 
 Dolayısıyla iki gerçek hesapla canlı mesaj/okundu/Presence testi, canlı oda daveti ve onaylanan yönetici/Baş Muallim ataması yapılmış kabul edilemez. Önizleme dağıtımı ana alan adının güncellendiği anlamına gelmez.
 
 ## Erişim sağlanınca uygulanacak sıra
 
-1. Uygulanmış migration listesini doğrula ve mevcut veritabanı yedeğini kontrol et. Eksik migration’ları sırasıyla uygula: 031, 032, 033, 034, 035. 031’i 032’den sonra tek başına tekrar çalıştırma; 032 puan/yazma yetkilerini daraltır. Dosyalar `supabase/migrations/` altındadır. Gerçek kullanıcı verileriyle seed/test çalıştırma.
+1. Uygulanmış migration listesini doğrula ve mevcut veritabanı yedeğini kontrol et. Eksik migration’ları sırasıyla uygula: 030, 031, 032, 033, 034, 035, 036. 031’i 032’den sonra tek başına tekrar çalıştırma; 032 puan/yazma yetkilerini daraltır. Dosyalar `supabase/migrations/` altındadır. Gerçek kullanıcı verileriyle seed/test çalıştırma.
 2. Yeni tablo/RPC şema önbelleğini, public tablolar için Realtime publication üyeliğini ve özel Presence RLS politikalarını doğrula. Açık eski istemcilerin yenilenmesiyle yeni sunucu tarafı alıştırma kayıt yoluna geçilmelidir.
 3. PR #64 ve ona bağlı sosyal değişiklikleri test edilmiş sırayla birleştir; doğrudan `main` push yapma. Otomatik Vercel üretim yayınının doğru commit’te hazır olduğunu ve ana alan adını doğrula.
 4. Gerçek öğrenci ve hoca hesaplarında iki ayrı dersin mesajlarının ayrıldığını, yalnızca açılan konuşmanın rozetinin azaldığını, opt-in yazıyor göstergesini, karşılıklı notları, dolu saatte eski rezervasyonun korunmasını ve davetsiz kişinin odaya giremediğini doğrula.
