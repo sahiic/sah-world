@@ -1823,3 +1823,302 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] .qc-v2 .quran-companion-tabs button.active{color:#5ec99e;background:rgba(0,155,119,.15)}
 [data-theme="dark"] .qc-v2 .qc-progress-preview,[data-theme="dark"] .qc-v2 .qc-weekly-summary,[data-theme="dark"] .qc-v2 .qc-social-card{background:#141b2f;border-color:rgba(0,155,119,.12)}
 
+/* ═══════════════════════════════════════════════════════════
+   AWARENESS PLATFORM V2 — Community, Boycott, Missions, Levels
+   ═══════════════════════════════════════════════════════════ */
+
+/* --- Route bar right side (level + progress) --- */
+.awareness-route-bar-right{display:flex;align-items:center;gap:16px}
+
+/* --- Community Impact Dashboard --- */
+.awareness-community-impact{margin:0 -1px 12px;padding:18px 24px;border-radius:20px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);box-shadow:0 6px 24px rgba(0,60,45,.06)}
+.awareness-community-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--awareness-accent);font-size:9px;font-weight:850;letter-spacing:.14em}
+.awareness-community-header .app-icon{font-size:16px}
+.awareness-community-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.awareness-community-stat{padding:14px 12px;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:#f8f6f4}
+.awareness-stat-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#1a1416,var(--awareness-accent,#9f1239));font-size:16px}
+.awareness-community-stat strong{font-size:20px;font-weight:800;letter-spacing:-.03em;color:#1a1416}
+.awareness-community-stat small{font-size:8px;color:#78696e;font-weight:700;letter-spacing:.04em}
+[data-theme="dark"] .awareness-community-impact{background:rgba(20,17,19,.92);box-shadow:0 6px 24px rgba(0,0,0,.2)}
+[data-theme="dark"] .awareness-community-stat{background:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-community-stat strong{color:#f0eaed}
+@media(max-width:620px){.awareness-community-stats{grid-template-columns:repeat(2,1fr)}.awareness-community-impact{padding:14px 16px;margin:0 0 10px}}
+
+/* --- Weekly Missions --- */
+.awareness-missions{margin:0 0 20px;padding:22px 24px;border-radius:20px;background:#fff;box-shadow:0 6px 24px rgba(55,34,42,.06)}
+.awareness-missions-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.awareness-missions-header>div:first-child{display:flex;align-items:center;gap:10px}
+.awareness-missions-header span{color:var(--awareness-accent);font-size:9px;font-weight:850;letter-spacing:.12em}
+.awareness-missions-header small{color:#8a7f83;font-size:9px}
+.awareness-missions-progress{position:relative;width:80px;height:6px;border-radius:99px;background:rgba(0,0,0,.06);overflow:hidden}
+.awareness-missions-progress>span{position:absolute;inset:0;border-radius:99px;background:var(--awareness-accent);transition:width .4s ease}
+.awareness-missions-progress>small{position:absolute;right:-28px;top:-5px;font-size:9px;font-weight:800;color:#5a5055}
+.awareness-missions-list{display:grid;gap:8px}
+.awareness-mission-card{padding:14px 16px;border-radius:14px;display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:12px;background:#f9f7f5;transition:background .2s}
+.awareness-mission-card.is-done{background:#f0faf4}
+.awareness-mission-card.is-celebrating{animation:awareness-celebrate .5s ease}
+@keyframes awareness-celebrate{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.awareness-mission-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--awareness-accent);background:color-mix(in srgb,var(--awareness-accent) 10%,transparent);font-size:17px}
+.awareness-mission-body{min-width:0}
+.awareness-mission-body h4{margin:0;font-size:12px;font-weight:750;color:#1a1416}
+.awareness-mission-body p{margin:3px 0 0;font-size:9px;color:#786d71;line-height:1.5}
+.awareness-mission-body small{display:flex;align-items:center;gap:4px;margin-top:4px;color:var(--awareness-accent);font-size:8px;font-weight:800}
+.awareness-mission-check{width:38px;height:38px;border:0;border-radius:10px;display:grid;place-items:center;color:#b5a9ae;background:transparent;font-size:22px;cursor:pointer;transition:color .2s}
+.awareness-mission-check.done{color:#059669}
+.awareness-mission-check:not(.done):hover{color:var(--awareness-accent)}
+[data-theme="dark"] .awareness-missions{background:#1a1416;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+[data-theme="dark"] .awareness-mission-card{background:rgba(255,255,255,.05)}
+[data-theme="dark"] .awareness-mission-card.is-done{background:rgba(5,150,105,.1)}
+[data-theme="dark"] .awareness-mission-body h4{color:#f0eaed}
+[data-theme="dark"] .awareness-mission-body p{color:#a89ca0}
+
+/* --- Boycott Guide --- */
+.awareness-boycott{padding:clamp(32px,5vw,64px) clamp(16px,3vw,48px);border-radius:0 0 24px 24px;background:linear-gradient(150deg,#f8f5f6,#fff)}
+.awareness-boycott-header{max-width:700px;margin-bottom:32px}
+.awareness-boycott-header>span{color:var(--awareness-accent);font-size:9px;font-weight:850;letter-spacing:.18em}
+.awareness-boycott-header h2{margin:12px 0;font:700 clamp(28px,4vw,48px)/1.05 Georgia,serif;letter-spacing:-.04em}
+.awareness-boycott-header p{color:#786d71;font-size:12px;line-height:1.7}
+.awareness-boycott-weekly{padding:20px 24px;border-radius:18px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;background:color-mix(in srgb,var(--awareness-accent) 6%,#fff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--awareness-accent) 12%,transparent)}
+.awareness-boycott-weekly>span{font-size:8px;font-weight:850;color:var(--awareness-accent);letter-spacing:.12em;display:flex;align-items:center;gap:6px}
+.awareness-boycott-weekly>strong{font-size:16px;font-weight:800;color:#1a1416}
+.awareness-boycott-weekly>p{flex:1 1 300px;color:#786d71;font-size:10px;line-height:1.6;margin:0}
+.awareness-boycott-alts{display:flex;flex-wrap:wrap;gap:6px}
+.awareness-alt-chip{padding:5px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:4px;color:#047857;background:#ecfdf5;font-size:9px;font-weight:700}
+.awareness-boycott-progress{margin-bottom:20px}
+.awareness-boycott-bar{height:8px;border-radius:99px;background:rgba(0,0,0,.06);overflow:hidden}
+.awareness-boycott-bar>span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--awareness-accent),#047857);transition:width .5s ease}
+.awareness-boycott-progress>small{display:block;margin-top:6px;color:#8a7f83;font-size:9px;font-weight:700}
+.awareness-boycott-controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.awareness-boycott-search{position:relative;flex:1 1 250px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:#f4f2f0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+.awareness-boycott-search>.app-icon{color:#8a7f83;font-size:16px}
+.awareness-boycott-search input{flex:1;border:0;background:transparent;font-size:12px;color:#1a1416;outline:none}
+.awareness-boycott-search button{border:0;background:transparent;color:#8a7f83;cursor:pointer;padding:2px}
+.awareness-boycott-cats{display:flex;flex-wrap:wrap;gap:6px}
+.awareness-boycott-cats button{padding:7px 12px;border:0;border-radius:10px;display:flex;align-items:center;gap:5px;color:#5a5055;background:#f4f2f0;font-size:9px;font-weight:750;cursor:pointer;transition:all .15s}
+.awareness-boycott-cats button.active{color:#fff;background:var(--awareness-accent)}
+.awareness-boycott-cats button:hover:not(.active){background:#ebe8e5}
+.awareness-boycott-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.awareness-boycott-card{padding:20px;border-radius:18px;background:#fff;box-shadow:0 4px 18px rgba(55,34,42,.06),inset 0 0 0 1px rgba(0,0,0,.04);transition:box-shadow .2s}
+.awareness-boycott-card:hover{box-shadow:0 8px 28px rgba(55,34,42,.1),inset 0 0 0 1px rgba(0,0,0,.06)}
+.awareness-boycott-card.is-boycotting{box-shadow:0 4px 18px rgba(5,150,105,.1),inset 0 0 0 2px #059669}
+.awareness-boycott-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.awareness-boycott-card-top small{display:flex;align-items:center;gap:4px;color:#8a7f83;font-size:8px;font-weight:800;letter-spacing:.08em}
+.awareness-boycott-card-top h3{margin:6px 0 2px;font-size:16px;font-weight:800;color:#1a1416}
+.awareness-boycott-parent{color:#8a7f83;font-size:9px}
+.awareness-boycott-toggle{padding:8px 14px;border:0;border-radius:10px;display:flex;align-items:center;gap:6px;font-size:9px;font-weight:750;cursor:pointer;transition:all .2s;white-space:nowrap}
+.awareness-boycott-toggle:not(.active){color:#5a5055;background:#f4f2f0}
+.awareness-boycott-toggle.active{color:#fff;background:#059669}
+.awareness-boycott-toggle:hover:not(.active){background:#ebe8e5}
+.awareness-boycott-reason{margin:10px 0;color:#786d71;font-size:10px;line-height:1.6}
+.awareness-boycott-expand{border:0;background:transparent;color:var(--awareness-accent);font-size:9px;font-weight:750;cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 0}
+.awareness-boycott-alts-detail{overflow:hidden;padding-top:10px}
+.awareness-alt-label{display:flex;align-items:center;gap:5px;margin-bottom:8px;color:#047857;font-size:8px;font-weight:850;letter-spacing:.1em}
+.awareness-alt-row{padding:8px 12px;border-radius:10px;margin-bottom:4px;background:#f0fdf4}
+.awareness-alt-row strong{font-size:11px;color:#065f46}
+.awareness-alt-row small{display:block;color:#6b7f77;font-size:8px;margin-top:2px}
+.awareness-boycott-src{display:flex;align-items:center;gap:5px;margin-top:10px;color:#8a7f83;font-size:8px;text-decoration:none}
+.awareness-boycott-src:hover{color:var(--awareness-accent)}
+.awareness-boycott-empty{grid-column:1/-1;padding:64px 0;text-align:center;color:#8a7f83}
+.awareness-boycott-empty .app-icon{font-size:32px;margin-bottom:12px}
+.awareness-boycott-source{margin-top:24px;padding:16px;border-radius:14px;display:flex;gap:10px;color:#74696d;background:#f9f7f5}
+.awareness-boycott-source .app-icon:first-child{color:var(--awareness-accent);font-size:18px}
+.awareness-boycott-source strong{font-size:10px;display:block}
+.awareness-boycott-source a{color:var(--awareness-accent);font-size:9px;text-decoration:none;display:flex;align-items:center;gap:4px}
+[data-theme="dark"] .awareness-boycott{background:linear-gradient(150deg,#14111a,#1a1416)}
+[data-theme="dark"] .awareness-boycott-header h2{color:#f0eaed}
+[data-theme="dark"] .awareness-boycott-weekly{background:rgba(255,255,255,.04)}
+[data-theme="dark"] .awareness-boycott-weekly strong{color:#f0eaed}
+[data-theme="dark"] .awareness-boycott-search{background:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-boycott-search input{color:#f0eaed}
+[data-theme="dark"] .awareness-boycott-cats button:not(.active){background:rgba(255,255,255,.06);color:#a89ca0}
+[data-theme="dark"] .awareness-boycott-card{background:#1e1a1c;box-shadow:0 4px 18px rgba(0,0,0,.15)}
+[data-theme="dark"] .awareness-boycott-card-top h3{color:#f0eaed}
+[data-theme="dark"] .awareness-boycott-toggle:not(.active){background:rgba(255,255,255,.06);color:#a89ca0}
+[data-theme="dark"] .awareness-alt-row{background:rgba(5,150,105,.1)}
+[data-theme="dark"] .awareness-alt-row strong{color:#6ee7b7}
+[data-theme="dark"] .awareness-boycott-source{background:rgba(255,255,255,.04)}
+[data-theme="dark"] .awareness-alt-chip{background:rgba(5,150,105,.15);color:#6ee7b7}
+[data-theme="dark"] .awareness-boycott-bar{background:rgba(255,255,255,.08)}
+@media(max-width:620px){.awareness-boycott{padding:28px 14px}.awareness-boycott-grid{grid-template-columns:1fr}.awareness-boycott-controls{flex-direction:column}.awareness-boycott-cats{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}}
+
+/* --- Awareness Level Badge --- */
+.awareness-level-badge{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:12px;background:color-mix(in srgb,var(--awareness-accent) 8%,transparent)}
+.awareness-level-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#fff;background:var(--awareness-accent);font-size:15px}
+.awareness-level-info{min-width:0}
+.awareness-level-info>strong{display:flex;flex-direction:column;gap:1px;font-size:11px;color:#1a1416}
+.awareness-level-info>strong>small{color:var(--awareness-accent);font-size:7px;font-weight:850;letter-spacing:.1em}
+.awareness-level-progress{margin-top:4px}
+.awareness-level-bar{height:4px;border-radius:99px;background:rgba(0,0,0,.06);overflow:hidden}
+.awareness-level-bar>span{display:block;height:100%;border-radius:99px;background:var(--awareness-accent)}
+.awareness-level-progress>small{display:block;margin-top:2px;font-size:7px;color:#8a7f83}
+.awareness-level-max{color:#059669;font-size:8px;font-weight:700}
+[data-theme="dark"] .awareness-level-badge{background:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-level-info>strong{color:#f0eaed}
+[data-theme="dark"] .awareness-level-bar{background:rgba(255,255,255,.1)}
+@media(max-width:620px){.awareness-level-badge{padding:6px 10px}.awareness-level-icon{width:26px;height:26px;font-size:13px}.awareness-route-bar-right{flex-wrap:wrap;gap:8px}}
+
+/* --- Compassion Reset --- */
+.awareness-compassion-reset{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgba(251,249,246,.96);backdrop-filter:blur(20px)}
+.awareness-compassion-inner{max-width:480px;padding:48px 32px;text-align:center}
+.awareness-compassion-icon{display:inline-flex;width:64px;height:64px;border-radius:20px;place-items:center;justify-content:center;color:var(--awareness-accent);background:color-mix(in srgb,var(--awareness-accent) 10%,transparent);font-size:28px;margin-bottom:24px}
+.awareness-compassion-inner h3{margin:0 0 12px;font:700 28px/1.2 Georgia,serif;color:#1a1416;letter-spacing:-.03em}
+.awareness-compassion-inner>p{margin:0 0 32px;color:#786d71;font-size:13px;line-height:1.7}
+.awareness-breath-circle{display:grid;place-items:center;margin-bottom:32px}
+.awareness-breath-ring{width:120px;height:120px;border-radius:50%;border:3px solid var(--awareness-accent);opacity:.5}
+.awareness-breath-circle>span{position:absolute;color:var(--awareness-accent);font-size:13px;font-weight:700}
+.awareness-compassion-actions{display:flex;flex-direction:column;gap:10px;align-items:center}
+.awareness-compassion-breath{padding:12px 20px;border:1px solid rgba(0,0,0,.08);border-radius:12px;background:#fff;color:#5a5055;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px}
+.awareness-compassion-continue{padding:12px 24px;border:0;border-radius:12px;background:var(--awareness-accent);color:#fff;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px}
+[data-theme="dark"] .awareness-compassion-reset{background:rgba(20,17,19,.96)}
+[data-theme="dark"] .awareness-compassion-inner h3{color:#f0eaed}
+[data-theme="dark"] .awareness-compassion-inner>p{color:#a89ca0}
+[data-theme="dark"] .awareness-compassion-breath{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08);color:#a89ca0}
+
+/* --- Timeline --- */
+.awareness-timeline{padding:20px;margin:12px 0;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06)}
+.awareness-timeline-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.awareness-timeline-header svg{width:24px;height:24px;color:var(--awareness-accent)}
+.awareness-timeline-header h3{margin:0;font-size:16px;font-weight:800;color:#1a1416}
+.awareness-timeline-header p{margin:2px 0 0;font-size:11px;color:#786d71}
+.awareness-timeline-track{position:relative;display:flex;overflow-x:auto;gap:0;padding:24px 0 12px;scrollbar-width:thin}
+.awareness-timeline-line{position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(0,0,0,.06)}
+.awareness-timeline-node{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 12px;border:0;background:none;cursor:pointer;min-width:80px;position:relative;z-index:1;flex-shrink:0}
+.awareness-timeline-year{font-size:11px;font-weight:800;color:var(--awareness-accent)}
+.awareness-timeline-dot{width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid rgba(0,0,0,.1);display:grid;place-items:center;transition:all .2s}
+.awareness-timeline-dot svg{width:14px;height:14px;color:#786d71}
+.awareness-timeline-node.active .awareness-timeline-dot{background:var(--awareness-accent);border-color:var(--awareness-accent)}
+.awareness-timeline-node.active .awareness-timeline-dot svg{color:#fff}
+.awareness-timeline-label{font-size:10px;color:#786d71;text-align:center;max-width:90px;line-height:1.3}
+.awareness-timeline-detail{padding:16px 20px;margin:8px 0;border-radius:12px;background:color-mix(in srgb,var(--awareness-accent) 5%,#fff);border:1px solid color-mix(in srgb,var(--awareness-accent) 15%,transparent);overflow:hidden}
+.awareness-timeline-detail header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.awareness-timeline-detail-badge{font-size:10px;font-weight:800;color:var(--awareness-accent);display:flex;align-items:center;gap:6px}
+.awareness-timeline-detail-badge svg{width:14px;height:14px}
+.awareness-timeline-detail header button{width:28px;height:28px;border:0;background:none;cursor:pointer;color:#786d71;display:grid;place-items:center}
+.awareness-timeline-detail h4{margin:0 0 8px;font-size:15px;font-weight:700;color:#1a1416}
+.awareness-timeline-detail p{margin:0 0 12px;font-size:12px;color:#5a5055;line-height:1.6}
+.awareness-timeline-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.awareness-timeline-legend-item{font-size:10px;font-weight:700;color:#786d71;display:flex;align-items:center;gap:4px}
+.awareness-timeline-legend-item svg{width:12px;height:12px}
+[data-theme="dark"] .awareness-timeline{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-timeline-header h3{color:#f0eaed}
+[data-theme="dark"] .awareness-timeline-header p{color:#a89ca0}
+[data-theme="dark"] .awareness-timeline-line{background:rgba(255,255,255,.08)}
+[data-theme="dark"] .awareness-timeline-dot{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .awareness-timeline-dot svg{color:#a89ca0}
+[data-theme="dark"] .awareness-timeline-label{color:#a89ca0}
+[data-theme="dark"] .awareness-timeline-detail{background:color-mix(in srgb,var(--awareness-accent) 8%,#1a1416);border-color:color-mix(in srgb,var(--awareness-accent) 15%,transparent)}
+[data-theme="dark"] .awareness-timeline-detail h4{color:#f0eaed}
+[data-theme="dark"] .awareness-timeline-detail p{color:#a89ca0}
+
+/* --- Prayer Wall --- */
+.awareness-prayer-wall{padding:20px;margin:12px 0;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06)}
+.awareness-prayer-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:16px}
+.awareness-prayer-header>div{display:flex;align-items:center;gap:8px}
+.awareness-prayer-header h3{margin:0;font-size:16px;font-weight:800;color:#1a1416}
+.awareness-prayer-header svg{width:22px;height:22px;color:var(--awareness-accent)}
+.awareness-prayer-header>p{width:100%;margin:0;font-size:11px;color:#786d71}
+.awareness-prayer-add{margin-left:auto;padding:8px 14px;border:1px solid rgba(0,0,0,.08);border-radius:10px;background:#fff;color:#5a5055;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+.awareness-prayer-form{padding:16px;border-radius:12px;background:color-mix(in srgb,var(--awareness-accent) 4%,#fff);border:1px solid rgba(0,0,0,.06);margin-bottom:16px;overflow:hidden}
+.awareness-prayer-form textarea{width:100%;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:12px;font-size:13px;resize:none;font-family:inherit;background:#fff;color:#1a1416}
+.awareness-prayer-form-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.awareness-prayer-form-footer small{color:#786d71;font-size:11px}
+.awareness-prayer-form-footer button{padding:8px 16px;border:0;border-radius:10px;background:var(--awareness-accent);color:#fff;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px}
+.awareness-prayer-form-footer button:disabled{opacity:.4;cursor:default}
+.awareness-prayer-list{display:grid;gap:10px}
+.awareness-prayer-card{padding:16px;border-radius:12px;background:rgba(0,0,0,.015);border:1px solid rgba(0,0,0,.04)}
+.awareness-prayer-card p{margin:0 0 10px;font:400 13px/1.6 Georgia,serif;color:#2a2327}
+.awareness-prayer-card footer{display:flex;justify-content:space-between;align-items:center}
+.awareness-prayer-card footer small{color:#a89ca0;font-size:10px}
+.awareness-amin-btn{padding:6px 12px;border:1px solid rgba(0,0,0,.06);border-radius:20px;background:#fff;color:#786d71;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s}
+.awareness-amin-btn svg{width:12px;height:12px}
+.awareness-amin-btn.amined{background:color-mix(in srgb,var(--awareness-accent) 10%,#fff);border-color:var(--awareness-accent);color:var(--awareness-accent)}
+.awareness-amin-btn:disabled{cursor:default}
+.awareness-prayer-empty{text-align:center;color:#a89ca0;font-size:12px;padding:24px 0}
+[data-theme="dark"] .awareness-prayer-wall{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-prayer-header h3{color:#f0eaed}
+[data-theme="dark"] .awareness-prayer-header>p{color:#a89ca0}
+[data-theme="dark"] .awareness-prayer-add{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08);color:#a89ca0}
+[data-theme="dark"] .awareness-prayer-form{background:color-mix(in srgb,var(--awareness-accent) 6%,#1a1416);border-color:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-prayer-form textarea{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);color:#f0eaed}
+[data-theme="dark"] .awareness-prayer-card{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.04)}
+[data-theme="dark"] .awareness-prayer-card p{color:#ddd6d9}
+[data-theme="dark"] .awareness-amin-btn{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06);color:#a89ca0}
+[data-theme="dark"] .awareness-amin-btn.amined{background:color-mix(in srgb,var(--awareness-accent) 15%,#1a1416)}
+
+/* --- Witness Wall --- */
+.awareness-witness-wall{padding:20px;margin:12px 0;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06)}
+.awareness-witness-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.awareness-witness-header svg{width:24px;height:24px;color:var(--awareness-accent);flex-shrink:0;margin-top:2px}
+.awareness-witness-header h3{margin:0;font-size:16px;font-weight:800;color:#1a1416}
+.awareness-witness-header p{margin:2px 0 0;font-size:11px;color:#786d71}
+.awareness-witness-grid{display:grid;gap:10px}
+.awareness-witness-card{padding:16px;border-radius:12px;background:rgba(0,0,0,.015);border:1px solid rgba(0,0,0,.04);cursor:pointer;transition:box-shadow .2s}
+.awareness-witness-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.awareness-witness-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:color-mix(in srgb,var(--awareness-accent) 8%,#fff);color:var(--awareness-accent);font-size:9px;font-weight:800;text-transform:uppercase;margin-bottom:8px}
+.awareness-witness-badge svg{width:11px;height:11px}
+.awareness-witness-card blockquote{margin:0 0 8px;font:italic 13px/1.6 Georgia,serif;color:#2a2327}
+.awareness-witness-card cite{font-size:10px;color:#786d71;font-style:normal;font-weight:600}
+.awareness-source-link{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:6px 12px;border-radius:8px;background:color-mix(in srgb,var(--awareness-accent) 6%,#fff);color:var(--awareness-accent);font-size:10px;font-weight:700;text-decoration:none}
+.awareness-source-link svg{width:12px;height:12px}
+[data-theme="dark"] .awareness-witness-wall{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-witness-header h3{color:#f0eaed}
+[data-theme="dark"] .awareness-witness-header p{color:#a89ca0}
+[data-theme="dark"] .awareness-witness-card{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.04)}
+[data-theme="dark"] .awareness-witness-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.15)}
+[data-theme="dark"] .awareness-witness-badge{background:color-mix(in srgb,var(--awareness-accent) 12%,#1a1416)}
+[data-theme="dark"] .awareness-witness-card blockquote{color:#ddd6d9}
+[data-theme="dark"] .awareness-witness-card cite{color:#a89ca0}
+[data-theme="dark"] .awareness-source-link{background:color-mix(in srgb,var(--awareness-accent) 10%,#1a1416)}
+
+/* --- 30-Day Journey --- */
+.awareness-journey{padding:20px;margin:12px 0;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06)}
+.awareness-journey-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:16px}
+.awareness-journey-header>div{display:flex;align-items:center;gap:8px}
+.awareness-journey-header h3{margin:0;font-size:16px;font-weight:800;color:#1a1416}
+.awareness-journey-header svg{width:24px;height:24px;color:var(--awareness-accent)}
+.awareness-journey-stats{margin-left:auto;display:flex;gap:16px;font-size:11px;color:#786d71}
+.awareness-journey-stats strong{color:var(--awareness-accent)}
+.awareness-journey-progress{margin-bottom:16px}
+.awareness-journey-bar{height:6px;border-radius:3px;background:rgba(0,0,0,.06);overflow:hidden}
+.awareness-journey-bar>span{display:block;height:100%;border-radius:3px;background:var(--awareness-accent)}
+.awareness-journey-progress small{font-size:10px;color:#786d71;margin-top:4px;display:block}
+.awareness-journey-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.awareness-journey-day{width:100%;aspect-ratio:1;border:1px solid rgba(0,0,0,.06);border-radius:8px;background:#fff;cursor:pointer;display:grid;place-items:center;position:relative;transition:all .2s}
+.awareness-journey-day-num{font-size:12px;font-weight:700;color:#786d71}
+.awareness-journey-day svg{position:absolute;top:2px;right:2px;width:10px;height:10px;color:var(--awareness-accent)}
+.awareness-journey-day.done{background:color-mix(in srgb,var(--cat-color,var(--awareness-accent)) 8%,#fff);border-color:var(--cat-color,var(--awareness-accent))}
+.awareness-journey-day.done .awareness-journey-day-num{color:var(--cat-color,var(--awareness-accent))}
+.awareness-journey-day.current{border-color:var(--awareness-accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--awareness-accent) 20%,transparent)}
+.awareness-journey-day.current .awareness-journey-day-num{color:var(--awareness-accent);font-weight:800}
+.awareness-journey-day.locked{opacity:.35;cursor:default}
+.awareness-journey-detail{padding:16px 20px;margin:12px 0;border-radius:12px;background:color-mix(in srgb,var(--cat-color,var(--awareness-accent)) 5%,#fff);border:1px solid color-mix(in srgb,var(--cat-color,var(--awareness-accent)) 15%,transparent)}
+.awareness-journey-detail header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.awareness-journey-detail header span{font-size:10px;font-weight:800;color:var(--cat-color,var(--awareness-accent));text-transform:uppercase}
+.awareness-journey-detail header button{width:28px;height:28px;border:0;background:none;cursor:pointer;color:#786d71;display:grid;place-items:center}
+.awareness-journey-detail h4{margin:0 0 8px;font-size:15px;font-weight:700;color:#1a1416}
+.awareness-journey-detail p{margin:0 0 12px;font-size:12px;color:#5a5055;line-height:1.6}
+.awareness-journey-detail footer{display:flex;justify-content:space-between;align-items:center}
+.awareness-journey-xp{font-size:12px;font-weight:800;color:var(--cat-color,var(--awareness-accent))}
+.awareness-journey-complete{padding:8px 16px;border:0;border-radius:10px;background:var(--awareness-accent);color:#fff;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px}
+.awareness-journey-done{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--awareness-accent)}
+.awareness-journey-categories{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+.awareness-journey-categories span{padding:3px 8px;border-radius:6px;font-size:9px;font-weight:800;color:var(--cat-color);background:color-mix(in srgb,var(--cat-color) 8%,#fff)}
+[data-theme="dark"] .awareness-journey{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-journey-header h3{color:#f0eaed}
+[data-theme="dark"] .awareness-journey-stats{color:#a89ca0}
+[data-theme="dark"] .awareness-journey-bar{background:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-journey-progress small{color:#a89ca0}
+[data-theme="dark"] .awareness-journey-day{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+[data-theme="dark"] .awareness-journey-day-num{color:#a89ca0}
+[data-theme="dark"] .awareness-journey-day.done{background:color-mix(in srgb,var(--cat-color,var(--awareness-accent)) 12%,#1a1416)}
+[data-theme="dark"] .awareness-journey-detail{background:color-mix(in srgb,var(--cat-color,var(--awareness-accent)) 8%,#1a1416);border-color:color-mix(in srgb,var(--cat-color,var(--awareness-accent)) 15%,transparent)}
+[data-theme="dark"] .awareness-journey-detail h4{color:#f0eaed}
+[data-theme="dark"] .awareness-journey-detail p{color:#a89ca0}
+[data-theme="dark"] .awareness-journey-categories span{background:color-mix(in srgb,var(--cat-color) 12%,#1a1416)}
+@media(max-width:620px){
+  .awareness-timeline-track{gap:0;padding:16px 0 8px}
+  .awareness-timeline-node{min-width:64px;padding:6px 8px}
+  .awareness-journey-grid{grid-template-columns:repeat(6,1fr)}
+  .awareness-witness-grid{gap:8px}
+}
+

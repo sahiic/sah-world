@@ -21,8 +21,17 @@ import {
   type Geography,
   type QuizOption,
 } from "@/lib/awareness";
+import CommunityImpact from "@/components/awareness/CommunityImpact";
+import WeeklyMissions from "@/components/awareness/WeeklyMissions";
+import BoycottGuide from "@/components/awareness/BoycottGuide";
+import AwarenessLevelBadge from "@/components/awareness/AwarenessLevelBadge";
+import AwarenessTimeline from "@/components/awareness/AwarenessTimeline";
+import PrayerWall from "@/components/awareness/PrayerWall";
+import WitnessWall from "@/components/awareness/WitnessWall";
+import ThirtyDayJourney from "@/components/awareness/ThirtyDayJourney";
+import CompassionReset from "@/components/awareness/CompassionReset";
 
-type Panel = "story" | "actions" | "quiz";
+type Panel = "story" | "actions" | "quiz" | "boycott" | "journey";
 type EngagementType = "section_read" | "action_opened" | "quiz_completed" | "narrative_completed" | "shared";
 const READ_REWARD = 15;
 const SHARE_REWARD = 5;
@@ -38,12 +47,17 @@ const shareSlug = (geography: Geography) => geography === "filistin" ? "filistin
 export default function AwarenessView({ onNavigate }: { onNavigate: (view: string) => void }) {
   const user = useAuthStore((state) => state.session?.access_token === "mock-token" ? null : state.session?.user ?? null);
   const addXP = useJourneyStore((state) => state.addXP);
+  const xp = useJourneyStore((state) => state.xp);
   const [geography, setGeography] = useState<Geography>("filistin");
   const [panel, setPanel] = useState<Panel>("story");
   const [content, setContent] = useState(AWARENESS_CONTENT_FALLBACK);
   const [questions, setQuestions] = useState(AWARENESS_QUIZ_FALLBACK);
   const [completedQuizzes, setCompletedQuizzes] = useState<Set<Geography>>(new Set());
   const [eventKeys, setEventKeys] = useState<Set<string>>(new Set());
+  const [userBoycotts, setUserBoycotts] = useState<Set<string>>(new Set());
+  const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
+  const [journeyDays, setJourneyDays] = useState<Set<number>>(new Set());
+  const [showCompassion, setShowCompassion] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -172,6 +186,46 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
     }
   }, [awardOnce, geography, geographyItems.length, readCount]);
 
+  const toggleBoycott = useCallback((itemId: string) => {
+    setUserBoycotts((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) next.delete(itemId); else next.add(itemId);
+      try { localStorage.setItem("sah:boycotts", JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }, []);
+
+  const completeMission = useCallback((missionId: string) => {
+    setCompletedMissions((prev) => {
+      const next = new Set(prev).add(missionId);
+      try { localStorage.setItem("sah:missions", JSON.stringify([...next])); } catch {}
+      return next;
+    });
+    addXP(10);
+    void recordXpEvent({ sourceType: "awareness_mission", sourceId: missionId, label: "Haftalık görev tamamlandı", amount: 10 });
+  }, [addXP]);
+
+  const completeJourneyDay = useCallback((day: number, xpAmount: number) => {
+    setJourneyDays((prev) => {
+      const next = new Set(prev).add(day);
+      try { localStorage.setItem("sah:journey-days", JSON.stringify([...next])); } catch {}
+      return next;
+    });
+    addXP(xpAmount);
+    void recordXpEvent({ sourceType: "awareness_journey", sourceId: `day-${day}`, label: `30 günlük yolculuk: Gün ${day}`, amount: xpAmount });
+  }, [addXP]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sah:boycotts");
+      if (saved) setUserBoycotts(new Set(JSON.parse(saved)));
+      const missions = localStorage.getItem("sah:missions");
+      if (missions) setCompletedMissions(new Set(JSON.parse(missions)));
+      const journey = localStorage.getItem("sah:journey-days");
+      if (journey) setJourneyDays(new Set(JSON.parse(journey)));
+    } catch {}
+  }, []);
+
   const changeGeography = (next: Geography) => {
     setGeography(next);
     setPanel("story");
@@ -188,8 +242,13 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
     <div className={`awareness-experience awareness-${geography}`} style={{ "--awareness-accent": meta.accent } as React.CSSProperties}>
       <header className="awareness-route-bar">
         <div><span className="awareness-kicker"><AppIcon name="world-heart" /> HAFIZA · HAKİKAT · SORUMLULUK</span><h1>Mazlum Coğrafyalar</h1></div>
-        <div className="awareness-route-progress" aria-label="Okuma ilerlemesi"><span><i style={{ width: `${(readCount / Math.max(geographyItems.length, 1)) * 100}%` }} /></span><small>{readCount}/{geographyItems.length} bölüm</small></div>
+        <div className="awareness-route-bar-right">
+          <AwarenessLevelBadge xp={xp} />
+          <div className="awareness-route-progress" aria-label="Okuma ilerlemesi"><span><i style={{ width: `${(readCount / Math.max(geographyItems.length, 1)) * 100}%` }} /></span><small>{readCount}/{geographyItems.length} bölüm</small></div>
+        </div>
       </header>
+
+      <CommunityImpact />
 
       <nav className="awareness-geography-tabs" aria-label="Coğrafya seçimi">
         {(Object.keys(GEOGRAPHY_META) as Geography[]).map((key) => (
@@ -203,20 +262,34 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
       <nav className="awareness-mode-tabs" aria-label="İçerik görünümü">
         <button className={panel === "story" ? "active" : ""} onClick={() => setPanel("story")}><AppIcon name="route" /> Anlatı</button>
         <button className={panel === "actions" ? "active" : ""} onClick={() => setPanel("actions")}><AppIcon name="heart-handshake" /> Ne yapabiliriz?</button>
+        <button className={panel === "boycott" ? "active" : ""} onClick={() => setPanel("boycott")}><AppIcon name="ban" /> Boykot Rehberi</button>
         <button className={panel === "quiz" ? "active" : ""} onClick={() => setPanel("quiz")}><AppIcon name="bulb" /> Bilgi testi</button>
+        <button className={panel === "journey" ? "active" : ""} onClick={() => setPanel("journey")}><AppIcon name="road" /> 30 Gün</button>
       </nav>
 
-      {panel === "story" && <ScrollyNarrative key={geography} geography={geography} items={geographyItems} eventKeys={eventKeys}
-        onRead={(item) => void logEngagement("section_read", geography, item.id, { source_url: item.sourceUrl })}
-        onResolve={() => setPanel("actions")} />}
+      {panel === "story" && (
+        <>
+          <WeeklyMissions completedMissions={completedMissions} onComplete={completeMission} />
+          <AwarenessTimeline geography={geography} />
+          <ScrollyNarrative key={geography} geography={geography} items={geographyItems} eventKeys={eventKeys}
+            onRead={(item) => void logEngagement("section_read", geography, item.id, { source_url: item.sourceUrl })}
+            onResolve={() => setShowCompassion(true)} />
+          <WitnessWall geography={geography} />
+          <PrayerWall geography={geography} />
+        </>
+      )}
       {panel === "actions" && <ActionPanel geography={geography} onQuiz={() => setPanel("quiz")} onPrayer={openPrayer}
         onAction={(href) => void logEngagement("action_opened", geography, href, { target_url: href })}
         onShared={(channel) => void awardOnce("shared", geography, SHARE_REWARD, `${meta.name} kaynaklı farkındalık paylaşımı`, { channel })} />}
+      {panel === "boycott" && <BoycottGuide userBoycotts={userBoycotts} onToggleBoycott={toggleBoycott} />}
       {panel === "quiz" && <Quiz geography={geography}
         questions={questions.filter((item) => item.geography === geography).sort((a, b) => a.orderIndex - b.orderIndex)}
         rewarded={completedQuizzes.has(geography)}
         onRewarded={() => setCompletedQuizzes((items) => new Set(items).add(geography))}
         onCompleted={(score) => void logEngagement("quiz_completed", geography, `quiz:${geography}`, { score })} />}
+      {panel === "journey" && <ThirtyDayJourney completedDays={journeyDays} onComplete={completeJourneyDay} />}
+
+      {showCompassion && <CompassionReset onContinue={() => { setShowCompassion(false); setPanel("actions"); }} />}
 
       <footer className="awareness-integrity-note"><AppIcon name="shield-check" /><div><strong>Kaynak zinciri görünür.</strong><p>Her olgusal cümlenin kaynağı aynı ekranda yer alır. Tanık ve kurum açıklamaları sahibine atfedilir; grafik görüntü kullanılmaz.</p></div></footer>
     </div>
