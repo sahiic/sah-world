@@ -37,10 +37,22 @@ import QuranAchievements from "@/components/quran/QuranAchievements";
 import QuranModal from "@/components/quran/QuranModal";
 import QuranTeacherProfile from "@/components/quran/QuranTeacherProfile";
 import QuranTeacherFeedback from "@/components/quran/QuranTeacherFeedback";
+import QuranChat from "@/components/quran/QuranChat";
+import QuranStudyGroup from "@/components/quran/QuranStudyGroup";
+import {
+  useQuranPresence,
+  type QuranPresenceState,
+} from "@/components/quran/useQuranPresence";
+import {
+  appointmentCalendar,
+  istanbulDay,
+  quranUnreadCounts,
+  quranWeek,
+} from "@/lib/quranSocial";
 import { useQuranSession } from "@/store/useQuranSession";
 import type {
   AppointmentRow,
-  ChatMessageRow,
+  QuranThreadSummary,
   HocaAvailabilityRow,
   HocaProfileRow,
   HocaTimeOffRow,
@@ -274,6 +286,162 @@ export default function QuranCompanionView({
   const recording = useRef(new Set<string>());
   const persistedResults = useRef(new Set<string>());
   const [schemaReady, setSchemaReady] = useState(false);
+  const [threads, setThreads] = useState<QuranThreadSummary[]>([]);
+  const [socialError, setSocialError] = useState("");
+  const [sharePresence, setSharePresence] = useState(false);
+  const presence = useQuranPresence(
+    [
+      ...matches.filter((m) => m.status === "accepted").map((m) => m.id),
+      ...appointments
+        .filter((a) => !["cancelled", "no_show"].includes(a.status))
+        .slice(0, 20)
+        .map((a) => a.id),
+    ],
+    userId,
+    isRealUser && sharePresence,
+  );
+  const unreadCounts = quranUnreadCounts(threads);
+  const loadLatest = useRef<(quiet?: boolean) => Promise<void>>(async () => {}),
+    flashLatest = useRef<(message: string) => void>(() => {});
+  const appointmentLatest = useRef(appointments);
+  const threadVersion = useRef(0);
+  const refreshThreads = useCallback(async () => {
+    if (!isRealUser) return;
+    const version = ++threadVersion.current;
+    const { data, error: e } = await supabase.rpc("get_quran_thread_summaries");
+    // Guard account changes without keeping any other account's private state.
+    if (
+      version !== threadVersion.current ||
+      useAuthStore.getState().user?.id !== userId
+    )
+      return;
+    if (e) {
+      setSocialError(
+        "Sohbet ve bildirim altyapısı henüz hazır değil. Eski kayıtların korunuyor.",
+      );
+      return;
+    }
+    setThreads(data ?? []);
+    setSocialError("");
+  }, [isRealUser, userId]);
+  useEffect(() => {
+    if (!isRealUser) return;
+    let active = true;
+    const initial = window.setTimeout(() => void refreshThreads(), 0);
+    let reloadTimer: ReturnType<typeof setTimeout> | undefined;
+    const refresh = () => {
+      if (!active) return;
+      if (reloadTimer) clearTimeout(reloadTimer);
+      reloadTimer = setTimeout(() => {
+        void refreshThreads();
+        void loadLatest.current(true);
+      }, 250);
+    };
+    const channel = ownedRealtimeChannel(supabase, `quran-social-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "chat_messages",
+          filter: `receiver_id=eq.${userId}`,
+        },
+        () => void refreshThreads(),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_messages",
+          filter: `sender_id=eq.${userId}`,
+        },
+        () => void refreshThreads(),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "quran_peer_matches",
+          filter: `helper_id=eq.${userId}`,
+        },
+        (payload) => {
+          const m = payload.new as QuranPeerMatchRow;
+          if (m.status === "pending") {
+            flashLatest.current("Yeni bir Kur'an kardeşliği isteği aldın.");
+            if (
+              typeof Notification !== "undefined" &&
+              Notification.permission === "granted"
+            )
+              new Notification("Kur'an Kardeşim", {
+                body: "Yeni bir eşleşme isteğin var.",
+                icon: "/favicon.ico",
+              });
+          }
+          refresh();
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "quran_peer_matches",
+          filter: `requester_id=eq.${userId}`,
+        },
+        (payload) => {
+          const m = payload.new as QuranPeerMatchRow;
+          if (m.status === "accepted")
+            flashLatest.current("Kur'an kardeşliği isteğin kabul edildi.");
+          refresh();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "appointments" },
+        (payload) => {
+          const a = payload.new as AppointmentRow,
+            old = appointmentLatest.current.find((x) => x.id === a.id);
+          if (!old && a.student_id !== userId) return;
+          if (old && old.status !== a.status)
+            flashLatest.current(`Randevun: ${STATUS_LABELS[a.status]}.`);
+          refresh();
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "quran_study_room_members",
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          refresh();
+          flashLatest.current("Çalışma odası davetlerin güncellendi.");
+        },
+      )
+      .subscribe();
+    const visible = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    document.addEventListener("visibilitychange", visible);
+    window.addEventListener("online", refresh);
+    const fallback = window.setInterval(visible, 30000);
+    return () => {
+      active = false;
+      // Invalidate pending requests on account/mode change or unmount.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      threadVersion.current++;
+      clearTimeout(initial);
+      if (reloadTimer) clearTimeout(reloadTimer);
+      clearInterval(fallback);
+      document.removeEventListener("visibilitychange", visible);
+      window.removeEventListener("online", refresh);
+      void supabase.removeChannel(channel);
+    };
+  }, [isRealUser, userId, refreshThreads]);
 
   const flash = (message: string) => {
     setNotice(message);
@@ -296,6 +464,9 @@ export default function QuranCompanionView({
       setAppointments([]);
       setNewBadges([]);
       setSchemaReady(false);
+      setThreads([]);
+      setSocialError("");
+      setSharePresence(false);
       persistedResults.current.clear();
     }
     if (pilotDemo || !isRealUser) {
@@ -463,6 +634,11 @@ export default function QuranCompanionView({
     setLoading(false);
   };
 
+  useEffect(() => {
+    loadLatest.current = load;
+    flashLatest.current = flash;
+    appointmentLatest.current = appointments;
+  });
   useEffect(() => {
     const timer = window.setTimeout(() => {
       void load();
@@ -715,9 +891,18 @@ export default function QuranCompanionView({
       id: "appointments",
       label: "Randevularım",
       icon: "calendar-check",
-      badge: upcoming.length || undefined,
+      badge: unreadCounts.appointments || undefined,
     },
-    { id: "peers", label: "Kur'an Kardeşi", icon: "heart-handshake" },
+    {
+      id: "peers",
+      label: "Kur'an Kardeşi",
+      icon: "heart-handshake",
+      badge:
+        unreadCounts.peers +
+          matches.filter(
+            (m) => m.direction === "received" && m.status === "pending",
+          ).length || undefined,
+    },
     { id: "study", label: "Çalışma Alanım", icon: "notebook" },
     { id: "achievements", label: "Başarımlarım", icon: "award" },
     ...(isHoca || isAdmin
@@ -762,10 +947,33 @@ export default function QuranCompanionView({
           >
             <AppIcon name={item.icon} />
             <span>{item.label}</span>
-            {item.badge && item.badge > 0 && <em>{item.badge}</em>}
+            {item.badge && item.badge > 0 && (
+              <em
+                className="qc-nav-badge"
+                aria-label={`${item.badge} okunmamış mesaj veya bekleyen istek`}
+              >
+                {item.badge > 99 ? "99+" : item.badge}
+              </em>
+            )}
           </button>
         ))}
       </nav>
+      {isRealUser && ["teachers", "appointments", "peers"].includes(tab) && (
+        <label className="qc-presence-preference">
+          <input
+            type="checkbox"
+            checked={sharePresence}
+            onChange={(e) => setSharePresence(e.target.checked)}
+          />
+          Çevrimiçi durumumu yalnızca eşleştiğim kişiler ve ders
+          katılımcılarıyla paylaş
+        </label>
+      )}
+      {socialError && ["appointments", "peers"].includes(tab) && (
+        <p className="quran-inline-error" role="alert">
+          {socialError}
+        </p>
+      )}
       {tab === "home" && !loading && (
         <QuranDashboard
           progress={surahProgress}
@@ -833,24 +1041,33 @@ export default function QuranCompanionView({
                 flash("Randevun onaylandı.");
               }}
               realUser={isRealUser}
+              presence={presence}
             />
           ) : tab === "appointments" ? (
             <AppointmentsView
+              key={`${userId}-${pilotDemo}`}
               appointments={appointments}
               userId={userId}
-              isHoca={isHoca || isAdmin}
-              onReload={load}
+              onReload={() => load(true)}
+              teachers={teachers}
+              threads={threads}
+              onRead={() => void refreshThreads()}
+              presence={presence}
               onReminders={() => void enableReminders()}
               onNotice={flash}
             />
           ) : tab === "peers" ? (
             <PeerMatching
+              key={`${userId}-${pilotDemo}`}
               helpers={helpers}
               matches={matches}
               level={profile?.quran_level || null}
               userId={userId}
               realUser={isRealUser}
-              onReload={load}
+              onReload={() => load(true)}
+              threads={threads}
+              onRead={() => void refreshThreads()}
+              presence={presence}
             />
           ) : tab === "study" ? (
             <QuranStudyWorkspace
@@ -949,10 +1166,12 @@ function TeacherDiscovery({
   teachers,
   onBooked,
   realUser,
+  presence,
 }: {
   teachers: HocaProfileRow[];
   onBooked: () => Promise<void>;
   realUser: boolean;
+  presence: QuranPresenceState;
 }) {
   const [selected, setSelected] = useState<HocaProfileRow | null>(null);
   const [profileTeacher, setProfileTeacher] = useState<HocaProfileRow | null>(
@@ -992,6 +1211,15 @@ function TeacherDiscovery({
               <div>
                 <small>{teacher.title}</small>
                 <h3>{teacher.display_name}</h3>
+                {teacher.user_id && (
+                  <span
+                    className={`qc-presence-dot ${presence.online.has(teacher.user_id) ? "online" : "offline"}`}
+                  >
+                    {presence.online.has(teacher.user_id)
+                      ? "Çevrimiçi"
+                      : "Çevrimiçi bilgisi paylaşılmıyor"}
+                  </span>
+                )}
                 <p>{teacher.bio}</p>
                 <div className="hoca-tags">
                   {teacher.specialties.map((tag) => (
@@ -1037,11 +1265,13 @@ function BookingFlow({
   onClose,
   onBooked,
   realUser,
+  reschedule,
 }: {
   teacher: HocaProfileRow;
   onClose: () => void;
   onBooked: () => Promise<void>;
   realUser: boolean;
+  reschedule?: AppointmentView;
 }) {
   const [month, setMonth] = useState(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -1054,7 +1284,7 @@ function BookingFlow({
     Array<{ slot_start: string; slot_end: string }>
   >([]);
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(reschedule?.topic_notes ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const slotVersion = useRef(0),
@@ -1147,15 +1377,24 @@ function BookingFlow({
     bookingLock.current = true;
     setBusy(true);
     setError("");
-    const { error: bookingError } = await supabase.rpc(
-      "book_hoca_appointment",
-      { target_hoca_id: teacher.id, target_start: selectedSlot, notes },
-    );
+    const { error: bookingError } = reschedule
+      ? await supabase.rpc("reschedule_hoca_appointment", {
+          target_appointment_id: reschedule.id,
+          new_start: selectedSlot,
+          new_notes: notes,
+        })
+      : await supabase.rpc("book_hoca_appointment", {
+          target_hoca_id: teacher.id,
+          target_start: selectedSlot,
+          notes,
+        });
     if (bookingError) {
       setError(
         bookingError.message.includes("SLOT_UNAVAILABLE")
           ? "Bu saat az önce doldu."
-          : "Randevu oluşturulamadı.",
+          : bookingError.message.includes("CANCELLATION_WINDOW")
+            ? "Randevuya 2 saatten az kaldı. Hocanla iletişim kur."
+            : "Randevu oluşturulamadı. Mevcut randevun korunuyor.",
       );
       setBusy(false);
       bookingLock.current = false;
@@ -1198,6 +1437,13 @@ function BookingFlow({
           />
           <span className="eyebrow">{teacher.title}</span>
           <h2 id="booking-title">{teacher.display_name}</h2>
+          {reschedule && (
+            <p className="qc-reschedule-info">
+              Yeniden planlanacak ders:{" "}
+              {formatAppointment(reschedule.scheduled_start)}. Yeni saat
+              onaylanana kadar mevcut ders korunur.
+            </p>
+          )}
           <p>{teacher.bio}</p>
           <div className="hoca-tags">
             {teacher.specialties.map((tag) => (
@@ -1303,7 +1549,8 @@ function BookingFlow({
             disabled={!selectedSlot || busy}
             onClick={() => void confirm()}
           >
-            <AppIcon name="calendar-check" /> Randevuyu onayla
+            <AppIcon name="calendar-check" />{" "}
+            {reschedule ? "Yeni saati onayla" : "Randevuyu onayla"}
           </button>
           <small className="booking-policy">
             Randevu anında onaylanır. Başlangıçtan 2 saat öncesine kadar
@@ -1318,17 +1565,23 @@ function BookingFlow({
 function AppointmentsView({
   appointments,
   userId,
-  isHoca,
   onReload,
   onReminders,
   onNotice,
+  teachers,
+  threads,
+  onRead,
+  presence,
 }: {
   appointments: AppointmentView[];
   userId: string;
-  isHoca: boolean;
   onReload: () => Promise<void>;
   onReminders: () => void;
   onNotice: (message: string) => void;
+  teachers: HocaProfileRow[];
+  threads: QuranThreadSummary[];
+  onRead: () => void;
+  presence: QuranPresenceState;
 }) {
   const [filter, setFilter] = useState<"upcoming" | "past">("upcoming");
   const [reviewAppointment, setReviewAppointment] =
@@ -1338,6 +1591,12 @@ function AppointmentsView({
   const [chatAppointment, setChatAppointment] =
     useState<AppointmentView | null>(null);
   const [now] = useState(() => Date.now());
+  const [reschedule, setReschedule] = useState<AppointmentView | null>(null);
+  const [weekView, setWeekView] = useState(false),
+    [weekOffset, setWeekOffset] = useState(0);
+  const [actionError, setActionError] = useState("");
+  const [busyId, setBusyId] = useState("");
+  const weekDays = quranWeek(new Date(now), weekOffset);
   const items = appointments
     .filter((item) =>
       filter === "upcoming"
@@ -1352,14 +1611,22 @@ function AppointmentsView({
         : b.scheduled_start.localeCompare(a.scheduled_start),
     );
   const cancel = async (item: AppointmentView) => {
+    if (item.is_demo) {
+      onNotice("Örnek randevu canlı sunucuya yazılmaz.");
+      return;
+    }
+    if (busyId) return;
     if (!window.confirm("Bu randevuyu iptal etmek istediğine emin misin?"))
       return;
+    setBusyId(item.id);
+    setActionError("");
     const { error } = await supabase.rpc("cancel_hoca_appointment", {
       target_appointment_id: item.id,
       reason: "Kullanıcı tarafından iptal edildi.",
     });
+    setBusyId("");
     if (error)
-      window.alert(
+      setActionError(
         error.message.includes("CANCELLATION_WINDOW")
           ? "Randevuya 2 saatten az kaldığı için uygulamadan iptal edilemez."
           : "Randevu iptal edilemedi.",
@@ -1395,6 +1662,88 @@ function AppointmentsView({
           Geçmiş
         </button>
       </div>
+      <div className="qc-appointment-tools">
+        <button
+          className="secondary-button"
+          aria-pressed={weekView}
+          onClick={() => setWeekView((v) => !v)}
+        >
+          <AppIcon name="calendar" />
+          {weekView ? "Liste görünümü" : "Haftalık takvim"}
+        </button>
+      </div>
+      {actionError && (
+        <p role="alert" className="booking-error">
+          {actionError}
+        </p>
+      )}
+      {weekView && (
+        <section
+          className="qc-week-calendar"
+          aria-label="Haftalık ders takvimi"
+        >
+          <header>
+            <button
+              aria-label="Önceki hafta"
+              onClick={() => setWeekOffset((v) => v - 1)}
+            >
+              ←
+            </button>
+            <strong>
+              {weekDays[0].toLocaleDateString("tr-TR", {
+                timeZone: "Europe/Istanbul",
+                day: "numeric",
+                month: "long",
+              })}{" "}
+              –{" "}
+              {weekDays[6].toLocaleDateString("tr-TR", {
+                timeZone: "Europe/Istanbul",
+                day: "numeric",
+                month: "long",
+              })}
+            </strong>
+            <button
+              aria-label="Sonraki hafta"
+              onClick={() => setWeekOffset((v) => v + 1)}
+            >
+              →
+            </button>
+          </header>
+          <div>
+            {weekDays.map((day) => (
+              <section key={istanbulDay(day)}>
+                <h3>
+                  {day.toLocaleDateString("tr-TR", {
+                    timeZone: "Europe/Istanbul",
+                    weekday: "short",
+                    day: "numeric",
+                  })}
+                </h3>
+                {items
+                  .filter(
+                    (a) =>
+                      new Date(a.scheduled_start).toLocaleDateString("en-CA", {
+                        timeZone: "Europe/Istanbul",
+                      }) === istanbulDay(day),
+                  )
+                  .map((a) => (
+                    <button
+                      key={a.id}
+                      className={`qc-calendar-lesson ${a.status}`}
+                      onClick={() => setChatAppointment(a)}
+                    >
+                      {timeOnly(a.scheduled_start)}
+                      <strong>
+                        {a.student_id === userId ? a.hoca_name : a.student_name}
+                      </strong>
+                      <small>{STATUS_LABELS[a.status]}</small>
+                    </button>
+                  ))}
+              </section>
+            ))}
+          </div>
+        </section>
+      )}
       {items.length === 0 ? (
         <EmptyState
           icon="calendar-smile"
@@ -1454,7 +1803,18 @@ function AppointmentsView({
                 <div className="appointment-actions">
                   {["confirmed", "completed"].includes(item.status) && (
                     <button onClick={() => setChatAppointment(item)}>
-                      <AppIcon name="message" /> Mesajlaş
+                      <AppIcon name="message" /> Mesajlaş{" "}
+                      {Number(
+                        threads.find((t) => t.context_id === item.id)
+                          ?.unread_count,
+                      ) > 0 && (
+                        <span className="qc-nav-badge">
+                          {
+                            threads.find((t) => t.context_id === item.id)
+                              ?.unread_count
+                          }
+                        </span>
+                      )}
                     </button>
                   )}
                   {item.status === "completed" && (
@@ -1470,9 +1830,45 @@ function AppointmentsView({
                         Hocaya yorum bırak
                       </button>
                     )}
+                  {!asHoca &&
+                    ["pending", "confirmed"].includes(item.status) && (
+                      <button
+                        disabled={busyId === item.id || item.is_demo}
+                        onClick={() => {
+                          if (!teachers.some((t) => t.id === item.hoca_id)) {
+                            setActionError("Hoca bilgileri yüklenemedi.");
+                            return;
+                          }
+                          setReschedule(item);
+                        }}
+                      >
+                        <AppIcon name="calendar" />
+                        Yeniden planla
+                      </button>
+                    )}
+                  {["pending", "confirmed"].includes(item.status) && (
+                    <button
+                      onClick={() => {
+                        const url = URL.createObjectURL(
+                          new Blob([appointmentCalendar(item)], {
+                            type: "text/calendar;charset=utf-8",
+                          }),
+                        );
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "kuran-dersi.ics";
+                        a.click();
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
+                      }}
+                    >
+                      <AppIcon name="download" />
+                      Takvime ekle
+                    </button>
+                  )}
                   {["pending", "confirmed"].includes(item.status) && (
                     <button
                       className="danger"
+                      disabled={busyId === item.id}
                       onClick={() => void cancel(item)}
                     >
                       İptal et
@@ -1487,7 +1883,7 @@ function AppointmentsView({
       {reviewAppointment && (
         <AppointmentReview
           appointment={reviewAppointment}
-          isHoca={isHoca && reviewAppointment.student_id !== userId}
+          isHoca={reviewAppointment.student_id !== userId}
           userId={userId}
           onClose={() => setReviewAppointment(null)}
           onSaved={() => {
@@ -1500,7 +1896,9 @@ function AppointmentsView({
         <AppointmentChat
           appointment={chatAppointment}
           currentUserId={userId}
-          isHoca={isHoca || chatAppointment.student_id !== userId}
+          isHoca={chatAppointment.student_id !== userId}
+          presence={presence}
+          onRead={onRead}
           onClose={() => setChatAppointment(null)}
         />
       )}
@@ -1509,6 +1907,18 @@ function AppointmentsView({
           appointment={feedbackAppointment}
           userId={userId}
           onClose={() => setFeedbackAppointment(null)}
+        />
+      )}
+      {reschedule && (
+        <BookingFlow
+          teacher={teachers.find((t) => t.id === reschedule.hoca_id)!}
+          reschedule={reschedule}
+          realUser={!reschedule.is_demo && isValidUUID(userId)}
+          onClose={() => setReschedule(null)}
+          onBooked={async () => {
+            await onReload();
+            onNotice("Dersin yeni saati onaylandı.");
+          }}
         />
       )}
     </section>
@@ -1522,6 +1932,9 @@ function PeerMatching({
   userId,
   realUser,
   onReload,
+  threads,
+  onRead,
+  presence,
 }: {
   helpers: HelperView[];
   matches: PeerView[];
@@ -1529,32 +1942,55 @@ function PeerMatching({
   userId: string;
   realUser: boolean;
   onReload: () => Promise<void>;
+  threads: QuranThreadSummary[];
+  onRead: () => void;
+  presence: QuranPresenceState;
 }) {
   const [activeChat, setActiveChat] = useState<PeerView | null>(null);
+  const [requestTarget, setRequestTarget] = useState<HelperView | null>(null),
+    [requestMessage, setRequestMessage] = useState(""),
+    [peerError, setPeerError] = useState(""),
+    [peerBusy, setPeerBusy] = useState(false);
+  const peerLock = useRef(false);
   const request = async (helper: HelperView) => {
-    const message =
-      window.prompt(
-        `${helper.display_name} için kısa bir tanışma notu (isteğe bağlı):`,
-        "Birlikte Kur'an çalışmak isterim.",
-      ) ?? null;
-    if (message === null) return;
     if (!realUser) {
-      window.alert("Eşleşme isteği için gerçek hesabınla giriş yap.");
+      setPeerError("Eşleşme isteği için gerçek hesabınla giriş yap.");
       return;
     }
+    if (peerLock.current) return;
+    peerLock.current = true;
+    setPeerBusy(true);
+    setPeerError("");
     const { error } = await supabase.rpc("send_quran_peer_request", {
       target_helper_id: helper.id,
-      request_message: message,
+      request_message: requestMessage,
     });
-    if (error) window.alert("İstek gönderilemedi.");
-    else await onReload();
+    peerLock.current = false;
+    setPeerBusy(false);
+    if (error)
+      setPeerError(
+        error.message.includes("COOLDOWN")
+          ? "Bu kişiye yeniden istek göndermeden önce 24 saat bekle."
+          : "İstek gönderilemedi. Notun korunuyor.",
+      );
+    else {
+      setRequestTarget(null);
+      setRequestMessage("");
+      await onReload();
+    }
   };
   const respond = async (match: PeerView, accept: boolean) => {
+    if (peerLock.current) return;
+    peerLock.current = true;
+    setPeerBusy(true);
     const { error } = await supabase.rpc("respond_quran_peer_match", {
       target_match_id: match.id,
       accept_request: accept,
     });
+    peerLock.current = false;
+    setPeerBusy(false);
     if (!error) await onReload();
+    else setPeerError("Yanıt kaydedilemedi. Yeniden dene.");
   };
   return (
     <section className="quran-panel">
@@ -1568,6 +2004,11 @@ function PeerMatching({
           </p>
         </div>
       </header>
+      {peerError && !requestTarget && (
+        <p className="booking-error" role="alert">
+          {peerError}
+        </p>
+      )}
       {level === "helper" ? (
         <div className="peer-helper-note">
           <AppIcon name="heart-handshake" />
@@ -1595,13 +2036,34 @@ function PeerMatching({
                   <AvatarImage
                     src={avatar(helper.display_name, helper.avatar_url)}
                     alt=""
-                    size={48}
+                    size={64}
                   />
                   <div>
                     <strong>{helper.display_name}</strong>
                     <span>Gönüllü akran desteği</span>
+                    <small className="qc-peer-level">
+                      Destekçi · {helper.xp} deneyim puanı
+                    </small>
+                    <span
+                      className={`qc-presence-dot ${presence.online.has(helper.id) ? "online" : "offline"}`}
+                    >
+                      {presence.online.has(helper.id)
+                        ? "Çevrimiçi"
+                        : "Durum paylaşılmıyor"}
+                    </span>
                   </div>
-                  <button onClick={() => void request(helper)}>
+                  <button
+                    disabled={matches.some(
+                      (m) =>
+                        m.partner_id === helper.id &&
+                        ["pending", "accepted"].includes(m.status),
+                    )}
+                    onClick={() => {
+                      setRequestTarget(helper);
+                      setPeerError("");
+                      setRequestMessage("Birlikte Kur'an çalışmak isterim.");
+                    }}
+                  >
                     İstek gönder
                   </button>
                 </article>
@@ -1641,18 +2103,63 @@ function PeerMatching({
                       : "Olumsuz"}
                 </span>
                 {match.message && <p>{match.message}</p>}
+                <ol className="qc-peer-timeline" aria-label="Eşleşme aşamaları">
+                  <li className="done">İstek</li>
+                  <li
+                    className={match.status === "pending" ? "current" : "done"}
+                  >
+                    Yanıt
+                  </li>
+                  <li className={match.status === "accepted" ? "done" : ""}>
+                    Birlikte çalışma
+                  </li>
+                </ol>
+                {match.status === "accepted" && (
+                  <>
+                    <span
+                      className={`qc-presence-dot ${presence.online.has(match.partner_id) ? "online" : "offline"}`}
+                    >
+                      {presence.online.has(match.partner_id)
+                        ? "Çevrimiçi"
+                        : "Durum paylaşılmıyor"}
+                    </span>
+                    <p className="qc-peer-preview">
+                      {threads.find((t) => t.context_id === match.id)
+                        ?.last_message || "İlk çalışma zamanınızı belirleyin."}
+                    </p>
+                  </>
+                )}
               </div>
               {match.direction === "received" && match.status === "pending" ? (
                 <span className="peer-actions">
-                  <button onClick={() => void respond(match, true)}>
+                  <button
+                    disabled={peerBusy}
+                    onClick={() => void respond(match, true)}
+                  >
                     Kabul et
                   </button>
-                  <button onClick={() => void respond(match, false)}>
+                  <button
+                    disabled={peerBusy}
+                    onClick={() => void respond(match, false)}
+                  >
                     Reddet
                   </button>
                 </span>
               ) : match.status === "accepted" ? (
-                <button onClick={() => setActiveChat(match)}>Mesajlaş</button>
+                <button onClick={() => setActiveChat(match)}>
+                  Mesajlaş{" "}
+                  {Number(
+                    threads.find((t) => t.context_id === match.id)
+                      ?.unread_count,
+                  ) > 0 && (
+                    <span className="qc-nav-badge">
+                      {
+                        threads.find((t) => t.context_id === match.id)
+                          ?.unread_count
+                      }
+                    </span>
+                  )}
+                </button>
               ) : null}
             </article>
           ))}
@@ -1663,7 +2170,74 @@ function PeerMatching({
           match={activeChat}
           userId={userId}
           onClose={() => setActiveChat(null)}
+          onRead={onRead}
+          presence={presence}
         />
+      )}
+      <QuranStudyGroup
+        userId={userId}
+        realUser={realUser}
+        peers={matches
+          .filter((m) => m.status === "accepted")
+          .map((m) => ({ id: m.partner_id, name: m.partner_name }))}
+      />
+      {requestTarget && (
+        <QuranModal
+          label="Kur'an kardeşliği isteği"
+          onClose={() => {
+            if (!peerBusy) setRequestTarget(null);
+          }}
+          className="qc-social-modal"
+        >
+          <header>
+            <AvatarImage
+              src={avatar(requestTarget.display_name, requestTarget.avatar_url)}
+              size={64}
+            />
+            <div>
+              <h2>{requestTarget.display_name}</h2>
+              <p>Gönüllü akran desteği · {requestTarget.xp} deneyim puanı</p>
+            </div>
+          </header>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void request(requestTarget);
+            }}
+          >
+            <label>
+              Tanışma notun{" "}
+              <textarea
+                maxLength={400}
+                rows={4}
+                value={requestMessage}
+                onChange={(e) => setRequestMessage(e.target.value)}
+                placeholder="Hangi sureyi veya konuyu birlikte çalışmak istersin?"
+              />
+            </label>
+            <small>
+              {requestMessage.length}/400 · Kişisel iletişim bilgilerini
+              paylaşma.
+            </small>
+            {peerError && (
+              <p role="alert" className="booking-error">
+                {peerError}
+              </p>
+            )}
+            <footer>
+              <button
+                type="button"
+                disabled={peerBusy}
+                onClick={() => setRequestTarget(null)}
+              >
+                Vazgeç
+              </button>
+              <button className="primary-button" disabled={peerBusy}>
+                {peerBusy ? "Gönderiliyor…" : "İstek gönder"}
+              </button>
+            </footer>
+          </form>
+        </QuranModal>
       )}
     </section>
   );
@@ -1673,134 +2247,28 @@ function PeerChat({
   match,
   userId,
   onClose,
+  onRead,
+  presence,
 }: {
   match: PeerView;
   userId: string;
   onClose: () => void;
+  onRead?: () => void;
+  presence?: QuranPresenceState;
 }) {
-  const [messages, setMessages] = useState<ChatMessageRow[]>([]);
-  const [text, setText] = useState("");
-  const [chatError, setChatError] = useState(""),
-    [sending, setSending] = useState(false);
-  const sendLock = useRef(false);
-  useEffect(() => {
-    const query = `and(sender_id.eq.${userId},receiver_id.eq.${match.partner_id}),and(sender_id.eq.${match.partner_id},receiver_id.eq.${userId})`;
-    void supabase
-      .from("chat_messages")
-      .select("*")
-      .is("group_id", null)
-      .or(query)
-      .order("created_at")
-      .then(({ data, error }) => {
-        if (error) setChatError("Mesajlar yüklenemedi.");
-        else setMessages(data || []);
-      });
-    const channel = ownedRealtimeChannel(supabase, `quran-peer-${match.id}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "chat_messages" },
-        (payload) => {
-          const item = payload.new as ChatMessageRow;
-          if (
-            (item.sender_id === userId &&
-              item.receiver_id === match.partner_id) ||
-            (item.sender_id === match.partner_id && item.receiver_id === userId)
-          )
-            setMessages((current) =>
-              current.some((message) => message.id === item.id)
-                ? current
-                : [...current, item],
-            );
-        },
-      )
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [match.id, match.partner_id, userId]);
-  const send = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const content = text.trim();
-    if (!content || sendLock.current) return;
-    sendLock.current = true;
-    setSending(true);
-    const { data, error } = await supabase
-      .from("chat_messages")
-      .insert({
-        sender_id: userId,
-        receiver_id: match.partner_id,
-        group_id: null,
-        content,
-        is_read: false,
-      })
-      .select()
-      .single();
-    sendLock.current = false;
-    setSending(false);
-    if (error) {
-      setChatError("Mesaj gönderilemedi. Metnin korunuyor.");
-      return;
-    }
-    setText("");
-    setChatError("");
-    if (data)
-      setMessages((list) =>
-        list.some((m) => m.id === data.id) ? list : [...list, data],
-      );
-  };
   return (
-    <QuranModal
+    <QuranChat
+      contextId={match.id}
+      userId={userId}
+      partnerId={match.partner_id}
+      name={match.partner_name}
+      avatar={match.partner_avatar}
+      subtitle="Kur’an çalışma eşleşmesi"
+      kind="peer"
       onClose={onClose}
-      label={`${match.partner_name} ile mesajlaşma`}
-      className="peer-chat-modal"
-    >
-      <>
-        <header>
-          <AvatarImage
-            src={avatar(match.partner_name, match.partner_avatar)}
-            size={44}
-          />
-          <div>
-            <strong>{match.partner_name}</strong>
-            <span>Kur’an çalışma eşleşmesi</span>
-          </div>
-          <button onClick={onClose} aria-label="Mesajlaşmayı kapat">
-            <AppIcon name="x" />
-          </button>
-        </header>
-        <div className="peer-messages">
-          {messages.length === 0 && (
-            <p>Çalışma zamanını belirlemek için ilk mesajı gönderebilirsin.</p>
-          )}
-          {messages.map((message) => (
-            <article
-              key={message.id}
-              className={message.sender_id === userId ? "mine" : ""}
-            >
-              {message.content}
-              <time>
-                {new Date(message.created_at).toLocaleTimeString("tr-TR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </time>
-            </article>
-          ))}
-        </div>
-        {chatError && <p role="alert">{chatError}</p>}
-        <form onSubmit={(event) => void send(event)}>
-          <input
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            maxLength={1000}
-            placeholder="Mesajını yaz…"
-          />
-          <button aria-label="Mesaj gönder" disabled={sending}>
-            <AppIcon name="send" />
-          </button>
-        </form>
-      </>
-    </QuranModal>
+      onRead={onRead}
+      presence={presence}
+    />
   );
 }
 

@@ -4,6 +4,8 @@ const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  // This suite requires its own isolated loopback backend and compiler.
+  testIgnore: '**/quran-social.spec.ts',
   fullyParallel: false,
   // A single Next dev compiler serves all cases; avoid CPU-count based fan-out
   // starving lazy route compilation on developer machines and small CI runners.

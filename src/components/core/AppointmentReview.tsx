@@ -33,6 +33,8 @@ export default function AppointmentReview({
 }) {
   const demoMode = Boolean(appointment.is_demo) || !isValidUUID(userId);
   const [note, setNote] = useState<AppointmentNoteRow | null>(null);
+  const [otherNote, setOtherNote] = useState<AppointmentNoteRow | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [surahName, setSurahName] = useState("");
   const [startAyah, setStartAyah] = useState("");
   const [endAyah, setEndAyah] = useState("");
@@ -55,21 +57,26 @@ export default function AppointmentReview({
       .from("appointment_notes")
       .select("*")
       .eq("appointment_id", appointment.id)
-      .eq("author_role", role)
-      .maybeSingle()
       .then(({ data, error: loadError }) => {
         if (!active) return;
-        if (loadError) setError("Ders notu yüklenemedi.");
-        if (data) {
-          setNote(data);
-          setSurahName(data.surah_name || "");
-          setStartAyah(data.start_ayah?.toString() || "");
-          setEndAyah(data.end_ayah?.toString() || "");
-          setTopics(data.topics_covered || []);
-          setPerformance(data.performance_note || "");
-          setReflection(data.student_reflection || "");
-          setAssignment(data.next_assignment || "");
-          setDifficulty(data.difficulty_rating || 3);
+        if (loadError) {
+          setError(
+            "Ders notları yüklenemedi. Önceki kaydı korumak için kaydetme kapalı.",
+          );
+          setLoadFailed(true);
+        }
+        const own = data?.find((n) => n.author_role === role);
+        setOtherNote(data?.find((n) => n.author_role !== role) ?? null);
+        if (own) {
+          setNote(own);
+          setSurahName(own.surah_name || "");
+          setStartAyah(own.start_ayah?.toString() || "");
+          setEndAyah(own.end_ayah?.toString() || "");
+          setTopics(own.topics_covered || []);
+          setPerformance(own.performance_note || "");
+          setReflection(own.student_reflection || "");
+          setAssignment(own.next_assignment || "");
+          setDifficulty(own.difficulty_rating || 3);
         }
         setLoading(false);
       });
@@ -80,7 +87,7 @@ export default function AppointmentReview({
 
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (saving) return;
+    if (saving || loadFailed) return;
     if (isHoca && startAyah && endAyah && Number(endAyah) < Number(startAyah)) {
       setError("Bitiş ayeti başlangıç ayetinden küçük olamaz.");
       return;
@@ -162,6 +169,46 @@ export default function AppointmentReview({
                 denemeyi tamamlar.
               </div>
             )}
+            <section
+              className="qc-shared-note"
+              aria-label="Diğer tarafın ders notu"
+            >
+              <h3>{isHoca ? "Öğrencinin yansıması" : "Hocanın ders notu"}</h3>
+              <small>
+                Bu not karşılıklı paylaşılmaktadır. Herkese açık yorum değildir.
+              </small>
+              {otherNote ? (
+                <>
+                  {otherNote.surah_name && (
+                    <strong>
+                      {otherNote.surah_name} · {otherNote.start_ayah}–
+                      {otherNote.end_ayah}
+                    </strong>
+                  )}
+                  {otherNote.topics_covered.length > 0 && (
+                    <p>{otherNote.topics_covered.join(" · ")}</p>
+                  )}
+                  <p>
+                    {isHoca
+                      ? otherNote.student_reflection
+                      : otherNote.performance_note}
+                  </p>
+                  {otherNote.next_assignment && (
+                    <p>
+                      <b>Sonraki çalışma: </b>
+                      {otherNote.next_assignment}
+                    </p>
+                  )}
+                  {otherNote.difficulty_rating && (
+                    <p>Zorluk: {otherNote.difficulty_rating}/5</p>
+                  )}
+                </>
+              ) : (
+                <p>
+                  {loadFailed ? "Notlar yüklenemedi." : "Henüz not eklenmedi."}
+                </p>
+              )}
+            </section>
             {isHoca ? (
               <>
                 <div className="review-ayah-grid">
@@ -279,7 +326,10 @@ export default function AppointmentReview({
               <button type="button" onClick={onClose}>
                 Vazgeç
               </button>
-              <button className="primary-button" disabled={saving}>
+              <button
+                className="primary-button"
+                disabled={saving || loadFailed}
+              >
                 {saving
                   ? "Kaydediliyor…"
                   : note

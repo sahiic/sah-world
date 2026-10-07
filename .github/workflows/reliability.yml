@@ -23,6 +23,16 @@ jobs:
       - run: npm run test:unit
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Check Quran social UI with an isolated fixture backend
+        run: npx playwright test --config=playwright.social.config.ts
+      - name: Install pinned isolated PostgreSQL test runtime
+        run: npm install --prefix "${{ runner.temp }}/quran-pglite" --ignore-scripts --no-audit --no-fund @electric-sql/pglite@0.5.8
+      - name: Check Quran migration and authorization rules locally
+        env:
+          QURAN_PGLITE_ROOT: ${{ runner.temp }}/quran-pglite
+        run: |
+          node scripts/test-quran-database.cjs
+          node scripts/test-quran-social-database.cjs
       - run: npm run build
       # Traces contain test-only synthetic text. Never run these tests with real personal data.
       - uses: actions/upload-artifact@v4
