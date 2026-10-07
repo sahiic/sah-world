@@ -4,7 +4,7 @@ import type { OutboxStorage } from './durableOutbox';
 export class DebouncedDrafts<T> {
   private staged = new Map<string, T>();
   private timer: ReturnType<typeof setTimeout> | undefined;
-  constructor(private storage: OutboxStorage, private onError: () => void, private delay = 600) {}
+  constructor(private storage: OutboxStorage, private onError: () => void, private delay = 600, private onPersist?: (key: string) => void) {}
   load(key: string): T | null {
     if (this.staged.has(key)) return this.staged.get(key)!;
     const raw = this.storage.getItem(key);
@@ -21,6 +21,7 @@ export class DebouncedDrafts<T> {
       for (const [key, value] of this.staged) {
         this.storage.setItem(key, JSON.stringify(value));
         this.staged.delete(key);
+        this.onPersist?.(key);
       }
       return true;
     } catch { this.onError(); return false; }

@@ -30,16 +30,17 @@ test('journal tabs have distinct URLs, Back restores the tab, and reload preserv
   test.setTimeout(120_000);
   await openGuest(page, '/?view=journal&tab=journal');
   for (const [tab, label] of [['matrix','Öncelik Matrisim'],['sukur','Şükür Defterim'],['lessons','Hatalar ve Dersler']] as const) {
-    await page.getByRole('tab', { name: new RegExp(label) }).click();
+    await page.getByRole('button', { name: /Araçlar/ }).click();
+    await page.getByRole('menuitem', { name: label }).click();
     await expect(page).toHaveURL(new RegExp(`view=journal&tab=${tab}`));
-    await expect(page.getByRole('tab', { name: new RegExp(label) })).toHaveAttribute('aria-selected','true');
+    await expect(page.locator('.journal-tool-panel > header h2')).toHaveText(label);
     await page.reload();
     await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
-    await expect(page.getByRole('tab', { name: new RegExp(label) })).toHaveAttribute('aria-selected','true');
+    await expect(page.locator('.journal-tool-panel > header h2')).toHaveText(label);
   }
   await page.goBack();
   await expect(page).toHaveURL(/tab=sukur/);
-  await expect(page.getByRole('tab', { name: /Şükür Defterim/ })).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('.journal-tool-panel > header h2')).toHaveText('Şükür Defterim');
 });
 
 test('Quran tabs survive reload and direct ayah/hadith access shares the same wheel result', async ({ page }) => {
@@ -47,10 +48,11 @@ test('Quran tabs survive reload and direct ayah/hadith access shares the same wh
   await openGuest(page, '/?view=quran-companion&tab=study');
   await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(/Çalışma alanım/);
   for (const [tab,label] of [['teachers','Hocalar'],['appointments','Randevularım'],['peers','Akran desteği'],['wheel','Günün Çarkı']] as const) {
-    await page.getByRole('button',{name:label,exact:true}).click();
+    // The existing appointment tab includes a live count in its accessible name.
+    await page.locator('.quran-companion-tabs').getByRole('button',{name:new RegExp(`^${label}(?: \\d+)?$`)}).click();
     await expect(page).toHaveURL(new RegExp(`view=quran-companion&tab=${tab}`));
     await page.reload(); await page.getByRole('button',{name:'DEV: Misafir görünümü'}).click();
-    await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(label);
+    await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(new RegExp(`^${label}(?:\\d+)?$`));
     await expect(page.locator('main video')).toHaveCount(0);
   }
   await expect(page.locator('.ritual-info > div')).toHaveCount(3);

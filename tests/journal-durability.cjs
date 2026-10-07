@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Existing Node CommonJS test runner */
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -47,4 +48,13 @@ test('drafts debounce disk writes, and leaving flushes the last character', () =
 test('draft persistence failure is surfaced and staged content remains recoverable', () => {
   let errors = 0; const cache = new DebouncedDrafts({ getItem: () => null, setItem: () => { throw new Error('quota'); } }, () => errors++, 60_000);
   cache.stage('key', { content: 'keep' }); assert.equal(cache.flush(), false); assert.equal(errors, 1); assert.equal(cache.load('key').content, 'keep');
+});
+
+test('stored notification is emitted per key only after a successful storage write', () => {
+  let failing = true; const persisted = []; const disk = storage();
+  const cache = new DebouncedDrafts({ getItem: disk.getItem, setItem(key, value) { if (failing) throw new Error('quota'); disk.setItem(key, value); } }, () => {}, 60_000, key => persisted.push(key));
+  cache.stage('A:today:morning', { content: 'last!' });
+  assert.equal(cache.flush(), false); assert.deepEqual(persisted, []);
+  failing = false; assert.equal(cache.flush(), true); assert.deepEqual(persisted, ['A:today:morning']);
+  assert.equal(cache.flush(), true); assert.equal(persisted.length, 1);
 });
