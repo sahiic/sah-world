@@ -1516,3 +1516,310 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .mescidim-show-more{width:100%;min-height:46px;margin-top:18px;padding:12px 16px;border:1px solid rgba(0,105,80,.13);border-radius:14px;display:flex;align-items:center;justify-content:center;gap:10px;color:#08785d;background:#f0f8f4;font-size:10px;font-weight:800}.mescidim-show-more:hover{background:#e3f2eb}.spiritual-library-stacked .asma-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:620px){.mescidim-today-hero{padding:24px 20px;grid-template-columns:minmax(0,1fr) 64px;gap:16px}.mescidim-today-copy h2{font-size:30px}.mescidim-today-mark{grid-row:1;min-height:70px}.mescidim-today-mark>span{width:60px;height:60px;font-size:26px}.mescidim-today-mark i{width:85px;height:85px}.mescidim-today-mark i:nth-of-type(2){width:110px;height:110px}.mescidim-today-mark i:nth-of-type(3){display:none}.mescidim-today-promise{grid-column:1/-1}.spiritual-library-stacked .asma-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+/* ════════════════════════════════════════════════════════════════
+   KUR'AN-I KERİM KARDEŞİM v2 — Complete Redesign
+   ════════════════════════════════════════════════════════════════ */
+.qc-v2{--qc-primary:#009B77;--qc-primary-dark:#006950;--qc-gold:#c5a059;--qc-canvas:#fbf9f6;--qc-forest:#0d2b1d;--qc-night:#081c13;--qc-grid-empty:#e8e5e0;--qc-grid-started:#b8e6d0;--qc-grid-reading:#5ec99e;--qc-grid-completed:#009B77;--qc-grid-memorized:#c5a059}
+
+/* Hero */
+.qc-hero{display:grid;grid-template-columns:1fr 340px;gap:32px;padding:clamp(28px,4vw,48px);border-radius:28px;color:#f2fbf6;background:radial-gradient(circle at 85% 5%,rgba(93,211,171,.2),transparent 32%),radial-gradient(circle at 15% 100%,rgba(197,160,89,.15),transparent 30%),linear-gradient(135deg,#082a22 0%,#0b4235 54%,#0a342b 100%);box-shadow:0 22px 56px rgba(8,54,42,.18)}
+.qc-hero h1{margin:0 0 12px;font-size:clamp(28px,3.4vw,42px);font-weight:900;letter-spacing:-.04em;line-height:1.15}
+.qc-hero .eyebrow{color:#91e0c4}
+.qc-streak-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);font-size:13px;margin-bottom:16px}
+.qc-streak-badge .app-icon{color:#f59e0b;font-size:20px}
+.qc-streak-badge strong{font-size:22px;color:#fbbf24}
+.qc-today-task{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.08);margin-bottom:18px}
+.qc-today-task .app-icon{font-size:22px;color:#5ec99e;flex-shrink:0;margin-top:2px}
+.qc-today-task strong{display:block;font-size:14px;color:#fff;margin-bottom:2px}
+.qc-today-task span{font-size:12px;color:#a8d5c2}
+.qc-today-task.completed .app-icon{color:#4ade80}
+.qc-hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.qc-btn-primary{padding:11px 22px;border:0;border-radius:14px;display:inline-flex;align-items:center;gap:8px;color:#fff;background:#0eb38a;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(14,179,138,.3);transition:background .18s}
+.qc-btn-primary:hover{background:#12c598}
+.qc-btn-secondary{padding:10px 18px;border:1px solid rgba(255,255,255,.18);border-radius:14px;display:inline-flex;align-items:center;gap:8px;color:#fff;background:rgba(255,255,255,.06);font-size:12px;font-weight:700;cursor:pointer;transition:background .18s}
+.qc-btn-secondary:hover{background:rgba(255,255,255,.12)}
+.qc-btn-ghost{padding:8px 14px;border:1px solid rgba(0,105,80,.15);border-radius:12px;display:inline-flex;align-items:center;gap:6px;color:#079a77;background:transparent;font-size:11px;font-weight:700;cursor:pointer}
+.qc-btn-ghost:hover{background:rgba(0,155,119,.06)}
+
+/* Hero right */
+.qc-hero-right{display:flex;flex-direction:column;gap:12px}
+.qc-buddy-card{padding:18px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
+.qc-buddy-card small{display:block;color:#91e0c4;font-size:8px;font-weight:800;letter-spacing:.12em;margin-bottom:10px}
+.qc-buddy-info{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.qc-buddy-info strong{display:block;font-size:14px;color:#fff}
+.qc-buddy-info span{font-size:11px;color:#a8d5c2}
+.qc-buddy-card.empty .qc-buddy-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.qc-buddy-card.empty .qc-buddy-steps span{display:flex;align-items:center;gap:8px;font-size:12px;color:#c1d8cf}
+.qc-buddy-card.empty .qc-buddy-steps b{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:10px;color:#082a22;background:#5ec99e}
+.qc-next-appointment{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;border-radius:14px;background:rgba(197,160,89,.12);border:1px solid rgba(197,160,89,.18)}
+.qc-next-appointment .app-icon{color:#c5a059;font-size:20px;flex-shrink:0}
+.qc-next-appointment small{display:block;color:#c5a059;font-size:8px;font-weight:800;letter-spacing:.1em}
+.qc-next-appointment strong{display:block;color:#fff;font-size:13px}
+.qc-next-appointment span{color:#cdb98e;font-size:11px}
+
+/* Progress Preview (mini grid on home) */
+.qc-progress-preview{margin-top:28px;padding:28px;border-radius:22px;background:#fff;border:1px solid rgba(0,105,80,.08);box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.qc-progress-preview header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.qc-progress-preview h2{margin:4px 0 0;font-size:20px;color:var(--qc-forest)}
+.qc-mini-grid{display:grid;grid-template-columns:repeat(19,1fr);gap:3px}
+.qc-mini-cell{width:100%;aspect-ratio:1;border-radius:3px;background:var(--qc-grid-empty);transition:background .15s}
+.qc-mini-cell.started{background:var(--qc-grid-started)}
+.qc-mini-cell.reading{background:var(--qc-grid-reading)}
+.qc-mini-cell.completed{background:var(--qc-grid-completed)}
+.qc-mini-cell.memorized{background:var(--qc-grid-memorized)}
+.qc-progress-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:11px;color:#5d7a6e}
+.qc-progress-legend span{display:flex;align-items:center;gap:5px}
+.qc-progress-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.qc-progress-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+.qc-progress-stats article{padding:14px;border-radius:14px;text-align:center;background:#f5f9f7}
+.qc-progress-stats strong{display:block;font-size:24px;color:var(--qc-primary-dark);font-weight:900}
+.qc-progress-stats span{font-size:11px;color:#5d7a6e}
+
+/* Exercise Preview */
+.qc-exercise-preview{margin-top:22px;padding:28px;border-radius:22px;background:linear-gradient(135deg,#f8faf9,#f2f7f4);border:1px solid rgba(0,105,80,.06)}
+.qc-exercise-preview header{margin-bottom:18px}
+.qc-exercise-preview h2{margin:4px 0 0;font-size:20px;color:var(--qc-forest)}
+.qc-exercise-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.qc-exercise-card{position:relative;padding:20px;border:1px solid rgba(0,105,80,.1);border-radius:18px;display:flex;flex-direction:column;gap:8px;text-align:left;background:#fff;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.qc-exercise-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,105,80,.1)}
+.qc-exercise-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff}
+.qc-exercise-icon.completion{background:linear-gradient(135deg,#009B77,#0eb38a)}
+.qc-exercise-icon.repetition{background:linear-gradient(135deg,#0d7377,#14b8a6)}
+.qc-exercise-icon.tajweed{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.qc-exercise-card strong{font-size:14px;color:var(--qc-forest)}
+.qc-exercise-card p{font-size:12px;color:#5d7a6e;margin:0}
+.qc-badge{position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:800;color:#fff;background:#ef4444;font-style:normal}
+
+/* Social Block (Teacher + Buddy) */
+.qc-social-block{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.qc-social-card{padding:24px;border-radius:22px;border:1px solid rgba(0,105,80,.08);background:#fff;display:flex;flex-direction:column;gap:14px}
+.qc-social-header{display:flex;align-items:center;gap:10px}
+.qc-social-header span{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.qc-social-card.teacher .qc-social-header span{background:var(--qc-primary)}
+.qc-social-card.peer .qc-social-header span{background:var(--qc-gold)}
+.qc-social-header small{font-size:8px;font-weight:800;letter-spacing:.12em;color:#5d7a6e}
+.qc-social-profile{display:flex;align-items:center;gap:12px}
+.qc-social-profile strong{display:block;font-size:14px;color:var(--qc-forest)}
+.qc-social-profile span{font-size:11px;color:#5d7a6e}
+.qc-social-empty{font-size:12px;color:#5d7a6e;margin:0}
+.qc-next-session{font-size:11px;color:var(--qc-primary);display:flex;align-items:center;gap:6px;margin:0}
+
+/* Weekly Summary */
+.qc-weekly-summary{margin-top:22px;padding:28px;border-radius:22px;background:#fff;border:1px solid rgba(0,105,80,.08)}
+.qc-weekly-summary header{margin-bottom:18px}
+.qc-weekly-summary h2{margin:4px 0 0;font-size:20px;color:var(--qc-forest)}
+.qc-weekly-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.qc-weekly-grid article{padding:18px;border-radius:16px;text-align:center;background:linear-gradient(135deg,#f0f8f4,#e8f5ee)}
+.qc-weekly-grid .app-icon{font-size:22px;color:var(--qc-primary);margin-bottom:6px}
+.qc-weekly-grid strong{display:block;font-size:28px;font-weight:900;color:var(--qc-forest)}
+.qc-weekly-grid span{font-size:11px;color:#5d7a6e}
+.qc-weekly-comparison{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600}
+.qc-weekly-comparison.up{color:#059669;background:#ecfdf5}
+.qc-weekly-comparison.down{color:#dc2626;background:#fef2f2}
+.qc-weekly-highlight{display:flex;align-items:center;gap:6px;margin:10px 0 0;font-size:12px;color:#5d7a6e}
+.qc-weekly-highlight .app-icon{color:var(--qc-gold)}
+
+/* ═══ Full Progress Map ═══ */
+.qc-progress-full{padding:24px;border-radius:22px;background:#fff;border:1px solid rgba(0,105,80,.08)}
+.qc-progress-toolbar{margin-bottom:18px}
+.qc-juz-filter{display:flex;flex-wrap:wrap;gap:4px;max-height:72px;overflow-y:auto;padding:4px;border-radius:12px;background:#f5f9f7}
+.qc-juz-filter button{padding:4px 10px;border:0;border-radius:8px;font-size:10px;font-weight:600;color:#5d7a6e;background:transparent;cursor:pointer;white-space:nowrap}
+.qc-juz-filter button.active{color:#fff;background:var(--qc-primary);box-shadow:0 2px 8px rgba(0,155,119,.25)}
+.qc-surah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.qc-surah-cell{position:relative;padding:10px;border:2px solid transparent;border-radius:14px;text-align:left;cursor:pointer;transition:all .15s;background:#f8faf9}
+.qc-surah-cell:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.qc-surah-cell.selected{border-color:var(--qc-primary);box-shadow:0 0 0 3px rgba(0,155,119,.15)}
+.qc-surah-cell.started{background:linear-gradient(135deg,#f0fdf7,#e2f9ed);border-color:rgba(0,155,119,.15)}
+.qc-surah-cell.reading{background:linear-gradient(135deg,#e6faf0,#ccf0dd);border-color:rgba(0,155,119,.25)}
+.qc-surah-cell.completed{background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-color:var(--qc-primary)}
+.qc-surah-cell.memorized{background:linear-gradient(135deg,#fef9e7,#fdf2c5);border-color:var(--qc-gold)}
+.qc-surah-num{display:block;font-size:10px;color:#8ea89d;font-weight:600}
+.qc-surah-cell strong{display:block;font-size:12px;color:var(--qc-forest);margin:2px 0}
+.qc-surah-cell small{font-size:9px;color:#8ea89d}
+.qc-mem-badge{position:absolute;top:6px;right:6px;font-size:12px;color:var(--qc-gold)}
+.qc-mem-badge.studying{color:var(--qc-primary)}
+.qc-mem-badge.reviewing{color:#14b8a6}
+
+/* Surah Detail */
+.qc-surah-detail{margin-top:20px;padding:24px;border-radius:18px;background:linear-gradient(135deg,#f8faf9,#f0f8f4);border:1px solid rgba(0,105,80,.1)}
+.qc-surah-detail header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.qc-surah-detail header>div{display:flex;align-items:center;gap:14px}
+.qc-surah-num-lg{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:18px;font-weight:900;color:#fff;background:var(--qc-primary)}
+.qc-surah-detail h3{margin:0;font-size:18px;color:var(--qc-forest)}
+.qc-surah-detail h3 span{margin-left:8px;font-size:20px;color:var(--qc-gold)}
+.qc-surah-detail header small{color:#5d7a6e;font-size:11px}
+.qc-surah-detail header button{width:32px;height:32px;border:0;border-radius:8px;display:grid;place-items:center;color:#5d7a6e;background:rgba(0,0,0,.04);cursor:pointer}
+.qc-detail-progress{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.qc-detail-progress label{display:flex;flex-direction:column;gap:6px}
+.qc-detail-progress label span{font-size:11px;font-weight:700;color:#5d7a6e}
+.qc-detail-progress select{padding:8px 12px;border:1px solid rgba(0,105,80,.15);border-radius:10px;font-size:12px;color:var(--qc-forest);background:#fff}
+.qc-detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.qc-detail-stats article{padding:12px;border-radius:12px;text-align:center;background:#fff}
+.qc-detail-stats strong{display:block;font-size:18px;font-weight:800;color:var(--qc-primary-dark)}
+.qc-detail-stats span{font-size:10px;color:#5d7a6e}
+.qc-difficult-ayahs{margin-top:4px}
+.qc-difficult-ayahs small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#ef4444;margin-bottom:8px}
+.qc-difficult-ayahs div{display:flex;flex-wrap:wrap;gap:6px}
+.qc-difficult-ayahs span{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;color:#b91c1c;background:#fef2f2}
+
+/* ═══ Exercise Center ═══ */
+.qc-exercise-center{display:flex;flex-direction:column;gap:20px}
+.qc-exercise-streak{padding:24px;border-radius:20px;background:linear-gradient(135deg,#0d2b1d,#0b4235);color:#f2fbf6}
+.qc-streak-display{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.qc-streak-display .app-icon{font-size:28px;color:#fbbf24}
+.qc-streak-display strong{font-size:20px;color:#fff}
+.qc-streak-display span{font-size:12px;color:#a8d5c2}
+.qc-streak-dots{display:flex;gap:8px;justify-content:center}
+.qc-streak-dot{width:40px;text-align:center}
+.qc-streak-dot::before{content:"";display:block;width:32px;height:32px;margin:0 auto 4px;border-radius:50%;background:rgba(255,255,255,.1);transition:all .2s}
+.qc-streak-dot.active::before{background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:0 4px 12px rgba(251,191,36,.35)}
+.qc-streak-dot span{font-size:9px;color:#8ea89d}
+.qc-streak-dot.active span{color:#fbbf24}
+
+.qc-spaced-cta{width:100%;padding:18px 20px;border:2px solid rgba(20,184,166,.2);border-radius:18px;display:flex;align-items:center;gap:14px;text-align:left;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);cursor:pointer;transition:all .15s}
+.qc-spaced-cta:hover{border-color:rgba(20,184,166,.4);box-shadow:0 6px 18px rgba(20,184,166,.12)}
+.qc-spaced-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff;background:linear-gradient(135deg,#0d7377,#14b8a6);flex-shrink:0}
+.qc-spaced-cta strong{display:block;font-size:14px;color:#0f766e}
+.qc-spaced-cta span{font-size:12px;color:#5d7a6e}
+.qc-spaced-cta>.app-icon{color:#14b8a6;font-size:20px;margin-left:auto}
+
+.qc-last-result{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;background:#fffbeb;border:1px solid rgba(197,160,89,.2);font-size:12px;color:#92400e}
+.qc-last-result .app-icon{color:var(--qc-gold);font-size:18px}
+
+.qc-exercise-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.qc-mode-card{padding:24px;border:1px solid rgba(0,105,80,.08);border-radius:20px;text-align:left;background:#fff;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:10px}
+.qc-mode-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+.qc-mode-card>span{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:26px;color:#fff}
+.qc-mode-card.completion>span{background:linear-gradient(135deg,#009B77,#0eb38a)}
+.qc-mode-card.ordering>span{background:linear-gradient(135deg,#2563eb,#60a5fa)}
+.qc-mode-card.tajweed>span{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.qc-mode-card h3{margin:4px 0 0;font-size:16px;color:var(--qc-forest)}
+.qc-mode-card p{font-size:12px;color:#5d7a6e;margin:0;flex:1}
+.qc-mode-card em{font-style:normal;font-size:12px;font-weight:700;color:var(--qc-primary);display:flex;align-items:center;gap:4px}
+
+/* Active Exercise */
+.qc-exercise-active{max-width:640px;margin:0 auto}
+.qc-exercise-active header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.qc-exercise-active header>button:first-child{padding:6px 12px;border:1px solid rgba(0,105,80,.12);border-radius:10px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--qc-primary);background:#fff;cursor:pointer}
+.qc-exercise-progress{flex:1;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--qc-forest)}
+.qc-exercise-progress i{flex:1;height:6px;border-radius:3px;background:#e8e5e0;overflow:hidden}
+.qc-exercise-progress b{display:block;height:100%;border-radius:3px;background:var(--qc-primary);transition:width .3s}
+.qc-exercise-score{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:800;color:var(--qc-gold)}
+.qc-exercise-question{text-align:center;padding:28px;border-radius:20px;background:linear-gradient(135deg,#f8faf9,#f0f8f4);margin-bottom:20px}
+.qc-exercise-question small{font-size:11px;color:#5d7a6e;font-weight:600}
+.qc-exercise-prompt{font-size:26px;margin:14px 0;color:var(--qc-forest);display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.qc-blank{padding:4px 16px;border-radius:10px;background:rgba(0,155,119,.1);color:var(--qc-primary);font-size:20px;font-weight:800}
+.qc-exercise-question p{font-size:13px;color:#5d7a6e;margin:0}
+.qc-exercise-options{display:grid;gap:10px;margin-bottom:18px}
+.qc-option{padding:16px 20px;border:2px solid rgba(0,105,80,.1);border-radius:16px;text-align:right;font-size:20px;color:var(--qc-forest);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s}
+.qc-option:hover:not(:disabled){border-color:var(--qc-primary);background:#f0fdf4}
+.qc-option.correct{border-color:#22c55e;background:#f0fdf4;color:#166534}
+.qc-option.wrong{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+.qc-option.selected{border-color:var(--qc-primary)}
+.qc-exercise-feedback{text-align:center;padding:18px;border-radius:16px;background:#f8faf9}
+.qc-exercise-feedback p.correct{color:#059669;font-weight:700;font-size:15px}
+.qc-exercise-feedback p.wrong{color:#dc2626;font-weight:700;font-size:15px}
+.qc-exercise-feedback p.partial{color:#d97706;font-weight:700;font-size:15px}
+
+/* Ordering Exercise */
+.qc-ordering-exercise{display:flex;flex-direction:column;gap:16px}
+.qc-ordering-instructions{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#dbeafe);color:#1e40af}
+.qc-ordering-instructions .app-icon{font-size:22px}
+.qc-ordering-instructions p{margin:0;font-size:13px;font-weight:600}
+.qc-ordering-target{padding:18px;border-radius:18px;background:#f8faf9;min-height:120px}
+.qc-ordering-target small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#5d7a6e;margin-bottom:10px}
+.qc-ordering-hint{font-size:13px;color:#8ea89d;text-align:center;padding:24px}
+.qc-ordered-verse{width:100%;padding:12px 16px;margin-bottom:6px;border:1px solid rgba(0,105,80,.1);border-radius:12px;display:flex;align-items:center;gap:10px;text-align:right;background:#fff;cursor:pointer;transition:all .15s}
+.qc-ordered-verse:hover{background:#f0fdf4}
+.qc-ordered-verse.correct{border-color:#22c55e;background:#f0fdf4}
+.qc-ordered-verse.wrong{border-color:#ef4444;background:#fef2f2}
+.qc-verse-num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;background:var(--qc-primary);flex-shrink:0}
+.qc-ordering-pool{padding:18px;border-radius:18px;background:#fffbeb}
+.qc-ordering-pool small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#92400e;margin-bottom:10px}
+.qc-pool-verse{width:100%;padding:12px 16px;margin-bottom:6px;border:1px dashed rgba(197,160,89,.3);border-radius:12px;display:flex;align-items:center;justify-content:space-between;text-align:right;background:#fff;cursor:pointer;transition:all .15s}
+.qc-pool-verse:hover{border-color:var(--qc-gold);background:#fef9e7}
+
+/* Tajweed */
+.qc-exercise-question.tajweed{background:linear-gradient(135deg,#f5f3ff,#ede9fe)}
+.qc-tajweed-text{font-size:32px;color:#1e1b4b;margin:18px 0}
+.qc-tajweed-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.qc-tajweed-option{padding:14px 16px;border:2px solid rgba(0,0,0,.06);border-radius:14px;text-align:left;background:#fff;cursor:pointer;transition:all .15s;position:relative}
+.qc-tajweed-option::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:2px;background:var(--rule-color,#ccc)}
+.qc-tajweed-option:hover:not(:disabled){border-color:var(--rule-color)}
+.qc-tajweed-option strong{display:block;font-size:14px;color:var(--qc-forest);padding-left:8px}
+.qc-tajweed-option small{display:block;font-size:11px;color:#5d7a6e;padding-left:8px}
+.qc-tajweed-option.correct{border-color:#22c55e;background:#f0fdf4}
+.qc-tajweed-option.wrong{border-color:#ef4444;background:#fef2f2}
+.qc-tajweed-option .app-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px}
+
+/* Spaced Review */
+.qc-spaced-empty{text-align:center;padding:48px 24px}
+.qc-spaced-empty .app-icon{font-size:48px;color:#22c55e;margin-bottom:12px}
+.qc-spaced-empty h2{color:var(--qc-forest);font-size:22px;margin:0 0 8px}
+.qc-spaced-empty p{color:#5d7a6e;font-size:13px}
+.qc-spaced-card{padding:32px;border-radius:22px;background:linear-gradient(135deg,#f0fdfa,#e6fffa);border:2px solid rgba(20,184,166,.15);text-align:center}
+.qc-spaced-card small{font-size:10px;font-weight:700;letter-spacing:.08em;color:#0d9488}
+.qc-spaced-content{padding:24px 0}
+.qc-spaced-content h2{font-size:28px;color:var(--qc-forest);margin:0 0 6px}
+.qc-spaced-content p{font-size:14px;color:#5d7a6e;margin:0 0 8px}
+.qc-spaced-interval{display:inline-block;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;color:#0d9488;background:rgba(20,184,166,.1)}
+.qc-reveal-btn{margin:0 auto}
+.qc-spaced-rating{padding-top:20px;border-top:1px solid rgba(20,184,166,.15)}
+.qc-spaced-rating p{font-size:14px;font-weight:600;color:var(--qc-forest);margin:0 0 14px}
+.qc-rating-buttons{display:flex;gap:12px;justify-content:center}
+.qc-rate{padding:16px 24px;border:2px solid transparent;border-radius:16px;text-align:center;cursor:pointer;transition:all .15s;background:#fff}
+.qc-rate .app-icon{font-size:28px;display:block;margin-bottom:6px}
+.qc-rate span{display:block;font-size:14px;font-weight:700}
+.qc-rate small{display:block;font-size:10px;color:#5d7a6e;margin-top:2px}
+.qc-rate.hard{border-color:#fecaca}.qc-rate.hard .app-icon{color:#ef4444}.qc-rate.hard:hover{background:#fef2f2}
+.qc-rate.good{border-color:#bbf7d0}.qc-rate.good .app-icon{color:#22c55e}.qc-rate.good:hover{background:#f0fdf4}
+.qc-rate.easy{border-color:#bfdbfe}.qc-rate.easy .app-icon{color:#3b82f6}.qc-rate.easy:hover{background:#eff6ff}
+
+/* Study Workspace Overview */
+.qc-study-overview{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.qc-study-stat{display:flex;align-items:center;gap:10px;padding:16px;border-radius:16px;background:#f5f9f7;border:1px solid rgba(0,105,80,.06)}
+.qc-study-stat .app-icon{font-size:22px;color:var(--qc-primary)}
+.qc-study-stat strong{display:block;font-size:18px;color:var(--qc-forest);font-weight:800}
+.qc-study-stat span{font-size:10px;color:#5d7a6e}
+
+/* Full progress legend */
+.qc-progress-legend.full{margin-top:20px;padding:14px 18px;border-radius:14px;background:#f8faf9}
+
+/* ═══ Responsive ═══ */
+@media(max-width:900px){
+  .qc-hero{grid-template-columns:1fr;gap:20px}
+  .qc-exercise-cards,.qc-exercise-modes{grid-template-columns:1fr}
+  .qc-social-block{grid-template-columns:1fr}
+  .qc-weekly-grid,.qc-progress-stats,.qc-study-overview{grid-template-columns:repeat(2,1fr)}
+  .qc-detail-stats{grid-template-columns:repeat(2,1fr)}
+  .qc-tajweed-options{grid-template-columns:1fr}
+  .qc-surah-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+}
+@media(max-width:620px){
+  .qc-hero{padding:24px 20px;border-radius:20px}
+  .qc-hero h1{font-size:26px}
+  .qc-hero-actions{flex-direction:column}
+  .qc-hero-actions button{width:100%}
+  .qc-mini-grid{grid-template-columns:repeat(12,1fr)}
+  .qc-weekly-grid,.qc-progress-stats,.qc-study-overview{grid-template-columns:1fr 1fr}
+  .qc-exercise-modes{grid-template-columns:1fr}
+  .qc-surah-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+  .qc-detail-progress{grid-template-columns:1fr}
+  .qc-rating-buttons{flex-direction:column}
+  .qc-exercise-prompt{font-size:20px}
+  .qc-tajweed-text{font-size:24px}
+}
+
+/* ═══ QC-V2 Nav Tab Overrides ═══ */
+.qc-v2 .quran-companion-tabs{position:sticky;top:0;z-index:20;margin:0 -1px;border-radius:0 0 18px 18px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,105,80,.06)}
+.qc-v2 .quran-companion-tabs button{color:#5d7a6e;font-size:11px}
+.qc-v2 .quran-companion-tabs button.active{color:#006950;background:rgba(0,155,119,.1)}
+.qc-v2 .quran-companion-tabs em{background:#009B77}
+.qc-v2 .qc-social-card{box-shadow:0 4px 16px rgba(0,105,80,.06)}
+.qc-v2 .qc-weekly-summary{box-shadow:0 4px 16px rgba(0,105,80,.06)}
+.qc-v2 .qc-progress-preview{box-shadow:0 4px 16px rgba(0,105,80,.06)}
+[data-theme="dark"] .qc-v2 .quran-companion-tabs{background:rgba(20,27,47,.96);box-shadow:0 4px 20px rgba(0,0,0,.2)}
+[data-theme="dark"] .qc-v2 .quran-companion-tabs button{color:#8ea89d}
+[data-theme="dark"] .qc-v2 .quran-companion-tabs button.active{color:#5ec99e;background:rgba(0,155,119,.15)}
+[data-theme="dark"] .qc-v2 .qc-progress-preview,[data-theme="dark"] .qc-v2 .qc-weekly-summary,[data-theme="dark"] .qc-v2 .qc-social-card{background:#141b2f;border-color:rgba(0,155,119,.12)}
+
