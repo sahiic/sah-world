@@ -18,8 +18,8 @@ test('quota failure does not rewind a running clock and recovers after storage w
   await page.evaluate(()=>(window as unknown as {focusQuota:boolean}).focusQuota=false);
   await page.getByRole('button',{name:'Zamanlayıcıyı duraklat'}).click();
   await expect(page.getByRole('status')).toHaveCount(0);
-  const paused=await page.getByRole('timer').innerText();
-  await page.reload();await expect(page.getByRole('timer')).toHaveText(paused);
+  const paused=await page.getByRole('timer').locator('strong').textContent();
+  await page.reload();await expect(page.getByRole('timer').locator('strong')).toHaveText(paused!);
 });
 
 async function openFocus(page: Page, route = "/focus") {
