@@ -22,8 +22,8 @@ export default function SessionConfig() {
         <div><small>Ritmini seç</small><h2 id="session-config-title">Oturum Ayarları</h2></div>
       </header>
       <div className={styles.segmented}>
-        <button className={store.timerKind === "pomodoro" ? styles.segmentActive : ""} onClick={() => setKind("pomodoro")} disabled={store.isRunning}>Pomodoro</button>
-        <button className={store.timerKind === "stopwatch" ? styles.segmentActive : ""} onClick={() => setKind("stopwatch")} disabled={store.isRunning}>Serbest Sayaç</button>
+        <button className={store.timerKind === "pomodoro" ? styles.segmentActive : ""} onClick={() => setKind("pomodoro")} disabled={Boolean(store.sessionStartTime)}>Pomodoro</button>
+        <button className={store.timerKind === "stopwatch" ? styles.segmentActive : ""} onClick={() => setKind("stopwatch")} disabled={Boolean(store.sessionStartTime)}>Serbest Sayaç</button>
       </div>
       {store.timerKind === "pomodoro" && (
         <div className={styles.configGroups}>
@@ -42,7 +42,7 @@ export default function SessionConfig() {
                     key={value}
                     className={store[key] === value ? styles.durationActive : ""}
                     onClick={() => store.updateSettings({ [key]: value })}
-                    disabled={store.isRunning}
+                    disabled={Boolean(store.sessionStartTime)}
                   >
                     {value} dk
                   </button>

@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { focusStorage } from "@/lib/focusStorage";
 import type { FocusMode, FocusSession, TimerKind } from "@/types/focus";
 import {
   durationForMode,
@@ -177,6 +178,8 @@ export const useFocusStore = create<FocusState>()(
 
       startTimer: () => {
         const state = get();
+        if (state.isRunning) return;
+        if (state.timerKind === "pomodoro" && state.timeLeft === 0 && !state.sessionStartTime) get().resetTimer();
         const now = Date.now();
         set({
           isRunning: true,
@@ -188,7 +191,16 @@ export const useFocusStore = create<FocusState>()(
         });
       },
       pauseTimer: () => {
+        if (!get().isRunning) return;
         get().tick();
+        if (get().timeLeft === 0 && get().timerKind === "pomodoro") {
+          const session=get().completeSession();
+          if(session && session.mode!=="focus") {
+            get().skipToNext();
+            if(get().autoStartFocus) get().startTimer();
+          }
+          return;
+        }
         set({ isRunning: false, isPaused: true, lastTickAt: null });
       },
       resetTimer: () => {
@@ -228,7 +240,7 @@ export const useFocusStore = create<FocusState>()(
       },
       setMode: (mode) => {
         const state = get();
-        if (state.isRunning) return;
+        if (state.sessionStartTime) return;
         const total =
           state.timerKind === "stopwatch"
             ? 0
@@ -244,7 +256,7 @@ export const useFocusStore = create<FocusState>()(
       },
       setTimerKind: (timerKind) => {
         const state = get();
-        if (state.isRunning) return;
+        if (state.sessionStartTime) return;
         const total =
           timerKind === "stopwatch"
             ? 0
@@ -271,14 +283,21 @@ export const useFocusStore = create<FocusState>()(
       },
       updateSettings: (settings) => {
         const state = get();
-        const next = { ...state, ...settings };
+        // Preference switches must not reset a paused or running session.
+        const safeSettings = { ...settings };
+        if (state.sessionStartTime) {
+          delete safeSettings.focusDuration;
+          delete safeSettings.shortBreakDuration;
+          delete safeSettings.longBreakDuration;
+        }
+        const next = { ...state, ...safeSettings };
         const total =
           state.timerKind === "stopwatch"
             ? state.totalTime
             : durationForMode(state.mode, next);
         set({
-          ...settings,
-          ...(state.isRunning
+          ...safeSettings,
+          ...(state.sessionStartTime
             ? {}
             : { totalTime: total, timeLeft: total, isPaused: false }),
         });
@@ -292,13 +311,13 @@ export const useFocusStore = create<FocusState>()(
         );
         if (elapsed < 1) return;
         if (state.timerKind === "stopwatch") {
-          set({ timeLeft: state.timeLeft + elapsed, lastTickAt: now });
+          set({ timeLeft: state.timeLeft + elapsed, lastTickAt: state.lastTickAt + elapsed * 1000 });
           return;
         }
         const remaining = Math.max(0, state.timeLeft - elapsed);
         set({
           timeLeft: remaining,
-          lastTickAt: now,
+          lastTickAt: state.lastTickAt + elapsed * 1000,
           ...(remaining === 0 ? { isRunning: false, lastTickAt: null } : {}),
         });
       },
@@ -307,8 +326,8 @@ export const useFocusStore = create<FocusState>()(
         if (!state.sessionStartTime) return null;
         const measuredMinutes =
           state.timerKind === "stopwatch"
-            ? Math.max(1, Math.round(state.timeLeft / 60))
-            : Math.max(1, Math.round((state.totalTime - state.timeLeft) / 60));
+            ? Math.round(state.timeLeft / 60 * 100) / 100
+            : Math.round((state.totalTime - state.timeLeft) / 60 * 100) / 100;
         const duration = options.durationMinutes ?? measuredMinutes;
         const session: FocusSession = {
           id: uniqueId(),
@@ -345,6 +364,7 @@ export const useFocusStore = create<FocusState>()(
           sessionStartTime: null,
           pendingCompletedSession:
             session.completed && session.mode === "focus" ? session : null,
+          ...(!session.completed ? {timeLeft:state.timerKind === "stopwatch" ? 0 : state.totalTime} : {}),
         });
         return session;
       },
@@ -353,7 +373,10 @@ export const useFocusStore = create<FocusState>()(
         if (state.sessionStartTime) get().completeSession({ completed: false });
         get().resetTimer();
       },
-      dismissCompletion: () => set({ pendingCompletedSession: null }),
+      dismissCompletion: () => {
+        if(get().sessionStartTime) set({pendingCompletedSession:null});
+        else get().resetTimer();
+      },
       saveShukurNote: (sessionId, note) => {
         const cleanNote = note.trim().slice(0, 200);
         set((state) => ({
@@ -396,7 +419,8 @@ export const useFocusStore = create<FocusState>()(
     {
       name: "sah-focus-sanctuary-v1",
       version: 1,
-      storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
+      storage: createJSONStorage(() => focusStorage),
       partialize: (state) => ({
         mode: state.mode,
         timerKind: state.timerKind,

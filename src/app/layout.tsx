@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Noto_Serif } from "next/font/google";
 import "./globals.css";
 import FocusTimerFloatingWidget from "@/components/core/FocusTimerRoot";
+import FocusSessionRuntime from "@/components/core/FocusSessionRuntime";
 import MotionPreferences from "@/components/ui/MotionPreferences";
 
 const inter = Inter({
@@ -112,6 +113,7 @@ export default function RootLayout({
         <MotionPreferences>
           {children}
           <FocusTimerFloatingWidget />
+          <FocusSessionRuntime />
         </MotionPreferences>
       </body>
     </html>

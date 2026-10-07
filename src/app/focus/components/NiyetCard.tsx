@@ -38,7 +38,7 @@ export default function NiyetCard({ onClose }: { onClose?: () => void }) {
   return (
     <div className={styles.niyetBackdrop} role="dialog" aria-modal="true" aria-labelledby="niyet-title">
       <section className={styles.niyetCard}>
-        {onClose && savedNiyet && (
+        {onClose && (
           <button className={styles.closeButton} onClick={onClose} aria-label="Niyet kartını kapat">
             <X aria-hidden />
           </button>

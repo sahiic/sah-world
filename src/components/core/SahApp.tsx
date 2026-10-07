@@ -39,7 +39,7 @@ const SectionView = dynamic(() => import("./SectionView"), {
 const JournalHubView = dynamic(() => import("./JournalHubView"), {
   loading: () => <SectionSkeleton shape="editor" />,
 });
-const FocusTimerView = dynamic(() => import("./FocusTimerView"), {
+const FocusTimerView = dynamic(() => import("@/app/focus/components/FocusExperience"), {
   loading: () => <SectionSkeleton shape="timer" />,
 });
 const AwarenessView = dynamic(() => import("./AwarenessView"), {
@@ -567,7 +567,6 @@ export default function SahApp({
               ) : view === "focus" ? (
                 <FocusTimerView
                   onExit={() => navigate("dashboard")}
-                  onNavigate={navigate}
                 />
               ) : view === "awareness" ? (
                 <AwarenessView onNavigate={navigate} />

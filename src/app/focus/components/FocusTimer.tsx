@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Expand,
   Headphones,
   Hourglass,
   Target,
@@ -13,7 +12,7 @@ import {
 import { FormEvent, useState } from "react";
 import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
 import { getFocusBackground } from "@/lib/focusBackgrounds";
-import { FocusPresets, FocusScenePicker, FocusStudioIntro } from "@/components/core/FocusAmbience";
+import { FocusPresets, FocusStudioIntro } from "@/components/core/FocusAmbience";
 import { useFocusStore } from "@/stores/focusStore";
 import { formatTimer } from "@/utils/timerUtils";
 import TimerControls from "./TimerControls";
@@ -30,13 +29,11 @@ export default function FocusTimer({
   onOpenTimerSettings,
   onOpenSound,
   onOpenBackground,
-  onToggleFullscreen,
 }: {
   onNeedNiyet: () => void;
   onOpenTimerSettings: () => void;
   onOpenSound: () => void;
   onOpenBackground: () => void;
-  onToggleFullscreen: () => void;
 }) {
   const mode = useFocusStore((state) => state.mode);
   const timerKind = useFocusStore((state) => state.timerKind);
@@ -44,7 +41,6 @@ export default function FocusTimer({
   const totalTime = useFocusStore((state) => state.totalTime);
   const isRunning = useFocusStore((state) => state.isRunning);
   const sessionStartTime = useFocusStore((state) => state.sessionStartTime);
-  const setBackgroundId = useFocusStore((state) => state.setBackgroundId);
   const currentRound = useFocusStore((state) => state.currentRound);
   const totalRounds = useFocusStore((state) => state.totalRounds);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
@@ -64,6 +60,7 @@ export default function FocusTimer({
   const activeSound = AMBIENT_SOUNDS.find(
     (sound) => (soundVolumes[sound.id] ?? 0) > 0,
   );
+  const activeSounds = AMBIENT_SOUNDS.filter(sound => (soundVolumes[sound.id] ?? 0) > 0).length;
   const durationLabel =
     timerKind === "stopwatch"
       ? "Serbest sayaç"
@@ -102,7 +99,7 @@ export default function FocusTimer({
             <i aria-hidden />
             <strong>{currentNiyet}</strong>
             {isRunning && <b aria-label="Oturum etkin" />}
-            {!isRunning && (
+            {!sessionStartTime && (
               <button
                 onClick={() => setNiyet("")}
                 aria-label="Odak görevini kaldır"
@@ -128,7 +125,7 @@ export default function FocusTimer({
         )}
       </div>
 
-      <FocusPresets
+      {!sessionStartTime && <FocusPresets
         minutes={timerKind === "pomodoro" && mode === "focus" ? totalTime / 60 : null}
         disabled={Boolean(sessionStartTime)}
         onSelect={(minutes) => {
@@ -137,7 +134,7 @@ export default function FocusTimer({
           store.setMode("focus");
           store.updateSettings({ focusDuration: minutes });
         }}
-      />
+      />}
       <div
         className={`focus-dial ${isRunning ? "is-running" : ""} ${styles.timerDial}`}
       >
@@ -152,7 +149,7 @@ export default function FocusTimer({
             strokeDashoffset={circumference * (1 - progress)}
           />
         </svg>
-        <div className={styles.timerValue} aria-live="polite" aria-atomic="true">
+        <div className={styles.timerValue} role="timer" aria-live="off" aria-label={modeLabels[mode]}>
           <strong>{formatTimer(timeLeft)}</strong>
           <div
             className={styles.rounds}
@@ -189,7 +186,7 @@ export default function FocusTimer({
             <Headphones aria-hidden />
           </span>
           <strong>Arka Plan Sesi</strong>
-          <small>{activeSound?.name ?? "Sessiz"}</small>
+          <small>{activeSounds > 1 ? `${activeSounds} sesli karışım` : activeSound?.name ?? "Sessiz"}</small>
         </button>
         <button onClick={onOpenBackground}>
           <span>
@@ -198,15 +195,8 @@ export default function FocusTimer({
           <strong>Arka Plan</strong>
           <small>{activeBackground.label}</small>
         </button>
-        <button onClick={onToggleFullscreen}>
-          <span>
-            <Expand aria-hidden />
-          </span>
-          <strong>Tam Ekran</strong>
-          <small>Dikkat dağıtanları gizle</small>
-        </button>
       </nav>
-      <FocusScenePicker compact backgroundId={backgroundId} onSelect={setBackgroundId} />
+      <p className={styles.sessionHint}>{sessionStartTime ? "Geri dön; oturumun ana sayfadaki küçük sayaçta devam eder." : "Niyetini yaz. Süreni seç. Kendine bir alan aç."}</p>
     </section>
   );
 }

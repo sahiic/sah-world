@@ -38,14 +38,10 @@ export default function FocusStats() {
         {stats.week.map((day) => (
           <div key={day.date} className={day.date === stats.bestDay.date && day.totalFocusMinutes > 0 ? styles.bestBar : ""}>
             <output>{day.totalFocusMinutes || ""}</output>
-            <span>
-              <meter
-                min="0"
-                max={maximum}
-                value={day.totalFocusMinutes}
-                aria-label={`${day.totalFocusMinutes} dakika`}
-              />
-            </span>
+            <svg viewBox="0 0 30 120" role="img" aria-label={`${day.date}: ${day.totalFocusMinutes} dakika`}>
+              <rect className={styles.chartTrack} x="3" y="0" width="24" height="120" rx="5" />
+              <rect className={styles.chartFill} x="3" y={120 - day.totalFocusMinutes / maximum * 120} width="24" height={day.totalFocusMinutes / maximum * 120} rx="5" />
+            </svg>
             <small>{dayFormatter.format(new Date(`${day.date}T12:00:00`)).slice(0, 3)}</small>
           </div>
         ))}

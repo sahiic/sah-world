@@ -34,6 +34,9 @@
 .sceneCheck { position: absolute; top: 7px; right: 7px; width: 19px; height: 19px; border-radius: 50%; padding: 3px; color: #10392e; background: #c0f3df; }
 .scenePicker .sceneOptions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .scenePicker { padding: 0 18px 18px; }
+.credits { margin-top:18px; color:#b8cbc0; font-size:11px; line-height:1.8; }
+.credits summary { cursor:pointer; min-height:40px; display:flex; align-items:center; }
+.credits a { color:#c0f3df; text-decoration:underline; }
 .studio :global(.focus-stage) { padding: 18px 32px; }
 .studio :global(.focus-topbar) { background: transparent !important; border: 0 !important; backdrop-filter: none !important; }
 .studio :global(.focus-view-tabs), .studio :global(.focus-view-nav) { display: flex; align-items: center; gap: 3px; padding: 4px; border: 1px solid #ffffff2e; background: #0820207a; backdrop-filter: blur(12px); border-radius: 999px; }

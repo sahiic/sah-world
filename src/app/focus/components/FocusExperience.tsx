@@ -13,26 +13,26 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useFocusDialog } from "@/hooks/useFocusDialog";
+import { useTimer } from "@/hooks/useTimer";
 import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
-import studioStyles from "@/components/core/focusStudio.module.css";
 import { useFocusStore } from "@/stores/focusStore";
 import AmbientSoundMixer from "./AmbientSoundMixer";
 import FocusHistory from "./FocusHistory";
 import FocusStats from "./FocusStats";
 import FocusTimer from "./FocusTimer";
-import MotivationQuote from "./MotivationQuote";
 import NiyetCard from "./NiyetCard";
-import SessionComplete from "./SessionComplete";
 import SessionConfig from "./SessionConfig";
 import styles from "../focus.module.css";
 
 type FocusView = "session" | "history";
 
-export default function FocusExperience() {
+export default function FocusExperience({ onExit }: { onExit?: () => void } = {}) {
   const mode = useFocusStore((state) => state.mode);
   const isRunning = useFocusStore((state) => state.isRunning);
   const pauseTimer = useFocusStore((state) => state.pauseTimer);
   const resetTimer = useFocusStore((state) => state.resetTimer);
+  const {start}=useTimer();
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
   const backgroundId = useFocusStore((state) => state.backgroundId);
   const setBackgroundId = useFocusStore((state) => state.setBackgroundId);
@@ -45,6 +45,7 @@ export default function FocusExperience() {
   const [backgroundOpen, setBackgroundOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [timelineOpen, setTimelineOpen] = useState(false);
+  useFocusDialog(!pendingCompletedSession && (soundOpen || backgroundOpen || settingsOpen || showNiyet || timelineOpen));
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -57,7 +58,7 @@ export default function FocusExperience() {
         setShowNiyet(false);
         return;
       }
-      if (soundOpen || backgroundOpen || settingsOpen || showNiyet || pendingCompletedSession) return;
+      if (soundOpen || backgroundOpen || settingsOpen || showNiyet || timelineOpen || pendingCompletedSession) return;
       if (target?.matches("input, textarea, select, [contenteditable='true']")) {
         return;
       }
@@ -66,17 +67,17 @@ export default function FocusExperience() {
       if (event.code === "Space") {
         event.preventDefault();
         if (isRunning) pauseTimer();
-        else if (!currentNiyet) setShowNiyet(true);
-        else useFocusStore.getState().startTimer();
+        else if (!currentNiyet && mode === "focus") setShowNiyet(true);
+        else void start();
       }
-      if (event.key.toLowerCase() === "r") resetTimer();
+      if (event.key.toLowerCase() === "r" && (!useFocusStore.getState().sessionStartTime || window.confirm("Süreyi kaydetmeden bu oturumu sıfırlamak istiyor musun?"))) resetTimer();
       if (event.key.toLowerCase() === "s") {
         setSoundOpen((value) => !value);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentNiyet, isRunning, pauseTimer, resetTimer, soundOpen, backgroundOpen, settingsOpen, showNiyet, pendingCompletedSession]);
+  }, [currentNiyet, mode, isRunning, pauseTimer, resetTimer, start, soundOpen, backgroundOpen, settingsOpen, showNiyet, timelineOpen, pendingCompletedSession]);
 
   const toggleFullscreen = async () => {
     try {
@@ -88,26 +89,28 @@ export default function FocusExperience() {
   };
 
   return (
-    <main className={`focus-root ${studioStyles.studio} ${styles.focusPage} ${styles[`${mode}Page`]}`}>
+    <main data-focus-studio="sanctuary-v2" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
       <FocusBackdrop backgroundId={backgroundId} />
       <header className={`focus-topbar ${styles.topbar}`}>
-        <Link
+        {onExit ? <button className={`focus-back-button ${styles.backLink}`} onClick={onExit} aria-label="Odak ekranını küçült"><ArrowLeft aria-hidden /><span>Geri</span></button> : <Link
           href="/"
           className={`focus-back-button ${styles.backLink}`}
           aria-label="SAH World ana sayfasına dön"
         >
           <ArrowLeft aria-hidden />
           <span>Geri</span>
-        </Link>
+        </Link>}
 
         <nav className={`focus-view-nav ${styles.viewTabs}`} aria-label="Odak bölümü">
           <button
+            aria-pressed={focusView === "session"}
             className={focusView === "session" ? `${styles.viewTabActive} is-active` : ""}
             onClick={() => setFocusView("session")}
           >
             <Timer aria-hidden /> Oturum
           </button>
           <button
+            aria-pressed={focusView === "history"}
             className={focusView === "history" ? `${styles.viewTabActive} is-active` : ""}
             onClick={() => setFocusView("history")}
           >
@@ -149,12 +152,11 @@ export default function FocusExperience() {
               onOpenTimerSettings={() => setSettingsOpen(true)}
               onOpenSound={() => setSoundOpen(true)}
               onOpenBackground={() => setBackgroundOpen(true)}
-              onToggleFullscreen={() => void toggleFullscreen()}
             />
-            <MotivationQuote seed={pendingCompletedSession?.id.length ?? 0} />
           </section>
         ) : (
           <section className={styles.historyStage} aria-label="Odak geçmişi">
+            <header className={styles.historyIntro}><span>GAYRETİNİN İZİ</span><h1>Küçük adımlar, gerçek ilerleme.</h1><p>Bugününü gör, ritmini tanı. Yarış değil; sana ait bir yolculuk.</p><small>Bu cihazdaki kayıtların · yalnızca bu tarayıcıda saklanır.</small></header>
             <div className={styles.historyGrid}>
               <FocusStats />
               <FocusHistory />
@@ -163,14 +165,14 @@ export default function FocusExperience() {
         )}
       </div>
 
-      {timelineOpen && (
+      {timelineOpen && !pendingCompletedSession && (
         <div className={styles.timelineBackdrop}>
           <button
             className={styles.timelineScrim}
             onClick={() => setTimelineOpen(false)}
             aria-label="Zaman çizelgesini kapat"
           />
-          <aside className={styles.timelinePanel} aria-label="Zaman çizelgesi">
+          <aside role="dialog" aria-modal="true" className={styles.timelinePanel} aria-label="Zaman çizelgesi">
             <button
               className={styles.modalClose}
               onClick={() => setTimelineOpen(false)}
@@ -183,7 +185,7 @@ export default function FocusExperience() {
         </div>
       )}
 
-      {settingsOpen && (
+      {settingsOpen && !pendingCompletedSession && (
         <div
           className={styles.modalBackdrop}
           role="dialog"
@@ -203,7 +205,7 @@ export default function FocusExperience() {
         </div>
       )}
 
-      {backgroundOpen && (
+      {backgroundOpen && !pendingCompletedSession && (
         <div
           className={styles.modalBackdrop}
           role="dialog"
@@ -236,7 +238,7 @@ export default function FocusExperience() {
       )}
 
       <AmbientSoundMixer
-        open={soundOpen}
+        open={soundOpen && !pendingCompletedSession}
         onClose={() => setSoundOpen(false)}
       />
 
@@ -250,7 +252,6 @@ export default function FocusExperience() {
       {showNiyet && !isRunning && !pendingCompletedSession && (
         <NiyetCard onClose={() => setShowNiyet(false)} />
       )}
-      <SessionComplete key={pendingCompletedSession?.id ?? "no-completion"} />
     </main>
   );
 }
