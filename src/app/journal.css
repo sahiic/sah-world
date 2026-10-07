@@ -179,6 +179,8 @@
   .journal-workspace .journal-heading-icon { width: 44px; height: 44px; flex-basis: 44px; border-radius: 12px; }
   .journal-workspace .journal-eyebrow { font-size: 10px; }
   .journal-workspace .journal-heading p { font-size: 13px; }
+  .journal-workspace .journal-hub-tabs button { min-width: 80px; padding: 8px 10px; gap: 6px; font-size: 14px; }
+  .journal-workspace .journal-tools-toggle { padding-inline: 8px; gap: 5px; font-size: 14px; }
   .journal-workspace .journal-toolbar { gap: 6px; flex-wrap: nowrap; }
   .journal-workspace .journal-date-controls { gap: 2px; min-width: 0; }
   .journal-workspace .journal-date-controls label { padding-inline: 4px; }
@@ -207,5 +209,4 @@
   .journal-workspace .journal-entry-symbol { flex-basis: 32px; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; }
   .journal-workspace .journal-footer-note { font-size: 12px; text-align: center; }
 }
-@media(max-width:390px) { .journal-workspace .journal-hub-tabs button { min-width: 86px; padding: 8px 10px; } .journal-workspace .journal-tools-toggle { padding-inline: 8px; } }
 @media(prefers-reduced-motion:reduce) { .journal-workspace *, .journal-workspace *::before, .journal-workspace *::after { scroll-behavior: auto; transition: none; animation: none; } }

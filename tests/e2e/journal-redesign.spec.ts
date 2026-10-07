@@ -28,7 +28,7 @@ test('editor is above the fold, calm, responsive and keyboard accessible', async
   await expect(page.locator('main h1')).toHaveCount(1);
   await expect(page.getByRole('tab')).toHaveCount(2);
   await expect(page.locator('.journal-cover-hero, .journal-binder, .journal-connections-grid')).toHaveCount(0);
-  for (const width of [375, 390, 768, 1440, 1920]) {
+  for (const width of [375, 390, 391, 412, 768, 1440, 1920]) {
     await page.setViewportSize({ width, height: width >= 768 ? 900 : 844 });
     // Resize acknowledgement can precede responsive reflow on the CI browser.
     // Keep the acceptance limit; wait for the actual layout, not a fixed sleep.
@@ -36,6 +36,12 @@ test('editor is above the fold, calm, responsive and keyboard accessible', async
       { message: `responsive editor top at ${width}px` }).toBeLessThanOrEqual(480);
     const box = await page.locator('.journal-main-textarea').boundingBox();
     expect(box!.y, `first editor top at ${width}px`).toBeLessThanOrEqual(480);
+    if (width < 768) {
+      const nav = page.locator('.journal-navigation');
+      const tabs = await nav.locator('.journal-hub-tabs').boundingBox();
+      const toolsBox = await nav.locator('.journal-tools-toggle').boundingBox();
+      expect(Math.abs(tabs!.y - toolsBox!.y), `one navigation row at ${width}px`).toBeLessThan(12);
+    }
     expect(box!.height).toBeGreaterThanOrEqual(width >= 768 ? 220 : 160);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `overflow ${width}px`).toBe(true);
     const small = await page.locator('.journal-navigation button, .journal-toolbar button, .journal-mood-picker button, .journal-mode-control button').evaluateAll(nodes => nodes.filter(node => { const r = node.getBoundingClientRect(); return r.height > 0 && (r.width < 44 || r.height < 44); }).map(node => node.textContent));
