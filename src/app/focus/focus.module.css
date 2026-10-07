@@ -513,6 +513,11 @@
 .goalTrack::-moz-progress-bar { border-radius: inherit; background: linear-gradient(90deg, var(--focus-primary), var(--focus-accent)); }
 .weekChart { height: 150px; padding: 8px 5px 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; border-bottom: 1px solid rgba(247, 243, 237, 0.07); }
 .weekChart > div { min-width: 0; display: grid; grid-template-rows: 18px 1fr 24px; align-items: end; justify-items: center; gap: 4px; }
+.weekChart > div { min-height: 0; grid-template-rows: 18px minmax(0, 1fr) 24px; }
+.weekChart svg { width: 30px; height: 100%; min-height: 0; max-height: 120px; overflow: hidden; }
+.chartTrack { fill: rgba(255,255,255,.045); }
+.chartFill { fill: #8cdfbe; }
+.bestBar .chartFill { fill: #dfc37b; }
 .weekChart output { color: #94a4b1; font: 600 7px var(--font-mono), monospace; }
 .weekChart > div > span { width: min(24px, 80%); height: 100%; display: flex; align-items: end; }
 .weekChart meter { width: 100%; height: 100%; min-height: 4px; border: 0; border-radius: 5px 5px 2px 2px; appearance: none; writing-mode: vertical-lr; direction: rtl; background: transparent; }
@@ -708,4 +713,155 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Sanctuary v2: intentionally scoped, independent of dashboard styles. */
+.focusPage.focusPage { --focus-muted:#a6b7c4; }
+.focusPage .focusLayout { width:min(1100px,100%); padding:22px 24px 36px; }
+.focusPage .topbar { padding:18px 28px; min-height:80px; }
+.focusPage .viewTabs button { min-height:44px; font-size:12px; padding:0 18px; }
+.focusPage .topActions button:nth-child(2) { display:inline-flex; }
+.focusPage .viewTabActive { color:#153e32; background:#c0f3df; }
+.focusPage .primaryControl { min-width:200px; min-height:52px; border-radius:999px; color:#113c2e; background:#c0f3df; }
+.focusPage .timerCard { --studio-mint:#c0f3df; width:min(100%,680px); margin-inline:auto; min-height:0; padding:12px 0 0; }
+.focusPage .timerEyebrow { display:none; }
+.focusPage :global(.focus-task-slot) { margin:8px auto 0 !important; width:min(100%,460px); }
+.focusPage :global(.focus-task-slot form) { padding:5px 7px 5px 14px; min-height:52px; }
+.focusPage :global(.focus-task-slot input) { font-size:14px; }
+.focusPage :global(.focus-task-slot form button) { min-width:52px; min-height:40px; }
+.focusPage :global(.focus-task-chip) { max-width:100%; font-size:14px; padding:12px 16px; }
+.focusPage :global(.focus-task-chip strong) { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.focusPage :global(.focus-dial) { width:300px; height:300px; margin:12px auto 12px; background:radial-gradient(circle,#06252870,#061a2220 70%) !important; }
+.focusPage :global(.focus-dial) { min-width:0; min-height:0; border:0; box-shadow:none; border-radius:50%; }
+.focusPage :global(.focus-dial::before),.focusPage :global(.focus-dial::after) { display:none; }
+.focusPage :global(.focus-dial strong) { font-size:76px; font-variant-numeric:tabular-nums; }
+.focusPage .timerControls { gap:12px; margin-top:0; }
+.focusPage :global(.focus-main-btn) { padding:0 28px !important; border-radius:999px !important; font-size:16px !important; }
+.focusPage .roundControl { width:50px; height:50px; min-height:50px; border-radius:50%; background:#102a2cba; border:1px solid #ffffff38; }
+.focusPage :global(.focus-controls) { width:min(100%,560px); grid-template-columns:repeat(3,minmax(0,1fr)) !important; margin-top:24px; gap:12px; }
+.focusPage :global(.focus-controls > button) { min-height:76px; padding:14px !important; grid-template-columns:24px 1fr; }
+.focusPage :global(.focus-controls > button > span) { width:28px; height:32px; }
+.focusPage :global(.focus-controls > button > span svg) { width:20px; height:20px; }
+.focusPage .timerControls button { height:52px; min-height:52px; }
+.focusPage .topbar { background:#06182155; }
+.focusPage .timerValue { background:transparent; backdrop-filter:none; }
+.focusPage :global(.focus-controls strong) { font-size:12px !important; }
+.focusPage :global(.focus-controls small) { font-size:11px !important; line-height:1.4; }
+.sessionHint { max-width:460px; margin:18px 0 0; text-align:center; font-size:11px; line-height:1.7; color:#cbdcd3; }
+.historyIntro { margin:4px 0 30px; }
+.historyIntro > span { color:#c0f3df; font-size:10px; letter-spacing:.18em; }
+.historyIntro h1 { margin:10px 0; font:400 clamp(25px,3vw,36px)/1.3 var(--font-noto-serif),serif; letter-spacing:-.035em; }
+.historyIntro p { margin:0 0 10px; font-size:14px; color:#d2dfdb; }
+.historyIntro > small { font-size:11px; color:#a9bdb4; }
+.focusPage .historyGrid { gap:24px; align-items:start; }
+.focusPage .historyStage { padding:0; }
+.focusPage .panelCard { min-width:0; padding:24px; border:1px solid #ffffff20; background:#10202de8; border-radius:24px; backdrop-filter:blur(20px); }
+.focusPage .panelHeader { margin-bottom:22px; }
+.focusPage .panelHeader h2 { font-size:21px; }
+.focusPage .panelHeader small { font-size:10px; }
+.focusPage .todayStats > div { min-height:92px; padding:12px; gap:10px; }
+.focusPage .todayStats small { font-size:11px; }
+.focusPage .todayStats strong { font-size:22px; }
+.focusPage .goalBlock { margin:24px 0; }
+.focusPage .goalBlock > div:first-child { font-size:13px; }
+.focusPage .goalBlock > small { font-size:11px; }
+.focusPage .weekChart { height:180px; max-height:180px; overflow:hidden; gap:8px; padding-top:12px; }
+.focusPage .weekChart output { font-size:10px; }
+.focusPage .weekChart small { font-size:10px; }
+.focusPage .weekSummary { padding:20px 0; }
+.focusPage .weekSummary small { font-size:10px; }
+.focusPage .weekSummary strong { font-size:14px; }
+.focusPage :global(.focus-controls) { padding-top:0; border:0; }
+.focusPage :global(.focus-controls > button) { border:1px solid #ffffff30; border-radius:16px; background:#0b292be0; }
+.focusPage :global(.focus-controls small) { display:block; }
+.focusPage .streakCard { padding:18px; }
+.focusPage .streakCard small,.focusPage .streakCard p { font-size:10px; }
+.historyFilters { display:flex; gap:4px; padding:4px; border-radius:12px; background:#ffffff09; margin:0 0 12px; }
+.historyFilters button { flex:1; min-height:40px; border:0; border-radius:8px; color:#bfd0d7; background:transparent; cursor:pointer; font-size:12px; }
+.historyFilters button[aria-pressed=true] { background:#c0f3df; color:#153e32; }
+.historySearch { display:flex; gap:10px; align-items:center; padding:0 12px; border:1px solid #ffffff20; border-radius:12px; }
+.historySearch svg { width:16px; color:#9aacb5; flex-shrink:0; }
+.historySearch input { width:100%; min-width:0; min-height:44px; background:transparent; border:0; color:#f1f6f2; font-size:12px; }
+.historyDay { color:#bbcdc5; margin:22px 0 4px; font-size:11px; font-weight:500; }
+.focusPage .historyList article { padding:14px 0; gap:12px; }
+.focusPage .historyList strong { font-size:13px; }
+.focusPage .historyList small { font-size:10px; line-height:1.6; }
+.focusPage .historyList b { font-size:12px; }
+.focusPage .historyList p { font-size:12px; }
+.loadHistory { min-height:44px; background:#ffffff09; border:1px solid #ffffff20; border-radius:12px; color:#c0f3df; font-size:12px; }
+.focusPage .emptyHistory { min-height:220px; }
+.focusPage .emptyHistory strong { font-size:17px; }
+.focusPage .emptyHistory p { font-size:12px; line-height:1.7; }
+.focusPage .soundCategories { grid-template-columns:1fr 1fr; align-items:start; gap:18px; }
+.focusPage .soundCategory h3 { font-size:13px; }
+.focusPage .soundRow { grid-template-columns:minmax(100px,1fr) minmax(60px,1fr) 28px; min-height:48px; font-size:11px; }
+.soundRow button { display:flex; align-items:center; gap:8px; text-align:left; border:0; background:transparent; padding:5px 0; min-height:44px; color:#c0cdd4; font-size:12px; cursor:pointer; }
+.soundRow button[aria-pressed=true] { color:#c0f3df; }
+.soundRow button[aria-pressed=true] i { background:#a7eaca; box-shadow:0 0 10px #a7eaca55; }
+.soundRow input { accent-color:#a7eaca; min-height:44px; }
+.mixActions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+.mixActions button,.audioStatus button { min-height:40px; background:#ffffff09; border:1px solid #ffffff25; border-radius:10px; color:#c0f3df; padding:0 12px; font-size:12px; }
+.mixActions small { color:#9baebb; font-size:10px; }
+.audioStatus { font-size:12px; line-height:1.8; color:#f1d998; }
+.focusPage .masterVolume,.focusPage .mixSaver,.focusPage .placeholderNote { font-size:12px; }
+.focusPage .durationOptions button { min-height:44px; font-size:12px; }
+.focusPage .configGroups label,.focusPage .toggleRow strong { font-size:13px; }
+.focusPage .toggleRow small { font-size:11px; line-height:1.5; }
+.focusPage .modalClose { width:44px; height:44px; }
+.runtime { --focus-text:#f7f3ed; --focus-accent:#a7eaca; --focus-gold:#d9c079; --focus-muted:#9eafba; color:var(--focus-text); font-family:var(--font-inter),sans-serif; }
+.runtime .completeCard > p { font-size:13px; line-height:1.7; }
+.runtime .completeActions button { font-size:12px; min-height:48px; cursor:pointer; }
+.runtime .shukurField textarea { font-size:14px; }
+.runtime .cardKicker { font-size:10px; }
+.storageWarning { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:110; width:min(600px,calc(100% - 32px)); padding:14px 18px; border:1px solid #eed29466; border-radius:14px; color:#ffebbb; background:#2c281ff5; font-size:12px; line-height:1.7; }
+.miniTimer { position:fixed; z-index:80; right:24px; bottom:24px; width:280px; border-radius:20px; border:1px solid #c0f3df40; color:#ecf5f0; background:#0e2927f5; box-shadow:0 14px 40px #0003; padding:14px; }
+:global(body:has([data-focus-studio])) .miniTimer { display:none; }
+.miniTimer header { display:flex; justify-content:space-between; align-items:center; }
+.miniTimer header > span { display:flex; align-items:center; gap:7px; font-size:11px; color:#b9d6ca; }
+.miniTimer svg { width:16px; height:16px; }
+.miniTimer header a { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; color:#e1f6ea; background:#ffffff0b; }
+.miniBody { display:grid; gap:8px; padding:8px 0 16px; }
+.miniBody strong { font:500 36px/1 var(--font-mono),monospace; letter-spacing:-.05em; }
+.miniBody > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:#c0d4ca; }
+.miniTimer footer { display:grid; grid-template-columns:1fr 44px; gap:8px; }
+.miniTimer button { min-height:44px; border:1px solid #ffffff25; border-radius:12px; background:#ffffff0c; color:#d9efe2; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; cursor:pointer; }
+.miniTimer footer button:first-child { background:#c0f3df; color:#113c2e; border:0; }
+.miniAudio { width:100%; margin-top:10px; }
+.miniConfirm p { font-size:12px; line-height:1.6; }
+.miniConfirm button { display:inline-flex; padding:0 10px; margin:0 6px 0 0; }
+.miniTimer :where(button,a):focus-visible { outline:2px solid #c0f3df; outline-offset:3px; }
+@media(max-width:700px) {
+ .focusPage .focusLayout { padding:10px 16px 28px; }
+ .focusPage .topbar { padding:12px; gap:6px; min-height:72px; }
+ .focusPage .topActions { gap:4px; }
+ .focusPage .topActions button { width:44px; min-height:44px; }
+ .focusPage :global(.focus-view-nav button) { padding:0 10px; min-height:44px; font-size:11px; }
+ .focusPage .viewTabs button { padding:0 10px; }
+ .focusPage :global(.focus-dial) { width:260px; height:260px; margin:14px auto 18px; }
+ .focusPage :global(.focus-dial strong) { font-size:66px; }
+ .focusPage :global(.focus-controls) { gap:7px; margin-top:22px; }
+ .focusPage :global(.focus-controls > button) { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 6px !important; text-align:center; min-height:92px; gap:5px; }
+ .focusPage :global(.focus-controls strong) { font-size:11px !important; }
+ .focusPage :global(.focus-controls small) { font-size:10px !important; }
+ .focusPage .historyGrid { grid-template-columns:1fr; gap:18px; }
+ .historyIntro { margin:10px 0 22px; }
+ .historyIntro p { font-size:12px; line-height:1.7; }
+ .focusPage .panelCard { padding:20px; }
+ .focusPage .todayStats strong { font-size:18px; }
+ .focusPage .soundCategories { grid-template-columns:1fr; }
+ .miniTimer { right:12px; bottom:calc(84px + env(safe-area-inset-bottom)); width:240px; padding:12px; }
+ .miniBody strong { font-size:30px; }
+}
+@media(max-width:360px) {
+ .focusPage .topbar { padding-inline:8px; gap:6px; }
+ .focusPage :global(.focus-view-nav button) { padding:0 6px; font-size:10px; }
+ .focusPage .topActions button { width:44px; }
+ .focusPage :global(.focus-main-btn) { min-width:155px; padding:0 18px !important; }
+ .focusPage .roundControl { width:44px; height:44px; }
+}
+@media(max-height:800px) and (min-width:621px) {
+ .focusPage .focusLayout { padding-top:12px; padding-bottom:20px; }
+ .focusPage :global(.focus-dial) { width:240px; height:240px; margin:10px auto; }
+ .focusPage :global(.focus-dial strong) { font-size:66px; }
+ .focusPage :global(.focus-controls) { margin-top:18px; }
 }

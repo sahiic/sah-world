@@ -45,6 +45,7 @@ export function FocusScenePicker({ backgroundId, onSelect, compact = false }: {
           </button>
         ))}
       </div>
+      {!compact && <details className={styles.credits}><summary>Fotoğraf kaynakları ve lisanslar</summary>{FOCUS_BACKGROUNDS.filter(scene=>scene.credit).map(scene=><p key={scene.id}>{scene.label}: <a href={scene.credit!.source} target="_blank" rel="noreferrer">{scene.credit!.author}</a> · <a href={scene.credit!.licenseUrl} target="_blank" rel="noreferrer">{scene.credit!.license}</a> · Boyutlandırıldı, WebP’ye dönüştürüldü. Arayüzde koyu katman uygulanır.</p>)}</details>}
     </div>
   );
 }

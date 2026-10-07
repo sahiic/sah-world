@@ -3,6 +3,7 @@
 import { ArrowRight, Check, Coins, RotateCcw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFocusStore } from "@/stores/focusStore";
+import { useFocusDialog } from "@/hooks/useFocusDialog";
 import MotivationQuote from "./MotivationQuote";
 import styles from "../focus.module.css";
 
@@ -21,6 +22,7 @@ export default function SessionComplete() {
   const autoStartBreak = useFocusStore((state) => state.autoStartBreak);
   const [note, setNote] = useState(session?.shukurNote ?? "");
   const [autoStartIn, setAutoStartIn] = useState(6);
+  useFocusDialog(Boolean(session));
 
   useEffect(() => {
     if (!session || !autoStartBreak) return;

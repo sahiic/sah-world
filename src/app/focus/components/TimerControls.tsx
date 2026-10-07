@@ -3,6 +3,7 @@
 import { Pause, Play, RotateCcw, SkipForward, Square } from "lucide-react";
 import { useFocusStore } from "@/stores/focusStore";
 import { useTimer } from "@/hooks/useTimer";
+import { ambientEngine } from "@/lib/ambientEngine";
 import styles from "../focus.module.css";
 
 export default function TimerControls({
@@ -14,6 +15,7 @@ export default function TimerControls({
   const isPaused = useFocusStore((state) => state.isPaused);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
   const sessionStartTime = useFocusStore((state) => state.sessionStartTime);
+  const mode = useFocusStore((state) => state.mode);
   const completeSession = useFocusStore((state) => state.completeSession);
   const { start, pause, reset, skip } = useTimer();
 
@@ -22,7 +24,7 @@ export default function TimerControls({
       pause();
       return;
     }
-    if (!currentNiyet) {
+    if (!currentNiyet && mode === "focus") {
       onNeedNiyet();
       return;
     }
@@ -41,7 +43,7 @@ export default function TimerControls({
       </button>
       <button
         className={`focus-secondary-btn ${styles.roundControl}`}
-        onClick={reset}
+        onClick={() => { if (!sessionStartTime || window.confirm("Süreyi kaydetmeden bu oturumu sıfırlamak istiyor musun?")) reset(); }}
         aria-label="Zamanlayıcıyı sıfırla"
         title="Sıfırla (R)"
       >
@@ -50,9 +52,9 @@ export default function TimerControls({
       {sessionStartTime ? (
         <button
           className={`focus-secondary-btn ${styles.roundControl} ${styles.dangerControl}`}
-          onClick={() => completeSession({ completed: true })}
-          aria-label="Oturumu şimdi tamamla"
-          title="Oturumu şimdi tamamla"
+          onClick={() => { if (window.confirm("Geçen süreyi kısmi oturum olarak kaydet ve bitir?")) { useFocusStore.getState().tick(); completeSession({ completed: false }); ambientEngine.stop(); } }}
+          aria-label="Oturumu bitir ve kaydet"
+          title="Bitir ve kaydet"
         >
           <Square aria-hidden />
         </button>

@@ -2,7 +2,6 @@
 
 import {
   AudioLines,
-  BookOpen,
   CloudRain,
   Headphones,
   Leaf,
@@ -19,7 +18,7 @@ import styles from "../focus.module.css";
 const categoryIcons = {
   Doğa: CloudRain,
   Gürültü: AudioLines,
-  İslami: BookOpen,
+  Ortam: Headphones,
 };
 
 export default function AmbientSoundMixer({
@@ -33,7 +32,8 @@ export default function AmbientSoundMixer({
     sounds,
     soundVolumes,
     masterVolume,
-    unavailable,
+    status,
+    enable,
     updateChannel,
     setMasterVolume,
   } = useAmbientSound();
@@ -43,13 +43,13 @@ export default function AmbientSoundMixer({
   const [mixName, setMixName] = useState("");
   const grouped = useMemo(
     () =>
-      ["Doğa", "Gürültü", "İslami"].map((category) => ({
+      ["Doğa", "Gürültü", "Ortam"].map((category) => ({
         category: category as keyof typeof categoryIcons,
         items: sounds.filter((sound) => sound.category === category),
       })),
     [sounds],
   );
-  const activeCount = Object.values(soundVolumes).filter((volume) => volume > 0).length;
+  const activeCount = sounds.filter(sound => (soundVolumes[sound.id] ?? 0) > 0).length;
 
   if (!open) return null;
 
@@ -77,7 +77,9 @@ export default function AmbientSoundMixer({
             <input id="master-volume" type="range" min="0" max="100" value={Math.round(masterVolume * 100)} onChange={(event) => setMasterVolume(Number(event.target.value) / 100)} />
             <output>{Math.round(masterVolume * 100)}%</output>
           </div>
-          <p className={styles.placeholderNote}><Leaf aria-hidden /> Ses kanalları hazır. MP3 dosyaları eklendiğinde karışım otomatik çalışacak.</p>
+          <p className={styles.placeholderNote}><Leaf aria-hidden /> 15 sentezlenmiş ortam sesi. Katmanları karıştır; kendine ait bir ses alanı kur.</p>
+          {status && <p className={styles.audioStatus} role="status">{status} <button onClick={()=>void enable()}>Dinlemeyi aç</button></p>}
+          <div className={styles.mixActions}><button onClick={()=>sounds.forEach(sound=>void updateChannel(sound.id,0))}>Tüm sesleri kapat</button><small>Sesler bu cihazda üretilir; kayıt veya tilavet değildir.</small></div>
           <div className={styles.soundCategories}>
             {grouped.map(({ category, items }) => {
               const CategoryIcon = categoryIcons[category];
@@ -85,8 +87,8 @@ export default function AmbientSoundMixer({
                 <div key={category} className={styles.soundCategory}>
                   <h3><CategoryIcon aria-hidden /> {category}</h3>
                   {items.map((sound) => (
-                    <label key={sound.id} className={styles.soundRow}>
-                      <span><i aria-hidden />{sound.name}{unavailable.includes(sound.id) && <small>dosya bekleniyor</small>}</span>
+                    <div key={sound.id} className={styles.soundRow}>
+                      <button aria-pressed={(soundVolumes[sound.id] ?? 0)>0} aria-label={`${sound.name} sesini ${(soundVolumes[sound.id] ?? 0)>0 ? "kapat" : "aç"}`} onClick={()=>void updateChannel(sound.id,(soundVolumes[sound.id] ?? 0)>0 ? 0 : .5)}><i aria-hidden />{sound.name}</button>
                       <input
                         aria-label={`${sound.name} ses düzeyi`}
                         type="range"
@@ -96,7 +98,7 @@ export default function AmbientSoundMixer({
                         onChange={(event) => void updateChannel(sound.id, Number(event.target.value) / 100)}
                       />
                       <output>{Math.round((soundVolumes[sound.id] ?? 0) * 100)}</output>
-                    </label>
+                    </div>
                   ))}
                 </div>
               );

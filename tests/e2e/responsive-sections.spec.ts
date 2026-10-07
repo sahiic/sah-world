@@ -9,7 +9,7 @@ test('seven main sections render at 375px with reduced motion and usable navigat
   await page.goto('/');
   await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
   await expect(page.locator('[data-growth-scene]')).toBeVisible();
-  for (const [view, selector] of [['journal', '.journal-notebook'], ['quran-companion', '.quran-companion'], ['mescidim', '.mescidim-single-flow'], ['awareness', '.awareness-experience'], ['reports', '.report-next-step'], ['profession-school', '.profession-school'], ['focus', '.focus-shell']]) {
+  for (const [view, selector] of [['journal', '.journal-notebook'], ['quran-companion', '.quran-companion'], ['mescidim', '.mescidim-single-flow'], ['awareness', '.awareness-experience'], ['reports', '.report-next-step'], ['profession-school', '.profession-school'], ['focus', '[data-focus-studio]']]) {
     await page.evaluate(view => window.history.pushState(null, '', `/?view=${view}`), view);
     await expect(page.locator(selector)).toBeVisible();
     await expect(page.locator('.view-motion-shell')).toHaveCSS('opacity', '1');
@@ -27,12 +27,13 @@ test('seven main sections render at 375px with reduced motion and usable navigat
     }).map(button => button.textContent?.trim()));
     expect(smallNav, `${view}: primary tabs/navigation >=44px`).toEqual([]);
     if (view === 'focus') {
-      await expect(page.locator('.focus-side-panel')).toHaveCount(0);
-      await expect(page.locator('.focus-timeline-toggle')).toHaveAttribute('aria-expanded', 'false');
-      await page.locator('.focus-timeline-toggle').click();
-      await expect(page.locator('.focus-side-panel')).toBeVisible();
-      await page.locator('.focus-side-close').click();
-      await expect(page.locator('.focus-side-panel')).toHaveCount(0);
+      await expect(page.getByRole('dialog', {name:'Zaman çizelgesi'})).toHaveCount(0);
+      await expect(page.getByRole('button', {name:'Zaman çizelgesini aç'})).toHaveAttribute('aria-expanded', 'false');
+      await page.getByRole('button', {name:'Zaman çizelgesini aç'}).click();
+      const timeline=page.getByRole('dialog', {name:'Zaman çizelgesi'});
+      await expect(timeline).toBeVisible();
+      await timeline.getByRole('button', {name:'Zaman çizelgesini kapat'}).click();
+      await expect(timeline).toHaveCount(0);
     } else {
       await expect(page.locator('.mobile-nav')).toBeVisible();
     }
