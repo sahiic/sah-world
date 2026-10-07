@@ -1,153 +1,276 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { AppIcon } from '@/components/ui/AppIcon'
-import { useActivityLog } from '@/hooks/useActivityLog'
-import { buildActivityFeed, dayKey } from '@/lib/activity'
-import { recordXpEvent } from '@/lib/xp'
-import { ensureUUID, useJourneyStore } from '@/store/useJourneyStore'
-import { useAuthStore } from '@/store/useAuthStore'
-import { DebouncedDrafts } from '@/lib/debouncedDrafts'
-import { JOURNAL_STATUS_EVENT, journalOwner, type JournalWriteStatus } from '@/lib/journalOutbox'
-import type { IntegratedActivity, JournalEntry } from '@/types'
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { useActivityLog } from '@/hooks/useActivityLog';
+import { useJournalGratitude } from '@/hooks/useJournalGratitude';
+import { buildActivityFeed, dayKey } from '@/lib/activity';
+import { recordXpEvent } from '@/lib/xp';
+import { ensureUUID, useJourneyStore } from '@/store/useJourneyStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { DebouncedDrafts } from '@/lib/debouncedDrafts';
+import { flushJournalOutbox, JOURNAL_STATUS_EVENT, journalOwner, journalWritesAfter, type JournalWriteStatus } from '@/lib/journalOutbox';
+import { journalDateLabel, journalPreview, JOURNAL_MOODS, validJournalDate, type JournalRitual } from '@/lib/journalPresentation';
+import type { IntegratedActivity, JournalEntry, SukurEntry } from '@/types';
 
-type Ritual = 'sabah' | 'aksam'
-type EntryMode = 'quick' | 'full'
-type Draft = { mood:number;energy:number;stress:number;sleep:number;content:string;moments:string[];gratitude:string[];selfNote:string;intention:string;challenge:string }
-type SectionId = 'quick'|'morning'|'wellbeing'|'story'|'moments'|'gratitude'|'self'|'activity'
-
-const todayKey=()=>dayKey(new Date())
-const emptyDraft=():Draft=>({mood:3,energy:7,stress:3,sleep:7,content:'',moments:['','',''],gratitude:['','',''],selfNote:'',intention:'',challenge:''})
-const MOODS=[{value:1,emoji:'😔',label:'Zor'},{value:2,emoji:'😕',label:'Düşük'},{value:3,emoji:'😌',label:'Sakin'},{value:4,emoji:'🙂',label:'İyi'},{value:5,emoji:'✨',label:'Harika'}]
-
-function dateLabel(value:string){return new Intl.DateTimeFormat('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(`${value}T12:00:00`))}
-function moveDate(value:string,amount:number){const date=new Date(`${value}T12:00:00`);date.setDate(date.getDate()+amount);return dayKey(date)}
-function offsetDate(unit:'day'|'month'|'year',amount:number){const date=new Date();date.setHours(12,0,0,0);if(unit==='day')date.setDate(date.getDate()-amount);if(unit==='month')date.setMonth(date.getMonth()-amount);if(unit==='year')date.setFullYear(date.getFullYear()-amount);return dayKey(date)}
-function entryPreview(entry:JournalEntry){return entry.content||entry.intentionText||entry.expectedChallengeText||entry.selfNote||'Bu güne ait kısa bir kayıt var.'}
-function ritualLabel(entry:JournalEntry){if(entry.entryMode==='quick')return '⚡ Hızlı';return entry.ritualType==='sabah'?'🌅 Sabah':'🌙 Akşam'}
-function awardFor(ritual:Ritual,mode:EntryMode){return ritual==='sabah'?(mode==='quick'?15:20):(mode==='quick'?20:50)}
-
-export default function JournalNotebook({onNavigate}:{onNavigate:(view:string)=>void}){
-  const store=useJourneyStore();const today=todayKey()
-  const [selectedDate,setSelectedDate]=useState(today)
-  const [ritual,setRitual]=useState<Ritual>(()=>new Date().getHours()<12?'sabah':'aksam')
-  const [mode,setMode]=useState<EntryMode>(()=>typeof window!=='undefined'&&window.localStorage.getItem('sah-journal-last-mode')==='full'?'full':'quick')
-  const [page,setPage]=useState(0);const [draft,setDraftState]=useState<Draft>(emptyDraft);const [notice,setNotice]=useState('')
-  const owner=useAuthStore(state=>state.user?.id??state.session?.user.id??'local')
-  const [writeStatus,setWriteStatus]=useState<JournalWriteStatus>('local')
-  const draftRef=useRef(draft)
-  const dirtyDraft=useRef(false)
-  const submittedPage=useRef<string|null>(null)
-  const loadedPage=useRef<string|null>(null)
-  const draftKey=`sah-journal-draft-v1:${owner}:${selectedDate}:${ritual}`
-  const cache=useMemo(()=>new DebouncedDrafts<Draft>({getItem:key=>window.localStorage.getItem(key),setItem:(key,value)=>window.localStorage.setItem(key,value)},()=>setNotice('Cihaz depolamasına yazılamadı. Metnini kopyala; kaydedildi olarak işaretlenmedi.')),[])
-  const setDraft:React.Dispatch<React.SetStateAction<Draft>>=next=>{
-    const value=typeof next==='function'?next(draftRef.current):next
-    draftRef.current=value;dirtyDraft.current=true;setDraftState(value);setWriteStatus('local');cache.stage(draftKey,value)
-  }
-  useEffect(()=>{
-    const flush=()=>{cache.flush()}
-    const update=(event:Event)=>{const detail=(event as CustomEvent<{value:JournalWriteStatus;owner:string}>).detail;if(detail?.owner!==journalOwner())return;if(detail.value==='storage-error'||(!dirtyDraft.current&&submittedPage.current===draftKey))setWriteStatus(detail.value)}
-    window.addEventListener('pagehide',flush);window.addEventListener('visibilitychange',flush);window.addEventListener(JOURNAL_STATUS_EVENT,update)
-    return()=>{flush();window.removeEventListener('pagehide',flush);window.removeEventListener('visibilitychange',flush);window.removeEventListener(JOURNAL_STATUS_EVENT,update)}
-  },[cache,draftKey])
-  const isToday=selectedDate===today
-  const dayEntries=useMemo(()=>store.journal.filter(item=>item.date===selectedDate),[selectedDate,store.journal])
-  const entry=dayEntries.find(item=>item.ritualType===ritual)??(ritual==='aksam'?dayEntries.find(item=>!item.ritualType):undefined)
-  const gratitudeEntry=store.sukurList.find(item=>item.date===selectedDate)
-  const activityQuery=useActivityLog(selectedDate,selectedDate)
-  useEffect(()=>{const requested=window.localStorage.getItem('sah-journal-open-date');if(!requested)return;window.localStorage.removeItem('sah-journal-open-date');const timer=window.setTimeout(()=>setSelectedDate(requested),0);return()=>window.clearTimeout(timer)},[])
-  const memoryDates=useMemo(()=>[
-    {label:'1 hafta önce',date:offsetDate('day',7)},{label:'1 ay önce',date:offsetDate('month',1)},{label:'3 ay önce',date:offsetDate('month',3)},
-    {label:'6 ay önce',date:offsetDate('month',6)},{label:'1 yıl önce',date:offsetDate('year',1)},
-  ],[])
-  const memoryActivityQuery=useActivityLog(memoryDates.at(-1)?.date,today)
-  const localActivities=useMemo<IntegratedActivity[]>(()=>buildActivityFeed(store).filter(item=>dayKey(item.createdAt)===selectedDate).map(item=>({id:item.id,category:item.category,label:item.label,detail:item.detail,xp:item.xp,occurredAt:item.createdAt,sourceView:item.category==='profession'?'profession-school':item.category})),[selectedDate,store])
-  const activities=activityQuery.items.length?activityQuery.items:localActivities
-  const trail=activities.filter(item=>item.category!=='journal')
-  const memories=useMemo(()=>memoryDates.flatMap(target=>
-    store.journal.filter(item=>item.date===target.date).map(item=>({
-      target,
-      entry:item,
-      activity:memoryActivityQuery.items.filter(event=>dayKey(event.occurredAt)===target.date&&event.category!=='journal').slice(0,2),
-    }))
-  ),[memoryDates,memoryActivityQuery.items,store.journal])
-
-  useEffect(()=>{if(isToday||dayEntries.some(item=>item.ritualType===ritual||(!item.ritualType&&ritual==='aksam')))return;const first=dayEntries[0];if(!first)return;const timer=window.setTimeout(()=>setRitual(first.ritualType==='sabah'?'sabah':'aksam'),0);return()=>window.clearTimeout(timer)},[dayEntries,isToday,ritual])
-  // Hydrate the selected page before paint: a deferred effect can overwrite a
-  // character typed immediately after changing ritual/date (covered by E2E).
-  /* eslint-disable react-hooks/set-state-in-effect -- synchronizing account-scoped external storage before exposing the editable page */
-  useLayoutEffect(()=>{
-    const fallback={mood:entry?.mood??3,energy:entry?.energy??7,stress:entry?.stress??3,sleep:entry?.sleep??7,content:entry?.content??'',moments:entry?.moments?.length?entry.moments:['','',''],gratitude:gratitudeEntry?.nimets?.length?gratitudeEntry.nimets:['','',''],selfNote:entry?.selfNote??'',intention:entry?.intentionText??'',challenge:entry?.expectedChallengeText??''}
-    let restored:Draft|null=null
-    try {const value=cache.load(draftKey);if(value&&['content','selfNote','intention','challenge'].every(key=>typeof value[key as 'content']==='string')&&['mood','energy','stress','sleep'].every(key=>Number.isFinite(value[key as 'mood']))&&Array.isArray(value.moments)&&value.moments.every(item=>typeof item==='string')&&Array.isArray(value.gratitude)&&value.gratitude.every(item=>typeof item==='string'))restored={...fallback,...value}}
-    catch {setNotice('Yerel taslak okunamadı. Kaydedilmiş sayfan gösteriliyor; taslak silinmedi.')}
-    draftRef.current=restored??fallback
-    if(loadedPage.current!==draftKey){
-      dirtyDraft.current=Boolean(restored&&JSON.stringify(restored)!==JSON.stringify(fallback))
-      submittedPage.current=null;loadedPage.current=draftKey
-    }
-    setDraftState(draftRef.current)
-    const remembered=window.localStorage.getItem('sah-journal-last-mode');setMode(entry?.entryMode??(remembered==='full'?'full':'quick'));setPage(0)
-    return()=>{cache.flush()}
-  },[cache,draftKey,entry,gratitudeEntry])
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  const pages=useMemo<SectionId[][]>(()=>mode==='quick'?[['quick']]:ritual==='sabah'?[['morning','wellbeing','story','activity']]:trail.length>5?[['wellbeing','story'],['moments','gratitude','self'],['activity']]:[['wellbeing','story'],['moments','gratitude','self','activity']],[mode,ritual,trail.length])
-  const currentPage=Math.min(page,pages.length-1);const visible=pages[currentPage]??[]
-  const chooseMode=(next:EntryMode)=>{setMode(next);setPage(0);window.localStorage.setItem('sah-journal-last-mode',next)}
-  const updateList=(key:'moments'|'gratitude',index:number,value:string)=>setDraft(current=>({...current,[key]:current[key].map((item,i)=>i===index?value:item)}))
-
-  const save=()=>{
-    if(!isToday)return
-    if(mode==='quick'&&!draft.content.trim()){setNotice('Hızlı kayıt için tek bir cümle bırak.');return}
-    if(mode==='full'&&ritual==='sabah'&&!draft.intention.trim()){setNotice('Bugünün niyetini bir cümleyle yaz.');return}
-    if(mode==='full'&&ritual==='aksam'&&!draft.content.trim()&&!draft.moments.some(Boolean)){setNotice('Bugünden en az bir iz bırak.');return}
-    if(!cache.flush()){return}
-    const now=new Date().toISOString(),journalId=entry?.id??ensureUUID(),targetAward=awardFor(ritual,mode),previousAward=entry?.xpAwarded??0,delta=Math.max(0,targetAward-previousAward)
-    const journal:JournalEntry={id:journalId,date:today,mood:draft.mood,energy:draft.energy,stress:draft.stress,sleep:draft.sleep,content:draft.content.trim(),moments:draft.moments.map(i=>i.trim()).filter(Boolean),selfNote:draft.selfNote.trim(),tags:entry?.tags??[],ritualType:ritual,entryMode:mode,intentionText:draft.intention.trim(),expectedChallengeText:draft.challenge.trim(),gratitudeText:draft.gratitude.map(i=>i.trim()).filter(Boolean).join(' · '),xpAwarded:targetAward,createdAt:entry?.createdAt??now,updatedAt:now}
-    dirtyDraft.current=false;submittedPage.current=draftKey
-    const saved=store.saveJournal(journal);setWriteStatus(saved)
-    if(saved==='storage-error'){dirtyDraft.current=true;setNotice('Kayıt kuyruğa alınamadı. Metnin bu sayfada; kopyalayarak koru.');return}
-    if(delta>0){store.addXP(delta);store.updateStreak();void recordXpEvent({sourceType:previousAward?'journal_detail':'journal',sourceId:journalId,label:mode==='quick'?'⚡ Hızlı günlük kaydı':ritual==='sabah'?'🌅 Sabah Niyeti':'🌙 Akşam Muhasebesi',amount:delta})}
-    if(ritual==='aksam'){const gratitude=draft.gratitude.map(i=>i.trim()).filter(Boolean);if(gratitude.length){const id=gratitudeEntry?.id??crypto.randomUUID();store.upsertSukur({id,date:today,text:'Akşam muhasebesinden eklenen şükürler',nimets:[gratitude[0]??'',gratitude[1]??'',gratitude[2]??''],createdAt:gratitudeEntry?.createdAt??now});if(!gratitudeEntry){store.addXP(20);void recordXpEvent({sourceType:'sukur',sourceId:id,label:'Günlükten şükür kaydı',amount:20})}}}
-    store.checkBadges();setNotice(saved==='local'?'Kayıt bu cihazda saklandı. Bulut kaydı için giriş yap.':'Metnin cihazda korundu. Bulut kayıt durumunu aşağıdan takip edebilirsin.');window.setTimeout(()=>setNotice(''),3400)
-  }
-
-  const openMemory=(memory:typeof memories[number])=>{setSelectedDate(memory.target.date);setRitual(memory.entry.ritualType==='sabah'?'sabah':'aksam');window.scrollTo({top:0,behavior:'smooth'})}
-
-  return <div className={`journal-notebook ritual-${ritual}`}>
-    <header className="journal-hero"><div><span className="journal-kicker"><AppIcon name={ritual==='sabah'?'sun':'moon'} /> KİŞİSEL DEFTERİN</span><h1>{ritual==='sabah'?'Güne niyetle başla.':'Günü şefkatle tamamla.'}</h1><p>{ritual==='sabah'?'Bugünün yönünü belirle; enerjini neye vereceğini sakin ve açık biçimde gör.':'Yaşadıklarını, şükürlerini ve öğrendiklerini kalıcı bir sayfada buluştur.'}</p></div><div className="journal-date-controls"><button onClick={()=>setSelectedDate(moveDate(selectedDate,-1))} aria-label="Önceki gün"><AppIcon name="chevron-left" /></button><label><span>{isToday?'BUGÜN':'ARŞİV'}</span><strong>{dateLabel(selectedDate)}</strong><input type="date" max={today} value={selectedDate} onChange={event=>setSelectedDate(event.target.value||today)} aria-label="Günlük tarihi seç" /></label><button disabled={isToday} onClick={()=>setSelectedDate(moveDate(selectedDate,1))} aria-label="Sonraki gün"><AppIcon name="chevron-right" /></button></div></header>
-    {notice&&<div className="journal-notice" role="status"><AppIcon name="circle-check" /> {notice}</div>}
-    <p role="status" className="journal-archive-note"><AppIcon name="shield-check" /><span>{writeStatus==='saved'?'Sunucuya kaydedildi':writeStatus==='saving'?'Sunucuya kaydediliyor…':writeStatus==='pending'?'Cihazda saklandı · Sunucuya gönderim bekliyor. Bağlantı gelince yeniden denenecek.':writeStatus==='storage-error'?'Depolama hatası · Metnini kopyalayarak koru.':'Taslak bu cihazda saklanır · Buluta kaydetmek için kaydet düğmesine bas.'}</span></p>
-    <section className="ritual-switcher" aria-label="Günlük yazma zamanı"><button className={ritual==='sabah'?'active':''} onClick={()=>setRitual('sabah')} disabled={!isToday&&!dayEntries.some(item=>item.ritualType==='sabah')}><span><AppIcon name="sun" /></span><div><small>GÜNE BAŞLARKEN</small><strong>Sabah Niyeti</strong><em>{dayEntries.some(item=>item.ritualType==='sabah')?'Kaydedildi':'Güne yön ver'}</em></div></button><button className={ritual==='aksam'?'active':''} onClick={()=>setRitual('aksam')} disabled={!isToday&&!dayEntries.some(item=>item.ritualType==='aksam'||!item.ritualType)}><span><AppIcon name="moon" /></span><div><small>GÜNÜ TAMAMLARKEN</small><strong>Akşam Muhasebesi</strong><em>{dayEntries.some(item=>item.ritualType==='aksam'||!item.ritualType)?'Kaydedildi':'Günü anlamlandır'}</em></div></button></section>
-    {isToday&&<section className="journal-mode-choice"><header><div><span className="eyebrow">YAZMA BİÇİMİNİ SEÇ</span><h2>Bugün ne kadar alanın var?</h2></div><small>Son seçimin hatırlanır; ikisi de serini sürdürür.</small></header><div><button className={mode==='quick'?'active':''} onClick={()=>chooseMode('quick')}><span><AppIcon name="bolt" /></span><div><strong>Hızlı Kayıt</strong><p>Bir duygu, tek cümle. 15 saniyede tamamla.</p><em>{awardFor(ritual,'quick')} XH</em></div><AppIcon name={mode==='quick'?'circle-check':'chevron-right'} /></button><button className={mode==='full'?'active':''} onClick={()=>chooseMode('full')}><span><AppIcon name="notebook" /></span><div><strong>Detaylı Yaz</strong><p>Dur, düşün ve gününün katmanlarını aç.</p><em>{awardFor(ritual,'full')} XH</em></div><AppIcon name={mode==='full'?'circle-check':'chevron-right'} /></button></div></section>}
-    {!isToday&&<div className="journal-archive-note"><AppIcon name="lock" /><span><strong>Bu kayıt geçmişinin değişmez bir parçası.</strong> Geçmiş niyet ve muhasebe kayıtları okunabilir; değiştirilemez veya silinemez.</span></div>}
-
-    <section className="notebook-shell"><div className="notebook-binding" aria-hidden>{Array.from({length:9},(_,i)=><i key={i}/>)}</div><motion.div key={`${selectedDate}-${ritual}-${mode}-${currentPage}`} className="notebook-page" initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{duration:.24}}><div className="notebook-page-heading"><span>{dateLabel(selectedDate)} · {entry?ritualLabel(entry):ritual==='sabah'?'🌅 Sabah':'🌙 Akşam'}</span><em>Sayfa {currentPage+1}</em></div>
-      {visible.includes('quick')&&<QuickEntry ritual={ritual} draft={draft} editable={isToday} onChange={setDraft} onDetail={()=>chooseMode('full')} hasSaved={Boolean(entry)}/>}
-      {visible.includes('morning')&&<MorningIntent draft={draft} editable={isToday} onChange={setDraft}/>}
-      {visible.includes('wellbeing')&&<Wellbeing draft={draft} editable={isToday} onChange={setDraft} compact={ritual==='sabah'}/>}
-      {visible.includes('story')&&<NotebookSection icon="pencil" title={ritual==='sabah'?'Niyetimi Destekleyen Not':'Bugün Neler Yaşadın'} note={ritual==='sabah'?'İstersen niyetine eşlik edecek kısa bir not bırak.':'Serbestçe yaz; alan seninle birlikte büyür.'}><AutoTextarea value={draft.content} readOnly={!isToday} minHeight={ritual==='sabah'?140:230} placeholder={ritual==='sabah'?'Bugün kendime hatırlatmak istediğim…':'Bugünün sende bıraktığı izleri, hislerini ve düşüncelerini yaz…'} onChange={value=>setDraft(c=>({...c,content:value}))}/></NotebookSection>}
-      {visible.includes('moments')&&<NotebookSection icon="sparkles" title="Bugünün 3 Anı" note="Hatırlamak istediğin küçük veya büyük anlar."><NumberedList values={draft.moments} editable={isToday} placeholder="Bugünden bir an…" onChange={(i,v)=>updateList('moments',i,v)} onAdd={()=>setDraft(c=>({...c,moments:[...c.moments,'']}))}/></NotebookSection>}
-      {visible.includes('gratitude')&&<NotebookSection icon="heart" title="Bugün Şükrettiklerim" note="Buraya eklediklerin Şükür Alanım ile aynı kaydı kullanır."><NumberedList values={draft.gratitude} editable={isToday} placeholder="Bugün fark ettiğim bir nimet…" onChange={(i,v)=>updateList('gratitude',i,v)}/></NotebookSection>}
-      {visible.includes('self')&&<NotebookSection icon="message-circle" title="Bugün Kendime Not" note="Yarınki sana kısa ve şefkatli bir cümle."><AutoTextarea value={draft.selfNote} readOnly={!isToday} minHeight={130} placeholder="Kendime hatırlatmak istediğim…" onChange={value=>setDraft(c=>({...c,selfNote:value}))}/></NotebookSection>}
-      {visible.includes('activity')&&<ActivityTrail items={trail} loading={activityQuery.loading&&!localActivities.length} onNavigate={onNavigate}/>}
-    </motion.div>{pages.length>1&&<footer className="notebook-footer"><button disabled={!currentPage} onClick={()=>setPage(v=>Math.max(0,v-1))}><AppIcon name="arrow-left" /> Önceki sayfa</button><div><span>Sayfa {currentPage+1}/{pages.length}</span><i>{pages.map((_,i)=><b key={i} className={i===currentPage?'active':''}/>)}</i></div><button disabled={currentPage===pages.length-1} onClick={()=>setPage(v=>Math.min(pages.length-1,v+1))}>Sonraki sayfa <AppIcon name="arrow-right" /></button></footer>}</section>
-
-    {memories.length>0&&<section className="journal-memories"><header><div><span className="eyebrow">GEÇMİŞE BAK</span><h2>Daha önce bugünlerde…</h2><p>Eski kayıtların, yolculuğundaki küçük değişimleri yeniden görmen için burada.</p></div><AppIcon name="history" /></header><div>{memories.map(memory=><button key={`${memory.target.label}-${memory.entry.id}`} onClick={()=>openMemory(memory)}><span className="memory-time">{memory.target.label}</span><div><strong>{new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long',year:'numeric'}).format(new Date(`${memory.entry.date}T12:00:00`))}</strong><i>{MOODS.find(m=>m.value===memory.entry.mood)?.emoji}</i></div><p>{entryPreview(memory.entry).slice(0,150)}{entryPreview(memory.entry).length>150?'…':''}</p><footer><span>{ritualLabel(memory.entry)}</span>{memory.activity[0]&&<span><AppIcon name="sparkles" /> {memory.activity[0].label}</span>}<AppIcon name="arrow-right" /></footer></button>)}</div></section>}
-    <nav className="journal-connections" aria-label="Günlüğü diğer alanlarla derinleştir"><span><AppIcon name="route" /><strong>Bugünün izini derinleştir</strong><small>Defterin, diğer alanlarınla birlikte anlam kazanır.</small></span><button onClick={()=>onNavigate('quran')}><AppIcon name="book-2" /> Kur’an notlarım</button><button onClick={()=>onNavigate('hadis')}><AppIcon name="quote" /> Hadis notlarım</button><button onClick={()=>onNavigate('sukur')}><AppIcon name="sparkles" /> Şükür alanı</button></nav>
-    {isToday&&<div className="journal-save-bar"><div><AppIcon name="shield-check" /><span><strong>Yazdıkların yalnızca sana görünür.</strong><small>Geçmiş kayıtlar kalıcı ve salt okunurdur.</small></span></div><button className="primary-button" onClick={save}><AppIcon name="device-floppy" /> {mode==='quick'?'Hızlı kaydı tamamla':ritual==='sabah'?'Niyetimi kaydet':'Muhasebemi kaydet'}</button></div>}
-  </div>
+type EntryMode = 'quick' | 'full';
+type Draft = { mood: number; energy: number; stress: number; sleep: number; content: string; moments: string[]; gratitude: string[]; selfNote: string; intention: string; challenge: string };
+type DraftStatus = 'idle' | 'writing' | 'stored' | 'error';
+const emptyDraft = (): Draft => ({ mood: 3, energy: 7, stress: 3, sleep: 7, content: '', moments: ['', '', ''], gratitude: ['', '', ''], selfNote: '', intention: '', challenge: '' });
+const initialRitual = (): JournalRitual => new Date().getHours() < 12 ? 'sabah' : 'aksam';
+function rememberedMode(): EntryMode { try { return typeof window !== 'undefined' && window.localStorage.getItem('sah-journal-last-mode') === 'full' ? 'full' : 'quick'; } catch { return 'quick'; } }
+function moveDate(value: string, amount: number) { const date = new Date(`${value}T12:00:00`); date.setDate(date.getDate() + amount); return dayKey(date); }
+function awardFor(ritual: JournalRitual, mode: EntryMode) { return ritual === 'sabah' ? mode === 'quick' ? 15 : 20 : mode === 'quick' ? 20 : 50; }
+function validDraft(value: unknown): value is Draft {
+  if (!value || typeof value !== 'object') return false;
+  const row = value as Record<string, unknown>;
+  return ['content', 'selfNote', 'intention', 'challenge'].every(key => typeof row[key] === 'string')
+    && ['mood', 'energy', 'stress', 'sleep'].every(key => typeof row[key] === 'number' && Number.isFinite(row[key]))
+    && ['moments', 'gratitude'].every(key => Array.isArray(row[key]) && (row[key] as unknown[]).every(item => typeof item === 'string'));
 }
 
-function QuickEntry({ritual,draft,editable,onChange,onDetail,hasSaved}:{ritual:Ritual;draft:Draft;editable:boolean;onChange:React.Dispatch<React.SetStateAction<Draft>>;onDetail:()=>void;hasSaved:boolean}){return <section className="journal-quick-entry"><div className="quick-orbit"><AppIcon name={ritual==='sabah'?'sun':'moon'}/></div><span className="eyebrow">{ritual==='sabah'?'GÜNÜN İLK IŞIĞI':'GÜNÜN SON İZİ'}</span><h2>{ritual==='sabah'?'Bugüne nasıl başlıyorsun?':'Bugün sende ne bıraktı?'}</h2><p>Önce duygunu seç, sonra yalnızca tek bir cümle bırak.</p><MoodPicker value={draft.mood} editable={editable} onChange={mood=>onChange(c=>({...c,mood}))}/><AutoTextarea value={draft.content} readOnly={!editable} minHeight={88} placeholder={ritual==='sabah'?'Bugün niyetim…':'Bugünü tek cümleyle anlatırsam…'} onChange={content=>onChange(c=>({...c,content}))}/>{editable&&<button className="detail-link" onClick={onDetail}><AppIcon name="plus" /> {hasSaved?'Kaydımı detaylandır':'Daha derin yazmak istiyorum'}</button>}</section>}
-function MorningIntent({draft,editable,onChange}:{draft:Draft;editable:boolean;onChange:React.Dispatch<React.SetStateAction<Draft>>}){return <section className="morning-intent"><header><span><AppIcon name="sun" /></span><div><span className="eyebrow">SABAH NİYETİ</span><h2>Bugünün yönünü belirle</h2><p>Kusursuz bir plan değil; gün içinde geri dönebileceğin sade bir pusula.</p></div></header><div><label><span>Bugünkü niyetim</span><AutoTextarea value={draft.intention} readOnly={!editable} minHeight={100} placeholder="Bugün nasıl biri olmak, neye özen göstermek istiyorum?" onChange={intention=>onChange(c=>({...c,intention}))}/></label><label><span>Karşıma çıkabilecek zorluk</span><AutoTextarea value={draft.challenge} readOnly={!editable} minHeight={100} placeholder="Beni zorlayabilecek şey ne; ona nasıl yaklaşabilirim?" onChange={challenge=>onChange(c=>({...c,challenge}))}/></label></div></section>}
-function MoodPicker({value,editable,onChange}:{value:number;editable:boolean;onChange:(value:number)=>void}){return <div className="mood-picker" role="group" aria-label="Ruh hali">{MOODS.map(mood=><button key={mood.value} disabled={!editable} className={value===mood.value?'active':''} onClick={()=>onChange(mood.value)} aria-pressed={value===mood.value}><b>{mood.emoji}</b><span>{mood.label}</span></button>)}</div>}
-function NotebookSection({icon,title,note,children}:{icon:string;title:string;note:string;children:React.ReactNode}){return <section className="journal-section"><header><span><AppIcon name={icon}/></span><div><h2>{title}</h2><p>{note}</p></div></header>{children}</section>}
-function Wellbeing({draft,editable,onChange,compact=false}:{draft:Draft;editable:boolean;onChange:React.Dispatch<React.SetStateAction<Draft>>;compact?:boolean}){const fields:Array<{key:'mood'|'energy'|'stress'|'sleep';label:string;icon:string;min:number;max:number;suffix:string}>=[{key:'mood',label:'Ruh hali',icon:'mood-smile',min:1,max:5,suffix:'/5'},{key:'energy',label:'Enerji',icon:'bolt',min:1,max:10,suffix:'/10'},...(!compact?[{key:'stress' as const,label:'Stres',icon:'activity',min:1,max:10,suffix:'/10'},{key:'sleep' as const,label:'Uyku',icon:'moon',min:0,max:24,suffix:' saat'}]:[])];return <section className="journal-wellbeing"><div><span className="eyebrow">GÜNÜN NABZI</span><h2>{compact?'Şu an nasılsın?':'Bugün nasıldın?'}</h2></div><div>{fields.map(field=><label key={field.key}><span><AppIcon name={field.icon}/> {field.label}</span><strong>{draft[field.key]}{field.suffix}</strong><input disabled={!editable} type="range" min={field.min} max={field.max} value={draft[field.key]} onChange={event=>onChange(c=>({...c,[field.key]:Number(event.target.value)}))}/></label>)}</div></section>}
-function AutoTextarea({value,onChange,placeholder,readOnly,minHeight}:{value:string;onChange:(value:string)=>void;placeholder:string;readOnly:boolean;minHeight:number}){const ref=useRef<HTMLTextAreaElement>(null);useEffect(()=>{const el=ref.current;if(!el)return;el.style.height='auto';el.style.height=`${Math.max(minHeight,el.scrollHeight)}px`},[minHeight,value]);return <textarea ref={ref} className="journal-textarea" value={value} onChange={event=>onChange(event.target.value)} placeholder={placeholder} readOnly={readOnly} style={{minHeight}}/>}
-function NumberedList({values,editable,placeholder,onChange,onAdd}:{values:string[];editable:boolean;placeholder:string;onChange:(index:number,value:string)=>void;onAdd?:()=>void}){const visible=values.length?values:['','',''];return <div className="journal-numbered-list">{visible.map((value,index)=><label key={index}><span>{index+1}</span><AutoTextarea value={value} onChange={next=>onChange(index,next)} placeholder={placeholder} readOnly={!editable} minHeight={48}/></label>)}{editable&&onAdd&&<button type="button" onClick={onAdd}><AppIcon name="plus"/> Bir an daha ekle</button>}</div>}
-function ActivityTrail({items,loading,onNavigate}:{items:IntegratedActivity[];loading:boolean;onNavigate:(view:string)=>void}){return <section className="journal-section activity-trail"><header><span><AppIcon name="timeline"/></span><div><h2>Bugün Neler Yaptın</h2><p>Uygulamadaki anlamlı adımların otomatik ve salt okunur gün izi.</p></div></header>{loading?<div className="journal-trail-loading"><i/><i/><i/></div>:items.length===0?<div className="journal-trail-empty"><AppIcon name="leaf"/><span><strong>Bu güne ait başka bir hareket yok.</strong><small>Kur’an, odak, dua veya ders kayıtların burada kendiliğinden görünecek.</small></span></div>:<ol>{items.map(item=><li key={`${item.category}-${item.id}`}><button onClick={()=>onNavigate(item.sourceView)}><span className={`trail-icon ${item.category}`}><AppIcon name={trailIcon(item.category)}/></span><span><strong>{item.label}</strong><small>{item.detail}</small></span><time dateTime={item.occurredAt}>{new Intl.DateTimeFormat('tr-TR',{hour:'2-digit',minute:'2-digit'}).format(new Date(item.occurredAt))}</time><AppIcon name="chevron-right"/></button></li>)}</ol>}</section>}
-function trailIcon(category:IntegratedActivity['category']){return({quran:'book-2',hadis:'quote',matrix:'circle-check',lessons:'history',sukur:'sparkles',mescidim:'building-mosque',focus:'target-arrow',profession:'certificate',awareness:'world-heart',journal:'notebook'} as const)[category]}
+export default function JournalNotebook({ onNavigate, entries, requestedDate, requestedRitual, onToday, loading = false, recordsReady = true }: {
+  onNavigate: (view: string) => void; entries?: JournalEntry[]; requestedDate?: string; requestedRitual?: JournalRitual; onToday?: () => void; loading?: boolean; recordsReady?: boolean;
+}) {
+  const store = useJourneyStore();
+  const today = dayKey(new Date());
+  const journal = entries ?? store.journal;
+  const [selectedDate, setSelectedDate] = useState(requestedDate ?? today);
+  const [ritual, setRitual] = useState<JournalRitual>(requestedRitual ?? initialRitual);
+  const [mode, setMode] = useState<EntryMode>(rememberedMode);
+  const [draft, setDraftState] = useState<Draft>(emptyDraft);
+  const [notice, setNotice] = useState('');
+  const [draftStatus, setDraftStatus] = useState<DraftStatus>('idle');
+  const [writeStatus, setWriteStatus] = useState<JournalWriteStatus>('local');
+  const owner = useAuthStore(state => state.user?.id ?? state.session?.user.id ?? 'local');
+  const draftRef = useRef(draft);
+  const dirty = useRef(false);
+  const loadedPage = useRef<string | null>(null);
+  const submittedPage = useRef<string | null>(null);
+  const corruptDraft = useRef<{ key: string; raw: string } | null>(null);
+  const editor = useRef<HTMLTextAreaElement>(null);
+  const helper = useRef<HTMLDetailsElement>(null);
+  const [helpQuestion, setHelpQuestion] = useState('');
+  const draftKey = `sah-journal-draft-v1:${owner}:${selectedDate}:${ritual}`;
+  const isToday = selectedDate === today;
+  const cache = useMemo(() => new DebouncedDrafts<Draft>({
+    getItem: key => window.localStorage.getItem(key), setItem: (key, value) => window.localStorage.setItem(key, value),
+  }, () => { setDraftStatus('error'); setNotice('Cihaz depolamasına yazılamadı. Metnini kopyalayarak koru; kaydedildi olarak işaretlenmedi.'); }, 600,
+  // eslint-disable-next-line react-hooks/refs -- invoked after storage writes, never during render
+  key => { if (loadedPage.current === key) setDraftStatus('stored'); }), []);
+  const dayEntries = useMemo(() => journal.filter(item => item.date === selectedDate), [journal, selectedDate]);
+  const entry = dayEntries.find(item => item.ritualType === ritual) ?? (ritual === 'aksam' ? dayEntries.find(item => !item.ritualType) : undefined);
+  const gratitudeLink = useJournalGratitude(selectedDate);
+  const gratitudeEntry = gratitudeLink.entry;
+  const activity = useActivityLog(selectedDate, selectedDate);
+  const localActivities = useMemo<IntegratedActivity[]>(() => buildActivityFeed(store).filter(item => dayKey(item.createdAt) === selectedDate).map(item => ({ id: item.id, category: item.category, label: item.label, detail: item.detail, xp: item.xp, occurredAt: item.createdAt, sourceView: item.category === 'profession' ? 'profession-school' : item.category })), [selectedDate, store]);
+  const guest = useAuthStore(state => state.session?.access_token === 'mock-token' || !state.user);
+  const trail = (activity.items.length || !guest ? activity.items : localActivities).filter(item => item.category !== 'journal' && dayKey(item.occurredAt) === selectedDate);
+  const memories = useMemo(() => {
+    const dates = [7, 30, 90, 180, 365].map(days => ({ days, date: moveDate(today, -days) }));
+    return dates.flatMap(target => journal.filter(item => item.date === target.date).map(item => ({ days: target.days, entry: item })));
+  }, [journal, today]);
+
+  const setDraft: React.Dispatch<React.SetStateAction<Draft>> = next => {
+    if (!isToday) return;
+    const value = typeof next === 'function' ? next(draftRef.current) : next;
+    draftRef.current = value; dirty.current = true; setDraftState(value); setWriteStatus('local');
+    if (corruptDraft.current?.key === draftKey) { setDraftStatus('error'); return; }
+    setDraftStatus('writing'); cache.stage(draftKey, value);
+  };
+
+  // Synchronize navigation and account-scoped storage before exposing inputs.
+  // Do not rehydrate a dirty draft when a late server response/store update arrives.
+  /* eslint-disable react-hooks/set-state-in-effect -- external account-scoped draft hydration must finish before paint */
+  useLayoutEffect(() => {
+    setSelectedDate(requestedDate ?? today);
+    if (requestedRitual) setRitual(requestedRitual);
+  }, [requestedDate, requestedRitual, today]);
+  useLayoutEffect(() => {
+    if (loadedPage.current === draftKey && (dirty.current || submittedPage.current === draftKey)) return;
+    const pageChanged = loadedPage.current !== draftKey;
+    const fallback: Draft = { ...emptyDraft(), mood: entry?.mood ?? 3, energy: entry?.energy ?? 7, stress: entry?.stress ?? 3, sleep: entry?.sleep ?? 7,
+      content: entry?.content ?? '', moments: entry?.moments?.length ? entry.moments : ['', '', ''],
+      gratitude: entry?.gratitudeText ? entry.gratitudeText.split(' · ') : gratitudeEntry?.nimets?.length ? gratitudeEntry.nimets : ['', '', ''],
+      selfNote: entry?.selfNote ?? '', intention: entry?.intentionText ?? '', challenge: entry?.expectedChallengeText ?? '',
+    };
+    let restored: Draft | null = null;
+    if (pageChanged) { corruptDraft.current = null; setNotice(''); setHelpQuestion(''); }
+    // Past entries are authoritative, read-only records, never unsaved local drafts.
+    if (isToday) {
+      try {
+        const value = cache.load(draftKey);
+        if (value !== null && !validDraft(value)) throw new Error('invalid_draft');
+        restored = value;
+      } catch {
+        try { const raw = window.localStorage.getItem(draftKey); if (raw) corruptDraft.current = { key: draftKey, raw }; } catch { /* storage may be unavailable */ }
+        setDraftStatus('error'); setNotice('Yerel taslak okunamadı; eski taslak silinmedi. Metnini kopyalayabilir veya korumayı yeniden deneyebilirsin.');
+      }
+    }
+    const values = restored ?? fallback;
+    draftRef.current = { ...values, moments: Array.from({ length: Math.max(3, values.moments.length) }, (_, i) => values.moments[i] ?? ''), gratitude: Array.from({ length: Math.max(3, values.gratitude.length) }, (_, i) => values.gratitude[i] ?? '') };
+    dirty.current = Boolean(restored && JSON.stringify(restored) !== JSON.stringify(fallback));
+    loadedPage.current = draftKey;
+    if (pageChanged) { submittedPage.current = null; setWriteStatus('local'); }
+    if (!corruptDraft.current) setDraftStatus(restored ? 'stored' : 'idle');
+    setDraftState(draftRef.current);
+    if (pageChanged || entry && !dirty.current) setMode(entry?.entryMode ?? rememberedMode());
+  }, [cache, draftKey, entry, gratitudeEntry, isToday]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    const flush = () => { cache.flush(); };
+    const update = (event: Event) => {
+      const detail = (event as CustomEvent<{ value: JournalWriteStatus; owner: string }>).detail;
+      if (detail?.owner !== journalOwner()) return;
+      if (detail.value === 'storage-error' || !dirty.current && submittedPage.current === loadedPage.current) setWriteStatus(detail.value);
+    };
+    window.addEventListener('pagehide', flush); document.addEventListener('visibilitychange', flush); window.addEventListener(JOURNAL_STATUS_EVENT, update);
+    return () => { flush(); window.removeEventListener('pagehide', flush); document.removeEventListener('visibilitychange', flush); window.removeEventListener(JOURNAL_STATUS_EVENT, update); };
+  }, [cache]);
+  useEffect(() => { return () => { cache.flush(); }; }, [cache, draftKey]);
+  useEffect(() => {
+    if (isToday || dayEntries.some(item => item.ritualType === ritual || !item.ritualType && ritual === 'aksam')) return;
+    const first = dayEntries[0]; if (!first) return;
+    const timer = window.setTimeout(() => setRitual(first.ritualType === 'sabah' ? 'sabah' : 'aksam'), 0);
+    return () => window.clearTimeout(timer);
+  }, [dayEntries, isToday, ritual]);
+  useEffect(() => {
+    try {
+      const date = window.localStorage.getItem('sah-journal-open-date');
+      if (!validJournalDate(date, today)) return;
+      window.localStorage.removeItem('sah-journal-open-date');
+      const timer = window.setTimeout(() => setSelectedDate(date), 0);
+      return () => window.clearTimeout(timer);
+    } catch { /* date navigation must not depend on device storage */ }
+  }, [today]);
+
+  const chooseMode = (value: EntryMode) => {
+    setMode(value);
+    try { window.localStorage.setItem('sah-journal-last-mode', value); } catch { setNotice('Yazma biçimi bu cihazda hatırlanamadı; metnin değişmedi.'); }
+  };
+  const persistCurrentDraft = () => {
+    if (corruptDraft.current?.key === draftKey) {
+      try {
+        // Preserve the unreadable original BEFORE allowing this page to replace it.
+        window.localStorage.setItem(`${draftKey}:recovery:${Date.now()}`, corruptDraft.current.raw);
+        corruptDraft.current = null;
+      } catch { setDraftStatus('error'); setNotice('Eski taslak güvenle korunamadı. Yazını kopyala; eski veri değiştirilmedi.'); return false; }
+    }
+    cache.stage(draftKey, draftRef.current);
+    return cache.flush();
+  };
+  const save = () => {
+    if (!isToday || loadedPage.current !== draftKey) return;
+    const value = draftRef.current;
+    if (mode === 'quick' && !value.content.trim() || mode === 'full' && ritual === 'sabah' && !value.intention.trim() || mode === 'full' && ritual === 'aksam' && !value.content.trim() && !value.moments.some(item => item.trim())) {
+      setNotice(mode === 'full' && ritual === 'sabah' ? 'Bugünün niyetini bir cümleyle yaz.' : 'Kaydetmek için bugünden bir cümle bırak.'); editor.current?.focus(); return;
+    }
+    if (!persistCurrentDraft()) return;
+    // Resolve existing IDs before creating a new row or calculating its reward.
+    if (!recordsReady) { setNotice('Mevcut kayıtların doğrulanıyor. Taslağın cihazda korundu; bağlantıyı kontrol edip birazdan yeniden Kaydet.'); return; }
+    if (ritual === 'aksam' && value.gratitude.some(item => item.trim()) && !gratitudeLink.ready) {
+      setNotice(gratitudeLink.error ? 'Şükür bağlantısı doğrulanamadı. Taslağın cihazda korundu; bağlantı gelince yeniden Kaydet.' : 'Şükür bağlantısı kontrol ediliyor. Taslağın cihazda korundu; birazdan yeniden Kaydet.'); return;
+    }
+    // Read fresh store state: two rapid clicks cannot mint two IDs or rewards.
+    const current = useJourneyStore.getState();
+    const authenticated = useAuthStore.getState().session?.access_token !== 'mock-token' && /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i.test(owner);
+    const candidates = authenticated ? [...journalWritesAfter(owner, 0), ...journal] : current.journal;
+    const existing = candidates.find(item => item.date === today && item.ritualType === ritual) ?? (ritual === 'aksam' ? candidates.find(item => item.date === today && !item.ritualType) : undefined) ?? entry;
+    const now = new Date().toISOString();
+    const id = existing?.id ?? ensureUUID();
+    const targetAward = awardFor(ritual, mode);
+    const previousAward = existing?.xpAwarded ?? 0;
+    const delta = Math.max(0, targetAward - previousAward);
+    const record: JournalEntry = { id, date: today, mood: value.mood, energy: value.energy, stress: value.stress, sleep: value.sleep,
+      content: value.content.trim(), moments: value.moments.map(item => item.trim()).filter(Boolean), selfNote: value.selfNote.trim(), tags: existing?.tags ?? [],
+      ritualType: ritual, entryMode: mode, intentionText: value.intention.trim(), expectedChallengeText: value.challenge.trim(),
+      gratitudeText: value.gratitude.map(item => item.trim()).filter(Boolean).join(' · '), xpAwarded: Math.max(previousAward, targetAward), createdAt: existing?.createdAt ?? now, updatedAt: now,
+    };
+    dirty.current = false; submittedPage.current = draftKey;
+    const status = current.saveJournal(record); setWriteStatus(status);
+    if (status === 'storage-error') { dirty.current = true; setNotice('Kayıt kuyruğa alınamadı. Metnini kopyalayarak koru.'); return; }
+    if (delta > 0) { current.addXP(delta); current.updateStreak(); void recordXpEvent({ sourceType: previousAward ? 'journal_detail' : 'journal', sourceId: id, label: mode === 'quick' ? '⚡ Hızlı günlük kaydı' : ritual === 'sabah' ? '🌅 Sabah Niyeti' : '🌙 Akşam Muhasebesi', amount: delta }); }
+    if (ritual === 'aksam') {
+      const gratitude = value.gratitude.map(item => item.trim()).filter(Boolean);
+      if (gratitude.length) {
+        const existingGratitude = authenticated ? gratitudeLink.entry : useJourneyStore.getState().sukurList.find(item => item.date === today);
+        const gratitudeId = existingGratitude?.id ?? ensureUUID();
+        const linked: SukurEntry = { id: gratitudeId, date: today, text: 'Akşam muhasebesinden eklenen şükürler', nimets: [gratitude[0] ?? '', gratitude[1] ?? '', gratitude[2] ?? ''], createdAt: existingGratitude?.createdAt ?? now };
+        current.upsertSukur(linked); gratitudeLink.remember(linked);
+        if (!existingGratitude) { current.addXP(20); void recordXpEvent({ sourceType: 'sukur', sourceId: gratitudeId, label: 'Günlükten şükür kaydı', amount: 20 }); }
+      }
+    }
+    current.checkBadges(); setNotice(status === 'local' ? 'Kayıt bu cihazda saklandı. Bulut kaydı için giriş yap.' : 'Kayıt gönderime alındı; durumunu aşağıdan takip edebilirsin.');
+  };
+  const updateList = (key: 'moments' | 'gratitude', index: number, value: string) => setDraft(current => ({ ...current, [key]: current[key].map((item, i) => i === index ? value : item) }));
+  const goToday = () => { cache.flush(); setSelectedDate(today); setRitual(initialRitual()); onToday?.(); };
+  const statusText = writeStatus === 'saved' ? 'Sunucuya kaydedildi' : writeStatus === 'saving' ? 'Kaydediliyor…' : writeStatus === 'pending' ? 'Cihazda saklandı · bağlantı bekleniyor' : writeStatus === 'storage-error' || draftStatus === 'error' ? 'Depolama hatası · metnini kopyala' : draftStatus === 'writing' ? 'Taslak korunuyor…' : draftStatus === 'stored' ? 'Taslak bu cihazda saklandı' : 'Taslak cihazda korunur · bulut için Kaydet';
+  const mainIsIntention = mode === 'full' && ritual === 'sabah';
+  const mainLabel = mainIsIntention ? 'Bugünkü niyetim' : ritual === 'sabah' ? 'Bugüne bir not' : 'Bugünden kalanlar';
+  const copyText = async () => {
+    const value = draftRef.current;
+    const text = [value.intention, value.content, value.challenge, ...value.moments, ...value.gratitude, value.selfNote].filter(Boolean).join('\n\n');
+    try { await navigator.clipboard.writeText(text); setNotice('Yazın panoya kopyalandı.'); } catch { setNotice('Panoya erişilemedi. Yazı alanındaki metni seçip kopyalayabilirsin.'); editor.current?.focus(); editor.current?.select(); }
+  };
+
+  return <div className={`journal-notebook ritual-${ritual}`}>
+    <div className="journal-toolbar">
+      <div className="journal-date-controls"><button type="button" aria-label="Önceki gün" onClick={() => { cache.flush(); setSelectedDate(moveDate(selectedDate, -1)); }}><AppIcon name="chevron-left" /></button><label><span>{isToday ? 'Bugün' : 'Arşiv'}</span><input type="date" value={selectedDate} max={today} aria-label="Günlük tarihi seç" onChange={event => { if (validJournalDate(event.target.value, today)) { cache.flush(); setSelectedDate(event.target.value); } }} /></label><button type="button" aria-label="Sonraki gün" disabled={isToday} onClick={() => { cache.flush(); setSelectedDate(moveDate(selectedDate, 1)); }}><AppIcon name="chevron-right" /></button></div>
+      <div className="journal-ritual-control" role="group" aria-label="Yazma zamanı">{(['sabah', 'aksam'] as const).map(value => <button type="button" key={value} aria-label={value === 'sabah' ? 'Sabah Niyeti' : 'Akşam Muhasebesi'} aria-pressed={ritual === value} disabled={!isToday && !dayEntries.some(item => item.ritualType === value || !item.ritualType && value === 'aksam')} onClick={() => { cache.flush(); setRitual(value); }}><AppIcon name={value === 'sabah' ? 'sun' : 'moon'} /> {value === 'sabah' ? 'Sabah' : 'Akşam'}</button>)}</div>
+    </div>
+    {!isToday && <div className="journal-readonly-note"><AppIcon name="lock" /><span><strong>Salt okunur</strong> · Geçmiş kayıtlar değiştirilemez.</span><button type="button" className="journal-text-button" onClick={goToday}>Bugün yaz</button></div>}
+    {notice && <div className={`journal-notice${draftStatus === 'error' || writeStatus === 'storage-error' ? ' is-error' : ''}`} role={draftStatus === 'error' || writeStatus === 'storage-error' ? 'alert' : 'status'}><AppIcon name={draftStatus === 'error' ? 'alert-circle' : 'info-circle'} /><span>{notice}</span></div>}
+    {!isToday && !entry ? <div className="journal-empty"><AppIcon name="notebook" /><h2>{loading ? 'Kayıt yükleniyor…' : 'Bu gün için bir kayıt görünmüyor.'}</h2><p>Başka bir gün seçebilir veya bugüne dönebilirsin.</p><button type="button" className="journal-secondary" onClick={goToday}>Bugün yaz</button></div> : <>
+      <section className={`journal-editor${mode === 'quick' ? ' journal-quick-entry' : ''}`} aria-label="Günlük yazı alanı">
+        <div className="journal-editor-heading"><span>{isToday ? 'Şu an nasılsın?' : journalDateLabel(selectedDate, true)}</span>{isToday && <div role="group" aria-label="Yazma biçimi" className="journal-mode-control"><button type="button" aria-label="Hızlı Kayıt" aria-pressed={mode === 'quick'} onClick={() => chooseMode('quick')}>Hızlı</button><button type="button" aria-label="Detaylı Yaz" aria-pressed={mode === 'full'} onClick={() => chooseMode('full')}>Detaylı</button></div>}</div>
+        <MoodPicker value={draft.mood} editable={isToday} onChange={value => setDraft(current => ({ ...current, mood: value }))} />
+        <label className="journal-main-field"><span>{mainLabel}</span><AutoTextarea inputRef={editor} main label={mainLabel} value={mainIsIntention ? draft.intention : draft.content} readOnly={!isToday} placeholder={mainIsIntention ? 'Bugün neye özen göstermek istiyorum?' : ritual === 'sabah' ? 'Bugün niyetim…' : 'Bugünü tek cümleyle anlatırsam…'} onChange={value => setDraft(current => ({ ...current, [mainIsIntention ? 'intention' : 'content']: value }))} /></label>
+        {isToday && <details ref={helper} className="journal-writing-help"><summary><AppIcon name="bulb" /> Yazmaya yardımcı ol <AppIcon name="chevron-down" /></summary><div>{['Bugün neye niyet ediyorum?', 'Bugünden aklımda kalan ne?', 'Bugün ne için şükrediyorum?', 'Kendime neyi hatırlatmak isterim?'].map(question => <button type="button" key={question} onClick={() => { setHelpQuestion(question); if (helper.current) helper.current.open = false; editor.current?.focus(); }}>{question}</button>)}</div></details>}
+        {helpQuestion && <p className="journal-prompt-note"><AppIcon name="bulb" /> {helpQuestion}<button type="button" aria-label="Yazma sorusunu kaldır" onClick={() => setHelpQuestion('')}><AppIcon name="x" /></button></p>}
+        {isToday && <footer className="journal-save-row"><div className="journal-write-status" role="status" aria-live="polite" data-status={draftStatus === 'error' ? 'storage-error' : writeStatus}><AppIcon name={draftStatus === 'error' || writeStatus === 'storage-error' ? 'alert-circle' : writeStatus === 'saved' ? 'cloud-check' : 'device-floppy'} /><span>{statusText}</span></div><button type="button" className="journal-save-button" onClick={save}><AppIcon name="device-floppy" /> Kaydet</button></footer>}
+        {isToday && (draftStatus === 'error' || writeStatus === 'storage-error' || writeStatus === 'pending') && <div className="journal-recovery-actions"><button type="button" className="journal-text-button" onClick={() => void copyText()}>Metnimi kopyala</button><button type="button" className="journal-text-button" onClick={() => { if (writeStatus === 'pending') void flushJournalOutbox(); else if (persistCurrentDraft()) setNotice('Taslak bu cihazda korundu. Bulut için Kaydet düğmesini kullan.'); }}>Yeniden dene</button></div>}
+      </section>
+      {(mode === 'full' || !isToday) && <div className="journal-details">
+        {ritual === 'sabah' && <>
+          <Fold title="Karşıma çıkabilecek zorluk" icon="route" filled={Boolean(draft.challenge)}><Field label="Zorlukla nasıl karşılaşmak isterim?" value={draft.challenge} editable={isToday} onChange={value => setDraft(current => ({ ...current, challenge: value }))} /></Fold>
+          <Fold title="Niyetimi destekleyen not" icon="pencil" filled={Boolean(draft.content)}><Field label="Niyetime eşlik eden not" value={draft.content} editable={isToday} onChange={value => setDraft(current => ({ ...current, content: value }))} /></Fold>
+        </>}
+        {ritual === 'aksam' && <>
+          <Fold title="Bugünün anları" icon="sparkles" filled={draft.moments.some(Boolean)}><NumberedList values={draft.moments} editable={isToday} label="Bugünden bir an" onChange={(index, value) => updateList('moments', index, value)} onAdd={() => setDraft(current => ({ ...current, moments: [...current.moments, ''] }))} /></Fold>
+          <Fold title="Şükrettiklerim" icon="heart" filled={draft.gratitude.some(Boolean)}><p className="journal-section-note">Kaydettiğinde Şükür Defterim ile ilişkilendirilir. Tek bir nimet de yeter.</p><NumberedList values={draft.gratitude} editable={isToday} label="Fark ettiğim bir nimet" onChange={(index, value) => updateList('gratitude', index, value)} /></Fold>
+          <Fold title="Kendime bir not" icon="message-circle" filled={Boolean(draft.selfNote)}><Field label="Yarınki kendime not" value={draft.selfNote} editable={isToday} onChange={value => setDraft(current => ({ ...current, selfNote: value }))} /></Fold>
+          {draft.intention && <Fold title="Bu kayıttaki niyet" icon="sun" filled><Field label="Kaydımın niyeti" value={draft.intention} editable={isToday} onChange={value => setDraft(current => ({ ...current, intention: value }))} /></Fold>}
+        </>}
+        <Fold title="Günün nabzı" icon="activity"><div className="journal-wellbeing-fields">{([{ key: 'energy', label: 'Enerji', min: 1, max: 10, suffix: '/10' }, { key: 'stress', label: 'Stres', min: 1, max: 10, suffix: '/10' }, { key: 'sleep', label: 'Uyku', min: 0, max: 24, suffix: ' saat' }] as const).map(field => <label key={field.key}><span>{field.label}<strong>{draft[field.key]}{field.suffix}</strong></span><input type="range" min={field.min} max={field.max} step={field.key === 'sleep' ? 0.5 : 1} value={draft[field.key]} disabled={!isToday} onChange={event => setDraft(current => ({ ...current, [field.key]: Number(event.target.value) }))} /></label>)}</div><p className="journal-section-note">Başlangıç değerleri tahmin değildir. İstersen kendi değerlerini seçebilirsin.</p></Fold>
+      </div>}
+      {mode === 'quick' && isToday && <button type="button" className="journal-text-button journal-deepen" onClick={() => chooseMode('full')}><AppIcon name="plus" /> Biraz daha derinleş</button>}
+    </>}
+    <Fold title="Günün izi" icon="timeline" caption={trail.length ? `${trail.length} adım` : undefined}>{activity.error && !guest ? <p className="journal-section-note">Günün izi yüklenemedi. <button type="button" className="journal-text-button" onClick={() => void activity.refresh()}>Yeniden dene</button></p> : <ActivityTrail items={trail} loading={activity.loading && !trail.length} onNavigate={onNavigate} />}</Fold>
+    {memories.length > 0 && <Fold title="Daha önce bugünlerde…" icon="history" caption={`${memories.length} anı`}><div className="journal-memory-list">{memories.map(memory => <button type="button" key={memory.entry.id} onClick={() => { cache.flush(); setSelectedDate(memory.entry.date); setRitual(memory.entry.ritualType === 'sabah' ? 'sabah' : 'aksam'); }}><small>{memory.days} gün önce · {journalDateLabel(memory.entry.date, true)}</small><span>{journalPreview(memory.entry).slice(0, 140)}</span><AppIcon name="arrow-right" /></button>)}</div></Fold>}
+    <p className="journal-footer-note"><AppIcon name="lock" /> Kişisel defterin · Taslak cihazda, bulut kaydı hesabında.</p>
+  </div>;
+}
+
+function MoodPicker({ value, editable, onChange }: { value: number; editable: boolean; onChange: (value: number) => void }) {
+  return <fieldset className="journal-mood-picker"><legend className="journal-sr-only">Ruh hali</legend><div role="group" aria-label="Ruh hali">{JOURNAL_MOODS.map(mood => <button type="button" key={mood.value} disabled={!editable} aria-pressed={value === mood.value} onClick={() => onChange(mood.value)}><span aria-hidden="true">{mood.emoji}</span>{mood.label}</button>)}</div></fieldset>;
+}
+function AutoTextarea({ value, onChange, label, placeholder = '', readOnly, main = false, inputRef }: { value: string; onChange: (value: string) => void; label: string; placeholder?: string; readOnly: boolean; main?: boolean; inputRef?: React.RefObject<HTMLTextAreaElement | null> }) {
+  const localRef = useRef<HTMLTextAreaElement>(null);
+  const ref = inputRef ?? localRef;
+  useLayoutEffect(() => { const element = ref.current; if (!element) return; element.style.height = 'auto'; element.style.height = `${element.scrollHeight}px`; }, [ref, value]);
+  return <textarea ref={ref} className={`journal-textarea${main ? ' journal-main-textarea' : ''}`} value={value} aria-label={label} onChange={event => onChange(event.target.value)} placeholder={placeholder} readOnly={readOnly} />;
+}
+function Field({ label, value, editable, onChange }: { label: string; value: string; editable: boolean; onChange: (value: string) => void }) {
+  return <label className="journal-field"><span>{label}</span><AutoTextarea value={value} onChange={onChange} label={label} readOnly={!editable} /></label>;
+}
+function Fold({ title, icon, filled = false, caption, children }: { title: string; icon: string; filled?: boolean; caption?: string; children: React.ReactNode }) {
+  const id = useId();
+  return <details className="journal-fold"><summary aria-controls={id}><span><AppIcon name={icon} />{title}</span><span>{filled && <small>Dolu</small>}{caption && <small>{caption}</small>}<AppIcon name="chevron-down" /></span></summary><div id={id} className="journal-fold-body">{children}</div></details>;
+}
+function NumberedList({ values, editable, label, onChange, onAdd }: { values: string[]; editable: boolean; label: string; onChange: (index: number, value: string) => void; onAdd?: () => void }) {
+  return <div className="journal-numbered-list">{(values.length ? values : ['', '', '']).map((value, index) => <label key={index}><span>{index + 1}</span><AutoTextarea value={value} onChange={next => onChange(index, next)} label={`${label} ${index + 1}`} placeholder={label + '…'} readOnly={!editable} /></label>)}{editable && onAdd && <button type="button" className="journal-text-button" onClick={onAdd}><AppIcon name="plus" /> Bir an daha ekle</button>}</div>;
+}
+function ActivityTrail({ items, loading, onNavigate }: { items: IntegratedActivity[]; loading: boolean; onNavigate: (view: string) => void }) {
+  return loading ? <p className="journal-section-note" role="status">Günün izi yükleniyor…</p> : !items.length ? <p className="journal-section-note">Bugüne ait başka bir hareket görünmüyor. Kur’an, odak ve ders kayıtların burada yer alır.</p> : <ol className="journal-activity-list">{items.map(item => <li key={`${item.category}-${item.id}`}><button type="button" onClick={() => onNavigate(item.sourceView)}><AppIcon name="circle-check" /><span><strong>{item.label}</strong><small>{item.detail}</small></span><time dateTime={item.occurredAt}>{new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' }).format(new Date(item.occurredAt))}</time><AppIcon name="chevron-right" /></button></li>)}</ol>;
+}

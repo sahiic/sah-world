@@ -11,7 +11,7 @@ export function readAppView(params: Pick<URLSearchParams, 'get'>): AppView {
 }
 export function appLocation(search: string, view: AppView, tab?: string, extra: Record<string, string> = {}): string {
   const params = new URLSearchParams(search);
-  for (const key of ['view', 'tab', 'wisdom', 'archive', 'focus']) params.delete(key);
+  for (const key of ['view', 'tab', 'wisdom', 'archive', 'focus', 'journalPanel', 'journalDate', 'journalRitual']) params.delete(key);
   params.set('view', view);
   if (tab) params.set('tab', tab);
   for (const [key, value] of Object.entries(extra)) params.set(key, value);

@@ -47,7 +47,6 @@ test('journal and Quran subtabs plus mosque section links remain usable at 375px
   await page.goto('/?view=journal');
   await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
   for (const [view, tabs, selector] of [
-    ['journal', ['journal', 'matrix', 'sukur', 'lessons'], '.journal-hub-tabs button.active'],
     ['quran-companion', ['home', 'wheel', 'teachers', 'appointments', 'peers', 'study'], '.quran-companion-tabs button.active'],
   ] as const) {
     for (const tab of tabs) {
@@ -60,6 +59,14 @@ test('journal and Quran subtabs plus mosque section links remain usable at 375px
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${view}/${tab}`).toBe(true);
       await expect(page.getByText('Bu bölüm şu anda görüntülenemiyor.')).toHaveCount(0);
     }
+  }
+  for (const [tab, label] of [['matrix', 'Öncelik Matrisim'], ['sukur', 'Şükür Defterim'], ['lessons', 'Hatalar ve Dersler']] as const) {
+    await page.evaluate(() => window.history.pushState(null, '', '/?view=journal'));
+    await page.getByRole('button', { name: /Araçlar/ }).click();
+    await page.getByRole('menuitem', { name: label }).click();
+    await expect(page).toHaveURL(new RegExp(`view=journal&tab=${tab}`));
+    await expect(page.locator('.journal-tool-panel > header h2')).toHaveText(label);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `journal/${tab}`).toBe(true);
   }
   await page.evaluate(() => window.history.pushState(null, '', '/?view=mescidim'));
   await expect(page.locator('.mescidim-single-flow')).toBeVisible();

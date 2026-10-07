@@ -19,8 +19,8 @@ test('unsaved last character survives navigation away and back', async ({ page }
   const text = `Kaydedilmemiş taslak ${Date.now()} son harf!`;
   await page.locator('.journal-quick-entry textarea').fill(text);
   // Navigate before the 600ms debounce fires: the unmount flush must protect it.
-  await page.getByRole('button', { name: 'Odaklanma', exact: true }).filter({ visible: true }).first().click();
-  await page.getByRole('button', { name: 'Odak ekranını küçült' }).click();
+  // Mescidim is directly reachable in both desktop and mobile navigation.
+  await page.getByRole('button', { name: 'Mescidim', exact: true }).filter({ visible: true }).first().click();
   await page.getByRole('button', { name: 'Günlük', exact: true }).filter({ visible: true }).first().click();
   await expect(page.locator('.journal-quick-entry textarea')).toHaveValue(text);
   await expect(page.getByText('Sunucuya kaydedildi', { exact: true })).toHaveCount(0);
