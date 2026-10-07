@@ -30,6 +30,10 @@ test('editor is above the fold, calm, responsive and keyboard accessible', async
   await expect(page.locator('.journal-cover-hero, .journal-binder, .journal-connections-grid')).toHaveCount(0);
   for (const width of [375, 390, 768, 1440, 1920]) {
     await page.setViewportSize({ width, height: width >= 768 ? 900 : 844 });
+    // Resize acknowledgement can precede responsive reflow on the CI browser.
+    // Keep the acceptance limit; wait for the actual layout, not a fixed sleep.
+    await expect.poll(async () => (await page.locator('.journal-main-textarea').boundingBox())?.y ?? Infinity,
+      { message: `responsive editor top at ${width}px` }).toBeLessThanOrEqual(480);
     const box = await page.locator('.journal-main-textarea').boundingBox();
     expect(box!.y, `first editor top at ${width}px`).toBeLessThanOrEqual(480);
     expect(box!.height).toBeGreaterThanOrEqual(width >= 768 ? 220 : 160);
