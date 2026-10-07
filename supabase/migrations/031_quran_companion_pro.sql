@@ -1,6 +1,6 @@
 -- SAH World — Kur'an-ı Kerim Kardeşim PRO
 -- Admin/hoca bootstrap, surah progress persistence, streak tracking,
--- exercise result history, and hasanat (spiritual reward) system.
+-- exercise result history, and hasanat (application learning points) system.
 
 -- 1) Allow admin_set_quran_role to also assign 'admin' role
 CREATE OR REPLACE FUNCTION public.admin_set_quran_role(target_user_id UUID, next_role TEXT)
@@ -57,10 +57,12 @@ CREATE TABLE IF NOT EXISTS public.quran_surah_progress (
 );
 
 CREATE INDEX IF NOT EXISTS quran_surah_progress_user_idx ON public.quran_surah_progress (user_id);
+DROP TRIGGER IF EXISTS quran_surah_progress_updated_at ON public.quran_surah_progress;
 CREATE TRIGGER quran_surah_progress_updated_at BEFORE UPDATE ON public.quran_surah_progress
 FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 ALTER TABLE public.quran_surah_progress ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS qsp_own_all ON public.quran_surah_progress;
 CREATE POLICY qsp_own_all ON public.quran_surah_progress FOR ALL TO authenticated
   USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.quran_surah_progress TO authenticated;
@@ -78,10 +80,12 @@ CREATE TABLE IF NOT EXISTS public.quran_streaks (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+DROP TRIGGER IF EXISTS quran_streaks_updated_at ON public.quran_streaks;
 CREATE TRIGGER quran_streaks_updated_at BEFORE UPDATE ON public.quran_streaks
 FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 ALTER TABLE public.quran_streaks ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS streaks_own_all ON public.quran_streaks;
 CREATE POLICY streaks_own_all ON public.quran_streaks FOR ALL TO authenticated
   USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 GRANT SELECT, INSERT, UPDATE ON public.quran_streaks TO authenticated;
@@ -101,11 +105,12 @@ CREATE TABLE IF NOT EXISTS public.quran_exercise_results (
 CREATE INDEX IF NOT EXISTS quran_exercise_user_idx ON public.quran_exercise_results (user_id, created_at DESC);
 
 ALTER TABLE public.quran_exercise_results ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS exercise_own_all ON public.quran_exercise_results;
 CREATE POLICY exercise_own_all ON public.quran_exercise_results FOR ALL TO authenticated
   USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 GRANT SELECT, INSERT ON public.quran_exercise_results TO authenticated;
 
--- 6) Hasanat (spiritual reward) ledger
+-- 6) Hasanat (application learning points, not religious reward) ledger
 CREATE TABLE IF NOT EXISTS public.quran_hasanat (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -118,6 +123,7 @@ CREATE TABLE IF NOT EXISTS public.quran_hasanat (
 CREATE INDEX IF NOT EXISTS quran_hasanat_user_idx ON public.quran_hasanat (user_id, created_at DESC);
 
 ALTER TABLE public.quran_hasanat ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS hasanat_own_all ON public.quran_hasanat;
 CREATE POLICY hasanat_own_all ON public.quran_hasanat FOR ALL TO authenticated
   USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 GRANT SELECT, INSERT ON public.quran_hasanat TO authenticated;
