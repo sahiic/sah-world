@@ -147,9 +147,38 @@ export type ChatMessageRow = {
   sender_id: string;
   receiver_id: string | null;
   group_id: string | null;
+  context_id: string | null;
   content: string;
   is_read: boolean;
   created_at: string;
+};
+
+export type QuranThreadSummary = {
+  context_id: string;
+  kind: "peer" | "appointment";
+  unread_count: number;
+  last_message: string | null;
+  last_message_at: string | null;
+};
+export type QuranStudyRoomRow = {
+  id: string;
+  group_id: string;
+  name: string;
+  creator_id: string;
+  surah_target: number;
+  start_ayah: number;
+  end_ayah: number;
+  scheduled_at: string | null;
+  max_participants: number;
+  is_active: boolean;
+  created_at: string;
+};
+export type QuranStudyRoomMemberRow = {
+  id: string;
+  room_id: string;
+  user_id: string;
+  status: "invited" | "accepted" | "declined";
+  joined_at: string;
 };
 
 export type XpEventRow = {
@@ -551,6 +580,8 @@ export interface Database {
         created_at: string;
       }>;
       chat_messages: RowTable<ChatMessageRow>;
+      quran_study_rooms: RowTable<QuranStudyRoomRow>;
+      quran_study_room_members: RowTable<QuranStudyRoomMemberRow>;
       groups: RowTable<GroupRow>;
       group_members: RowTable<GroupMemberRow>;
       xp_events: RowTable<XpEventRow>;
@@ -627,6 +658,41 @@ export interface Database {
       };
     };
     Functions: {
+      send_quran_message: {
+        Args: { target_context: string; message_content: string };
+        Returns: ChatMessageRow;
+      };
+      mark_quran_thread_read: {
+        Args: { target_context: string; message_ids: string[] };
+        Returns: number;
+      };
+      get_quran_thread_summaries: {
+        Args: Record<string, never>;
+        Returns: QuranThreadSummary[];
+      };
+      reschedule_hoca_appointment: {
+        Args: {
+          target_appointment_id: string;
+          new_start: string;
+          new_notes?: string;
+        };
+        Returns: AppointmentRow;
+      };
+      create_quran_study_room: {
+        Args: {
+          room_name: string;
+          target_surah: number;
+          first_ayah: number;
+          last_ayah: number;
+          invited_users: string[];
+          study_time?: string | null;
+        };
+        Returns: QuranStudyRoomRow;
+      };
+      respond_quran_room_invite: {
+        Args: { target_room: string; accept_invite: boolean };
+        Returns: QuranStudyRoomRow;
+      };
       create_group: {
         Args: { group_name: string; group_description?: string };
         Returns: GroupRow;

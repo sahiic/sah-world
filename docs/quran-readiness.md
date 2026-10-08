@@ -1,12 +1,12 @@
 # Kur’an Kardeşim — test ve yayın hazırlığı
 
-Tarih: 7 Ekim 2026 · Dal: `feature/quran-readiness`
+Tarih: 8 Ekim 2026 · Dal: `feature/quran-readiness`
 
 ## Durum
 
-Arayüz ve uygulama değişiklikleri bu dalda hazır. **Canlı Supabase kurulumu ve canlı yayın henüz tamamlanmadı.** Kullanıcı `eyuperen5633@gmail.com` hesabının yönetici ve Baş Muallim yapılmasını açıkça onayladı; mevcut oturumda veritabanına yönetici erişimi bulunmuyor. Yerel testte verilen yetki, canlı hesapta verilmiş yetki anlamına gelmez.
+Arayüz ve uygulama değişiklikleri PR #64 ile ana dala birleştirildi. 8 Ekim’de canlı Supabase üzerinde 030–036 sıralı ve tek transaction içinde uygulandı. Kullanıcının açıkça onayladığı hesabın yönetici ve Baş Muallim yetkisi canlı veritabanında doğrulandı. Mevcut 12 mesaj ve 5 randevu korundu; 198 cevap anahtarı yüklendi.
 
-Üretim sitesi bu çalışma için değiştirilmedi. Veritabanı adımları doğrulanmadan bu dalı `main` ile birleştirmeyin. Önizlemenin misafir denemesi, gerçek hesap/randevu/veritabanı testi değildir.
+Sosyal altyapı ve nihai arayüz yayını PR #65 üzerinden devam eder. Ayrıntılı canlı katalog kontrolü [sosyal altyapı raporunda](quran-social-infra.md). Önizlemenin misafir denemesi, gerçek hesap/randevu/veritabanı testi değildir; nihai üretim dağıtımının doğru commit ve ana alan adı üzerinde doğrulanması gerekir.
 
 ## Uygulanan kapsam
 
@@ -73,7 +73,7 @@ $env:QURAN_PGLITE_ROOT=$quranTestRuntime
 node scripts/test-quran-database.cjs
 ```
 
-## Canlı yayın kapısı — henüz yapılmadı
+## Yayın kontrol listesi
 
 Görsel kanıtlar: [masaüstü](validation/quran/readiness-desktop-2026-10-07.png), [telefon](validation/quran/readiness-mobile-2026-10-07.png), [koyu tema](validation/quran/readiness-dark-mobile-2026-10-07.png). Bunlar yerel misafir denemesidir.
 
@@ -85,4 +85,4 @@ Görsel kanıtlar: [masaüstü](validation/quran/readiness-desktop-2026-10-07.pn
 
 032, eski istemcilerin doğrudan sonuç/puan yazmasını artık kabul etmez. Bu nedenle şema değişikliği ile yeni istemci yayını birlikte planlanmalıdır; eski istemciye tek başına geri dönmek tam geri alma değildir. Sorunda yeni kayıtları durdurup ileri düzeltme tercih edin; kullanıcı tablolarını silmeyin. Özel ders notlarının ve geçmiş sonuçların korunmasını ayrıca doğrulayın.
 
-Bekleyenler: canlı migration’lar, gerçek hesap yetkisi, canlı RLS/randevu/yorum testleri, üretim yayını, eğitim içeriğinin uzman son incelemesi.
+Canlı migration’lar, onaylanan hesap yetkisi ve canlı güvenlik katalog kontrolleri tamamlandı. İki gerçek hesapla uçtan uca RLS/randevu/yorum denemesi ve eğitim içeriğinin uzman son incelemesi otomatik/yerel testlerle yapılmış sayılmaz. Nihai üretim dağıtım kanıtı PR #65 yayın kaydında tutulur.

@@ -65,6 +65,8 @@ export default function ChatTab() {
         const { data, error } = await supabase
           .from('chat_messages')
           .select('*')
+          .is('context_id', null)
+          .is('group_id', null)
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${activeFriend.id}),and(sender_id.eq.${activeFriend.id},receiver_id.eq.${user.id})`)
           .order('created_at', { ascending: true })
           .limit(50);
@@ -83,6 +85,8 @@ export default function ChatTab() {
     // Okundu olarak işaretle (Bize gelenleri)
     supabase.from('chat_messages')
       .update({ is_read: true })
+      .is('context_id', null)
+      .is('group_id', null)
       .eq('sender_id', activeFriend.id)
       .eq('receiver_id', user.id)
       .eq('is_read', false)
@@ -105,6 +109,7 @@ export default function ChatTab() {
         },
         (payload) => {
           const newMsg = payload.new as ChatMessage;
+          if (newMsg.context_id || newMsg.group_id) return;
           // Eğer şu an açık olan sohbete aitse listeye ekle
           if (activeFriend && (
             (newMsg.sender_id === user.id && newMsg.receiver_id === activeFriend.id) ||
