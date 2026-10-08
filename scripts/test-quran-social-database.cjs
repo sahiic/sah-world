@@ -352,12 +352,34 @@ async function run() {
   await as(outsider);
   assert.equal((await db.query("SELECT * FROM appointment_notes")).rows.length, 0, "platform admin role alone never exposes private participant notes");
   await assert.rejects(() => db.query("INSERT INTO appointment_notes(appointment_id,author_id,author_role,performance_note) VALUES($1,$2,'hoca','Forged teacher note')", [appt2,outsider]));
+  // --- Message edit/delete (migration 038) ---
+  await db.exec("RESET ROLE");
+  await db.exec(fs.readFileSync("supabase/migrations/038_quran_message_edit.sql", "utf8"));
+  await as(student);
+  const editMsg = (await send(appt2, "Typo here")).rows[0];
+  await db.query("SELECT update_quran_message($1,'Fixed text')", [editMsg.id]);
+  const edited = (await db.query("SELECT content,edited_at FROM chat_messages WHERE id=$1", [editMsg.id])).rows[0];
+  assert.equal(edited.content, "Fixed text");
+  assert.notEqual(edited.edited_at, null);
+  // Outsider cannot edit student's message
+  await as(outsider);
+  await assert.rejects(() => db.query("SELECT update_quran_message($1,'hacked')", [editMsg.id]));
+  // Student can soft-delete own message
+  await as(student);
+  await db.query("SELECT delete_quran_message($1)", [editMsg.id]);
+  const deleted = (await db.query("SELECT content,deleted_at FROM chat_messages WHERE id=$1", [editMsg.id])).rows[0];
+  assert.equal(deleted.content, "Bu mesaj silindi.");
+  assert.notEqual(deleted.deleted_at, null);
+  // Cannot edit or delete again after soft-delete
+  await assert.rejects(() => db.query("SELECT update_quran_message($1,'retry')", [editMsg.id]));
+  await assert.rejects(() => db.query("SELECT delete_quran_message($1)", [editMsg.id]));
+
   await db.exec("RESET ROLE;SET ROLE anon");
   await assert.rejects(() =>
     db.query("SELECT * FROM get_quran_thread_summaries()"),
   );
   console.log(
-    "PASS: thread isolation, bounded receipts, immutable routing/content, outsider/anon denial, private presence authorization, reschedule rollback, peer idempotency, room consent and code-bypass protection. Realtime delivery and concurrent production load NOT verified.",
+    "PASS: thread isolation, bounded receipts, immutable routing/content, outsider/anon denial, private presence authorization, reschedule rollback, peer idempotency, room consent and code-bypass protection, message edit/delete ownership. Realtime delivery and concurrent production load NOT verified.",
   );
   await db.close();
 }
