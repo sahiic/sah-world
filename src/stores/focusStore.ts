@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { focusStorage } from "@/lib/focusStorage";
+import { AMBIENT_PROFILES } from "@/lib/ambientEngine";
 import type { FocusMode, FocusSession, TimerKind } from "@/types/focus";
 import {
   durationForMode,
@@ -40,6 +41,7 @@ export interface FocusState extends FocusSettings {
   sessionStartTime: string | null;
   activeSound: string | null;
   soundVolume: number;
+  soundMuted: boolean;
   soundVolumes: Record<string, number>;
   backgroundId: string;
   favoriteMixes: Record<string, Record<string, number>>;
@@ -67,6 +69,8 @@ export interface FocusState extends FocusSettings {
   dismissCompletion: () => void;
   saveShukurNote: (sessionId: string, note: string) => void;
   setSoundVolume: (soundId: string, volume: number) => void;
+  setSoundMix: (volumes: Record<string, number>) => void;
+  setSoundMuted: (muted: boolean) => void;
   setMasterVolume: (volume: number) => void;
   setBackgroundId: (id: string) => void;
   saveFavoriteMix: (name: string) => void;
@@ -164,6 +168,7 @@ export const useFocusStore = create<FocusState>()(
       sessionStartTime: null,
       activeSound: null,
       soundVolume: 0.65,
+      soundMuted: false,
       soundVolumes: {},
       backgroundId: "kaaba-night",
       favoriteMixes: {},
@@ -257,12 +262,14 @@ export const useFocusStore = create<FocusState>()(
       setTimerKind: (timerKind) => {
         const state = get();
         if (state.sessionStartTime) return;
+        const mode = timerKind === "stopwatch" ? "focus" : state.mode;
         const total =
           timerKind === "stopwatch"
             ? 0
-            : durationForMode(state.mode, state);
+            : durationForMode(mode, state);
         set({
           timerKind,
+          mode,
           timeLeft: total,
           totalTime: total,
           isPaused: false,
@@ -392,6 +399,7 @@ export const useFocusStore = create<FocusState>()(
         }));
       },
       setSoundVolume: (soundId, volume) => {
+        if (!AMBIENT_PROFILES.includes(soundId) || !Number.isFinite(volume)) return;
         const safeVolume = Math.min(1, Math.max(0, volume));
         set((state) => ({
           activeSound: safeVolume > 0 ? soundId : state.activeSound,
@@ -399,7 +407,15 @@ export const useFocusStore = create<FocusState>()(
         }));
       },
       setMasterVolume: (soundVolume) =>
-        set({ soundVolume: Math.min(1, Math.max(0, soundVolume)) }),
+        Number.isFinite(soundVolume) && set({ soundVolume: Math.min(1, Math.max(0, soundVolume)) }),
+      setSoundMix: (volumes) => {
+        const soundVolumes = Object.fromEntries(Object.entries(volumes)
+          .filter(([id, value]) => AMBIENT_PROFILES.includes(id) && Number.isFinite(value) && value > 0)
+          .map(([id, value]) => [id, Math.min(1, value)]));
+        // Replace all channels together, without intermediate mixes or repeated writes.
+        set({ soundVolumes, activeSound: Object.keys(soundVolumes)[0] ?? null });
+      },
+      setSoundMuted: (soundMuted) => set({ soundMuted }),
       setBackgroundId: (backgroundId) => set({ backgroundId }),
       saveFavoriteMix: (name) => {
         const cleanName = name.trim().slice(0, 32);
@@ -413,7 +429,7 @@ export const useFocusStore = create<FocusState>()(
       },
       loadFavoriteMix: (name) => {
         const mix = get().favoriteMixes[name];
-        if (mix) set({ soundVolumes: { ...mix } });
+        if (mix) get().setSoundMix(mix);
       },
     }),
     {
@@ -443,6 +459,7 @@ export const useFocusStore = create<FocusState>()(
         sessionStartTime: state.sessionStartTime,
         activeSound: state.activeSound,
         soundVolume: state.soundVolume,
+        soundMuted: state.soundMuted,
         soundVolumes: state.soundVolumes,
         backgroundId: state.backgroundId,
         favoriteMixes: state.favoriteMixes,

@@ -19,9 +19,16 @@ export const AMBIENT_SOUNDS = [
   { id: "fan", name: "Vantilatör", category: "Ortam" },
   { id: "train", name: "Tren ritmi", category: "Ortam" },
 ] as const;
+export const AMBIENT_MIXES: { name: string; description: string; volumes: Record<string, number> }[] = [
+  { name: "Yağmurlu okuma", description: "Hafif yağmur · şömine", volumes: { "soft-rain": 0.5, fireplace: 0.25 } },
+  { name: "Orman yürüyüşü", description: "Orman · dere · kuşlar", volumes: { forest: 0.4, stream: 0.25, birds: 0.2 } },
+  { name: "Derin odak", description: "Kahverengi gürültü · rüzgâr", volumes: { "brown-noise": 0.45, wind: 0.15 } },
+  { name: "Sakin kıyı", description: "Okyanus · hafif rüzgâr", volumes: { ocean: 0.5, wind: 0.2 } },
+];
 export function useAmbientSound() {
   const soundVolumes = useFocusStore((state) => state.soundVolumes);
   const masterVolume = useFocusStore((state) => state.soundVolume);
+  const muted = useFocusStore((state) => state.soundMuted);
   const status = useSyncExternalStore(
     ambientEngine.subscribe,
     ambientEngine.snapshot,
@@ -30,16 +37,30 @@ export function useAmbientSound() {
   const enable = async () => {
     await ambientEngine.unlock();
     const state = useFocusStore.getState();
-    ambientEngine.sync(state.isPaused ? {} : state.soundVolumes, state.soundVolume);
+    ambientEngine.sync(state.isPaused || state.soundMuted ? {} : state.soundVolumes, state.soundVolume);
   };
   const updateChannel = async (id: string, volume: number) => {
     useFocusStore.getState().setSoundVolume(id, volume);
-    await enable();
+    if (volume > 0) await enable();
+  };
+  const applyMix = async (volumes: Record<string, number>) => {
+    useFocusStore.getState().setSoundMix(volumes);
+    if (Object.values(volumes).some(value => value > 0)) await enable();
+    else ambientEngine.stop();
+  };
+  const toggleMute = async () => {
+    const next = !useFocusStore.getState().soundMuted;
+    useFocusStore.getState().setSoundMuted(next);
+    if (next) ambientEngine.stop();
+    else await enable();
   };
   return {
     sounds: AMBIENT_SOUNDS,
     soundVolumes,
     masterVolume,
+    muted,
+    toggleMute,
+    applyMix,
     status,
     enable,
     updateChannel,

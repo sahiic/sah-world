@@ -802,6 +802,31 @@
 .mixActions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
 .mixActions button,.audioStatus button { min-height:40px; background:#ffffff09; border:1px solid #ffffff25; border-radius:10px; color:#c0f3df; padding:0 12px; font-size:12px; }
 .mixActions small { color:#9baebb; font-size:10px; }
+.mixActions button { display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+.mixActions button svg { width:16px; height:16px; }
+.mixActions button:disabled { opacity:.4; cursor:default; }
+.mixPresets { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:6px 0 14px; }
+.mixPresets button { min-width:0; min-height:76px; display:grid; align-content:center; gap:7px; padding:14px; border:1px solid #ffffff25; border-radius:14px; background:linear-gradient(135deg,#18413e88,#112c3888); color:#eef8f3; text-align:left; cursor:pointer; }
+.mixPresets button[aria-pressed=true] { border-color:#c0f3df; background:#245344; }
+.mixPresets strong { font-size:13px; font-weight:600; }
+.mixPresets small { color:#bdd2cc; font-size:11px; line-height:1.5; }
+.configNote { color:#bcd2cd; font-size:12px; line-height:1.7; }
+.notificationOption { margin-top:18px; padding-top:18px; border-top:1px solid #ffffff18; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+.notificationOption strong { font-size:13px; }
+.notificationOption p { font-size:12px; color:#bcd2cd; line-height:1.6; margin:6px 0; }
+.notificationOption button { display:flex; gap:8px; align-items:center; min-height:44px; padding:0 14px; border:1px solid #ffffff30; border-radius:12px; color:#c0f3df; background:#ffffff09; cursor:pointer; }
+.notificationOption svg { width:16px; }
+.focusPage .modalHeader { position:sticky; top:0; z-index:4; background:#101c2af7; backdrop-filter:blur(16px); }
+.focusPage :global(.focus-task-slot form), .focusPage :global(.focus-task-chip) { background:#092428e8 !important; border:1px solid #ffffff30 !important; box-shadow:none !important; }
+.focusPage :global(.focus-task-slot form button[type="submit"]) { color:#d2f8e8 !important; background:#245347 !important; border-color:#c0f3df44 !important; }
+.focusPage :global(.focus-controls > button) { background:#0c282ce8 !important; border-color:#c0f3df33 !important; box-shadow:none !important; }
+.focusPage :global(.focus-controls > button > span) { width:28px !important; height:28px !important; background:transparent !important; }
+.focusPage :global(.focus-controls > button:hover) { background:#183d3de8 !important; transform:translateY(-2px) !important; }
+.focusPage :global(.focus-controls small) { color:#bdd2cc !important; opacity:1; }
+.focusPage :global(.focus-task-slot input):focus-visible { outline:0; }
+.focusPage :global(.focus-task-slot form):focus-within { outline:2px solid #c0f3df; outline-offset:3px; }
+.focusPage .timerValue > span { margin:2px 0 0; color:#c0f3df; font:600 10px/1.5 var(--font-inter),sans-serif; letter-spacing:.16em; }
+.focusPage .rounds > span { margin:0; font:500 10px/1.4 var(--font-inter),sans-serif; letter-spacing:0; color:#bdd2cc; }
 .audioStatus { font-size:12px; line-height:1.8; color:#f1d998; }
 .focusPage .masterVolume,.focusPage .mixSaver,.focusPage .placeholderNote { font-size:12px; }
 .focusPage .durationOptions button { min-height:44px; font-size:12px; }
@@ -864,4 +889,20 @@
  .focusPage :global(.focus-dial) { width:240px; height:240px; margin:10px auto; }
  .focusPage :global(.focus-dial strong) { font-size:66px; }
  .focusPage :global(.focus-controls) { margin-top:18px; }
+ .focusPage .timerCard > header > span, .focusPage .timerCard > header p { display:none; }
+ .focusPage .timerCard > header { margin-bottom:6px; }
+ .focusPage .timerCard > header h1 { font-size:28px; margin:4px 0; }
+ .focusPage .sessionHint { margin-top:12px; }
+}
+/* Keep the primary action reachable on short phone and embedded viewports. */
+@media(max-width:700px) and (max-height:850px) {
+ .focusPage .timerCard { padding-top:0; }
+ .focusPage .timerCard > header { margin-bottom:8px; }
+ .focusPage .timerCard > header h1 { font-size:26px; margin:8px 0 4px; }
+ .focusPage .timerCard > header > span { display:none; }
+ .focusPage :global(.focus-dial) { width:220px; height:220px; margin:8px auto; }
+ .focusPage :global(.focus-dial strong) { font-size:60px; font-weight:500; }
+ .focusPage :global(.focus-controls) { margin-top:16px; }
+ .focusPage :global(.focus-controls > button) { min-height:76px; }
+ .focusPage .sessionHint { margin-top:12px; }
 }

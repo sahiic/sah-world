@@ -9,7 +9,7 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
 import { getFocusBackground } from "@/lib/focusBackgrounds";
 import { FocusPresets, FocusStudioIntro } from "@/components/core/FocusAmbience";
@@ -25,12 +25,16 @@ const modeLabels = {
 };
 
 export default function FocusTimer({
-  onNeedNiyet,
+  onStart,
+  taskDraft,
+  setTaskDraft,
   onOpenTimerSettings,
   onOpenSound,
   onOpenBackground,
 }: {
-  onNeedNiyet: () => void;
+  onStart: () => void;
+  taskDraft: string;
+  setTaskDraft: (value: string) => void;
   onOpenTimerSettings: () => void;
   onOpenSound: () => void;
   onOpenBackground: () => void;
@@ -45,9 +49,10 @@ export default function FocusTimer({
   const totalRounds = useFocusStore((state) => state.totalRounds);
   const currentNiyet = useFocusStore((state) => state.currentNiyet);
   const soundVolumes = useFocusStore((state) => state.soundVolumes);
+  const soundMuted = useFocusStore((state) => state.soundMuted || state.soundVolume === 0);
+  const isPaused = useFocusStore((state) => state.isPaused);
   const backgroundId = useFocusStore((state) => state.backgroundId);
   const setNiyet = useFocusStore((state) => state.setNiyet);
-  const [taskDraft, setTaskDraft] = useState("");
 
   const radius = 150;
   const circumference = 2 * Math.PI * radius;
@@ -151,7 +156,7 @@ export default function FocusTimer({
         </svg>
         <div className={styles.timerValue} role="timer" aria-live="off" aria-label={modeLabels[mode]}>
           <strong>{formatTimer(timeLeft)}</strong>
-          <div
+          {timerKind === "pomodoro" && <div
             className={styles.rounds}
             aria-label={`Tur ${currentRound} / ${totalRounds}`}
           >
@@ -166,15 +171,15 @@ export default function FocusTimer({
             <b>
               {currentRound}/{totalRounds}
             </b>
-          </div>
-          <span>{modeLabels[mode]}</span>
+          </div>}
+          <span>{isPaused ? "Duraklatıldı" : timerKind === "stopwatch" ? "Serbest çalışma" : modeLabels[mode]}</span>
         </div>
       </div>
 
-      <TimerControls onNeedNiyet={onNeedNiyet} />
+      <TimerControls onStart={onStart} />
 
       <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
-        <button onClick={onOpenTimerSettings} disabled={Boolean(sessionStartTime)}>
+        <button onClick={onOpenTimerSettings}>
           <span>
             <Hourglass aria-hidden />
           </span>
@@ -186,7 +191,7 @@ export default function FocusTimer({
             <Headphones aria-hidden />
           </span>
           <strong>Arka Plan Sesi</strong>
-          <small>{activeSounds > 1 ? `${activeSounds} sesli karışım` : activeSound?.name ?? "Sessiz"}</small>
+          <small>{soundMuted ? "Sessize alındı" : activeSounds > 1 ? `${activeSounds} sesli karışım` : activeSound?.name ?? "Sessiz"}</small>
         </button>
         <button onClick={onOpenBackground}>
           <span>
@@ -196,7 +201,7 @@ export default function FocusTimer({
           <small>{activeBackground.label}</small>
         </button>
       </nav>
-      <p className={styles.sessionHint}>{sessionStartTime ? "Geri dön; oturumun ana sayfadaki küçük sayaçta devam eder." : "Niyetini yaz. Süreni seç. Kendine bir alan aç."}</p>
+      <p className={styles.sessionHint}>{isPaused ? "Süren korundu. Hazır olduğunda kaldığın yerden devam et." : sessionStartTime ? "Geri dön; oturumun ana sayfadaki küçük sayaçta devam eder." : "Niyetini yaz. Süreni seç. Kendine bir alan aç."}</p>
     </section>
   );
 }

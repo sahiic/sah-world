@@ -7,28 +7,23 @@ import { ambientEngine } from "@/lib/ambientEngine";
 import styles from "../focus.module.css";
 
 export default function TimerControls({
-  onNeedNiyet,
+  onStart,
 }: {
-  onNeedNiyet: () => void;
+  onStart: () => void;
 }) {
   const isRunning = useFocusStore((state) => state.isRunning);
   const isPaused = useFocusStore((state) => state.isPaused);
-  const currentNiyet = useFocusStore((state) => state.currentNiyet);
   const sessionStartTime = useFocusStore((state) => state.sessionStartTime);
-  const mode = useFocusStore((state) => state.mode);
+  const timerKind = useFocusStore((state) => state.timerKind);
   const completeSession = useFocusStore((state) => state.completeSession);
-  const { start, pause, reset, skip } = useTimer();
+  const { pause, reset, skip } = useTimer();
 
   const handlePrimary = () => {
     if (isRunning) {
       pause();
       return;
     }
-    if (!currentNiyet && mode === "focus") {
-      onNeedNiyet();
-      return;
-    }
-    void start();
+    onStart();
   };
 
   return (
@@ -58,7 +53,7 @@ export default function TimerControls({
         >
           <Square aria-hidden />
         </button>
-      ) : (
+      ) : timerKind === "pomodoro" ? (
         <button
           className={`focus-secondary-btn ${styles.roundControl}`}
           onClick={skip}
@@ -67,7 +62,7 @@ export default function TimerControls({
         >
           <SkipForward aria-hidden />
         </button>
-      )}
+      ) : null}
     </div>
   );
 }
