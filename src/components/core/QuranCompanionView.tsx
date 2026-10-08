@@ -263,6 +263,7 @@ export default function QuranCompanionView({
   const [helpers, setHelpers] = useState<HelperView[]>([]);
   const [matches, setMatches] = useState<PeerView[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bgLoading, setBgLoading] = useState(true);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const isRealUser = Boolean(user && isValidUUID(user.id) && !pilotDemo);
@@ -285,6 +286,7 @@ export default function QuranCompanionView({
   const loadedIdentity = useRef("");
   const recording = useRef(new Set<string>());
   const persistedResults = useRef(new Set<string>());
+  const tabsRef = useRef<HTMLElement>(null);
   const [schemaReady, setSchemaReady] = useState(false);
   const [threads, setThreads] = useState<QuranThreadSummary[]>([]);
   const [socialError, setSocialError] = useState("");
@@ -487,17 +489,13 @@ export default function QuranCompanionView({
     }
     if (!quiet) setLoading(true);
     try {
+      // Phase 1: critical data for dashboard
       const [
         teacherResult,
         appointmentResult,
         goalResult,
-        helperResult,
-        matchResult,
-        progressResult,
         streakResult,
         hasanatResult,
-        exerciseResult,
-        reviewResult,
       ] = await Promise.all([
         supabase.from("hoca_profiles").select("*").order("created_at"),
         supabase.rpc("get_my_quran_appointments"),
@@ -506,18 +504,58 @@ export default function QuranCompanionView({
           .select("*")
           .eq("user_id", user!.id)
           .maybeSingle(),
-        supabase.rpc("browse_quran_helpers"),
-        supabase.rpc("get_my_quran_peer_matches"),
-        supabase
-          .from("quran_surah_progress")
-          .select("*")
-          .eq("user_id", user!.id),
         supabase
           .from("quran_streaks")
           .select("*")
           .eq("user_id", user!.id)
           .maybeSingle(),
         supabase.rpc("get_my_hasanat_total"),
+      ]);
+      if (version !== loadVersion.current) return;
+      setTeachers(teacherResult.data || []);
+      setAppointments(appointmentResult.data || []);
+      setGoal(goalResult.data || null);
+      if (streakResult.data) {
+        setStreak({
+          current: streakResult.data.current_streak,
+          longest: streakResult.data.longest_streak,
+          lastDate: streakResult.data.last_activity_date || "",
+          totalDays: streakResult.data.total_days,
+          freezeAvailable: streakResult.data.streak_freeze_available,
+        });
+      } else if (!streakResult.error) {
+        setStreak(emptyStreak());
+      }
+      if (hasanatResult.data != null)
+        setTotalHasanat(Number(hasanatResult.data));
+      const criticalError =
+        teacherResult.error ||
+        appointmentResult.error ||
+        goalResult.error ||
+        streakResult.error ||
+        hasanatResult.error;
+      if (criticalError)
+        setError(
+          "Bazı veriler yüklenemedi. Kayıt altyapısı hazır olmadan sonuçlar kaydedilmiş sayılmaz. Lütfen tekrar dene.",
+        );
+      else setError("");
+      setLoading(false);
+
+      // Phase 2: background data for secondary tabs
+      if (!quiet) setBgLoading(true);
+      const [
+        helperResult,
+        matchResult,
+        progressResult,
+        exerciseResult,
+        reviewResult,
+      ] = await Promise.all([
+        supabase.rpc("browse_quran_helpers"),
+        supabase.rpc("get_my_quran_peer_matches"),
+        supabase
+          .from("quran_surah_progress")
+          .select("*")
+          .eq("user_id", user!.id),
         supabase
           .from("quran_exercise_results")
           .select("*")
@@ -530,9 +568,6 @@ export default function QuranCompanionView({
           .eq("user_id", user!.id),
       ]);
       if (version !== loadVersion.current) return;
-      setTeachers(teacherResult.data || []);
-      setAppointments(appointmentResult.data || []);
-      setGoal(goalResult.data || null);
       setHelpers(helperResult.data || []);
       setMatches(matchResult.data || []);
       if (!progressResult.error) {
@@ -561,19 +596,6 @@ export default function QuranCompanionView({
         });
         setSurahProgress(dbProgress);
       }
-      if (streakResult.data) {
-        setStreak({
-          current: streakResult.data.current_streak,
-          longest: streakResult.data.longest_streak,
-          lastDate: streakResult.data.last_activity_date || "",
-          totalDays: streakResult.data.total_days,
-          freezeAvailable: streakResult.data.streak_freeze_available,
-        });
-      } else if (!streakResult.error) {
-        setStreak(emptyStreak());
-      }
-      if (hasanatResult.data != null)
-        setTotalHasanat(Number(hasanatResult.data));
       if (exerciseResult.data)
         setRecentExercises(
           exerciseResult.data.map((r) => ({
@@ -605,33 +627,27 @@ export default function QuranCompanionView({
         );
       setSchemaReady(
         !progressResult.error &&
-          !streakResult.error &&
-          !hasanatResult.error &&
           !exerciseResult.error &&
           !reviewResult.error,
       );
-      const firstError =
-        teacherResult.error ||
-        appointmentResult.error ||
-        goalResult.error ||
+      const bgError =
         helperResult.error ||
         matchResult.error ||
         progressResult.error ||
-        streakResult.error ||
-        hasanatResult.error ||
         exerciseResult.error ||
         reviewResult.error;
-      setError(
-        firstError
-          ? "Bazı veriler yüklenemedi. Kayıt altyapısı hazır olmadan sonuçlar kaydedilmiş sayılmaz. Lütfen tekrar dene."
-          : "",
-      );
+      if (bgError && !criticalError)
+        setError(
+          "Bazı veriler yüklenemedi. Kayıt altyapısı hazır olmadan sonuçlar kaydedilmiş sayılmaz. Lütfen tekrar dene.",
+        );
+      setBgLoading(false);
     } catch {
-      if (version === loadVersion.current)
+      if (version === loadVersion.current) {
         setError("Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.");
+        setLoading(false);
+        setBgLoading(false);
+      }
     }
-    if (version !== loadVersion.current) return;
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -639,6 +655,10 @@ export default function QuranCompanionView({
     flashLatest.current = flash;
     appointmentLatest.current = appointments;
   });
+  useEffect(() => {
+    const active = tabsRef.current?.querySelector<HTMLElement>("[aria-selected=\"true\"]");
+    active?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+  }, [tab]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       void load();
@@ -718,12 +738,24 @@ export default function QuranCompanionView({
       setError("Bu tarayıcı bildirimleri desteklemiyor.");
       return;
     }
+    if (Notification.permission === "granted") {
+      flash("Bildirimler zaten açık.");
+      return;
+    }
+    if (Notification.permission === "denied") {
+      flash("Bildirimler engellendi. Tarayıcı ayarlarından izin verebilirsin.");
+      return;
+    }
     const permission = await Notification.requestPermission();
-    flash(
-      permission === "granted"
-        ? "Randevu hatırlatmaları açıldı."
-        : "Bildirim izni verilmedi.",
-    );
+    if (permission === "granted") {
+      flash("Randevu hatırlatmaları açıldı.");
+      new Notification("Kur'an Kardeşim", {
+        body: "Bildirimlerin açıldı. Randevuların yaklaştığında seni uyaracağız.",
+        icon: "/favicon.ico",
+      });
+    } else {
+      flash("Bildirim izni verilmedi.");
+    }
   };
 
   const saveProgressToDb = useCallback(
@@ -935,14 +967,17 @@ export default function QuranCompanionView({
       )}
 
       <nav
+        ref={tabsRef}
         className="quran-companion-tabs"
+        role="tablist"
         aria-label="Kur'an Kardeşim alanları"
       >
         {navItems.map((item) => (
           <button
             key={item.id}
+            role="tab"
             className={tab === item.id ? "active" : ""}
-            aria-pressed={tab === item.id}
+            aria-selected={tab === item.id}
             onClick={() => setTab(item.id)}
           >
             <AppIcon name={item.icon} />
@@ -988,12 +1023,8 @@ export default function QuranCompanionView({
         />
       )}
 
-      {tab === "home" && (
-        <>
-          {!profile?.quran_level && (
-            <LevelOnboarding onSelect={(level) => void saveLevel(level)} />
-          )}
-        </>
+      {tab === "home" && !loading && isRealUser && !profile?.quran_level && (
+        <LevelOnboarding onSelect={(level) => void saveLevel(level)} />
       )}
 
       {error && (
@@ -1008,6 +1039,8 @@ export default function QuranCompanionView({
         <motion.div
           key={loading ? "loading" : tab}
           className="quran-tab-transition"
+          role="tabpanel"
+          aria-label={navItems.find((item) => item.id === tab)?.label ?? tab}
           initial={reducedMotion ? false : { opacity: 0, y: 7 }}
           animate={{ opacity: 1, y: 0 }}
           exit={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -4 }}
@@ -1019,11 +1052,13 @@ export default function QuranCompanionView({
           {loading ? (
             <CompanionSkeleton />
           ) : tab === "home" ? null : tab === "progress" ? (
+            bgLoading ? <TabSkeleton /> :
             <QuranProgressMap
               surahProgress={surahProgress}
               onUpdate={saveProgressToDb}
             />
           ) : tab === "exercises" ? (
+            bgLoading ? <TabSkeleton /> :
             <QuranExercises
               surahProgress={surahProgress}
               spacedItems={spacedItems}
@@ -1034,7 +1069,7 @@ export default function QuranCompanionView({
             />
           ) : tab === "teachers" ? (
             <TeacherDiscovery
-              teachers={teachers.filter((t) => t.is_active)}
+              teachers={teachers.filter((t) => t.is_active && (isRealUser ? !t.is_placeholder : true))}
               onBooked={async () => {
                 await load();
                 setTab("appointments");
@@ -1057,6 +1092,7 @@ export default function QuranCompanionView({
               onNotice={flash}
             />
           ) : tab === "peers" ? (
+            bgLoading ? <TabSkeleton /> :
             <PeerMatching
               key={`${userId}-${pilotDemo}`}
               helpers={helpers}
@@ -1094,6 +1130,7 @@ export default function QuranCompanionView({
           ) : tab === "wheel" ? (
             <DailyWisdomWheel />
           ) : tab === "achievements" ? (
+            bgLoading ? <TabSkeleton /> :
             <QuranAchievements
               progress={surahProgress}
               streak={streak}
@@ -1230,8 +1267,12 @@ function TeacherDiscovery({
               <button onClick={() => setProfileTeacher(teacher)}>
                 Profili incele <AppIcon name="user" />
               </button>
-              <button onClick={() => setSelected(teacher)}>
-                Randevu al <AppIcon name="arrow-right" />
+              <button
+                onClick={() => setSelected(teacher)}
+                disabled={Boolean(teacher.is_placeholder)}
+                title={teacher.is_placeholder ? "Örnek profil — randevu alınamaz" : undefined}
+              >
+                {teacher.is_placeholder ? "Örnek profil" : "Randevu al"} <AppIcon name="arrow-right" />
               </button>
             </article>
           ))}
@@ -1856,7 +1897,7 @@ function AppointmentsView({
                         );
                         const a = document.createElement("a");
                         a.href = url;
-                        a.download = "kuran-dersi.ics";
+                        a.download = `kuran-randevu-${istanbulDay(item.scheduled_start)}.ics`;
                         a.click();
                         setTimeout(() => URL.revokeObjectURL(url), 1000);
                       }}
@@ -2009,6 +2050,17 @@ function PeerMatching({
           {peerError}
         </p>
       )}
+      {level !== "helper" && level !== "fluent" && realUser && (
+        <div className="peer-helper-note">
+          <AppIcon name="heart-handshake" />
+          <div>
+            <strong>Kur'an kardeşi olmak ister misin?</strong>
+            <span>
+              Seviyeni &quot;Destek olabilirim&quot; veya &quot;Akıcı okuyorum&quot; olarak güncellersen, diğer kullanıcılar seni bulabilir.
+            </span>
+          </div>
+        </div>
+      )}
       {level === "helper" ? (
         <div className="peer-helper-note">
           <AppIcon name="heart-handshake" />
@@ -2026,8 +2078,8 @@ function PeerMatching({
           {helpers.length === 0 ? (
             <EmptyState
               icon="users-minus"
-              title="Şimdilik uygun destekçi yok"
-              text="Yeni gönüllüler katıldığında burada görünecek."
+              title="Şu anda eşleşebilecek Kur'an kardeşi bulunmuyor"
+              text="Yeni gönüllüler katıldığında burada görünecek. Seviyeni 'Destek olabilirim' olarak güncellersen, başkalarının seni bulmasını sağlarsın."
             />
           ) : (
             <div className="helper-grid">
@@ -2042,7 +2094,7 @@ function PeerMatching({
                     <strong>{helper.display_name}</strong>
                     <span>Gönüllü akran desteği</span>
                     <small className="qc-peer-level">
-                      Destekçi · {helper.xp} deneyim puanı
+                      {helper.quran_level === "helper" ? "Destekçi" : "Akıcı okuyor"} · {helper.xp} deneyim puanı
                     </small>
                     <span
                       className={`qc-presence-dot ${presence.online.has(helper.id) ? "online" : "offline"}`}
@@ -2305,6 +2357,20 @@ function HocaManagement({
       role: "user" | "admin" | "hoca";
     }>
   >([]);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setScheduleError("Fotoğraf 2 MB'den küçük olmalı.");
+      e.target.value = "";
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
   const loadSchedule = async () => {
     if (!effectiveManagedId) return;
     const [a, t] = await Promise.all([
@@ -2368,6 +2434,25 @@ function HocaManagement({
     event.preventDefault();
     if (!managed) return;
     const fd = new FormData(event.currentTarget);
+    let photoUrl: string | null = String(fd.get("photo")) || null;
+
+    if (photoFile) {
+      setPhotoUploading(true);
+      const ext = photoFile.name.split(".").pop() || "jpg";
+      const path = `${managed.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("hoca-photos")
+        .upload(path, photoFile, { upsert: true });
+      setPhotoUploading(false);
+      if (uploadError) {
+        setScheduleError("Fotoğraf yüklenemedi. Profil diğer bilgilerle kaydedilecek.");
+      } else {
+        const { data: publicData } = supabase.storage.from("hoca-photos").getPublicUrl(path);
+        photoUrl = publicData.publicUrl;
+      }
+      setPhotoFile(null);
+    }
+
     const { error } = await supabase
       .from("hoca_profiles")
       .update({
@@ -2378,7 +2463,7 @@ function HocaManagement({
           .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
-        photo_url: String(fd.get("photo")) || null,
+        photo_url: photoUrl,
         is_active: fd.get("active") === "on",
       })
       .eq("id", managed.id);
@@ -2387,6 +2472,7 @@ function HocaManagement({
       return;
     }
     setScheduleNotice("Profil kaydedildi.");
+    setPhotoPreview(null);
     await onReload();
   };
   const addAvailability = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -2584,8 +2670,22 @@ function HocaManagement({
               />
             </label>
             <label>
-              Fotoğraf URL’si
-              <input name="photo" defaultValue={managed.photo_url || ""} />
+              Fotoğraf yükle
+              <input type="file" accept="image/*" onChange={handlePhotoFile} />
+            </label>
+            {(photoPreview || managed.photo_url) && (
+              <div className="hoca-photo-preview">
+                <AvatarImage
+                  src={photoPreview || managed.photo_url || ""}
+                  alt="Fotoğraf önizleme"
+                  size={80}
+                />
+                {photoUploading && <small>Yükleniyor...</small>}
+              </div>
+            )}
+            <label>
+              Fotoğraf URL (alternatif)
+              <input name="photo" defaultValue={managed.photo_url || ""} placeholder="Veya doğrudan URL yapıştır" />
             </label>
             <label className="check-field">
               <input
@@ -2784,6 +2884,14 @@ function CompanionSkeleton() {
       aria-label="Kur'an Kardeşim yükleniyor"
     >
       <i />
+      <i />
+      <i />
+    </div>
+  );
+}
+function TabSkeleton() {
+  return (
+    <div className="qc-tab-skeleton" aria-label="Sekme yükleniyor">
       <i />
       <i />
     </div>

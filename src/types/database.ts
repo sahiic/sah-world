@@ -150,6 +150,8 @@ export type ChatMessageRow = {
   context_id: string | null;
   content: string;
   is_read: boolean;
+  edited_at: string | null;
+  deleted_at: string | null;
   created_at: string;
 };
 
@@ -669,6 +671,14 @@ export interface Database {
       get_quran_thread_summaries: {
         Args: Record<string, never>;
         Returns: QuranThreadSummary[];
+      };
+      update_quran_message: {
+        Args: { target_message_id: string; new_content: string };
+        Returns: void;
+      };
+      delete_quran_message: {
+        Args: { target_message_id: string };
+        Returns: void;
       };
       reschedule_hoca_appointment: {
         Args: {

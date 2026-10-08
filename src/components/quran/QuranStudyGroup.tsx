@@ -177,95 +177,96 @@ export default function QuranStudyGroup({
         </p>
       )}
       {realUser && !rooms.length && !error && (
-        <p className="qc-room-empty">
-          Henüz çalışma odan yok. Eşleştiğin kardeşleri ortak bir sure
-          çalışmasına davet edebilirsin.
-        </p>
+        <div className="qc-room-empty-cta">
+          <AppIcon name="users" />
+          <strong>Henüz bir çalışma odan yok</strong>
+          <p>
+            Kur'an kardeşlerinle birlikte çalışmak için bir oda oluştur. Her kardeş davetini kendisi kabul eder.
+          </p>
+          {peers.length > 0 && (
+            <button
+              className="primary-button"
+              onClick={() => { setCreating(true); setError(""); }}
+            >
+              <AppIcon name="plus" /> Oda oluştur
+            </button>
+          )}
+        </div>
       )}
-      <div className="qc-room-grid">
-        {rooms.map((room) => {
-          const status = members.find(
-            (m) => m.room_id === room.id && m.user_id === userId,
-          )?.status;
-          return (
-            <article key={room.id}>
-              <span className="qc-room-icon">
-                <AppIcon name="book-open" />
-              </span>
-              <h4>{room.name}</h4>
-              <p>
-                {SURAHS[room.surah_target - 1].name} · {room.start_ayah}–
-                {room.end_ayah}. ayet
-              </p>
-              {room.scheduled_at && (
-                <time>
-                  {new Date(room.scheduled_at).toLocaleString("tr-TR", {
-                    timeZone: "Europe/Istanbul",
-                    day: "numeric",
-                    month: "long",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}{" "}
-                  · Türkiye saati
-                </time>
-              )}
-              {status === "invited" ? (
-                <>
-                  <small>
-                    Bekleyen özel davet · Katılınca grup sohbeti açılır.
-                  </small>
-                  <div>
-                    <button
-                      className="primary-button"
-                      disabled={busy}
-                      onClick={() => void respond(room, true)}
-                    >
-                      Daveti kabul et
-                    </button>
-                    <button
-                      disabled={busy}
-                      onClick={() => void respond(room, false)}
-                    >
-                      Reddet
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <small>
-                    {
-                      members.filter(
-                        (m) => m.room_id === room.id && m.status === "accepted",
-                      ).length
-                    }
-                    /{room.max_participants} katılımcı ·{" "}
-                    {
-                      members.filter(
-                        (m) => m.room_id === room.id && m.status === "invited",
-                      ).length
-                    }{" "}
-                    davet bekliyor
-                  </small>
-                  <div>
-                    <button
-                      className="primary-button"
-                      onClick={() => setActiveRoom(room)}
-                    >
-                      <AppIcon name="message" />
-                      Oda sohbeti
-                    </button>
-                    {room.creator_id !== userId && (
-                      <button disabled={busy} onClick={() => void leave(room)}>
-                        Ayrıl
-                      </button>
-                    )}
-                  </div>
-                </>
-              )}
-            </article>
-          );
-        })}
-      </div>
+      {(() => {
+        const pending = rooms.filter((r) =>
+          members.some((m) => m.room_id === r.id && m.user_id === userId && m.status === "invited"),
+        );
+        const active = rooms.filter((r) =>
+          !members.some((m) => m.room_id === r.id && m.user_id === userId && m.status === "invited"),
+        );
+        return (
+          <>
+            {pending.length > 0 && (
+              <>
+                <h4 className="subsection-title">Bekleyen davetler</h4>
+                <div className="qc-room-grid">
+                  {pending.map((room) => (
+                    <article key={room.id} className="qc-room-invited">
+                      <span className="qc-room-icon"><AppIcon name="mail" /></span>
+                      <h4>{room.name}</h4>
+                      <p>{SURAHS[room.surah_target - 1].name} · {room.start_ayah}–{room.end_ayah}. ayet</p>
+                      {room.scheduled_at && (
+                        <time>
+                          {new Date(room.scheduled_at).toLocaleString("tr-TR", {
+                            timeZone: "Europe/Istanbul", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
+                          })} · Türkiye saati
+                        </time>
+                      )}
+                      <small>Bekleyen özel davet · Katılınca grup sohbeti açılır.</small>
+                      <div>
+                        <button className="primary-button" disabled={busy} onClick={() => void respond(room, true)}>
+                          Daveti kabul et
+                        </button>
+                        <button disabled={busy} onClick={() => void respond(room, false)}>Reddet</button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </>
+            )}
+            {active.length > 0 && (
+              <>
+                {pending.length > 0 && <h4 className="subsection-title">Aktif odalar</h4>}
+                <div className="qc-room-grid">
+                  {active.map((room) => (
+                    <article key={room.id}>
+                      <span className="qc-room-icon"><AppIcon name="book-open" /></span>
+                      <h4>{room.name}</h4>
+                      <p>{SURAHS[room.surah_target - 1].name} · {room.start_ayah}–{room.end_ayah}. ayet</p>
+                      {room.scheduled_at && (
+                        <time>
+                          {new Date(room.scheduled_at).toLocaleString("tr-TR", {
+                            timeZone: "Europe/Istanbul", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
+                          })} · Türkiye saati
+                        </time>
+                      )}
+                      <small>
+                        {members.filter((m) => m.room_id === room.id && m.status === "accepted").length}
+                        /{room.max_participants} katılımcı ·{" "}
+                        {members.filter((m) => m.room_id === room.id && m.status === "invited").length} davet bekliyor
+                      </small>
+                      <div>
+                        <button className="primary-button" onClick={() => setActiveRoom(room)}>
+                          <AppIcon name="message" /> Oda sohbeti
+                        </button>
+                        {room.creator_id !== userId && (
+                          <button disabled={busy} onClick={() => void leave(room)}>Ayrıl</button>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        );
+      })()}
       {activeRoom && (
         <QuranChat
           groupId={activeRoom.group_id}

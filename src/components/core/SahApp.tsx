@@ -14,7 +14,10 @@ import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { quranUnreadCounts } from "@/lib/quranSocial";
+import { ownedRealtimeChannel } from "@/lib/ownedRealtimeChannel";
+import type { QuranThreadSummary } from "@/types/database";
 import AwarenessProfileSummary from "./AwarenessProfileSummary";
 import CommandPalette from "./CommandPalette";
 import type { GrowthNavigationCue } from "./GrowthTree";
@@ -135,6 +138,27 @@ export default function SahApp({
   const currentLevelName = level.name;
   const savedThemePreference =
     profile?.theme_preference ?? initialProfile?.theme_preference;
+
+  const [quranThreads, setQuranThreads] = useState<QuranThreadSummary[]>([]);
+  const quranUnread = useMemo(() => {
+    const counts = quranUnreadCounts(quranThreads);
+    return counts.appointments + counts.peers;
+  }, [quranThreads]);
+  useEffect(() => {
+    const uid = user?.id;
+    if (!uid) { setQuranThreads([]); return; }
+    let active = true;
+    const fetch = () =>
+      void supabase.rpc("get_quran_thread_summaries").then(({ data }) => {
+        if (active && data) setQuranThreads(data);
+      });
+    fetch();
+    const channel = ownedRealtimeChannel(supabase, `sidebar-quran-${uid}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `receiver_id=eq.${uid}` }, fetch)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chat_messages", filter: `sender_id=eq.${uid}` }, fetch)
+      .subscribe();
+    return () => { active = false; void supabase.removeChannel(channel); };
+  }, [user?.id]);
 
   useEffect(() => {
     // DEV-ONLY: enables deterministic end-to-end onboarding QA without
@@ -387,6 +411,11 @@ export default function SahApp({
               >
                 <AppIcon name={item.icon} />
                 <span>{item.label}</span>
+                {item.id === "quran-companion" && quranUnread > 0 && (
+                  <em className="sidebar-badge" aria-label={`${quranUnread} okunmamış mesaj`}>
+                    {quranUnread > 99 ? "99+" : quranUnread}
+                  </em>
+                )}
               </button>
             ))}
           </section>

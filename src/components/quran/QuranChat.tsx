@@ -58,12 +58,17 @@ export default function QuranChat(props: Props) {
             content:
               "Selâmün aleyküm. Ders öncesinde çalışmak istediğin sureyi buradan yazabilirsin.",
             is_read: true,
+            edited_at: null,
+            deleted_at: null,
             created_at: new Date().toISOString(),
           },
         ]
       : [],
   );
   const [text, setText] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [menuId, setMenuId] = useState<string | null>(null);
   const [participants, setParticipants] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!groupId || demo) return;
@@ -322,6 +327,45 @@ export default function QuranChat(props: Props) {
       input.current?.focus();
     }
   };
+  const canModify = (m: ChatMessageRow) =>
+    m.sender_id === userId &&
+    !demo &&
+    !legacy &&
+    Date.now() - new Date(m.created_at).getTime() < 15 * 60_000;
+
+  const editMessage = async (id: string) => {
+    const content = editText.trim();
+    if (!content) return;
+    const { error: e } = await supabase.rpc("update_quran_message", {
+      target_message_id: id,
+      new_content: content,
+    });
+    if (e) {
+      setError("Mesaj düzenlenemedi.");
+      return;
+    }
+    setMessages((msgs) =>
+      msgs.map((m) => (m.id === id ? { ...m, content, edited_at: new Date().toISOString() } : m)),
+    );
+    setEditingId(null);
+    setEditText("");
+  };
+
+  const deleteMessage = async (id: string) => {
+    if (!window.confirm("Bu mesajı silmek istiyor musun?")) return;
+    const { error: e } = await supabase.rpc("delete_quran_message", {
+      target_message_id: id,
+    });
+    if (e) {
+      setError("Mesaj silinemedi.");
+      return;
+    }
+    setMessages((msgs) =>
+      msgs.map((m) => (m.id === id ? { ...m, content: "Bu mesaj silindi.", deleted_at: new Date().toISOString() } : m)),
+    );
+    setMenuId(null);
+  };
+
   const switchArchive = () => {
     setLegacy((current) => !current);
     setMessages([]);
@@ -450,13 +494,44 @@ export default function QuranChat(props: Props) {
                   {chatDateLabel(m.created_at)}
                 </div>
               )}
-              <article className={`qc-chat-bubble ${mine ? "mine" : "theirs"}`}>
+              <article
+                className={`qc-chat-bubble ${mine ? "mine" : "theirs"}${(m as ChatMessageRow & { deleted_at?: string }).deleted_at ? " deleted" : ""}`}
+                onContextMenu={(e) => {
+                  if (canModify(m)) {
+                    e.preventDefault();
+                    setMenuId(menuId === m.id ? null : m.id);
+                  }
+                }}
+              >
                 {groupId && !mine && (
                   <strong className="qc-chat-author">
                     {participants[m.sender_id] || "Katılımcı"}
                   </strong>
                 )}
-                <p>{m.content}</p>
+                {editingId === m.id ? (
+                  <div className="qc-chat-edit">
+                    <textarea
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      maxLength={2000}
+                      rows={2}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") { setEditingId(null); setEditText(""); }
+                        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void editMessage(m.id); }
+                      }}
+                    />
+                    <div>
+                      <button type="button" onClick={() => { setEditingId(null); setEditText(""); }}>Vazgeç</button>
+                      <button type="button" className="primary-button" onClick={() => void editMessage(m.id)}>Kaydet</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p>{m.content}</p>
+                )}
+                {(m as ChatMessageRow & { edited_at?: string }).edited_at && !(m as ChatMessageRow & { deleted_at?: string }).deleted_at && (
+                  <small className="qc-chat-edited">(düzenlendi)</small>
+                )}
                 <div className="qc-chat-meta">
                   <time className="qc-chat-time" dateTime={m.created_at}>
                     {new Date(m.created_at).toLocaleTimeString("tr-TR", {
@@ -479,7 +554,26 @@ export default function QuranChat(props: Props) {
                       {m.is_read ? "✓✓" : "✓"}
                     </span>
                   )}
+                  {canModify(m) && !(m as ChatMessageRow & { deleted_at?: string }).deleted_at && (
+                    <button
+                      className="qc-chat-action-trigger"
+                      onClick={() => setMenuId(menuId === m.id ? null : m.id)}
+                      aria-label="Mesaj seçenekleri"
+                    >
+                      ⋯
+                    </button>
+                  )}
                 </div>
+                {menuId === m.id && (
+                  <div className="qc-chat-actions">
+                    <button onClick={() => { setEditingId(m.id); setEditText(m.content); setMenuId(null); }}>
+                      Düzenle
+                    </button>
+                    <button onClick={() => void deleteMessage(m.id)}>
+                      Sil
+                    </button>
+                  </div>
+                )}
               </article>
             </Fragment>
           );
