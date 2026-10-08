@@ -1,6 +1,6 @@
 # Kur’an sosyal altyapısı — yayın durumu
 
-7 Ekim 2026. Dal: `feature/quran-social-infra`. Bu değişiklik, `feature/quran-readiness` / PR #64 üzerine kuruludur. Ana site ve canlı veritabanı henüz bu sürüme geçirilmedi.
+8 Ekim 2026. Dal: `feature/quran-social-infra`. Bu değişiklik, `feature/quran-readiness` / PR #64 üzerine kuruludur. PR #64 ana dala birleştirildi; sosyal arayüz yayını [PR #65](https://github.com/sahiic/sah-world/pull/65) üzerinden takip edilir. Canlı veritabanı kurulumu tamamlandı; önizleme yayını tek başına ana alan adının güncellendiğinin kanıtı değildir.
 
 ## Uygulanan öncelikli fazlar
 
@@ -39,15 +39,17 @@ Presence paketleri yalnızca arayüz ipucudur; yetki kaynağı değildir. Özel 
 - Ekran kanıtları yalnızca kurgu hesaplar içerir: `validation/quran-social/desktop-dark.png`, `validation/quran-social/mobile-dark.png`.
 - CI, genel misafir UI testlerinden ayrı sosyal fixture testini ve iki izole veritabanı betiğini çalıştıracak şekilde güncellendi.
 
-## Canlıya geçişte kalan somut engel
+## Canlı veritabanı doğrulaması — 8 Ekim 2026
 
-Kullanıcı Supabase oturumunu açtı. Canlı SQL ön kontrolü 030–036 şema eklerinin henüz bulunmadığını, mevcut 12 mesaj ve 5 randevunun korunduğunu doğruladı. Hesap mevcut, yönetici ataması henüz yapılmadı. Bu kontrol hiçbir kullanıcı verisini değiştirmedi veya yazdırmadı.
+Kullanıcının açtığı yetkili Supabase oturumunda 030–036 tek transaction içinde sıralı uygulandı ve migration geçmişine kaydedildi. Test edilmiş kaynak commit: `784ebce336166592b49c767483eba3b226f4ddec`. İşlem başarılı tamamlandı; 12 mesaj ve 5 randevu korundu. 198 cevap anahtarı yüklendi. Onaylanan hesabın `admin` rolü ve aktif, gerçek `Baş Muallim` profili doğrulandı. Panelde otomatik yedek bulunmadığı görüldü; yedek varmış gibi kabul edilmedi. Kullanıcı kayıtları silinmedi veya test verisiyle değiştirilmedi.
 
-Dolayısıyla iki gerçek hesapla canlı mesaj/okundu/Presence testi, canlı oda daveti ve onaylanan yönetici/Baş Muallim ataması yapılmış kabul edilemez. Önizleme dağıtımı ana alan adının güncellendiği anlamına gelmez.
+Canlı katalog kontrolleri: 11 yeni tabloda RLS açık; cevap anahtarlarını anonim/oturumlu istemci okuyamıyor; sonuç/puan/seri tablolarına doğrudan yazma kapalı; anonim sosyal RPC çalıştırma kapalı; iki özel Presence politikası var; not kimliğini koruyan trigger etkin; not SELECT politikası gerçek katılımcı kontrolü kullanıyor. `appointments`, `chat_messages`, `quran_peer_matches`, `quran_study_room_members` Realtime publication içinde.
 
-## Erişim sağlanınca uygulanacak sıra
+İki ayrı gerçek hesapla canlı mesaj/okundu/Presence ve oda daveti uçtan uca testi yapılmış kabul edilmez. Bu akışların izole otomatik testleri başarılıdır; canlı katalog kontrolü gerçek iki hesap testi yerine geçmez. Eğitim içeriğinin ehil öğretici son incelemesi de ayrı bir süreçtir.
 
-1. Uygulanmış migration listesini doğrula ve mevcut veritabanı yedeğini kontrol et. Eksik migration’ları sırasıyla uygula: 030, 031, 032, 033, 034, 035, 036. 031’i 032’den sonra tek başına tekrar çalıştırma; 032 puan/yazma yetkilerini daraltır. Dosyalar `supabase/migrations/` altındadır. Gerçek kullanıcı verileriyle seed/test çalıştırma.
+## Yayın ve tekrar kurulum notları
+
+1. Canlıda 030–036 uygulandı; tekrar çalıştırmadan migration geçmişini kontrol et. Yeni ortamda eksik migration’ları sırasıyla uygula: 030, 031, 032, 033, 034, 035, 036. 031’i 032’den sonra tek başına tekrar çalıştırma; 032 puan/yazma yetkilerini daraltır. Dosyalar `supabase/migrations/` altındadır. Gerçek kullanıcı verileriyle seed/test çalıştırma.
 2. Yeni tablo/RPC şema önbelleğini, public tablolar için Realtime publication üyeliğini ve özel Presence RLS politikalarını doğrula. Açık eski istemcilerin yenilenmesiyle yeni sunucu tarafı alıştırma kayıt yoluna geçilmelidir.
 3. PR #64 ve ona bağlı sosyal değişiklikleri test edilmiş sırayla birleştir; doğrudan `main` push yapma. Otomatik Vercel üretim yayınının doğru commit’te hazır olduğunu ve ana alan adını doğrula.
 4. Gerçek öğrenci ve hoca hesaplarında iki ayrı dersin mesajlarının ayrıldığını, yalnızca açılan konuşmanın rozetinin azaldığını, opt-in yazıyor göstergesini, karşılıklı notları, dolu saatte eski rezervasyonun korunmasını ve davetsiz kişinin odaya giremediğini doğrula.
