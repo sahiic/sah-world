@@ -1,14 +1,22 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { supabase } from "@/lib/supabase";
 import { isValidUUID } from "@/store/useJourneyStore";
 import type { AppointmentNoteRow } from "@/types/database";
 import type { AppointmentView } from "./QuranCompanionView";
+import QuranModal from "@/components/quran/QuranModal";
 
-const TOPICS = ["Tecvid", "Mahreç", "Ezber", "Meal", "Tefsir", "Hatim", "Elif-Ba"];
+const TOPICS = [
+  "Tecvid",
+  "Mahreç",
+  "Ezber",
+  "Meal",
+  "Tefsir",
+  "Hatim",
+  "Elif-Ba",
+];
 
 export default function AppointmentReview({
   appointment,
@@ -23,7 +31,6 @@ export default function AppointmentReview({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const reducedMotion = useReducedMotion();
   const demoMode = Boolean(appointment.is_demo) || !isValidUUID(userId);
   const [note, setNote] = useState<AppointmentNoteRow | null>(null);
   const [surahName, setSurahName] = useState("");
@@ -73,6 +80,11 @@ export default function AppointmentReview({
 
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (saving) return;
+    if (isHoca && startAyah && endAyah && Number(endAyah) < Number(startAyah)) {
+      setError("Bitiş ayeti başlangıç ayetinden küçük olamaz.");
+      return;
+    }
     setError("");
     setSaving(true);
     if (demoMode) {
@@ -112,45 +124,172 @@ export default function AppointmentReview({
   };
 
   return (
-    <div className="quran-modal-backdrop">
-      <motion.section
-        className="appointment-review-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="appointment-review-title"
-        initial={reducedMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-      >
+    <QuranModal
+      onClose={onClose}
+      label="Ders Notu"
+      className="appointment-review-modal"
+    >
+      <>
         <header>
-          <span><AppIcon name="notes" /></span>
+          <span>
+            <AppIcon name="notes" />
+          </span>
           <div>
             <small>{isHoca ? "HOCA DEĞERLENDİRMESİ" : "DERS YANSIMASI"}</small>
             <h2 id="appointment-review-title">Ders Notu</h2>
-            <p>{isHoca ? appointment.student_name : appointment.hoca_name} · {new Date(appointment.scheduled_start).toLocaleDateString("tr-TR")}</p>
+            <p>
+              {isHoca ? appointment.student_name : appointment.hoca_name} ·{" "}
+              {new Date(appointment.scheduled_start).toLocaleDateString(
+                "tr-TR",
+              )}
+            </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Ders notunu kapat"><AppIcon name="x" /></button>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Ders notunu kapat"
+          >
+            <AppIcon name="x" />
+          </button>
         </header>
-        {loading ? <p className="quran-form-status">Yükleniyor…</p> : (
+        {loading ? (
+          <p className="quran-form-status">Yükleniyor…</p>
+        ) : (
           <form onSubmit={(event) => void save(event)}>
-            {demoMode && <div className="quran-pilot-badge"><AppIcon name="flask" /> Örnek pilot — kaydetme yalnızca bu denemeyi tamamlar.</div>}
-            {isHoca ? <>
-              <div className="review-ayah-grid">
-                <label>Sure adı<input value={surahName} onChange={(event) => setSurahName(event.target.value)} placeholder="Örn. Fâtiha" /></label>
-                <label>Başlangıç ayeti<input type="number" min="1" value={startAyah} onChange={(event) => setStartAyah(event.target.value)} /></label>
-                <label>Bitiş ayeti<input type="number" min="1" value={endAyah} onChange={(event) => setEndAyah(event.target.value)} /></label>
+            {demoMode && (
+              <div className="quran-pilot-badge">
+                <AppIcon name="flask" /> Örnek pilot — kaydetme yalnızca bu
+                denemeyi tamamlar.
               </div>
-              <fieldset className="review-topics"><legend>İşlenen konular</legend><div>{TOPICS.map((topic) => <button key={topic} type="button" className={topics.includes(topic) ? "active" : ""} onClick={() => setTopics((current) => current.includes(topic) ? current.filter((item) => item !== topic) : [...current, topic])}>{topic}</button>)}</div></fieldset>
-              <label>Öğrenci performansı<textarea maxLength={600} value={performance} onChange={(event) => setPerformance(event.target.value)} placeholder="Güçlü yönler ve üzerinde çalışılacak noktalar…" /><small>{performance.length}/600</small></label>
-              <label>Sonraki ders için görev<textarea maxLength={300} value={assignment} onChange={(event) => setAssignment(event.target.value)} placeholder="Örn. Fâtiha suresini mahreçlere dikkat ederek üç kez oku." /><small>{assignment.length}/300</small></label>
-            </> : <>
-              <label>Bu derste ne hissettin / ne öğrendin?<textarea required maxLength={600} value={reflection} onChange={(event) => setReflection(event.target.value)} placeholder="Bugünkü dersten sende kalanları birkaç cümleyle yaz…" /><small>{reflection.length}/600</small></label>
-              <fieldset className="review-difficulty"><legend>Zorluk derecesi</legend><div>{[1,2,3,4,5].map((value) => <button key={value} type="button" className={difficulty === value ? "active" : ""} onClick={() => setDifficulty(value)} aria-label={`${value} / 5 zorluk`}>{["Çok kolay","Kolay","Dengeli","Zor","Çok zor"][value - 1]}<span>{"★".repeat(value)}</span></button>)}</div></fieldset>
-            </>}
-            {error && <p className="booking-error" role="alert">{error}</p>}
-            <footer><button type="button" onClick={onClose}>Vazgeç</button><button className="primary-button" disabled={saving}>{saving ? "Kaydediliyor…" : note ? "Notu güncelle" : "Ders notunu kaydet"}</button></footer>
+            )}
+            {isHoca ? (
+              <>
+                <div className="review-ayah-grid">
+                  <label>
+                    Sure adı
+                    <input
+                      value={surahName}
+                      onChange={(event) => setSurahName(event.target.value)}
+                      placeholder="Örn. Fâtiha"
+                    />
+                  </label>
+                  <label>
+                    Başlangıç ayeti
+                    <input
+                      type="number"
+                      min="1"
+                      value={startAyah}
+                      onChange={(event) => setStartAyah(event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Bitiş ayeti
+                    <input
+                      type="number"
+                      min="1"
+                      value={endAyah}
+                      onChange={(event) => setEndAyah(event.target.value)}
+                    />
+                  </label>
+                </div>
+                <fieldset className="review-topics">
+                  <legend>İşlenen konular</legend>
+                  <div>
+                    {TOPICS.map((topic) => (
+                      <button
+                        key={topic}
+                        type="button"
+                        className={topics.includes(topic) ? "active" : ""}
+                        onClick={() =>
+                          setTopics((current) =>
+                            current.includes(topic)
+                              ? current.filter((item) => item !== topic)
+                              : [...current, topic],
+                          )
+                        }
+                      >
+                        {topic}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+                <label>
+                  Öğrenci performansı
+                  <textarea
+                    maxLength={600}
+                    value={performance}
+                    onChange={(event) => setPerformance(event.target.value)}
+                    placeholder="Güçlü yönler ve üzerinde çalışılacak noktalar…"
+                  />
+                  <small>{performance.length}/600</small>
+                </label>
+                <label>
+                  Sonraki ders için görev
+                  <textarea
+                    maxLength={300}
+                    value={assignment}
+                    onChange={(event) => setAssignment(event.target.value)}
+                    placeholder="Örn. Fâtiha suresini mahreçlere dikkat ederek üç kez oku."
+                  />
+                  <small>{assignment.length}/300</small>
+                </label>
+              </>
+            ) : (
+              <>
+                <label>
+                  Bu derste ne hissettin / ne öğrendin?
+                  <textarea
+                    required
+                    maxLength={600}
+                    value={reflection}
+                    onChange={(event) => setReflection(event.target.value)}
+                    placeholder="Bugünkü dersten sende kalanları birkaç cümleyle yaz…"
+                  />
+                  <small>{reflection.length}/600</small>
+                </label>
+                <fieldset className="review-difficulty">
+                  <legend>Zorluk derecesi</legend>
+                  <div>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={difficulty === value ? "active" : ""}
+                        onClick={() => setDifficulty(value)}
+                        aria-label={`${value} / 5 zorluk`}
+                      >
+                        {
+                          ["Çok kolay", "Kolay", "Dengeli", "Zor", "Çok zor"][
+                            value - 1
+                          ]
+                        }
+                        <span>{"★".repeat(value)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              </>
+            )}
+            {error && (
+              <p className="booking-error" role="alert">
+                {error}
+              </p>
+            )}
+            <footer>
+              <button type="button" onClick={onClose}>
+                Vazgeç
+              </button>
+              <button className="primary-button" disabled={saving}>
+                {saving
+                  ? "Kaydediliyor…"
+                  : note
+                    ? "Notu güncelle"
+                    : "Ders notunu kaydet"}
+              </button>
+            </footer>
           </form>
         )}
-      </motion.section>
-    </div>
+      </>
+    </QuranModal>
   );
 }

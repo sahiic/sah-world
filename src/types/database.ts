@@ -74,11 +74,7 @@ export type HocaTimeOffRow = {
   created_at: string;
 };
 export type AppointmentStatus =
-  | "pending"
-  | "confirmed"
-  | "completed"
-  | "cancelled"
-  | "no_show";
+  "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
 export type AppointmentRow = {
   id: string;
   hoca_id: string;
@@ -121,6 +117,8 @@ export type QuranStudyGoalRow = {
   user_id: string;
   title: string;
   progress_percent: number;
+  daily_ayah_goal: number;
+  daily_minutes_goal: number;
   created_at: string;
   updated_at: string;
 };
@@ -185,11 +183,7 @@ export type FocusSessionRow = {
 };
 
 export type MosqueEventCategory =
-  | "sohbet"
-  | "egitim"
-  | "yardim"
-  | "genclik"
-  | "ozel";
+  "sohbet" | "egitim" | "yardim" | "genclik" | "ozel";
 export type MosqueEventRow = {
   id: string;
   title: string;
@@ -287,7 +281,12 @@ export type AwarenessEngagementRow = {
   user_id: string;
   geography: GeographyRow;
   content_id: string;
-  event_type: "section_read" | "action_opened" | "quiz_completed" | "narrative_completed" | "shared";
+  event_type:
+    | "section_read"
+    | "action_opened"
+    | "quiz_completed"
+    | "narrative_completed"
+    | "shared";
   metadata: Json;
   created_at: string;
   updated_at: string;
@@ -385,18 +384,9 @@ export type IntegratedActivityRow = {
 };
 
 export type FeedbackType =
-  | "suggestion"
-  | "bug"
-  | "usability"
-  | "content"
-  | "performance"
-  | "other";
+  "suggestion" | "bug" | "usability" | "content" | "performance" | "other";
 export type FeedbackStatus =
-  | "received"
-  | "reviewing"
-  | "planned"
-  | "completed"
-  | "closed";
+  "received" | "reviewing" | "planned" | "completed" | "closed";
 export type FeedbackRow = {
   id: string;
   user_id: string;
@@ -449,21 +439,46 @@ export type QuranStreakRow = {
 export type QuranExerciseResultRow = {
   id: string;
   user_id: string;
-  exercise_type: "completion" | "ordering" | "tajweed" | "spaced";
+  exercise_type:
+    "completion" | "ordering" | "tajweed" | "spaced" | "meaning" | "letters";
   surah_id: number | null;
   score: number;
   total_questions: number;
   time_spent_seconds: number;
+  answers: Json;
   created_at: string;
 };
 
-export type QuranHasanatSource = "exercise" | "streak" | "review" | "milestone" | "appointment" | "daily";
+export type QuranHasanatSource =
+  "exercise" | "streak" | "review" | "milestone" | "appointment" | "daily";
+export type QuranReviewScheduleRow = {
+  id: string;
+  user_id: string;
+  surah_id: number;
+  start_ayah: number;
+  end_ayah: number;
+  next_review_date: string;
+  interval_index: number;
+  review_count: number;
+  last_review_date: string | null;
+};
+export type QuranTeacherReviewRow = {
+  id: string;
+  appointment_id: string;
+  hoca_id: string;
+  student_id: string;
+  rating: number;
+  comment: string;
+  published: boolean;
+  created_at: string;
+};
 export type QuranHasanatRow = {
   id: string;
   user_id: string;
   amount: number;
   source: QuranHasanatSource;
   description: string;
+  exercise_id: string | null;
   created_at: string;
 };
 
@@ -580,6 +595,22 @@ export interface Database {
       quran_streaks: RowTable<QuranStreakRow>;
       quran_exercise_results: RowTable<QuranExerciseResultRow>;
       quran_hasanat: RowTable<QuranHasanatRow>;
+      // Server-only answer registry; RLS/grants deny client access.
+      quran_practice_keys: RowTable<{
+        practice_type: string;
+        question_id: string;
+        answer: string;
+        surah_id: number;
+        ayah: number;
+        topic: string;
+      }>;
+      quran_review_schedule: RowTable<QuranReviewScheduleRow>;
+      quran_leaderboard_preferences: RowTable<{
+        user_id: string;
+        opted_in: boolean;
+        alias_seed: string;
+      }>;
+      quran_teacher_reviews: RowTable<QuranTeacherReviewRow>;
     };
     Views: {
       public_profile_summary: {
@@ -760,6 +791,25 @@ export interface Database {
       get_my_hasanat_total: {
         Args: Record<string, never>;
         Returns: number;
+      };
+      submit_quran_practice: {
+        Args: {
+          session_id: string;
+          practice_type: string;
+          practice_score: number;
+          question_count: number;
+          elapsed_seconds: number;
+          practice_answers: Json;
+        };
+        Returns: { reward: number; replayed: boolean };
+      };
+      get_quran_weekly_leaderboard: {
+        Args: Record<string, never>;
+        Returns: Array<{ alias: string; points: number; is_me: boolean }>;
+      };
+      get_quran_teacher_reviews: {
+        Args: { target_hoca_id: string };
+        Returns: Array<{ rating: number; comment: string; created_at: string }>;
       };
       get_hoca_available_slots: {
         Args: { target_hoca_id: string; target_date: string };

@@ -46,8 +46,8 @@ test('journal tabs have distinct URLs, Back restores the tab, and reload preserv
 test('Quran tabs survive reload and direct ayah/hadith access shares the same wheel result', async ({ page }) => {
   test.setTimeout(120_000);
   await openGuest(page, '/?view=quran-companion&tab=study');
-  await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(/Çalışma alanım/);
-  for (const [tab,label] of [['teachers','Hocalar'],['appointments','Randevularım'],['peers','Akran desteği'],['wheel','Günün Çarkı']] as const) {
+  await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(/Çalışma Alanım/);
+  for (const [tab,label] of [['teachers','Hocalar'],['appointments','Randevularım'],['peers',"Kur'an Kardeşi"],['achievements','Başarımlarım'],['study','Çalışma Alanım']] as const) {
     // The existing appointment tab includes a live count in its accessible name.
     await page.locator('.quran-companion-tabs').getByRole('button',{name:new RegExp(`^${label}(?: \\d+)?$`)}).click();
     await expect(page).toHaveURL(new RegExp(`view=quran-companion&tab=${tab}`));
@@ -55,6 +55,9 @@ test('Quran tabs survive reload and direct ayah/hadith access shares the same wh
     await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(new RegExp(`^${label}(?:\\d+)?$`));
     await expect(page.locator('main video')).toHaveCount(0);
   }
+  await page.getByRole('button',{name:'Not arşivini aç'}).click();
+  await expect(page).toHaveURL(/tab=wheel/);
+  await page.getByRole('tab',{name:'Ayet Çarkı',exact:true}).click();
   await expect(page.locator('.ritual-info > div')).toHaveCount(3);
   await page.getByRole('button',{name:'Bugünün ayetini direkt göster',exact:true}).click();
   await expect(page.locator('.wisdom-reveal')).toBeVisible();

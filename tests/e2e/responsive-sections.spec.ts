@@ -48,7 +48,7 @@ test('journal and Quran subtabs plus mosque section links remain usable at 375px
   await page.goto('/?view=journal');
   await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
   for (const [view, tabs, selector] of [
-    ['quran-companion', ['home', 'wheel', 'teachers', 'appointments', 'peers', 'study'], '.quran-companion-tabs button.active'],
+    ['quran-companion', ['home', 'progress', 'exercises', 'teachers', 'appointments', 'peers', 'study', 'achievements'], '.quran-companion-tabs button.active'],
   ] as const) {
     for (const tab of tabs) {
       await page.evaluate(({ view, tab }) => window.history.pushState(null, '', `/?view=${view}&tab=${tab}`), { view, tab });
