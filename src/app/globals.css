@@ -1014,7 +1014,30 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 [data-theme="dark"] .awareness-share-buttons button{color:#f0eaed;background:rgba(255,255,255,.06)}
 [data-theme="dark"] .awareness-integrity-note{background:#1a1416;box-shadow:0 8px 28px rgba(0,0,0,.2);color:#a89ca0}
 [data-theme="dark"] .awareness-integrity-note strong{color:#f0eaed}
-.awareness-quiz-v2{padding:48px;border-radius:0 0 24px 24px;background:#1a1118;color:#f0eaed}
+.awareness-quiz-v2{padding:48px;border-radius:0 0 24px 24px;background:radial-gradient(ellipse at 20% 0%,#2a1428,transparent 55%),radial-gradient(ellipse at 90% 100%,#14222a,transparent 50%),#100e14;color:#f0eaed}
+.awareness-quiz-v2 .quiz-layout>aside{background:linear-gradient(160deg,#1c0f2e,#0f1e2a);box-shadow:0 13px 30px rgba(0,0,0,.35)}
+.awareness-quiz-v2 .quiz-card{background:#fefefe;box-shadow:0 12px 40px rgba(0,0,0,.22),0 0 0 1px rgba(255,255,255,.08)}
+.awareness-quiz-v2 .quiz-card>header{color:var(--awareness-accent);font-weight:900}
+.awareness-quiz-v2 .quiz-card>h3{color:#0f0a14;font-size:24px;line-height:1.3}
+.awareness-quiz-v2 .quiz-options button{background:#f0ecf4;box-shadow:inset 0 0 0 1.5px rgba(90,60,120,.12);min-height:72px}
+.awareness-quiz-v2 .quiz-options button:not(:disabled):hover{background:#e8e0f0;box-shadow:0 9px 22px rgba(31,42,68,.12),inset 0 0 0 2px var(--awareness-accent);transform:translateY(-2px)}
+.awareness-quiz-v2 .quiz-options button b{color:#5b21b6;background:#e0d4f0;font-size:11px;font-weight:900}
+.awareness-quiz-v2 .quiz-options button span{color:#1a0e24;font-size:11px;font-weight:700}
+.awareness-quiz-v2 .quiz-card>footer{border-top:1px solid rgba(0,0,0,.06)}
+.awareness-quiz-v2 .quiz-result{background:#fefefe;box-shadow:0 12px 40px rgba(0,0,0,.22)}
+.awareness-quiz-v2 .quiz-result h3{color:#0f0a14}
+.awareness-quiz-v2 .quiz-result>p:not(.eyebrow,.inline-notice){color:#4a3d56}
+.awareness-quiz-v2 .quiz-reward{background:#f0ecf7}
+[data-theme="dark"] .awareness-quiz-v2{background:radial-gradient(ellipse at 20% 0%,#1a0a1e,transparent 55%),radial-gradient(ellipse at 90% 100%,#0a1418,transparent 50%),#08060c}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-layout>aside{background:linear-gradient(160deg,#140a22,#0a1620)}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-card{background:#16121e;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-card>h3{color:#f0eaed}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-options button{color:#f0eaed;background:#221e2c;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-options button:not(:disabled):hover{background:#2e2840;box-shadow:0 9px 22px rgba(0,0,0,.2),inset 0 0 0 2px var(--awareness-accent)}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-options button b{color:#c4b5fd;background:#2e2644}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-options button span{color:#e0dae6}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-result{background:#16121e}
+[data-theme="dark"] .awareness-quiz-v2 .quiz-result h3{color:#f0eaed}
 @media(max-width:900px){.awareness-experience{margin-top:-12px}.awareness-mode-tabs{top:64px}.awareness-story-grid{grid-template-columns:1fr}.awareness-visual-rail{display:none}.awareness-story-panels{padding:0 24px}.awareness-story-panel{min-height:80svh}.awareness-action-grid-v2{grid-template-columns:1fr}.awareness-share-card{grid-column:auto;display:flex!important}.awareness-share-preview{order:5;width:100%;min-height:280px}.awareness-share-buttons{order:6;width:100%}.awareness-share-notice{order:7}.awareness-quiz-v2{padding:28px}.awareness-source-dock{bottom:86px}}
 @media(max-width:620px){.awareness-route-bar{min-height:76px;padding:14px 16px}.awareness-route-bar h1{font-size:20px}.awareness-route-progress{min-width:110px}.awareness-geography-tabs{grid-template-columns:1fr}.awareness-geography-tabs button:not(.active) small{display:none}.awareness-mode-tabs{justify-content:stretch;overflow-x:auto}.awareness-mode-tabs button{flex:1;white-space:nowrap;padding-inline:9px}.awareness-mode-tabs button .app-icon{display:none}.awareness-opening{min-height:calc(100svh - 64px);padding:40px 24px 92px}.awareness-opening-copy{width:100%}.awareness-opening-copy h2{font-size:clamp(38px,12vw,54px);line-height:1.04}.awareness-opening-mark{width:100vw;right:-56%;top:8%}.awareness-scroll-cue{left:24px;bottom:34px}.awareness-story-panels{padding:0 14px}.awareness-story-panel{min-height:76svh}.awareness-story-copy{padding:26px 22px}.awareness-story-copy h2{font-size:34px}.awareness-story-copy>p{font-size:13px;line-height:1.75}.awareness-story-copy>a{grid-template-columns:1fr auto}.awareness-story-copy>a span{display:none}.awareness-resolution-bridge{padding-inline:10px}.awareness-source-dock{grid-template-columns:45px 1fr auto;width:calc(100% - 20px);bottom:82px;margin-bottom:10px}.awareness-actions-v2{padding:48px 14px}.awareness-action-grid-v2>article{min-height:0;padding:24px}.awareness-share-preview{padding:24px}.awareness-share-preview strong{font-size:28px}.awareness-share-buttons{grid-template-columns:1fr}.awareness-quiz-v2{padding:18px}.awareness-integrity-note{margin-bottom:80px}}
 @media(prefers-reduced-motion:reduce){.awareness-scroll-cue .app-icon{animation:none}.awareness-story-copy{opacity:1!important;transform:none!important}.awareness-orbit-line{transform:none!important}.awareness-story-panel{min-height:auto;padding:48px 0}.awareness-opening{min-height:auto;padding-block:72px 120px}}
@@ -1921,20 +1944,21 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] .awareness-mission-body p{color:#a89ca0}
 
 /* --- Boycott Guide --- */
-.awareness-boycott{padding:clamp(32px,5vw,64px) clamp(16px,3vw,48px);border-radius:0 0 24px 24px;background:linear-gradient(150deg,#f8f5f6,#fff)}
+.awareness-boycott{padding:clamp(32px,5vw,64px) clamp(16px,3vw,48px);border-radius:0 0 24px 24px;background:radial-gradient(ellipse at 85% 5%,rgba(159,18,57,.04),transparent 40%),radial-gradient(ellipse at 10% 90%,rgba(5,150,105,.04),transparent 35%),linear-gradient(150deg,#f8f5f6,#fff)}
 .awareness-boycott-header{max-width:700px;margin-bottom:32px}
 .awareness-boycott-header>span{color:var(--awareness-accent);font-size:9px;font-weight:850;letter-spacing:.18em}
-.awareness-boycott-header h2{margin:12px 0;font:700 clamp(28px,4vw,48px)/1.05 Georgia,serif;letter-spacing:-.04em}
+.awareness-boycott-header h2{margin:12px 0;font:700 clamp(28px,4vw,48px)/1.05 Georgia,serif;letter-spacing:-.04em;background:linear-gradient(135deg,#1a1416 40%,var(--awareness-accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .awareness-boycott-header p{color:#786d71;font-size:12px;line-height:1.7}
-.awareness-boycott-weekly{padding:20px 24px;border-radius:18px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;background:color-mix(in srgb,var(--awareness-accent) 6%,#fff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--awareness-accent) 12%,transparent)}
+.awareness-boycott-weekly{padding:22px 26px;border-radius:18px;margin-bottom:24px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;background:linear-gradient(135deg,color-mix(in srgb,var(--awareness-accent) 6%,#fff),color-mix(in srgb,var(--awareness-accent) 3%,#fff));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--awareness-accent) 14%,transparent),0 8px 24px color-mix(in srgb,var(--awareness-accent) 6%,transparent);position:relative;overflow:hidden}
+.awareness-boycott-weekly::before{content:"";position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:color-mix(in srgb,var(--awareness-accent) 8%,transparent);pointer-events:none}
 .awareness-boycott-weekly>span{font-size:8px;font-weight:850;color:var(--awareness-accent);letter-spacing:.12em;display:flex;align-items:center;gap:6px}
 .awareness-boycott-weekly>strong{font-size:16px;font-weight:800;color:#1a1416}
 .awareness-boycott-weekly>p{flex:1 1 300px;color:#786d71;font-size:10px;line-height:1.6;margin:0}
 .awareness-boycott-alts{display:flex;flex-wrap:wrap;gap:6px}
 .awareness-alt-chip{padding:5px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:4px;color:#047857;background:#ecfdf5;font-size:9px;font-weight:700}
 .awareness-boycott-progress{margin-bottom:20px}
-.awareness-boycott-bar{height:8px;border-radius:99px;background:rgba(0,0,0,.06);overflow:hidden}
-.awareness-boycott-bar>span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--awareness-accent),#047857);transition:width .5s ease}
+.awareness-boycott-bar{height:10px;border-radius:99px;background:rgba(0,0,0,.06);overflow:hidden}
+.awareness-boycott-bar>span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--awareness-accent),#047857);box-shadow:0 2px 8px color-mix(in srgb,var(--awareness-accent) 30%,transparent);transition:width .5s ease}
 .awareness-boycott-progress>small{display:block;margin-top:6px;color:#8a7f83;font-size:9px;font-weight:700}
 .awareness-boycott-controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
 .awareness-boycott-search{position:relative;flex:1 1 250px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:#f4f2f0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
@@ -1946,22 +1970,23 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .awareness-boycott-cats button.active{color:#fff;background:var(--awareness-accent)}
 .awareness-boycott-cats button:hover:not(.active){background:#ebe8e5}
 .awareness-boycott-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-.awareness-boycott-card{padding:20px;border-radius:18px;background:#fff;box-shadow:0 4px 18px rgba(55,34,42,.06),inset 0 0 0 1px rgba(0,0,0,.04);transition:box-shadow .2s}
-.awareness-boycott-card:hover{box-shadow:0 8px 28px rgba(55,34,42,.1),inset 0 0 0 1px rgba(0,0,0,.06)}
+.awareness-boycott-card{padding:20px;border-radius:18px;background:#fff;box-shadow:0 4px 18px rgba(55,34,42,.06),inset 0 0 0 1px rgba(0,0,0,.04);transition:box-shadow .2s,transform .2s}
+.awareness-boycott-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(55,34,42,.12),inset 0 0 0 1px rgba(0,0,0,.07)}
 .awareness-boycott-card.is-boycotting{box-shadow:0 4px 18px rgba(5,150,105,.1),inset 0 0 0 2px #059669}
 .awareness-boycott-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .awareness-boycott-card-top small{display:flex;align-items:center;gap:4px;color:#8a7f83;font-size:8px;font-weight:800;letter-spacing:.08em}
 .awareness-boycott-card-top h3{margin:6px 0 2px;font-size:16px;font-weight:800;color:#1a1416}
 .awareness-boycott-parent{color:#8a7f83;font-size:9px}
-.awareness-boycott-toggle{padding:8px 14px;border:0;border-radius:10px;display:flex;align-items:center;gap:6px;font-size:9px;font-weight:750;cursor:pointer;transition:all .2s;white-space:nowrap}
+.awareness-boycott-toggle{padding:8px 14px;border:0;border-radius:10px;display:flex;align-items:center;gap:6px;font-size:9px;font-weight:750;cursor:pointer;transition:all .25s;white-space:nowrap}
 .awareness-boycott-toggle:not(.active){color:#5a5055;background:#f4f2f0}
-.awareness-boycott-toggle.active{color:#fff;background:#059669}
-.awareness-boycott-toggle:hover:not(.active){background:#ebe8e5}
+.awareness-boycott-toggle.active{color:#fff;background:linear-gradient(135deg,#059669,#047857);box-shadow:0 4px 14px rgba(5,150,105,.25)}
+.awareness-boycott-toggle:hover:not(.active){background:#ebe8e5;transform:translateY(-1px)}
 .awareness-boycott-reason{margin:10px 0;color:#786d71;font-size:10px;line-height:1.6}
 .awareness-boycott-expand{border:0;background:transparent;color:var(--awareness-accent);font-size:9px;font-weight:750;cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 0}
 .awareness-boycott-alts-detail{overflow:hidden;padding-top:10px}
 .awareness-alt-label{display:flex;align-items:center;gap:5px;margin-bottom:8px;color:#047857;font-size:8px;font-weight:850;letter-spacing:.1em}
-.awareness-alt-row{padding:8px 12px;border-radius:10px;margin-bottom:4px;background:#f0fdf4}
+.awareness-alt-row{padding:10px 14px;border-radius:12px;margin-bottom:5px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);box-shadow:inset 0 0 0 1px rgba(5,150,105,.08);transition:transform .15s}
+.awareness-alt-row:hover{transform:translateX(3px)}
 .awareness-alt-row strong{font-size:11px;color:#065f46}
 .awareness-alt-row small{display:block;color:#6b7f77;font-size:8px;margin-top:2px}
 .awareness-boycott-src{display:flex;align-items:center;gap:5px;margin-top:10px;color:#8a7f83;font-size:8px;text-decoration:none}
@@ -1972,8 +1997,8 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .awareness-boycott-source .app-icon:first-child{color:var(--awareness-accent);font-size:18px}
 .awareness-boycott-source strong{font-size:10px;display:block}
 .awareness-boycott-source a{color:var(--awareness-accent);font-size:9px;text-decoration:none;display:flex;align-items:center;gap:4px}
-[data-theme="dark"] .awareness-boycott{background:linear-gradient(150deg,#14111a,#1a1416)}
-[data-theme="dark"] .awareness-boycott-header h2{color:#f0eaed}
+[data-theme="dark"] .awareness-boycott{background:radial-gradient(ellipse at 85% 5%,rgba(159,18,57,.08),transparent 40%),radial-gradient(ellipse at 10% 90%,rgba(5,150,105,.06),transparent 35%),linear-gradient(150deg,#14111a,#1a1416)}
+[data-theme="dark"] .awareness-boycott-header h2{background:linear-gradient(135deg,#f0eaed 40%,var(--awareness-accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 [data-theme="dark"] .awareness-boycott-header p{color:#a89ca0}
 [data-theme="dark"] .awareness-boycott-weekly{background:rgba(255,255,255,.04)}
 [data-theme="dark"] .awareness-boycott-weekly strong{color:#f0eaed}
@@ -1990,9 +2015,11 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] .awareness-boycott-bar{background:rgba(255,255,255,.08)}
 /* Status chips row */
 .awareness-boycott-stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
-.awareness-status-chip{display:flex;align-items:center;gap:8px;padding:10px 16px;border:0;border-radius:12px;background:var(--chip-bg);cursor:pointer;transition:all .2s;flex:1 1 120px}
-.awareness-status-chip:hover{filter:brightness(.97)}
-.awareness-status-chip.active{box-shadow:inset 0 0 0 2px var(--chip-color)}
+.awareness-status-chip{display:flex;align-items:center;gap:8px;padding:12px 18px;border:0;border-radius:14px;background:var(--chip-bg);cursor:pointer;transition:all .25s;flex:1 1 120px;position:relative;overflow:hidden}
+.awareness-status-chip::after{content:"";position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,transparent 60%,var(--chip-color));transition:opacity .25s}
+.awareness-status-chip:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.awareness-status-chip:hover::after{opacity:.06}
+.awareness-status-chip.active{box-shadow:inset 0 0 0 2.5px var(--chip-color),0 4px 14px color-mix(in srgb,var(--chip-color) 15%,transparent)}
 .awareness-status-dot{width:10px;height:10px;border-radius:50%;background:var(--chip-color);flex-shrink:0}
 .awareness-status-chip strong{font-size:20px;font-weight:800;color:var(--chip-color)}
 .awareness-status-chip>span:last-child{font-size:10px;font-weight:700;color:#5a5055}
@@ -2000,7 +2027,7 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] .awareness-status-chip>span:last-child{color:#a89ca0}
 /* Status badge on cards */
 .awareness-boycott-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.awareness-status-badge{padding:3px 8px;border-radius:6px;font-size:8px;font-weight:850;letter-spacing:.06em;color:var(--badge-color);background:var(--badge-bg)}
+.awareness-status-badge{padding:4px 10px;border-radius:8px;font-size:8px;font-weight:850;letter-spacing:.08em;color:var(--badge-color);background:var(--badge-bg);box-shadow:0 2px 8px color-mix(in srgb,var(--badge-color) 12%,transparent)}
 [data-theme="dark"] .awareness-status-badge{background:var(--badge-dark-bg)}
 @media(max-width:620px){.awareness-boycott{padding:28px 14px}.awareness-boycott-grid{grid-template-columns:1fr}.awareness-boycott-controls{flex-direction:column}.awareness-boycott-cats{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.awareness-boycott-stats{flex-direction:column}}
 
