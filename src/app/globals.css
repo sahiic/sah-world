@@ -47,6 +47,12 @@
 
 /* SAH WORLD — centralized interface design tokens */
 :root {
+  --text-display: clamp(28px, 4vw, 48px);
+  --text-h2: clamp(20px, 2.5vw, 28px);
+  --text-body: 15px;
+  --text-small: 13px;
+  --text-caption: 11px;
+  --font-display: Georgia, 'Times New Roman', serif;
   --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
