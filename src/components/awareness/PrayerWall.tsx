@@ -15,11 +15,11 @@ type Prayer = {
 };
 
 const DEMO_PRAYERS: Prayer[] = [
-  { id: "p1", text: "Ya Rabbi, mazlum halkları kurtar, sabır ve sebat ver.", geography: "filistin", aminCount: 47, createdAt: "2026-10-06" },
-  { id: "p2", text: "Allah'ım Gazze'deki çocukları koru, ailelerine kavuştur.", geography: "filistin", aminCount: 93, createdAt: "2026-10-05" },
-  { id: "p3", text: "Ya Rabbi, Doğu Türkistan'daki kardeşlerimizi esaretten kurtar.", geography: "dogu_turkistan", aminCount: 62, createdAt: "2026-10-04" },
-  { id: "p4", text: "Allah'ım zulme uğrayan tüm Müslümanlara yardım et, kalplerimizi birleştir.", geography: "filistin", aminCount: 38, createdAt: "2026-10-07" },
-  { id: "p5", text: "Rabbim Uygur Türklerinin dilini, dinini ve kimliğini muhafaza eyle.", geography: "dogu_turkistan", aminCount: 55, createdAt: "2026-10-06" },
+  { id: "p1", text: "Ya Rabbi, mazlum halkları kurtar, sabır ve sebat ver.", geography: "filistin", aminCount: 0, createdAt: "2026-10-06" },
+  { id: "p2", text: "Allah'ım Gazze'deki çocukları koru, ailelerine kavuştur.", geography: "filistin", aminCount: 0, createdAt: "2026-10-05" },
+  { id: "p3", text: "Ya Rabbi, Doğu Türkistan'daki kardeşlerimizi esaretten kurtar.", geography: "dogu_turkistan", aminCount: 0, createdAt: "2026-10-04" },
+  { id: "p4", text: "Allah'ım zulme uğrayan tüm Müslümanlara yardım et, kalplerimizi birleştir.", geography: "filistin", aminCount: 0, createdAt: "2026-10-07" },
+  { id: "p5", text: "Rabbim Uygur Türklerinin dilini, dinini ve kimliğini muhafaza eyle.", geography: "dogu_turkistan", aminCount: 0, createdAt: "2026-10-06" },
 ];
 
 const MAX_LENGTH = 200;
@@ -60,9 +60,9 @@ export default function PrayerWall({ geography }: { geography: Geography }) {
       <header className="awareness-prayer-header">
         <div>
           <AppIcon name="heart-handshake" />
-          <h3>Dua Duvarı</h3>
+          <h3>Dua defteri</h3>
         </div>
-        <p>{GEOGRAPHY_META[geography].name} için topluluk duaları</p>
+        <p>{GEOGRAPHY_META[geography].name} için örnek dualar. Eklediklerin yalnızca bu görünümde tutulur; topluluğa gönderilmez.</p>
         <button className="awareness-prayer-add" onClick={() => setShowForm(!showForm)}>
           <AppIcon name={showForm ? "x" : "plus"} /> {showForm ? "Kapat" : "Dua ekle"}
         </button>
@@ -79,13 +79,13 @@ export default function PrayerWall({ geography }: { geography: Geography }) {
             <textarea
               value={newText}
               onChange={(e) => setNewText(e.target.value.slice(0, MAX_LENGTH))}
-              placeholder="Duanı buraya yaz..."
+              aria-label="Dua notun" placeholder="Duanı buraya yaz..."
               rows={3}
             />
             <div className="awareness-prayer-form-footer">
               <small>{newText.length}/{MAX_LENGTH}</small>
               <button onClick={handleSubmit} disabled={!newText.trim()}>
-                <AppIcon name="send" /> Paylaş
+                <AppIcon name="send" /> Not ekle
               </button>
             </div>
           </motion.div>
@@ -103,13 +103,13 @@ export default function PrayerWall({ geography }: { geography: Geography }) {
           >
             <p>{prayer.text}</p>
             <footer>
-              <small>{prayer.createdAt}</small>
+              <small>{prayer.id.startsWith("user-") ? "Bu oturumdaki notun" : "Örnek dua"}</small>
               <button
                 className={`awareness-amin-btn ${aminedIds.has(prayer.id) ? "amined" : ""}`}
                 onClick={() => handleAmin(prayer.id)}
                 disabled={aminedIds.has(prayer.id)}
               >
-                <AppIcon name="heart" /> Amin ({prayer.aminCount})
+                <AppIcon name="heart" /> {aminedIds.has(prayer.id) ? "Amin dedin" : "Amin"}
               </button>
             </footer>
           </motion.article>
