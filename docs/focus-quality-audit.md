@@ -26,4 +26,4 @@
 - Focus history remains local to this browser; this change does not promise account/cloud synchronization.
 - Sounds are synthesized locally, not field recordings or recitations. No third-party audio data requests added.
 - A suspended or closed browser cannot guarantee timely notifications; elapsed time is reconciled on return.
-- No database, authentication, user roles or private records changed.
+- The Focus changes do not change database records, authentication or user roles. The separately requested Quran migrations are documented in `quran-037-038-rollout.md`.

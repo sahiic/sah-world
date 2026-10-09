@@ -1,5 +1,5 @@
 -- 037: Expand browse_quran_helpers to include 'fluent' users alongside 'helper'
--- This migration is NOT yet applied to production.
+-- Production rollout verified 2026-10-08; see docs/quran-037-038-rollout.md.
 
 CREATE OR REPLACE FUNCTION public.browse_quran_helpers()
 RETURNS TABLE (id UUID, display_name TEXT, avatar_url TEXT, xp INTEGER, quran_level TEXT)

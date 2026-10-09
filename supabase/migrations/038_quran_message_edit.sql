@@ -1,5 +1,5 @@
 -- 038: Add edited_at / deleted_at columns and RPCs for message edit & soft-delete
--- NOT YET APPLIED to production.
+-- Production rollout verified 2026-10-08; see docs/quran-037-038-rollout.md.
 
 -- Columns ------------------------------------------------------------------
 ALTER TABLE public.chat_messages
