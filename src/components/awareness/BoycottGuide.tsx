@@ -7,9 +7,11 @@ import {
   BOYCOTT_CATEGORIES,
   BOYCOTT_ITEMS,
   BOYCOTT_SOURCE,
+  BOYCOTT_STATUS_META,
   getWeeklyFocus,
   type BoycottCategory,
   type BoycottItem,
+  type BoycottStatus,
 } from "@/lib/boycottData";
 
 export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
@@ -17,12 +19,14 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
   onToggleBoycott: (itemId: string) => void;
 }) {
   const [category, setCategory] = useState<BoycottCategory | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<BoycottStatus | "all">("all");
   const [search, setSearch] = useState("");
   const weeklyFocus = useMemo(() => getWeeklyFocus(), []);
 
   const filtered = useMemo(() => {
     let items = BOYCOTT_ITEMS.filter((item) => item.isActive);
     if (category !== "all") items = items.filter((item) => item.category === category);
+    if (statusFilter !== "all") items = items.filter((item) => item.status === statusFilter);
     if (search.trim()) {
       const q = search.toLocaleLowerCase("tr-TR");
       items = items.filter((item) =>
@@ -32,17 +36,42 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
       );
     }
     return items;
-  }, [category, search]);
+  }, [category, statusFilter, search]);
 
-  const boycottCount = BOYCOTT_ITEMS.filter((item) => userBoycotts.has(item.id)).length;
+  const stats = useMemo(() => ({
+    boykot: BOYCOTT_ITEMS.filter((i) => i.status === "boykot").length,
+    supheli: BOYCOTT_ITEMS.filter((i) => i.status === "supheli").length,
+    uygun: BOYCOTT_ITEMS.filter((i) => i.status === "uygun").length,
+  }), []);
+
+  const boycottCount = BOYCOTT_ITEMS.filter((item) => item.status === "boykot" && userBoycotts.has(item.id)).length;
+  const totalBoycott = stats.boykot;
 
   return (
     <section className="awareness-boycott">
       <header className="awareness-boycott-header">
         <span>BİLİNÇLİ TÜKETİM REHBERİ</span>
         <h2>Boykot et, yerli alternatifini keşfet.</h2>
-        <p>Her markanın boykot nedeni kaynağa dayalıdır. Alternatifler yerli ve etik seçeneklerdir.</p>
+        <p>Her markanın durumu doğrulanabilir kaynaklara dayalıdır.</p>
       </header>
+
+      <div className="awareness-boycott-stats">
+        {(["boykot", "supheli", "uygun"] as BoycottStatus[]).map((s) => {
+          const meta = BOYCOTT_STATUS_META[s];
+          return (
+            <button
+              key={s}
+              className={`awareness-status-chip ${statusFilter === s ? "active" : ""}`}
+              style={{ "--chip-color": meta.color, "--chip-bg": meta.bg, "--chip-dark-bg": meta.darkBg } as React.CSSProperties}
+              onClick={() => setStatusFilter(statusFilter === s ? "all" : s)}
+            >
+              <span className="awareness-status-dot" />
+              <strong>{stats[s]}</strong>
+              <span>{meta.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
       {weeklyFocus && (
         <div className="awareness-boycott-weekly">
@@ -59,9 +88,9 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
 
       <div className="awareness-boycott-progress">
         <div className="awareness-boycott-bar">
-          <span style={{ width: `${(boycottCount / Math.max(BOYCOTT_ITEMS.length, 1)) * 100}%` }} />
+          <span style={{ width: `${(boycottCount / Math.max(totalBoycott, 1)) * 100}%` }} />
         </div>
-        <small>{boycottCount}/{BOYCOTT_ITEMS.length} markayı bıraktın</small>
+        <small>{boycottCount}/{totalBoycott} boykot markasını bıraktın</small>
       </div>
 
       <div className="awareness-boycott-controls">
@@ -105,7 +134,7 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
       <footer className="awareness-boycott-source">
         <AppIcon name="shield-check" />
         <div>
-          <strong>Kaynak</strong>
+          <strong>Kaynaklar</strong>
           <a href={BOYCOTT_SOURCE.url} target="_blank" rel="noopener noreferrer">
             {BOYCOTT_SOURCE.name} <AppIcon name="external-link" />
           </a>
@@ -118,6 +147,7 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
 function BoycottCard({ item, isBoycotting, onToggle }: { item: BoycottItem; isBoycotting: boolean; onToggle: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const catMeta = BOYCOTT_CATEGORIES.find((c) => c.id === item.category);
+  const statusMeta = BOYCOTT_STATUS_META[item.status];
 
   return (
     <motion.article
@@ -130,48 +160,62 @@ function BoycottCard({ item, isBoycotting, onToggle }: { item: BoycottItem; isBo
     >
       <div className="awareness-boycott-card-top">
         <div>
-          <small><AppIcon name={catMeta?.icon ?? "dots"} /> {catMeta?.label ?? item.category}</small>
+          <div className="awareness-boycott-card-meta">
+            <small><AppIcon name={catMeta?.icon ?? "dots"} /> {catMeta?.label ?? item.category}</small>
+            <span
+              className="awareness-status-badge"
+              style={{ "--badge-color": statusMeta.color, "--badge-bg": statusMeta.bg, "--badge-dark-bg": statusMeta.darkBg } as React.CSSProperties}
+            >
+              {statusMeta.label}
+            </span>
+          </div>
           <h3>{item.brandName}</h3>
           <span className="awareness-boycott-parent">{item.parentCompany}</span>
         </div>
-        <button
-          className={`awareness-boycott-toggle ${isBoycotting ? "active" : ""}`}
-          onClick={onToggle}
-          aria-label={isBoycotting ? `${item.brandName} boykotunu kaldır` : `${item.brandName} markasını boykot et`}
-        >
-          <AppIcon name={isBoycotting ? "circle-check-filled" : "circle-dashed"} />
-          <span>{isBoycotting ? "Boykot ediyorum" : "Boykot et"}</span>
-        </button>
+        {item.status === "boykot" && (
+          <button
+            className={`awareness-boycott-toggle ${isBoycotting ? "active" : ""}`}
+            onClick={onToggle}
+            aria-label={isBoycotting ? `${item.brandName} boykotunu kaldır` : `${item.brandName} markasını boykot et`}
+          >
+            <AppIcon name={isBoycotting ? "circle-check-filled" : "circle-dashed"} />
+            <span>{isBoycotting ? "Boykot ediyorum" : "Boykot et"}</span>
+          </button>
+        )}
       </div>
 
       <p className="awareness-boycott-reason">{item.reason}</p>
 
-      <button className="awareness-boycott-expand" onClick={() => setExpanded(!expanded)}>
-        <AppIcon name={expanded ? "chevron-up" : "chevron-down"} />
-        {expanded ? "Kapat" : `${item.alternatives.length} alternatif gör`}
-      </button>
+      {item.alternatives.length > 0 && (
+        <>
+          <button className="awareness-boycott-expand" onClick={() => setExpanded(!expanded)}>
+            <AppIcon name={expanded ? "chevron-up" : "chevron-down"} />
+            {expanded ? "Kapat" : `${item.alternatives.length} alternatif gör`}
+          </button>
 
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            className="awareness-boycott-alts-detail"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-          >
-            <span className="awareness-alt-label"><AppIcon name="leaf" /> YERLİ ALTERNATİFLER</span>
-            {item.alternatives.map((alt) => (
-              <div key={alt.name} className="awareness-alt-row">
-                <strong>{alt.name}</strong>
-                <small>{alt.note}</small>
-              </div>
-            ))}
-            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="awareness-boycott-src">
-              Kaynak: {item.sourceName} <AppIcon name="external-link" />
-            </a>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <AnimatePresence>
+            {expanded && (
+              <motion.div
+                className="awareness-boycott-alts-detail"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+              >
+                <span className="awareness-alt-label"><AppIcon name="leaf" /> YERLİ ALTERNATİFLER</span>
+                {item.alternatives.map((alt) => (
+                  <div key={alt.name} className="awareness-alt-row">
+                    <strong>{alt.name}</strong>
+                    <small>{alt.note}</small>
+                  </div>
+                ))}
+                <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="awareness-boycott-src">
+                  Kaynak: {item.sourceName} <AppIcon name="external-link" />
+                </a>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </motion.article>
   );
 }
