@@ -14,6 +14,20 @@ export function getWeeklyNextStep(journal: JournalEntry[], events: ActivityEvent
   return { title: 'Bir sonraki işin için tek bir çıktı seç.', detail: 'Başlamadan önce “Bu oturum bitince ne ortaya çıkacak?” sorusunu görev etiketiyle yanıtla.', action: 'Sonraki oturumu planla', view: 'focus' }
 }
 
+export function buildComparativeInsight(thisWeekEvents: ActivityEvent[], allEvents: ActivityEvent[]): string {
+  const now = new Date()
+  const lastWeekStart = new Date(now); lastWeekStart.setHours(0,0,0,0); lastWeekStart.setDate(lastWeekStart.getDate() - 13)
+  const lastWeekEnd = new Date(now); lastWeekEnd.setHours(0,0,0,0); lastWeekEnd.setDate(lastWeekEnd.getDate() - 7)
+  const lastWeekCount = allEvents.filter(e => { const d = new Date(e.createdAt); return d >= lastWeekStart && d < lastWeekEnd }).length
+  const thisWeekCount = thisWeekEvents.length
+  if (lastWeekCount === 0 && thisWeekCount === 0) return 'Bu hafta henüz bir adım bırakmadın. Tek bir küçük kayıtla başlayabilirsin.'
+  if (lastWeekCount === 0) return `Bu hafta ${thisWeekCount} adım bıraktın — yolculuğun başlıyor!`
+  const change = Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
+  if (change > 0) return `Bu hafta geçen haftadan %${change} daha aktifsin. ${thisWeekCount} küçük adım biriktirdin.`
+  if (change < 0) return `Geçen haftaya kıyasla biraz daha sakinsin — ama her geri dönüş yeni bir başlangıç.`
+  return `Geçen haftayla aynı ritimdesin — ${thisWeekCount} adım. İstikrar güçlü bir erdem.`
+}
+
 export function buildWeeklyInsights(journal:JournalEntry[],events:ActivityEvent[],now=new Date()):string[]{
   const currentStart=new Date(now);currentStart.setHours(0,0,0,0);currentStart.setDate(currentStart.getDate()-6)
   const previousStart=new Date(currentStart);previousStart.setDate(previousStart.getDate()-7)
