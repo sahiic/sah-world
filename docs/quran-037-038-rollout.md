@@ -23,3 +23,7 @@ Transaction-local snapshots compared every pre-existing message and appointment 
 3. Edit/delete RPCs: sender and 15-minute constraints present, authenticated-only access; guard trigger enabled; migration versions registered; preservation counts and null metadata confirmed. **7 rows returned; all boolean checks true.**
 
 The SQL stored in the migration registry matches the applied definitions. The only later file change is replacing the obsolete "not yet applied" comment with this verification reference.
+
+## Release follow-up — 2026-10-09
+
+Production migration versions, columns, RPC signatures and preservation counts were rechecked successfully. The combined release also includes PR #67's visual commits and fixes a pre-existing guest/demo loading state that prevented secondary Quran tabs from rendering. Regression tests follow the accessible `tab` roles and dated calendar filenames; no assertions about data ownership, privacy or learning outcomes were removed.
