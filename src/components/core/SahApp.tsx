@@ -119,6 +119,16 @@ export default function SahApp({
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return typeof window !== 'undefined' && localStorage.getItem('sah:sidebar-collapsed') === '1' } catch { return false }
+  });
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => {
+      const next = !prev;
+      try { localStorage.setItem('sah:sidebar-collapsed', next ? '1' : '0') } catch {}
+      return next;
+    });
+  }, []);
   const [onboardingPreview, setOnboardingPreview] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [milestone, setMilestone] = useState<Milestone>(null);
@@ -370,7 +380,7 @@ export default function SahApp({
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(activeProfile?.display_name || "Yolcu")}`;
 
   return (
-    <div className={`core-app ${view === "focus" ? "focus-mode" : ""}`}>
+    <div className={`core-app ${view === "focus" ? "focus-mode" : ""} ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       {activeProfile?.created_at && (
         <WelcomeGuide
           profileId={activeProfile.id}
@@ -408,6 +418,7 @@ export default function SahApp({
                 className={view === item.id ? "active" : ""}
                 onClick={() => navigate(item.id)}
                 aria-current={view === item.id ? "page" : undefined}
+                data-tooltip={item.label}
               >
                 <AppIcon name={item.icon} />
                 <span>{item.label}</span>
@@ -434,6 +445,14 @@ export default function SahApp({
             <span>·</span>
             <a href="/kullanim-kosullari">Koşullar</a>
           </div>
+          <button
+            className="sidebar-collapse-toggle"
+            onClick={toggleSidebar}
+            aria-label={sidebarCollapsed ? "Menüyü genişlet" : "Menüyü daralt"}
+          >
+            <AppIcon name={sidebarCollapsed ? "layout-sidebar-right" : "layout-sidebar-left-collapse"} />
+            <span>{sidebarCollapsed ? "Genişlet" : "Daralt"}</span>
+          </button>
         </div>
       </aside>
 
