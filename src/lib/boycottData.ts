@@ -1,8 +1,10 @@
-export type BoycottCategory = 'gida' | 'icecek' | 'teknoloji' | 'moda' | 'kozmetik' | 'market' | 'diger'
+export type BoycottCategory = 'gida' | 'icecek' | 'teknoloji' | 'moda' | 'kozmetik' | 'market' | 'fastfood' | 'diger'
+export type BoycottStatus = 'boykot' | 'supheli' | 'uygun'
 
 export type BoycottItem = {
   id: string
   category: BoycottCategory
+  status: BoycottStatus
   brandName: string
   parentCompany: string
   reason: string
@@ -15,12 +17,19 @@ export type BoycottItem = {
 export const BOYCOTT_CATEGORIES: { id: BoycottCategory; label: string; icon: string }[] = [
   { id: 'gida', label: 'Gıda', icon: 'soup' },
   { id: 'icecek', label: 'İçecek', icon: 'cup' },
+  { id: 'fastfood', label: 'Fast Food', icon: 'burger' },
   { id: 'teknoloji', label: 'Teknoloji', icon: 'device-mobile' },
-  { id: 'moda', label: 'Moda', icon: 'shirt' },
-  { id: 'kozmetik', label: 'Kozmetik', icon: 'sparkles' },
-  { id: 'market', label: 'Market', icon: 'building-store' },
+  { id: 'moda', label: 'Moda & Ayakkabı', icon: 'shirt' },
+  { id: 'kozmetik', label: 'Kozmetik & Bakım', icon: 'sparkles' },
+  { id: 'market', label: 'Market & E-Ticaret', icon: 'building-store' },
   { id: 'diger', label: 'Diğer', icon: 'dots' },
 ]
+
+export const BOYCOTT_STATUS_META: Record<BoycottStatus, { label: string; color: string; bg: string; darkBg: string }> = {
+  boykot: { label: 'Boykot', color: '#dc2626', bg: '#fef2f2', darkBg: 'rgba(220,38,38,.15)' },
+  supheli: { label: 'Şüpheli', color: '#d97706', bg: '#fffbeb', darkBg: 'rgba(217,119,6,.15)' },
+  uygun: { label: 'Uygun', color: '#059669', bg: '#ecfdf5', darkBg: 'rgba(5,150,105,.15)' },
+}
 
 export const BOYCOTT_SOURCE = {
   name: 'BDS Hareketi Resmi Boykot Listesi',
@@ -30,7 +39,7 @@ export const BOYCOTT_SOURCE = {
 export const BOYCOTT_ITEMS: BoycottItem[] = [
   // === GIDA ===
   {
-    id: 'nestle', category: 'gida', brandName: 'Nestlé', parentCompany: 'Nestlé S.A.',
+    id: 'nestle', category: 'gida', status: 'boykot', brandName: 'Nestlé', parentCompany: 'Nestlé S.A.',
     reason: 'İsrail\'deki Osem gıda şirketinin çoğunluk hissesine sahip. BDS hedef listesinde yer alıyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -39,7 +48,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'danone', category: 'gida', brandName: 'Danone', parentCompany: 'Danone S.A.',
+    id: 'danone', category: 'gida', status: 'boykot', brandName: 'Danone', parentCompany: 'Danone S.A.',
     reason: 'İsrail\'de Strauss Group ile ortaklığı bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -48,7 +57,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'mondelez', category: 'gida', brandName: 'Mondelēz (Oreo, Cadbury, Toblerone)', parentCompany: 'Mondelēz International',
+    id: 'mondelez', category: 'gida', status: 'boykot', brandName: 'Mondelēz (Oreo, Cadbury, Toblerone)', parentCompany: 'Mondelēz International',
     reason: 'İsrail\'de üretim ve dağıtım ağına sahip.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -57,7 +66,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'unilever-food', category: 'gida', brandName: 'Knorr / Algida', parentCompany: 'Unilever',
+    id: 'unilever-food', category: 'gida', status: 'boykot', brandName: 'Knorr / Algida', parentCompany: 'Unilever',
     reason: 'İsrail\'deki operasyonları nedeniyle BDS hedef listesinde.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -66,18 +75,49 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'kelloggs', category: 'gida', brandName: "Kellogg's (Pringles)", parentCompany: "Kellanova",
+    id: 'kelloggs', category: 'gida', status: 'boykot', brandName: "Kellogg's (Pringles)", parentCompany: "Kellanova",
     reason: 'İsrail\'de satış ve dağıtım ağı bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
       { name: 'Eti Cips', note: 'Yerli cips markası' },
-      { name: 'Doritos (yerli üretim)', note: 'Frito-Lay Türkiye' },
     ], isActive: true,
+  },
+  {
+    id: 'sabra', category: 'gida', status: 'boykot', brandName: 'Sabra Hummus', parentCompany: 'Strauss Group / PepsiCo',
+    reason: 'Strauss Group İsrail ordusunun Golani Tugayı\'nı destekliyor.',
+    sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
+    sourceName: 'BDS Movement', alternatives: [
+      { name: 'Ev yapımı humus', note: 'Nohut + tahin + limon' },
+    ], isActive: true,
+  },
+  {
+    id: 'ulker', category: 'gida', status: 'uygun', brandName: 'Ülker', parentCompany: 'Yıldız Holding',
+    reason: 'Türkiye merkezli yerli gıda üreticisi.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
+  {
+    id: 'eti', category: 'gida', status: 'uygun', brandName: 'Eti', parentCompany: 'Eti Gıda',
+    reason: 'Türkiye merkezli yerli atıştırmalık ve bisküvi üreticisi.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
+  {
+    id: 'solen', category: 'gida', status: 'uygun', brandName: 'Şölen', parentCompany: 'Şölen Çikolata',
+    reason: 'Türkiye merkezli yerli çikolata üreticisi.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
+  {
+    id: 'yayla', category: 'gida', status: 'uygun', brandName: 'Yayla', parentCompany: 'Yayla Agro Gıda',
+    reason: 'Türkiye merkezli bakliyat ve hazır gıda markası.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
   },
 
   // === İÇECEK ===
   {
-    id: 'coca-cola', category: 'icecek', brandName: 'Coca-Cola', parentCompany: 'The Coca-Cola Company',
+    id: 'coca-cola', category: 'icecek', status: 'boykot', brandName: 'Coca-Cola', parentCompany: 'The Coca-Cola Company',
     reason: 'İsrail\'de üretim tesisleri ve uzun süreli yatırımları bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -86,7 +126,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'pepsi', category: 'icecek', brandName: 'PepsiCo (Pepsi, Lay\'s, Doritos)', parentCompany: 'PepsiCo Inc.',
+    id: 'pepsi', category: 'icecek', status: 'boykot', brandName: 'PepsiCo (Pepsi, Lay\'s, Doritos)', parentCompany: 'PepsiCo Inc.',
     reason: 'İsrail operasyonları ve SodaStream satın alımı (2018).',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -95,7 +135,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'starbucks', category: 'icecek', brandName: 'Starbucks', parentCompany: 'Starbucks Corp.',
+    id: 'starbucks', category: 'icecek', status: 'boykot', brandName: 'Starbucks', parentCompany: 'Starbucks Corp.',
     reason: 'İsrail yanlısı açıklamaları ve lobicilik faaliyetleri nedeniyle boykot çağrısında.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -104,18 +144,56 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'mcdonalds', category: 'icecek', brandName: "McDonald's", parentCompany: "McDonald's Corp.",
-    reason: 'İsrail\'deki franchise\'ları İsrail ordusuna ücretsiz yemek sağladı.',
+    id: 'cola-turka', category: 'icecek', status: 'uygun', brandName: 'Cola Turka', parentCompany: 'Anadolu Efes',
+    reason: 'Türkiye merkezli yerli kola markası.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
+  {
+    id: 'black-bruin', category: 'icecek', status: 'uygun', brandName: 'Black Bruin', parentCompany: 'İçecek Sanayi',
+    reason: 'Yerli enerji içeceği markası.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
+
+  // === FAST FOOD ===
+  {
+    id: 'mcdonalds', category: 'fastfood', status: 'boykot', brandName: "McDonald's", parentCompany: "McDonald's Corp.",
+    reason: 'İsrail\'deki franchise\'ları İsrail ordusuna ücretsiz yemek sağladı. Dünya genelinde yoğun boykot çağrısı var.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
-      { name: 'Usta Dönerci', note: 'Yerel restoranlar' },
       { name: 'Çiğköfteci Ali Usta', note: 'Yerli fast food' },
+      { name: 'Usta Dönerci', note: 'Yerel restoranlar' },
+    ], isActive: true,
+  },
+  {
+    id: 'burger-king', category: 'fastfood', status: 'boykot', brandName: 'Burger King', parentCompany: 'Restaurant Brands International',
+    reason: 'İsrail\'de franchise mağazaları aktif olarak faaliyet gösteriyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [
+      { name: 'Usta Dönerci', note: 'Yerel restoranlar' },
+    ], isActive: true,
+  },
+  {
+    id: 'dominos', category: 'fastfood', status: 'boykot', brandName: "Domino's Pizza", parentCompany: "Domino's Pizza Inc.",
+    reason: 'ABD merkezli uluslararası pizza zinciri. İsrail\'de franchise mağazaları bulunuyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [
+      { name: 'Pizza Lazza', note: 'Yerli pizza zinciri' },
+    ], isActive: true,
+  },
+  {
+    id: 'getir', category: 'fastfood', status: 'boykot', brandName: 'Getir', parentCompany: 'Getir Perakende Lojistik',
+    reason: 'Türkiye merkezli hızlı teslimat platformu; yabancı yatırım ortaklıkları sorgulanıyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [
+      { name: 'Yerel bakkal', note: 'Mahalle bakkalı' },
     ], isActive: true,
   },
 
   // === TEKNOLOJİ ===
   {
-    id: 'hp', category: 'teknoloji', brandName: 'HP (Hewlett-Packard)', parentCompany: 'HP Inc.',
+    id: 'hp', category: 'teknoloji', status: 'boykot', brandName: 'HP (Hewlett-Packard)', parentCompany: 'HP Inc.',
     reason: 'İsrail ordusuna ve kontrol noktalarına teknoloji sağlıyor. BDS öncelikli hedef.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -124,7 +202,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'siemens', category: 'teknoloji', brandName: 'Siemens', parentCompany: 'Siemens AG',
+    id: 'siemens', category: 'teknoloji', status: 'boykot', brandName: 'Siemens', parentCompany: 'Siemens AG',
     reason: 'İsrail\'deki demiryolu projeleri ve altyapı işleri ile bağlantılı.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -133,17 +211,38 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'intel', category: 'teknoloji', brandName: 'Intel', parentCompany: 'Intel Corp.',
+    id: 'intel', category: 'teknoloji', status: 'boykot', brandName: 'Intel', parentCompany: 'Intel Corp.',
     reason: 'İsrail\'deki en büyük özel sektör işvereni; Kiryat Gat ve Haifa\'da üretim tesisleri.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
       { name: 'AMD', note: 'Alternatif işlemci üreticisi' },
     ], isActive: true,
   },
+  {
+    id: 'apple', category: 'teknoloji', status: 'boykot', brandName: 'Apple', parentCompany: 'Apple Inc.',
+    reason: 'ABD merkezli çok uluslu şirket. İsrail\'de Ar-Ge merkezleri ve operasyonları bulunuyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [
+      { name: 'Samsung', note: 'Güney Kore merkezli alternatif' },
+      { name: 'Casper', note: 'Yerli bilgisayar markası' },
+    ], isActive: true,
+  },
+  {
+    id: 'samsung', category: 'teknoloji', status: 'uygun', brandName: 'Samsung', parentCompany: 'Samsung Electronics',
+    reason: 'Güney Kore merkezli teknoloji şirketi. BDS hedef listesinde yer almıyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
+  {
+    id: 'amd', category: 'teknoloji', status: 'uygun', brandName: 'AMD', parentCompany: 'Advanced Micro Devices',
+    reason: 'ABD merkezli işlemci üreticisi. BDS hedef listesinde yer almıyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
 
   // === MODA ===
   {
-    id: 'zara', category: 'moda', brandName: 'Zara', parentCompany: 'Inditex',
+    id: 'zara', category: 'moda', status: 'boykot', brandName: 'Zara', parentCompany: 'Inditex',
     reason: 'İsrail\'de mağazaları ve tedarik ilişkileri bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -152,7 +251,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'hm', category: 'moda', brandName: 'H&M', parentCompany: 'H&M Group',
+    id: 'hm', category: 'moda', status: 'boykot', brandName: 'H&M', parentCompany: 'H&M Group',
     reason: 'İsrail\'de mağazaları bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -161,7 +260,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'nike', category: 'moda', brandName: 'Nike', parentCompany: 'Nike Inc.',
+    id: 'nike', category: 'moda', status: 'boykot', brandName: 'Nike', parentCompany: 'Nike Inc.',
     reason: 'İsrail\'deki distribütörleri ve sponsorluk ilişkileri.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -170,7 +269,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'puma', category: 'moda', brandName: 'Puma', parentCompany: 'Puma SE',
+    id: 'puma', category: 'moda', status: 'boykot', brandName: 'Puma', parentCompany: 'Puma SE',
     reason: 'İsrail Futbol Federasyonu\'nun sponsoru (yasadışı yerleşim takımları dahil). BDS öncelikli hedef.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -181,7 +280,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
 
   // === KOZMETİK ===
   {
-    id: 'loreal', category: 'kozmetik', brandName: "L'Oréal", parentCompany: "L'Oréal S.A.",
+    id: 'loreal', category: 'kozmetik', status: 'boykot', brandName: "L'Oréal", parentCompany: "L'Oréal S.A.",
     reason: 'İsrail\'de fabrikaları ve operasyonları bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -190,7 +289,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'pg', category: 'kozmetik', brandName: 'P&G (Gillette, Oral-B, Pantene)', parentCompany: 'Procter & Gamble',
+    id: 'pg', category: 'kozmetik', status: 'boykot', brandName: 'P&G (Gillette, Oral-B, Pantene)', parentCompany: 'Procter & Gamble',
     reason: 'İsrail\'de uzun süreli operasyonları bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -199,7 +298,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'estee-lauder', category: 'kozmetik', brandName: 'Estée Lauder (MAC, Clinique)', parentCompany: 'Estée Lauder Companies',
+    id: 'estee-lauder', category: 'kozmetik', status: 'boykot', brandName: 'Estée Lauder (MAC, Clinique)', parentCompany: 'Estée Lauder Companies',
     reason: 'Kurucunun ailesi İsrail\'e önemli bağışçılar arasında.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -208,7 +307,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'johnson', category: 'kozmetik', brandName: "Johnson & Johnson", parentCompany: 'Kenvue / J&J',
+    id: 'johnson', category: 'kozmetik', status: 'boykot', brandName: "Johnson & Johnson", parentCompany: 'Kenvue / J&J',
     reason: 'İsrail\'de operasyonları ve yatırımları bulunuyor.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -216,10 +315,24 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
       { name: 'Sleepy', note: 'Yerli bebek ürünleri' },
     ], isActive: true,
   },
+  {
+    id: 'ahava', category: 'kozmetik', status: 'boykot', brandName: 'Ahava', parentCompany: 'Ahava Dead Sea Laboratories',
+    reason: 'İşgal altındaki Batı Şeria\'daki yasadışı yerleşimde üretim yapıyor.',
+    sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
+    sourceName: 'BDS Movement', alternatives: [
+      { name: 'Thalia', note: 'Yerli doğal kozmetik' },
+    ], isActive: true,
+  },
+  {
+    id: 'flormar', category: 'kozmetik', status: 'uygun', brandName: 'Flormar', parentCompany: 'Flormar Kozmetik',
+    reason: 'Türkiye merkezli yerli kozmetik markası.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
+  },
 
   // === MARKET ===
   {
-    id: 'carrefour', category: 'market', brandName: 'Carrefour', parentCompany: 'Carrefour S.A.',
+    id: 'carrefour', category: 'market', status: 'boykot', brandName: 'Carrefour', parentCompany: 'Carrefour S.A.',
     reason: 'İsrail\'deki franchise ortaklıkları ve yasadışı yerleşimlerde mağaza açma ihtimali.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -228,10 +341,18 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
       { name: 'ŞOK', note: 'Yerli market zinciri' },
     ], isActive: true,
   },
+  {
+    id: 'a101', category: 'market', status: 'supheli', brandName: 'A101', parentCompany: 'Turgut Aydın Holding',
+    reason: '2008\'de kurulan A101 Yeni Mağazacılık A.Ş. ortaklık yapısı itibarıyla sorgulanıyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [
+      { name: 'BİM', note: 'Yerli market zinciri' },
+    ], isActive: true,
+  },
 
   // === DİĞER ===
   {
-    id: 'booking', category: 'diger', brandName: 'Booking.com', parentCompany: 'Booking Holdings',
+    id: 'booking', category: 'diger', status: 'boykot', brandName: 'Booking.com', parentCompany: 'Booking Holdings',
     reason: 'Yasadışı İsrail yerleşimlerindeki konaklama yerlerini listeliyor. BDS hedef listesinde.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -240,7 +361,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'airbnb', category: 'diger', brandName: 'Airbnb', parentCompany: 'Airbnb Inc.',
+    id: 'airbnb', category: 'diger', status: 'boykot', brandName: 'Airbnb', parentCompany: 'Airbnb Inc.',
     reason: 'Daha önce yerleşimlerdeki listelemeyi kaldırıp geri ekledi.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -248,7 +369,7 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'caterpillar', category: 'diger', brandName: 'Caterpillar (CAT)', parentCompany: 'Caterpillar Inc.',
+    id: 'caterpillar', category: 'diger', status: 'boykot', brandName: 'Caterpillar (CAT)', parentCompany: 'Caterpillar Inc.',
     reason: 'İş makineleri Filistin evlerinin yıkımında kullanılıyor. BDS öncelikli hedef.',
     sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
     sourceName: 'BDS Movement', alternatives: [
@@ -256,25 +377,15 @@ export const BOYCOTT_ITEMS: BoycottItem[] = [
     ], isActive: true,
   },
   {
-    id: 'sabra', category: 'gida', brandName: 'Sabra Hummus', parentCompany: 'Strauss Group / PepsiCo',
-    reason: 'Strauss Group İsrail ordusunun Golani Tugayı\'nı destekliyor.',
-    sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
-    sourceName: 'BDS Movement', alternatives: [
-      { name: 'Ev yapımı humus', note: 'Nohut + tahin + limon' },
-    ], isActive: true,
-  },
-  {
-    id: 'ahava', category: 'kozmetik', brandName: 'Ahava', parentCompany: 'Ahava Dead Sea Laboratories',
-    reason: 'İşgal altındaki Batı Şeria\'daki yasadışı yerleşimde üretim yapıyor.',
-    sourceUrl: 'https://bdsmovement.net/get-involved/what-to-boycott',
-    sourceName: 'BDS Movement', alternatives: [
-      { name: 'Thalia', note: 'Yerli doğal kozmetik' },
-    ], isActive: true,
+    id: 'steam', category: 'diger', status: 'uygun', brandName: 'Steam', parentCompany: 'Valve Corporation',
+    reason: 'Valve\'e ait dijital oyun satış platformu. BDS hedef listesinde yer almıyor.',
+    sourceUrl: 'https://boykotdedektifi.com/',
+    sourceName: 'Boykot Dedektifi', alternatives: [], isActive: true,
   },
 ]
 
 export function getWeeklyFocus(): BoycottItem {
   const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000))
-  const active = BOYCOTT_ITEMS.filter((item) => item.isActive)
+  const active = BOYCOTT_ITEMS.filter((item) => item.status === 'boykot' && item.isActive)
   return active[weekNumber % active.length]
 }
