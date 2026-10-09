@@ -35,171 +35,469 @@ export const GEOGRAPHY_META: Record<Geography, { name: string; short: string; ic
   dogu_turkistan: { name: 'Doğu Türkistan', short: 'Tarih, kitlesel gözaltılar ve kültürel hafıza', icon: 'moon-stars', accent: '#b91c1c' },
 }
 
+// Reviewed 2026-10-09. Short attributed summaries, not a live casualty feed.
+export const SOURCES = {
+  "nakba": "https://www.dijitalhafiza.com/video-belgeseller/buyuk-felaket",
+  "refugees": "https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler",
+  "press": "https://www.dijitalhafiza.com/biyografiler/hind-khoudary",
+  "prisoners": "https://www.dijitalhafiza.com/kavramlar-sozlugu/idari-tutukluluk",
+  "history": "https://doguturkistan.dijitalhafiza.com/zaman-tuneli/1759-mancularin-ilk-dogu-turkistan-istilasi",
+  "camps": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari",
+  "testimony": "https://doguturkistan.dijitalhafiza.com/kose-yazilari/bir-dogu-turkistanlinin-yasadiklari",
+  "culture": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/yeniden-egitim",
+  "language": "https://doguturkistan.dijitalhafiza.com/biyografiler/abdulweli-ayup"
+} as const;
+
 export const AWARENESS_CONTENT_FALLBACK: AwarenessContent[] = [
   {
-    id: 'p-nakba', geography: 'filistin', section: 'history', displayOrder: 1,
-    sectionTitle: '1948: Nekbe ve mülksüzleştirme',
-    contentBody: 'TRT Haber’in 15 Mayıs 2024 tarihli dosyası, 14 Mayıs 1948’de İsrail devletinin kurulması sürecinde Filistinlilerin zorunlu göçe maruz bırakılmasını ve 15 Mayıs’ın “Nekbe — Büyük Felaket” olarak anılmasını aktarıyor. Bu anlatı, toprağından edilme ile kuşaklar boyunca taşınan hafızayı birlikte ele alıyor.',
-    sourceName: 'TRT Haber · Filistin’in 76 yıldır süren dramı: Nekbe',
-    sourceUrl: 'https://www.trthaber.com/haber/dunya/filistinin-76-yildir-suren-drami-nekbe-857567.html',
-    actionCue: 'Tarihi bir sloganla değil, tarih ve kaynak bağlantısıyla aktar.',
+    "id": "p-nakba",
+    "geography": "filistin",
+    "section": "history",
+    "sectionTitle": "1948: Nekbe",
+    "contentBody": "Dijital Hafıza’nın belgesel özeti, Nekbe’yi “Büyük Felaket” olarak açıklar. İsrail’in 1948’de kuruluş sürecini Filistinlilerin kitlesel yerinden edilmesiyle birlikte ele alır.",
+    "sourceName": "Dijital Hafıza · Büyük Felaket",
+    "sourceUrl": "https://www.dijitalhafiza.com/video-belgeseller/buyuk-felaket",
+    "displayOrder": 1,
+    "actionCue": "Tarihi ve kaynağı birlikte oku."
   },
   {
-    id: 'p-refugees', geography: 'filistin', section: 'human', displayOrder: 4,
-    sectionTitle: 'Sürgün, mültecilik ve geri dönüş iradesi',
-    contentBody: 'Dijital Hafıza, Filistinli mültecileri 1948 Nekbesi veya 1967 Haziran Savaşı sonrasında evlerini terk etmek zorunda kalan ve geri dönüşleri engellenen siviller olarak tanımlıyor. Kaynak, farklı ülke ve kamplara dağılan insanların Filistinli kimliğine aidiyetlerini ve geri dönme iradesini sürdürdüğünü vurguluyor.',
-    sourceName: 'Dijital Hafıza · Filistinli Mülteciler',
-    sourceUrl: 'https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler',
-    actionCue: 'Mültecileri yalnızca sayı olarak değil; ev, aile ve aidiyet hikâyeleriyle hatırla.',
+    "id": "p-occupation",
+    "geography": "filistin",
+    "section": "displacement",
+    "sectionTitle": "Yerinden edilmenin iki eşiği",
+    "contentBody": "Kaynak, Filistinli mülteciliğini 1948 Nekbesi ve 1967 Haziran Savaşı ile ilişkilendirir. Evlerini terk eden sivillerin geri dönüşlerinin engellendiğini aktarır.",
+    "sourceName": "Dijital Hafıza · Filistinli Mülteciler",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler",
+    "displayOrder": 2,
+    "actionCue": "Mülteciliği yalnızca sayılara indirgeme."
   },
   {
-    id: 'p-occupation', geography: 'filistin', section: 'history', displayOrder: 2,
-    sectionTitle: '1967 sonrası işgalin genişlemesi',
-    contentBody: 'TRT Haber dosyası, İsrail’in 1967’deki Altı Gün Savaşı’nın ardından Batı Şeria ve Gazze Şeridi’ni ele geçirdiğini; sonraki yıllarda Filistin topraklarında yeni yerleşimlerin açıldığını aktarıyor. Bugünü anlamak, 1948 ile 1967 arasındaki sürekliliği birlikte görmeyi gerektiriyor.',
-    sourceName: 'TRT Haber · Nekbe dosyası',
-    sourceUrl: 'https://www.trthaber.com/haber/dunya/filistinin-76-yildir-suren-drami-nekbe-857567.html',
-    actionCue: 'Bir güncel haberi paylaşmadan önce olayın 1948 ve 1967 bağlamını kontrol et.',
+    "id": "p-gaza",
+    "geography": "filistin",
+    "section": "today",
+    "sectionTitle": "Gazze’yi belgelemenin sorumluluğu",
+    "contentBody": "Hind Khoudary’nin biyografisi, 7 Ekim 2023 sonrasındaki saha haberciliğini anlatır. Gazetecinin sivillerin yaşadıklarını dünyaya aktaran çalışmalarına odaklanır; bu sayfa anlık haber akışı değildir.",
+    "sourceName": "Dijital Hafıza · Hind Khoudary",
+    "sourceUrl": "https://www.dijitalhafiza.com/biyografiler/hind-khoudary",
+    "displayOrder": 3,
+    "actionCue": "Güncel haberin tarihini ve ilk kaynağını kontrol et."
   },
   {
-    id: 'p-gaza', geography: 'filistin', section: 'today', displayOrder: 3,
-    sectionTitle: 'Gazze: tanıkların bugüne verdiği isim',
-    contentBody: 'TRT Haber’in 12 Mayıs 2026 tarihli haberinde Gazze’de yaşayan Filistinliler, Ekim 2023’ten beri yaşadıklarını “soykırım” ve 1948’le kıyaslanamayacak ölçekte yeni bir Nekbe olarak nitelendiriyor. Haber; güvenli barınma, su, gıda, sağlık ve eğitim imkânlarından yoksun bırakılan ailelerin doğrudan anlatımlarını aktarıyor. Bu nitelemeler haberdeki tanıkların ve haber çerçevesinin ifadeleridir.',
-    sourceName: 'TRT Haber · Gazzelilerin tanıklıkları',
-    sourceUrl: 'https://www.trthaber.com/haber/dunya/filistinliler-yasadigimiz-soykirim-1948deki-nekbe-ile-kiyas-dahi-edilemez-944861.html',
-    actionCue: 'İnsan onurunu koruyan, grafik görüntü içermeyen tanıklıkları kaynak bağlantısıyla paylaş.',
+    "id": "p-refugees",
+    "geography": "filistin",
+    "section": "human",
+    "sectionTitle": "Bir evden daha fazlası",
+    "contentBody": "Dijital Hafıza, sürgündeki Filistinlilerin kimlikleriyle bağlarını koruduğunu vurgular. Geri dönme isteği, anlatıda kuşakları birbirine bağlayan bir unsur olarak yer alır.",
+    "sourceName": "Dijital Hafıza · Filistinli Mülteciler",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler",
+    "displayOrder": 4,
+    "actionCue": "Bir insanı önce hayatıyla ve aidiyetiyle tanı."
   },
   {
-    id: 'p-prisoners', geography: 'filistin', section: 'detention', displayOrder: 5,
-    sectionTitle: 'Mahpuslar ve tutuklular',
-    contentBody: 'TRT Haber’in 5 Kasım 2025 tarihli haberinde Filistin Esir İşleri Kurumu Başkanı Raid Ebu Humus, cezaevlerindeki Filistinlilere yönelik sistematik işkence, aç bırakma, tecrit, nakil ve aşağılamadan söz ediyor. Haber, açıklamanın yapıldığı tarihte İsrail hapishanelerinde 10 binden fazla Filistinli bulunduğunu aktarıyor.',
-    sourceName: 'TRT Haber · Filistin Esir İşleri Kurumu açıklaması',
-    sourceUrl: 'https://www.trthaber.com/haber/dunya/filistin-esir-isleri-kurumu-baskani-israil-cezaevlerinde-sessiz-soykirim-uyguluyor-924909.html',
-    actionCue: 'Mahpuslar hakkında konuşurken iddiayı kimin, hangi tarihte söylediğini görünür kıl.',
+    "id": "p-prisoners",
+    "geography": "filistin",
+    "section": "detention",
+    "sectionTitle": "İdari tutukluluk ne demek?",
+    "contentBody": "Kaynak, bu uygulamayı suçlama yöneltilmeden gözaltında tutma olarak tarif eder. Gizli dosyalar nedeniyle kişinin ve avukatının dosyaya erişemeyebildiğini aktarır.",
+    "sourceName": "Dijital Hafıza · İdari Tutukluluk",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/idari-tutukluluk",
+    "displayOrder": 5,
+    "actionCue": "İddia, tanıklık ve hukuki değerlendirmeyi birbirinden ayır."
   },
   {
-    id: 'p-sumud', geography: 'filistin', section: 'solidarity', displayOrder: 6,
-    sectionTitle: 'Sebat, dayanışma ve sivil sorumluluk',
-    contentBody: 'TRT Haber’in 25 Şubat 2026 tarihli haberi, Özgürlük ve Sumud Filosu’nun 150’yi aşkın ülkeden katılımcılarla ve 100’ü aşkın gemi ve tekneyle yola çıkacağının duyurulduğunu aktarıyor. Bu örnek, “sumud” adının uluslararası sivil dayanışma ve süreklilik fikriyle birlikte kullanıldığını gösteriyor.',
-    sourceName: 'TRT Haber · Özgürlük ve Sumud Filosu',
-    sourceUrl: 'https://www.trthaber.com/haber/dunya/ozgurluk-ve-sumud-filosu-12-nisanda-yeniden-akdenize-acilacak-935510.html',
-    actionCue: 'Öfkeyi doğrulanabilir bilgiye, düzenli öğrenmeye ve barışçıl dayanışmaya dönüştür.',
+    "id": "p-sumud",
+    "geography": "filistin",
+    "section": "solidarity",
+    "sectionTitle": "Yazıyla dayanışma",
+    "contentBody": "Dijital Hafıza’ya göre Khoudary, 2015’te genç Filistinli yazarları destekleyen We Are Not Numbers programına katıldı. Biyografi, yazı ve haberciliğin insanların hikâyelerini görünür kılmadaki rolünü gösterir.",
+    "sourceName": "Dijital Hafıza · Hind Khoudary",
+    "sourceUrl": "https://www.dijitalhafiza.com/biyografiler/hind-khoudary",
+    "displayOrder": 6,
+    "actionCue": "Bir insan hikâyesini kaynağıyla ve izin sınırlarına saygıyla paylaş."
   },
   {
-    id: 'e-history', geography: 'dogu_turkistan', section: 'history', displayOrder: 1,
-    sectionTitle: 'Tarihsel eşik: 1759',
-    contentBody: 'Dijital Hafıza’nın zaman tüneli, Mançuların 1755’te Cungarya’yı ele geçirmesinin ardından Tanrı Dağları’nın güneyine ilerlediğini ve 1759’da Doğu Türkistan’ın ilk istilasını gerçekleştirdiğini anlatıyor. Kaynak, dönemin iç çekişmelerinin ortak direnişi zayıflattığını da vurguluyor.',
-    sourceName: 'Dijital Hafıza Doğu Türkistan · Mançuların İlk İstilası',
-    sourceUrl: 'https://doguturkistan.dijitalhafiza.com/zaman-tuneli/1759-mancularin-ilk-dogu-turkistan-istilasi',
-    actionCue: 'Bugünü değerlendirirken coğrafyanın uzun tarihini tek bir döneme indirgeme.',
+    "id": "e-history",
+    "geography": "dogu_turkistan",
+    "section": "history",
+    "sectionTitle": "1759: tarihsel bir eşik",
+    "contentBody": "Dijital Hafıza, Mançuların 1755’te Cungarya’yı ele geçirdikten sonra güneye ilerlediğini anlatır. İlk Doğu Türkistan istilasını 1759 yılına tarihler.",
+    "sourceName": "Dijital Hafıza · Mançuların İlk İstilası",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/zaman-tuneli/1759-mancularin-ilk-dogu-turkistan-istilasi",
+    "displayOrder": 1,
+    "actionCue": "Bugünün arkasındaki uzun tarihi tanı."
   },
   {
-    id: 'e-detentions', geography: 'dogu_turkistan', section: 'today', displayOrder: 2,
-    sectionTitle: 'Bugünün kapalı gerçeği',
-    contentBody: 'Dijital Hafıza, Çin makamlarının “Mesleki Eğitim ve Öğretim Merkezi” adını kullandığı kapalı yapıları; hukuki süreç olmadan özgürlüğün sistematik biçimde kaldırıldığı yerler olarak tarif ediyor. Kaynak, kapalılık nedeniyle kesin ve güncel sayılara ulaşmanın güç olduğunu özellikle belirtiyor.',
-    sourceName: 'Dijital Hafıza Doğu Türkistan · Toplama Kampları',
-    sourceUrl: 'https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari',
-    actionCue: 'Doğrulanması güç sayıları tekrar etmek yerine kaynağın kesinlik sınırını koru.',
+    "id": "e-detentions",
+    "geography": "dogu_turkistan",
+    "section": "displacement",
+    "sectionTitle": "Yurdundan uzak bir aile",
+    "contentBody": "7 Mayıs 2020 tarihli söyleşi, ailesiyle ülkesinden ayrılan bir Uygurun yaşadıklarını aktarır. Editör, güvenlik kaygısıyla kimlik ve konum ayrıntılarını sınırladığını belirtir.",
+    "sourceName": "Dijital Hafıza · Bir Doğu Türkistanlının Yaşadıkları",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kose-yazilari/bir-dogu-turkistanlinin-yasadiklari",
+    "displayOrder": 2,
+    "actionCue": "Tanığın mahremiyetine saygı göster."
   },
   {
-    id: 'e-camps', geography: 'dogu_turkistan', section: 'human', displayOrder: 3,
-    sectionTitle: 'Bir hayatın geride bıraktıkları',
-    contentBody: 'Dijital Hafıza’daki 7 Mayıs 2020 tarihli söyleşi, güvenlik nedeniyle tam adı ve yaşadığı şehir paylaşılmayan bir Uygur Türkünün hikâyesini aktarıyor. Kaynağın editoryal girişine göre kendisi, işini ve yakınlarını geride bırakarak eşi ve iki çocuğuyla yurt dışına çıkmak zorunda kaldı. Bu, büyük başlıkların ardındaki kayıp, aile ve belirsizlik boyutunu görünür kılan kişisel bir tanıklıktır.',
-    sourceName: 'Dijital Hafıza Doğu Türkistan · Bir Doğu Türkistanlının Yaşadıkları',
-    sourceUrl: 'https://doguturkistan.dijitalhafiza.com/kose-yazilari/bir-dogu-turkistanlinin-yasadiklari',
-    actionCue: 'Tanıklığı sahibine atfederek oku; kişinin güvenlik için saklı tutulan kimliğine ve mahremiyetine saygı göster.',
+    "id": "e-camps",
+    "geography": "dogu_turkistan",
+    "section": "today",
+    "sectionTitle": "Kapalı yapılar, sınırlı bilgi",
+    "contentBody": "Kamp sayfası, hukuki süreç olmaksızın özgürlükten alıkoymayı ele alır. Kaynak kapalılık nedeniyle kesin bilgiye erişimin güç olduğunu söyler; tahmini sayıları güncel ve kesin veri gibi sunmuyoruz.",
+    "sourceName": "Dijital Hafıza · Toplama Kampları",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari",
+    "displayOrder": 3,
+    "actionCue": "Sayının tarihi, yöntemi ve belirsizliği görünür olsun."
   },
   {
-    id: 'e-reeducation', geography: 'dogu_turkistan', section: 'culture', displayOrder: 4,
-    sectionTitle: '“Yeniden eğitim” ve inanç baskısı',
-    contentBody: 'Dijital Hafıza’nın kavram sayfası, “yeniden eğitim” adı altında Müslüman Uygurların inançlarıyla bağdaşmayan davranışlara zorlandığı uygulamaları aktarıyor. Bu anlatım, kamp politikasını yalnızca gözaltı değil, kimlik ve inanç üzerinde baskı iddiası olarak da ele alıyor.',
-    sourceName: 'Dijital Hafıza Doğu Türkistan · Yeniden Eğitim',
-    sourceUrl: 'https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/yeniden-egitim',
-    actionCue: 'Bir topluluğu yalnız mağduriyetle değil; dil, inanç, sanat ve gündelik hayatıyla da tanı.',
+    "id": "e-reeducation",
+    "geography": "dogu_turkistan",
+    "section": "human",
+    "sectionTitle": "Bir tanıklığı dikkatle okumak",
+    "contentBody": "Söyleşideki kişi, ülkesinde iş sahibi olduğunu ve ayrılırken çok şey kaybettiğini anlatır. Bu kişisel anlatı, bütün bir topluluk adına genellenmeden okunmalıdır.",
+    "sourceName": "Dijital Hafıza · Bir Doğu Türkistanlının Yaşadıkları",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kose-yazilari/bir-dogu-turkistanlinin-yasadiklari",
+    "displayOrder": 4,
+    "actionCue": "Doğrudan söz ile editörün yorumunu ayırt et."
   },
   {
-    id: 'e-suppression', geography: 'dogu_turkistan', section: 'solidarity', displayOrder: 5,
-    sectionTitle: 'Dili yaşatmak, hafızayı geleceğe taşımak',
-    contentBody: 'Dijital Hafıza’nın biyografi sayfası, dilbilimci ve şair Abduweli Ayup’u Uygurca dil okulları kuran ve dil ile kültürün kuşaklar arası aktarım hakkını savunan bir eğitimci olarak tanıtıyor. Kültürel sebat burada yalnızca geçmişi hatırlamak değil; dili öğreterek geleceğe taşıyan somut bir emek olarak görünür oluyor.',
-    sourceName: 'Dijital Hafıza Doğu Türkistan · Abduweli Ayup biyografisi',
-    sourceUrl: 'https://doguturkistan.dijitalhafiza.com/biyografiler/abdulweli-ayup',
-    actionCue: 'Bir halkı yalnızca maruz kaldığı baskıyla değil, dilini ve kültürünü yaşatma iradesiyle de tanı.',
+    "id": "e-suppression",
+    "geography": "dogu_turkistan",
+    "section": "culture",
+    "sectionTitle": "İnanç ve kimlik üzerindeki baskı",
+    "contentBody": "Dijital Hafıza’nın “Yeniden Eğitim” maddesi, Uygurların inançlarıyla bağdaşmayan uygulamalara zorlanmasını aktarır. Kavram, yalnız eğitim politikası değil inanç özgürlüğü bağlamında ele alınır.",
+    "sourceName": "Dijital Hafıza · Yeniden Eğitim",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/yeniden-egitim",
+    "displayOrder": 5,
+    "actionCue": "Bir topluluğu dili, inancı ve kültürüyle birlikte tanı."
   },
   {
-    id: 'e-documentation', geography: 'dogu_turkistan', section: 'solidarity', displayOrder: 6,
-    sectionTitle: 'Belgelemeden sorumluluğa',
-    contentBody: 'TRT Haber’in 29 Aralık 2022 tarihli haberinde dönemin Dışişleri Bakanı Mevlüt Çavuşoğlu, BM İnsan Hakları Komiserinin görevden ayrılırken yayımladığı raporun ihlalleri ortaya koyduğunu söylüyor; bağımsız bir insani heyetin bölgeye erişebilmesi ve şeffaf inceleme yapılması gerektiğini vurguluyor.',
-    sourceName: 'TRT Haber · BM raporu ve şeffaf inceleme açıklaması',
-    sourceUrl: 'https://www.trthaber.com/haber/gundem/bakan-cavusoglu-rejim-de-teror-tehdidinin-farkinda-ortak-mucadele-olabilir-734259.html',
-    actionCue: 'Sosyal medya özetleri yerine erişilebilir raporları ve açık kaynak zincirini takip et.',
-  },
-]
-
-const q = (id: string, geography: Geography, orderIndex: number, questionText: string, options: [string, string, string, string], correctOption: QuizOption, explanationText: string, sourceUrl: string): AwarenessQuizQuestion => ({ id, geography, orderIndex, questionText, options: { A: options[0], B: options[1], C: options[2], D: options[3] }, correctOption, explanationText, sourceUrl })
-
-const P_NAKBA = 'https://www.trthaber.com/haber/dunya/filistinin-76-yildir-suren-drami-nekbe-857567.html'
-const P_REFUGEES = 'https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler'
-const P_GAZA = 'https://www.trthaber.com/haber/dunya/filistinliler-yasadigimiz-soykirim-1948deki-nekbe-ile-kiyas-dahi-edilemez-944861.html'
-const P_PRISONERS = 'https://www.trthaber.com/haber/dunya/filistin-esir-isleri-kurumu-baskani-israil-cezaevlerinde-sessiz-soykirim-uyguluyor-924909.html'
-const P_SUMUD = 'https://www.trthaber.com/haber/dunya/ozgurluk-ve-sumud-filosu-12-nisanda-yeniden-akdenize-acilacak-935510.html'
-const E_HISTORY = 'https://doguturkistan.dijitalhafiza.com/zaman-tuneli/1759-mancularin-ilk-dogu-turkistan-istilasi'
-const E_CAMPS = 'https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari'
-const E_REEDUCATION = 'https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/yeniden-egitim'
-const E_TRT = 'https://www.trthaber.com/haber/gundem/cin-makamlarini-toplama-kamplarini-kapatmaya-davet-ediyoruz-404380.html'
-const E_REPORT = 'https://www.trthaber.com/haber/gundem/bakan-cavusoglu-rejim-de-teror-tehdidinin-farkinda-ortak-mucadele-olabilir-734259.html'
+    "id": "e-documentation",
+    "geography": "dogu_turkistan",
+    "section": "solidarity",
+    "sectionTitle": "Dili geleceğe taşımak",
+    "contentBody": "Abduweli Ayup biyografisi, Uygurca eğitimi için açtığı okulları anlatır. Dil ve kültürün kuşaklar arasında aktarımını savunan çalışmalarını öne çıkarır.",
+    "sourceName": "Dijital Hafıza · Abdulweli Ayup",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/biyografiler/abdulweli-ayup",
+    "displayOrder": 6,
+    "actionCue": "Bir dilin edebiyatını ve eğitim çalışmalarını keşfet."
+  }
+];
 
 export const AWARENESS_QUIZ_FALLBACK: AwarenessQuizQuestion[] = [
-  q('p-01','filistin',1,'TRT Haber dosyasına göre Nekbe hangi Türkçe ifadeyle açıklanır?',['Büyük Felaket','Uzun Yolculuk','Sessiz Bahar','Yeni Başlangıç'],'A','TRT Haber, Nekbe ifadesini “Büyük Felaket” olarak açıklar.',P_NAKBA),
-  q('p-02','filistin',2,'TRT Haber’e göre Nekbe hangi tarihte anılır?',['15 Mayıs','1 Ocak','29 Ekim','10 Aralık'],'A','İsrail devletinin 14 Mayıs 1948’de kurulmasının ertesi günü olan 15 Mayıs, Nekbe olarak anılır.',P_NAKBA),
-  q('p-03','filistin',3,'1967’deki savaşın ardından İsrail’in ele geçirdiği iki bölge hangileridir?',['Batı Şeria ve Gazze Şeridi','Ürdün ve Lübnan','Kahire ve Şam','Kıbrıs ve Girit'],'A','TRT Haber dosyası 1967’nin ardından Batı Şeria ve Gazze Şeridi’nin ele geçirildiğini aktarır.',P_NAKBA),
-  q('p-04','filistin',4,'Dijital Hafıza, Filistinli mültecileri hangi iki tarihsel eşikle ilişkilendirir?',['1948 Nekbesi ve 1967 Haziran Savaşı','1914 ve 1918','1973 ve 1974','2001 ve 2005'],'A','Kavram sayfası, zorunlu göçü 1948 Nekbesi ve 1967 Haziran Savaşı sonrasıyla ilişkilendirir.',P_REFUGEES),
-  q('p-05','filistin',5,'Dijital Hafıza’ya göre Filistinli mülteciler hangi iradeyi sürdürmektedir?',['Topraklarına dönme iradesini','Kimliklerini unutma iradesini','Kayıtları silme iradesini','Tarihi kapatma iradesini'],'A','Kaynak, mültecilerin geri dönüş iradesini ve Filistinli kimliğine aidiyetini koruduğunu vurgular.',P_REFUGEES),
-  q('p-06','filistin',6,'12 Mayıs 2026 tarihli TRT Haber, bugünkü Gazze’yi en çok kimlerin anlatımıyla aktarır?',['Gazze’de yaşayan Filistinlilerin','Spor yorumcularının','Turizm şirketlerinin','Teknoloji yöneticilerinin'],'A','Haber, çadırlarda yaşayan Gazze sakinlerinin doğrudan tanıklıklarına yer verir.',P_GAZA),
-  q('p-07','filistin',7,'TRT Haber’de cezaevi koşullarına ilişkin açıklamayı yapan kurum hangisidir?',['Filistin Esir İşleri Kurumu','Dünya Meteoroloji Örgütü','Uluslararası Olimpiyat Komitesi','Avrupa Uzay Ajansı'],'A','Açıklama Filistin Esir İşleri Kurumu Başkanı Raid Ebu Humus’a aittir.',P_PRISONERS),
-  q('p-08','filistin',8,'Raid Ebu Humus’un aktarılan açıklamasında mahpuslara yönelik uygulamalardan biri hangisidir?',['Tecrit','Burs programı','Ücretsiz seyahat','Spor kampı'],'A','TRT Haber, açıklamada sistematik işkence, aç bırakma, tecrit, nakil ve aşağılamanın sayıldığını aktarır.',P_PRISONERS),
-  q('p-09','filistin',9,'Özgürlük ve Sumud Filosu için duyurulan hareket tarihi hangisidir?',['12 Nisan 2026','15 Mayıs 2024','1 Ocak 2027','10 Aralık 2025'],'A','TRT Haber, filonun 12 Nisan 2026’da İspanya’dan açılacağının duyurulduğunu bildirir.',P_SUMUD),
-  q('p-10','filistin',10,'TRT Haber’e göre Özgürlük ve Sumud Filosu kaçtan fazla ülkeden katılımcı hedefliyordu?',['150’den fazla','10’dan fazla','25’ten fazla','50’den fazla'],'A','Haberde 150’yi aşkın ülkeden binlerce katılımcı ifadesi yer alır.',P_SUMUD),
-  q('e-01','dogu_turkistan',1,'Dijital Hafıza zaman tüneline göre Mançuların ilk Doğu Türkistan istilası hangi yılda gerçekleşti?',['1759','1453','1918','2001'],'A','Zaman tüneli, ilk istilayı 1759 yılına tarihler.',E_HISTORY),
-  q('e-02','dogu_turkistan',2,'Mançular 1755’te hangi bölgeyi ele geçirdikten sonra güneye ilerledi?',['Cungarya','Anadolu','Balkanlar','Hicaz'],'A','Kaynak, Mançuların 1755’te Cungarya’yı ele geçirdiğini anlatır.',E_HISTORY),
-  q('e-03','dogu_turkistan',3,'Dijital Hafıza, kamp olarak tarif ettiği yapılarda hangi temel soruna dikkat çeker?',['Hukuki süreç olmadan özgürlükten alıkoymaya','Ulaşım planlamasına','Turizm eğitimine','Spor organizasyonuna'],'A','Kavram sayfası, hukuki süreç olmadan özgürlüğün sistematik biçimde kaldırıldığı iddiasını aktarır.',E_CAMPS),
-  q('e-04','dogu_turkistan',4,'Kaynak, kamp verilerinde kesinliğin neden sınırlı olduğunu söyler?',['Gizlilik ve kapalılık politikaları','Mevsim değişikliği','Harita ölçeği','Dilbilgisi farkı'],'A','Dijital Hafıza, gizlilik ve kapalılık nedeniyle net ve güncel bilgilere ulaşmanın güç olduğunu belirtir.',E_CAMPS),
-  q('e-05','dogu_turkistan',5,'Dijital Hafıza’ya göre kamplar için kullanılan resmî adlandırma hangisidir?',['Mesleki Eğitim ve Öğretim Merkezi','Açık Üniversite Kampüsü','Kültür ve Spor Köyü','Turizm Eğitim Parkı'],'A','Kavram sayfası, Çin makamlarının “Mesleki Eğitim ve Öğretim Merkezi” adını kullandığını aktarır.',E_CAMPS),
-  q('e-06','dogu_turkistan',6,'Dijital Hafıza, kamp verilerinde kesinliğin neden sınırlı olduğunu söyler?',['Gizlilik ve kapalılık politikaları','Mevsim değişikliği','Harita ölçeği','Dilbilgisi farkı'],'A','Kaynak, gizlilik ve kapalılık nedeniyle net bilgilere ulaşmanın güç olduğunu açıkça belirtir.',E_CAMPS),
-  q('e-07','dogu_turkistan',7,'“Yeniden eğitim” kavram sayfası baskıyı hangi alanla da ilişkilendirir?',['Dinî inanç ve gündelik pratiklerle','Yalnız trafik eğitimiyle','Yalnız sporla','Yalnız hava durumuyla'],'A','Kaynak, Müslüman Uygurların inançlarıyla bağdaşmayan davranışlara zorlandığı iddialarını aktarır.',E_REEDUCATION),
-  q('e-08','dogu_turkistan',8,'TRT Haber’de aktarılan “Tüm Dinlerin ve İnançların Çinlileştirilmesi” siyaseti hangi yıl ilan edildi?',['2017','1990','2005','2024'],'A','Dışişleri Bakanlığı açıklaması, bu siyasetin Ekim 2017’de ilan edildiğini belirtir.',E_TRT),
-  q('e-09','dogu_turkistan',9,'TRT Haber’e göre Türkiye Dışişleri Bakanlığı Çin makamlarına hangi çağrıyı yaptı?',['Kampları kapatma çağrısı','Yeni kamp açma çağrısı','Spor turnuvası çağrısı','Ticaret fuarı çağrısı'],'A','Haberde Uygurların temel insan haklarına saygı gösterilmesi ve kampların kapatılması çağrısı aktarılır.',E_TRT),
-  q('e-10','dogu_turkistan',10,'TRT Haber’de dönemin Dışişleri Bakanı bölge için hangi yöntemi savunuyordu?',['Şeffaf inceleme ve insani heyet erişimi','Kaynağı belirsiz paylaşımlar','Tarihsiz söylentiler','Kapalı sosyal medya grupları'],'A','Haberde şeffaf iş birliği ve bağımsız bir insani heyetin bölgeyi inceleyebilmesi gerektiği vurgulanır.',E_REPORT),
-]
-
-export const AWARENESS_ACTIONS = {
-  filistin: [
-    { icon: 'book', title: 'Nekbe dosyasını kaynağından oku', body: '1948, zorunlu göç ve 1967 sonrası işgal bağlamını aynı dosyada incele.', href: P_NAKBA },
-    { icon: 'users', title: 'Mültecilerin hafızasını tanı', body: 'Geri dönüş iradesini ve aidiyeti, Dijital Hafıza’nın kavram sayfasından oku.', href: P_REFUGEES },
-    { icon: 'heart-handshake', title: 'Dayanışmayı doğrulanmış bilgiyle kur', body: 'Sumud Filosu haberini aç; tarih, aktör ve kapsamı kontrol ederek paylaş.', href: P_SUMUD },
-  ],
-  dogu_turkistan: [
-    { icon: 'history', title: 'Tarih tünelini takip et', body: '1759 eşiğini ve bölgenin tarihsel sürekliliğini doğrudan kaynaktan incele.', href: E_HISTORY },
-    { icon: 'file-description', title: 'Kavramları kaynaklarıyla öğren', body: 'Kamp ve yeniden eğitim ifadelerinin Dijital Hafıza’daki açıklamalarını karşılaştır.', href: E_CAMPS },
-    { icon: 'shield-check', title: 'Şeffaf belgelemenin izini sür', body: 'TRT Haber’de aktarılan BM raporu ve insani heyet erişimi tartışmasını oku.', href: E_REPORT },
-  ],
-} as const
+  {
+    "id": "p-01",
+    "geography": "filistin",
+    "orderIndex": 1,
+    "questionText": "Nekbe hangi anlama gelir?",
+    "options": {
+      "A": "Büyük Felaket",
+      "B": "Dönüş Yolu",
+      "C": "Barış Görüşmesi",
+      "D": "Yeni Şehir"
+    },
+    "correctOption": "A",
+    "explanationText": "Kaynak, Nekbe’yi Büyük Felaket olarak açıklar.",
+    "sourceUrl": "https://www.dijitalhafiza.com/video-belgeseller/buyuk-felaket"
+  },
+  {
+    "id": "p-02",
+    "geography": "filistin",
+    "orderIndex": 2,
+    "questionText": "Belgesel özetinin anlattığı kuruluş ve yerinden edilme süreci hangi yıldadır?",
+    "options": {
+      "A": "1918",
+      "B": "1948",
+      "C": "1987",
+      "D": "2007"
+    },
+    "correctOption": "B",
+    "explanationText": "Belgesel özeti 1948 sürecini ele alır.",
+    "sourceUrl": "https://www.dijitalhafiza.com/video-belgeseller/buyuk-felaket"
+  },
+  {
+    "id": "p-03",
+    "geography": "filistin",
+    "orderIndex": 3,
+    "questionText": "Mültecilik sayfasındaki iki tarihsel eşik hangileridir?",
+    "options": {
+      "A": "1908 ve 1923",
+      "B": "1939 ve 1945",
+      "C": "1948 ve 1967",
+      "D": "1980 ve 1990"
+    },
+    "correctOption": "C",
+    "explanationText": "Kaynak 1948 Nekbesi ile 1967 Haziran Savaşı’nı birlikte anar.",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler"
+  },
+  {
+    "id": "p-04",
+    "geography": "filistin",
+    "orderIndex": 4,
+    "questionText": "Kaynak, mültecilerin hangi isteği koruduğunu belirtir?",
+    "options": {
+      "A": "Yeni bir para birimi",
+      "B": "Sınırların unutulması",
+      "C": "Arşivlerin kapatılması",
+      "D": "Topraklarına dönmek"
+    },
+    "correctOption": "D",
+    "explanationText": "Geri dönme iradesi özellikle vurgulanır.",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler"
+  },
+  {
+    "id": "p-05",
+    "geography": "filistin",
+    "orderIndex": 5,
+    "questionText": "Hind Khoudary hangi meslekle tanıtılır?",
+    "options": {
+      "A": "Gazeteci",
+      "B": "Mimar",
+      "C": "Arkeolog",
+      "D": "Müzisyen"
+    },
+    "correctOption": "A",
+    "explanationText": "Biyografi onun gazetecilik çalışmalarını anlatır.",
+    "sourceUrl": "https://www.dijitalhafiza.com/biyografiler/hind-khoudary"
+  },
+  {
+    "id": "p-06",
+    "geography": "filistin",
+    "orderIndex": 6,
+    "questionText": "Khoudary, We Are Not Numbers programına hangi yıl katıldı?",
+    "options": {
+      "A": "2005",
+      "B": "2015",
+      "C": "1995",
+      "D": "1985"
+    },
+    "correctOption": "B",
+    "explanationText": "Biyografide katılım yılı 2015 olarak verilir.",
+    "sourceUrl": "https://www.dijitalhafiza.com/biyografiler/hind-khoudary"
+  },
+  {
+    "id": "p-07",
+    "geography": "filistin",
+    "orderIndex": 7,
+    "questionText": "We Are Not Numbers hangi çalışmaya destek verir?",
+    "options": {
+      "A": "Deniz taşımacılığına",
+      "B": "Tarım sigortasına",
+      "C": "Genç yazarların gelişimine",
+      "D": "İnşaat planlamasına"
+    },
+    "correctOption": "C",
+    "explanationText": "Program genç Filistinli yazarları destekler.",
+    "sourceUrl": "https://www.dijitalhafiza.com/biyografiler/hind-khoudary"
+  },
+  {
+    "id": "p-08",
+    "geography": "filistin",
+    "orderIndex": 8,
+    "questionText": "İdari tutukluluk maddesinin temel konusu nedir?",
+    "options": {
+      "A": "Pasaport yenileme",
+      "B": "Belediye seçimi",
+      "C": "Okul kaydı",
+      "D": "Suçlama olmadan gözaltında tutma"
+    },
+    "correctOption": "D",
+    "explanationText": "Kaynak, suçlama olmadan tutulma uygulamasını tarif eder.",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/idari-tutukluluk"
+  },
+  {
+    "id": "p-09",
+    "geography": "filistin",
+    "orderIndex": 9,
+    "questionText": "Kaynağa göre gizli dosyalar hangi güçlüğe yol açabilir?",
+    "options": {
+      "A": "Kişinin ve avukatının dosyaya erişememesi",
+      "B": "Mahkeme binasının taşınması",
+      "C": "Arşiv dilinin değişmesi",
+      "D": "Duruşmaların halka açılması"
+    },
+    "correctOption": "A",
+    "explanationText": "Dosyaya erişim kısıtı maddede belirtilir.",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/idari-tutukluluk"
+  },
+  {
+    "id": "p-10",
+    "geography": "filistin",
+    "orderIndex": 10,
+    "questionText": "Mültecilik sayfası, yerinden edilmenin yanında neyi vurgular?",
+    "options": {
+      "A": "Sadece ticari yolları",
+      "B": "Kimliğe aidiyetin sürmesini",
+      "C": "Turizm gelirini",
+      "D": "Sanayi planını"
+    },
+    "correctOption": "B",
+    "explanationText": "Kaynak, Filistinli kimliğine bağlılığın sürdüğünü aktarır.",
+    "sourceUrl": "https://www.dijitalhafiza.com/kavramlar-sozlugu/filistinli-multeciler"
+  },
+  {
+    "id": "e-01",
+    "geography": "dogu_turkistan",
+    "orderIndex": 1,
+    "questionText": "Zaman tüneli ilk Mançu istilasını hangi yıla tarihler?",
+    "options": {
+      "A": "1911",
+      "B": "1949",
+      "C": "1759",
+      "D": "2009"
+    },
+    "correctOption": "C",
+    "explanationText": "Kaynakta olay 1759 olarak tarihlenir.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/zaman-tuneli/1759-mancularin-ilk-dogu-turkistan-istilasi"
+  },
+  {
+    "id": "e-02",
+    "geography": "dogu_turkistan",
+    "orderIndex": 2,
+    "questionText": "Mançular 1755’te hangi bölgeyi ele geçirdi?",
+    "options": {
+      "A": "Anadolu",
+      "B": "Balkanlar",
+      "C": "Hicaz",
+      "D": "Cungarya"
+    },
+    "correctOption": "D",
+    "explanationText": "Zaman tünelinde Cungarya belirtilir.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/zaman-tuneli/1759-mancularin-ilk-dogu-turkistan-istilasi"
+  },
+  {
+    "id": "e-03",
+    "geography": "dogu_turkistan",
+    "orderIndex": 3,
+    "questionText": "Kaynak, kamp bilgilerindeki belirsizliği neyle ilişkilendirir?",
+    "options": {
+      "A": "Gizlilik ve kapalılıkla",
+      "B": "İklimle",
+      "C": "Takvim farkıyla",
+      "D": "Harita ölçeğiyle"
+    },
+    "correctOption": "A",
+    "explanationText": "Kaynak net bilgiye erişimin güç olduğunu belirtir.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari"
+  },
+  {
+    "id": "e-04",
+    "geography": "dogu_turkistan",
+    "orderIndex": 4,
+    "questionText": "Kamp sayfasında hangi resmî adlandırma aktarılır?",
+    "options": {
+      "A": "Açık Öğretim Kampüsü",
+      "B": "Mesleki Eğitim ve Öğretim Merkezi",
+      "C": "Kültür Köyü",
+      "D": "Spor Akademisi"
+    },
+    "correctOption": "B",
+    "explanationText": "Maddede bu adlandırma aktarılır.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari"
+  },
+  {
+    "id": "e-05",
+    "geography": "dogu_turkistan",
+    "orderIndex": 5,
+    "questionText": "Kamp tanımında hangi temel hak sorunu öne çıkar?",
+    "options": {
+      "A": "Ulaşım planı",
+      "B": "Ticaret kotası",
+      "C": "Hukuki süreç olmadan özgürlükten alıkoyma",
+      "D": "Spor lisansı"
+    },
+    "correctOption": "C",
+    "explanationText": "Özgürlüğün hukuki süreç olmadan kaldırılması ele alınır.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/toplama-kamplari"
+  },
+  {
+    "id": "e-06",
+    "geography": "dogu_turkistan",
+    "orderIndex": 6,
+    "questionText": "Yeniden Eğitim maddesi baskıyı hangi alanla ilişkilendirir?",
+    "options": {
+      "A": "Yalnızca trafik",
+      "B": "Yalnızca turizm",
+      "C": "Yalnızca spor",
+      "D": "Dinî inanç ve uygulamalar"
+    },
+    "correctOption": "D",
+    "explanationText": "Madde, inançla bağdaşmayan uygulamalara zorlamayı anlatır.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kavramlar-sozlugu/yeniden-egitim"
+  },
+  {
+    "id": "e-07",
+    "geography": "dogu_turkistan",
+    "orderIndex": 7,
+    "questionText": "Abduweli Ayup biyografisinde hangi uzmanlık belirtilir?",
+    "options": {
+      "A": "Dilbilim",
+      "B": "Denizcilik",
+      "C": "Kimya",
+      "D": "Mimarlık"
+    },
+    "correctOption": "A",
+    "explanationText": "Kaynak Ayup’u dilbilimci olarak tanıtır.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/biyografiler/abdulweli-ayup"
+  },
+  {
+    "id": "e-08",
+    "geography": "dogu_turkistan",
+    "orderIndex": 8,
+    "questionText": "Ayup’un eğitim çalışmaları hangi dile odaklanır?",
+    "options": {
+      "A": "İspanyolca",
+      "B": "Uygurca",
+      "C": "İtalyanca",
+      "D": "Portekizce"
+    },
+    "correctOption": "B",
+    "explanationText": "Biyografi Uygurca eğitimi için açılan okulları anlatır.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/biyografiler/abdulweli-ayup"
+  },
+  {
+    "id": "e-09",
+    "geography": "dogu_turkistan",
+    "orderIndex": 9,
+    "questionText": "7 Mayıs 2020 tarihli söyleşide ayrıntılar neden sınırlandırılır?",
+    "options": {
+      "A": "Metin kısalsın diye",
+      "B": "Reklam amacıyla",
+      "C": "Tanığın güvenliği için",
+      "D": "Çeviri yapılmadığı için"
+    },
+    "correctOption": "C",
+    "explanationText": "Editör güvenlik kaygısını açıkça belirtir.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kose-yazilari/bir-dogu-turkistanlinin-yasadiklari"
+  },
+  {
+    "id": "e-10",
+    "geography": "dogu_turkistan",
+    "orderIndex": 10,
+    "questionText": "Söyleşideki kişi ülkesinden kimlerle ayrılmıştır?",
+    "options": {
+      "A": "Spor takımıyla",
+      "B": "Bir orkestrayla",
+      "C": "Turist kafilesiyle",
+      "D": "Eşi ve iki çocuğuyla"
+    },
+    "correctOption": "D",
+    "explanationText": "Yazının girişinde ailece ayrılış anlatılır.",
+    "sourceUrl": "https://doguturkistan.dijitalhafiza.com/kose-yazilari/bir-dogu-turkistanlinin-yasadiklari"
+  }
+];
 
 export const AWARENESS_OPENINGS: Record<Geography, AwarenessOpening> = {
-  filistin: {
-    statement: '14 Mayıs 1948’in ardından zorla yerinden edilen Filistinliler, 15 Mayıs’ı Nekbe — Büyük Felaket — olarak anıyor.',
-    sourceName: 'TRT Haber · Nekbe dosyası',
-    sourceUrl: P_NAKBA,
-  },
-  dogu_turkistan: {
-    statement: 'Dijital Hafıza’nın zaman tüneli, 1759’u Mançuların Doğu Türkistan’daki ilk istilası olarak kayda geçiriyor.',
-    sourceName: 'Dijital Hafıza Doğu Türkistan · 1759',
-    sourceUrl: E_HISTORY,
-  },
-}
-
+  filistin: { statement: 'Bir coğrafyayı değil, insanların hayatını anlamak.', sourceName: 'Dijital Hafıza · Filistin', sourceUrl: SOURCES.refugees },
+  dogu_turkistan: { statement: 'Hafızayı korumak, bir dilin sesini duymakla başlar.', sourceName: 'Dijital Hafıza · Doğu Türkistan', sourceUrl: SOURCES.language }
+};
 export const AWARENESS_MILESTONES: Record<Geography, string[]> = {
-  filistin: ['1948', '1967', 'Bugün', 'İnsan', 'Mahpuslar', 'Sumud'],
-  dogu_turkistan: ['1759', 'Bugün', 'Tanıklık', 'İnanç', 'Dil', 'Şeffaflık'],
-}
+  filistin: ['1948', 'Yerinden edilme', 'Gazetecilik', 'İnsan', 'Haklar', 'Dayanışma'],
+  dogu_turkistan: ['1759', 'Göç', 'Belgeleme', 'Tanıklık', 'İnanç', 'Dil']
+};
+export const AWARENESS_ACTIONS = {
+  filistin: [{icon: 'book',title: 'Kaynağı oku',body: 'Hafızayı ilk kaynağından incele.',href: SOURCES.refugees}],
+  dogu_turkistan: [{icon: 'book',title: 'Kaynağı oku',body: 'Dil ve kültür çalışmalarını tanı.',href: SOURCES.language}]
+} as const;
 
 export const HUMANITARIAN_ORGANIZATIONS = [
   {
@@ -217,13 +515,13 @@ export const HUMANITARIAN_ORGANIZATIONS = [
 export const AWARENESS_SHARE_COPY: Record<Geography, { title: string; text: string; sourceUrl: string }> = {
   filistin: {
     title: 'Filistin: Hafızayı kaynağıyla koru',
-    text: '15 Mayıs, 1948’de zorla yerinden edilen Filistinlilerin Nekbe — Büyük Felaket — olarak andığı gündür. Kaynaklı ve insan onurunu koruyan kısa anlatıyı SAH World’de oku.',
-    sourceUrl: P_NAKBA,
+    text: 'Dijital Hafıza, 1948’deki yerinden edilme sürecini Nekbe — Büyük Felaket — başlığıyla anlatıyor. Kaynaklı ve insan onurunu koruyan kısa anlatıyı SAH World’de oku.',
+    sourceUrl: SOURCES.nakba,
   },
   dogu_turkistan: {
     title: 'Doğu Türkistan: Bilgiyi kaynağıyla taşı',
     text: 'Dijital Hafıza’nın zaman tüneli 1759’u Mançuların Doğu Türkistan’daki ilk istilası olarak kayda geçiriyor. Kaynaklı ve sakin anlatıyı SAH World’de oku.',
-    sourceUrl: E_HISTORY,
+    sourceUrl: SOURCES.history,
   },
 }
 

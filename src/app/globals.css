@@ -2277,6 +2277,73 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 [data-theme="dark"] .qc-chat-action-trigger:hover{background:rgba(255,255,255,.08)}
 @media(max-width:700px){.qc-modal-root>.qc-chat-container{height:calc(100dvh - 24px);border-radius:20px}.qc-chat-header{padding:16px}.qc-chat-context{padding:10px 16px}.qc-chat-messages{padding:14px}.qc-chat-bubble{max-width:90%}.qc-chat-input-area{padding:12px}.qc-social-modal{padding:22px}.qc-study-rooms>header{align-items:flex-start}.qc-peer-preview{max-width:220px}}
 @media(max-width:375px){.qc-chat-bubble{max-width:94%}.qc-chat-edit textarea{font-size:13px}.qc-chat-actions button{min-height:36px;padding:6px 12px}.qc-room-empty-cta{padding:20px}.appointment-list>article{grid-template-columns:44px 1fr;gap:10px}.appointment-list>article>div{flex-wrap:wrap;gap:6px}.appointment-list>article>div button{min-height:36px;font-size:11px}}
+/* Awareness editorial edition: one header, three tabs, content first. */
+.awareness-editorial{--ae-paper:#fbf9f6;--ae-card:#fff;--ae-ink:#232b28;--ae-muted:#56625c;--ae-line:#d9ded9;--ae-soft:#f0f3ef;background:var(--ae-paper);color:var(--ae-ink);max-width:1120px;margin:0 auto;border-radius:20px;overflow:clip;font-family:Arial,sans-serif;padding:28px}
+.awareness-editorial h1,.awareness-editorial h2,.awareness-editorial h3{font-family:Georgia,serif;color:var(--ae-ink)}
+.awareness-editorial-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:24px}
+.awareness-editorial-header h1{font-size:24px;margin:8px 0 0}.awareness-editorial .awareness-kicker{font-size:12px;color:var(--ae-muted);letter-spacing:.1em}
+.awareness-editorial-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.awareness-editorial-tools select{min-height:44px;max-width:100%;padding:10px 32px 10px 12px;border:1px solid var(--ae-line);border-radius:10px;background:var(--ae-card);color:var(--ae-ink);font:600 16px Arial,sans-serif}
+.awareness-xh{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ae-muted);white-space:nowrap}
+.awareness-editorial-tabs{display:flex;gap:24px;border-bottom:1px solid var(--ae-line);margin-bottom:24px}
+.awareness-editorial-tabs button{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:0;border-bottom:3px solid transparent;color:var(--ae-muted);min-height:48px;padding:12px 4px;font:600 16px Arial,sans-serif;cursor:pointer}
+.awareness-editorial-tabs button[aria-selected="true"]{color:var(--ae-ink);border-color:var(--awareness-accent)}
+.awareness-editorial :is(button,a,select,summary,input,textarea):focus-visible{outline:3px solid #009b77;outline-offset:4px}
+.awareness-editorial [role="tabpanel"]{min-width:0}.awareness-editorial .awareness-story{background:transparent}
+.awareness-editorial .awareness-opening{min-height:0;padding:30px 0 32px;background:none;border-bottom:1px solid var(--ae-line);display:block}
+.awareness-editorial .awareness-opening::before,.awareness-editorial .awareness-opening-mark{display:none}
+.awareness-editorial .awareness-opening-copy{width:100%;max-width:740px;position:static}.awareness-editorial .awareness-opening-copy>span{color:var(--ae-muted);font-size:12px}
+.awareness-editorial .awareness-opening-copy h2{font-size:24px;line-height:1.35;margin:14px 0;color:var(--ae-ink);max-width:650px}
+.awareness-editorial .awareness-opening-copy a{color:var(--ae-muted);font-size:16px}
+.awareness-editorial .awareness-scroll-cue{position:static;margin-top:24px;min-height:44px;padding:10px 16px;background:var(--ae-ink);color:var(--ae-paper);border:0;border-radius:8px;display:inline-flex;gap:16px}
+.awareness-editorial .awareness-story-grid{display:block;background:none}.awareness-editorial .awareness-story-panels{padding:0;max-width:800px;margin:auto}
+.awareness-editorial .awareness-story-panel{min-height:0;padding:28px 0;border-bottom:1px solid var(--ae-line);scroll-margin-top:100px}
+.awareness-editorial .awareness-story-copy{padding:8px 0;background:none;border:0;box-shadow:none;color:var(--ae-ink);opacity:1}
+.awareness-editorial .awareness-story-copy header{color:var(--ae-muted)}.awareness-editorial .awareness-story-copy header span,.awareness-editorial .awareness-story-copy header small{color:var(--ae-muted);font-size:12px}
+.awareness-editorial .awareness-story-copy h2{font-size:24px;line-height:1.35;margin:16px 0}.awareness-editorial .awareness-story-copy>p{font-size:16px;line-height:1.85;color:var(--ae-ink)}
+.awareness-editorial .awareness-story-copy>a{background:var(--ae-soft);border:1px solid var(--ae-line);border-radius:8px;color:var(--ae-ink);padding:12px;grid-template-columns:auto 1fr auto}
+.awareness-editorial .awareness-story-copy>a :is(span,strong){color:var(--ae-ink);font-size:12px}.awareness-editorial .awareness-story-copy blockquote{padding:12px 0;margin:14px 0 0;background:none;border:0;color:var(--ae-muted);font-size:16px}.awareness-editorial .awareness-story-copy blockquote small{display:none}
+.awareness-editorial .awareness-resolution-bridge{min-height:0;padding:32px 0;text-align:left;background:none}.awareness-editorial .awareness-resolution-bridge h2{font-size:24px;color:var(--ae-ink)}.awareness-editorial .awareness-resolution-bridge p{color:var(--ae-muted);font-size:16px}
+.awareness-disclosure{border:1px solid var(--ae-line);border-radius:12px;background:var(--ae-card);margin:14px 0;overflow:hidden}
+.awareness-disclosure>summary{cursor:pointer;padding:18px;font-size:16px;font-weight:600;min-height:56px;color:var(--ae-ink)}.awareness-disclosure>summary span{font-size:12px;font-weight:400;color:var(--ae-muted);margin-left:12px}.awareness-disclosure[open]>summary{border-bottom:1px solid var(--ae-line)}.awareness-disclosure>section{margin:0;border-radius:0;background:var(--ae-card)}
+.awareness-progress-inline{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;margin-top:24px;border-top:1px solid var(--ae-line);padding:18px 0;color:var(--ae-muted);font-size:12px}.awareness-progress-inline strong{color:var(--ae-ink);font-size:16px}.awareness-progress-inline>span:first-child{display:flex;gap:8px;align-items:center}
+.awareness-editorial .awareness-integrity-note{background:none;border:0;margin:0;padding:16px 0;color:var(--ae-muted)}.awareness-editorial .awareness-integrity-note strong{color:var(--ae-ink)}.awareness-editorial .awareness-integrity-note p{color:var(--ae-muted);font-size:12px}
+.awareness-editorial .awareness-boycott{padding:0;background:none}.awareness-editorial .awareness-boycott-header{text-align:left;margin-bottom:20px}.awareness-editorial .awareness-boycott-header h2{font-size:24px;color:var(--ae-ink)}.awareness-editorial .awareness-boycott-header p{font-size:16px;line-height:1.7;color:var(--ae-muted)}
+.awareness-editorial .awareness-boycott-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.awareness-editorial .awareness-boycott-card{background:var(--ae-card);border:1px solid var(--ae-line);box-shadow:none;padding:20px;border-radius:12px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.awareness-editorial .awareness-boycott-card:hover{transform:none;box-shadow:0 4px 16px #0000000b}.awareness-editorial .awareness-boycott-card h3{font-size:24px;color:var(--ae-ink)}.awareness-editorial .awareness-boycott-card-top{flex-wrap:wrap}.awareness-editorial .awareness-boycott-card-top small,.awareness-editorial .awareness-boycott-parent{font-size:12px;color:var(--ae-muted)}
+.awareness-editorial .awareness-boycott-reason{font-size:16px;line-height:1.7;color:var(--ae-ink);margin:0}.awareness-editorial .awareness-boycott-src{display:inline-flex;gap:6px;font-size:12px;color:var(--ae-muted);text-decoration:underline}
+.awareness-editorial .awareness-boycott-alts-detail{background:var(--ae-soft);padding:12px;border-radius:8px}.awareness-editorial .awareness-alt-row{font-size:16px}.awareness-editorial .awareness-alt-row :is(strong,small){color:var(--ae-ink)}.awareness-editorial .awareness-alt-row small{font-size:12px}
+.awareness-editorial .awareness-boycott-controls{margin-block:20px}.awareness-editorial .awareness-boycott-search{background:var(--ae-card);border:1px solid var(--ae-line)}.awareness-editorial .awareness-boycott-search input{color:var(--ae-ink);font-size:16px}
+.awareness-editorial .awareness-boycott-cats button{min-height:44px;font-size:12px;background:var(--ae-card);color:var(--ae-ink);border:1px solid var(--ae-line)}.awareness-editorial .awareness-boycott-cats button.active{background:var(--ae-ink);color:var(--ae-paper)}
+.awareness-editorial .awareness-status-chip{min-height:44px;font-size:16px}.awareness-editorial .awareness-status-badge{font-size:12px}.awareness-editorial .awareness-boycott-toggle{min-height:44px;font-size:12px}
+.awareness-editorial .awareness-quiz-v2{padding:24px;background:#25212e;border-radius:16px;gap:24px}.awareness-editorial .awareness-quiz-v2>aside{color:#f4f0f7}.awareness-editorial .quiz-card{background:#fff;border:1px solid #cfc8d7;box-shadow:none}
+.awareness-editorial .quiz-options button{border:2px solid #85798f;background:#f6f3f9;color:#261e30;box-shadow:none;min-height:58px;font-size:16px;font-weight:600;opacity:1}.awareness-editorial .quiz-options button span{color:inherit}.awareness-editorial .quiz-options button b{background:#e6deed;color:#32283c}
+.awareness-editorial .quiz-options button.correct{background:#dcfce7;border-color:#16743d;color:#14532d}.awareness-editorial .quiz-options button.wrong{background:#fee2e2;border-color:#b91c1c;color:#7f1d1d}
+.awareness-editorial .answer-explanation{font-size:16px;line-height:1.7}.awareness-editorial .answer-explanation.correct{background:#dcfce7;color:#14532d}.awareness-editorial .answer-explanation.learn{background:#fff1f2;color:#881337}
+.awareness-editorial .awareness-witness-grid{display:grid;grid-template-columns:1fr;gap:14px}.awareness-editorial .awareness-witness-card{background:var(--ae-soft);border:1px solid var(--ae-line);padding:18px}.awareness-editorial .awareness-witness-card p{font-size:16px;line-height:1.8;color:var(--ae-ink)}
+[data-theme="dark"] .awareness-editorial{--ae-paper:#141b18;--ae-card:#1c2520;--ae-ink:#edf2ee;--ae-muted:#b5c1b9;--ae-line:#405147;--ae-soft:#24332a}
+[data-theme="dark"] .awareness-editorial .quiz-card{background:#1e1a26;border-color:#675c73}[data-theme="dark"] .awareness-editorial .quiz-card h3{color:#f5f1f8}
+[data-theme="dark"] .awareness-editorial .quiz-options button{background:#2a2434;border-color:#887896;color:#f5f1f8}[data-theme="dark"] .awareness-editorial .quiz-options button b{background:#44374f;color:#fff}
+[data-theme="dark"] .awareness-editorial .quiz-options button.correct{background:#123b27;border-color:#67dc96;color:#d9ffe6}[data-theme="dark"] .awareness-editorial .quiz-options button.wrong{background:#49212a;border-color:#ff98a1;color:#ffe4e7}
+[data-theme="dark"] .awareness-editorial .answer-explanation.correct{background:#123b27;color:#d9ffe6}[data-theme="dark"] .awareness-editorial .answer-explanation.learn{background:#49212a;color:#ffe4e7}
+@media(max-width:900px){.awareness-editorial{padding:20px}.awareness-editorial-header{align-items:flex-start}.awareness-editorial .awareness-quiz-v2{grid-template-columns:1fr}.awareness-editorial .awareness-quiz-v2>aside{display:flex;align-items:center;gap:16px}.awareness-editorial .awareness-quiz-v2>aside>small{display:none}}
+@media(max-width:620px){.awareness-editorial{padding:16px 12px;border-radius:12px;margin:0}.awareness-editorial-header{flex-direction:column;padding-bottom:16px;gap:12px}.awareness-editorial-header h1{font-size:24px}.awareness-editorial-tools{width:100%;justify-content:space-between}.awareness-editorial-tabs{gap:0;justify-content:space-between}.awareness-editorial-tabs button{font-size:12px;padding:10px 6px;gap:5px}.awareness-editorial .awareness-opening{padding:16px 0 24px}.awareness-editorial .awareness-opening-copy h2{font-size:24px}.awareness-editorial .awareness-story-copy h2{font-size:24px}.awareness-editorial .awareness-story-copy>p{font-size:16px}.awareness-editorial .awareness-boycott-grid{grid-template-columns:1fr}.awareness-editorial .awareness-quiz-v2{padding:12px;gap:12px}.awareness-editorial .quiz-card{padding:16px}.awareness-editorial .quiz-card>footer{flex-direction:column;align-items:stretch;gap:12px}.awareness-editorial .quiz-options button{padding:12px;font-size:16px}.awareness-disclosure>summary span{display:block;margin:6px 0 0 18px}.awareness-editorial .awareness-story-copy>a{grid-template-columns:1fr auto}.awareness-editorial .awareness-story-copy>a>span{display:none}}
+@media(prefers-reduced-motion:reduce){.awareness-editorial *{scroll-behavior:auto!important;animation:none!important;transition:none!important}.awareness-editorial .awareness-story-copy{opacity:1!important;transform:none!important}}
+.awareness-editorial .quiz-card>header{color:var(--ae-muted)}
+.awareness-editorial .quiz-card h3,.awareness-editorial .quiz-index{font-size:24px}
+.awareness-editorial .quiz-options button span{font-size:16px}
+.awareness-editorial .awareness-boycott-card h3{font-family:Georgia,serif}
+.awareness-editorial .awareness-boycott-search input{min-width:0;flex:1;width:100%}
+.awareness-editorial .awareness-boycott-search button{flex-shrink:0;min-width:44px;min-height:44px}
+.awareness-editorial .awareness-boycott-controls{display:grid;grid-template-columns:minmax(0,1fr);min-width:0}
+.awareness-editorial .awareness-boycott-search{width:100%;max-width:100%;min-width:0;min-height:52px;box-sizing:border-box}
+.awareness-editorial .awareness-boycott-cats{min-width:0;max-width:100%;flex-wrap:wrap}
+.awareness-editorial .awareness-boycott-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.awareness-editorial .awareness-status-chip{min-width:0;flex:initial;padding:10px 8px;gap:5px;flex-wrap:wrap}
+.awareness-editorial .awareness-boycott-header>span,.awareness-editorial .awareness-alt-label{color:var(--ae-muted)}
+.awareness-editorial .awareness-boycott-header h2{background:none;-webkit-text-fill-color:currentColor}
+.awareness-editorial .awareness-boycott-header .awareness-source-policy{font-size:12px;line-height:1.55;max-width:760px}
+[data-theme="dark"] .awareness-editorial .awareness-status-badge{color:color-mix(in srgb,var(--badge-color) 50%,white)}
+[data-theme="dark"] .awareness-editorial .awareness-status-chip strong{color:color-mix(in srgb,var(--chip-color) 50%,white)}
 .qc-chat-author{display:block;font-size:11px;color:var(--qc-primary-dark);margin-bottom:4px}
 .qc-chat-bubble.deleted p{font-style:italic;opacity:.55}
 .qc-chat-edited{display:block;font-size:10px;color:var(--qc-muted);margin-top:2px}

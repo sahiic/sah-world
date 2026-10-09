@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -9,7 +9,6 @@ import { supabase } from "@/lib/supabase";
 import { recordXpEvent } from "@/lib/xp";
 import {
   AWARENESS_CONTENT_FALLBACK,
-  AWARENESS_MILESTONES,
   AWARENESS_OPENINGS,
   AWARENESS_QUIZ_FALLBACK,
   AWARENESS_SHARE_COPY,
@@ -24,14 +23,13 @@ import {
 import CommunityImpact from "@/components/awareness/CommunityImpact";
 import WeeklyMissions from "@/components/awareness/WeeklyMissions";
 import BoycottGuide from "@/components/awareness/BoycottGuide";
-import AwarenessLevelBadge from "@/components/awareness/AwarenessLevelBadge";
 import AwarenessTimeline from "@/components/awareness/AwarenessTimeline";
 import PrayerWall from "@/components/awareness/PrayerWall";
 import WitnessWall from "@/components/awareness/WitnessWall";
 import ThirtyDayJourney from "@/components/awareness/ThirtyDayJourney";
 import CompassionReset from "@/components/awareness/CompassionReset";
 
-type Panel = "story" | "actions" | "quiz" | "boycott" | "journey";
+type Panel = "story" | "actions" | "quiz";
 type EngagementType = "section_read" | "action_opened" | "quiz_completed" | "narrative_completed" | "shared";
 const READ_REWARD = 15;
 const SHARE_REWARD = 5;
@@ -39,7 +37,8 @@ const SHARE_REWARD = 5;
 const isApprovedSource = (url: string | null | undefined) => Boolean(url && (
   url.startsWith("https://www.dijitalhafiza.com/") ||
   url.startsWith("https://doguturkistan.dijitalhafiza.com/") ||
-  url.startsWith("https://www.trthaber.com/")
+  url.startsWith("https://www.trthaber.com/") ||
+  url.startsWith("https://boykotdedektifi.com/")
 ));
 
 const shareSlug = (geography: Geography) => geography === "filistin" ? "filistin" : "dogu-turkistan";
@@ -58,6 +57,7 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
   const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
   const [journeyDays, setJourneyDays] = useState<Set<number>>(new Set());
   const [showCompassion, setShowCompassion] = useState(false);
+  const awardedKeys = useRef(new Set<string>());
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -134,7 +134,9 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
     metadata: Record<string, string | number | boolean> = {},
   ) => {
     const key = `${eventType}:${targetGeography}:${contentId}`;
-    const isNew = !eventKeys.has(key);
+    const isNew = !eventKeys.has(key) && !awardedKeys.current.has(key);
+    if (!isNew) return false;
+    awardedKeys.current.add(key);
     setEventKeys((current) => new Set(current).add(key));
     if (user) {
       const { error } = await supabase.from("awareness_engagement_log").upsert({
@@ -196,6 +198,8 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
   }, []);
 
   const completeMission = useCallback((missionId: string) => {
+    if (completedMissions.has(missionId) || awardedKeys.current.has(`mission:${missionId}`)) return;
+    awardedKeys.current.add(`mission:${missionId}`);
     setCompletedMissions((prev) => {
       const next = new Set(prev).add(missionId);
       try { localStorage.setItem("sah:missions", JSON.stringify([...next])); } catch {}
@@ -203,9 +207,11 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
     });
     addXP(10);
     void recordXpEvent({ sourceType: "awareness_mission", sourceId: missionId, label: "Haftalık görev tamamlandı", amount: 10 });
-  }, [addXP]);
+  }, [addXP, completedMissions]);
 
   const completeJourneyDay = useCallback((day: number, xpAmount: number) => {
+    if (journeyDays.has(day) || awardedKeys.current.has(`journey:${day}`)) return;
+    awardedKeys.current.add(`journey:${day}`);
     setJourneyDays((prev) => {
       const next = new Set(prev).add(day);
       try { localStorage.setItem("sah:journey-days", JSON.stringify([...next])); } catch {}
@@ -213,23 +219,25 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
     });
     addXP(xpAmount);
     void recordXpEvent({ sourceType: "awareness_journey", sourceId: `day-${day}`, label: `30 günlük yolculuk: Gün ${day}`, amount: xpAmount });
-  }, [addXP]);
+  }, [addXP, journeyDays]);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("sah:boycotts");
-      if (saved) setUserBoycotts(new Set(JSON.parse(saved)));
-      const missions = localStorage.getItem("sah:missions");
-      if (missions) setCompletedMissions(new Set(JSON.parse(missions)));
-      const journey = localStorage.getItem("sah:journey-days");
-      if (journey) setJourneyDays(new Set(JSON.parse(journey)));
-    } catch {}
+    // Hydrate browser-only preferences after mount; preserve all existing keys.
+    const frame = requestAnimationFrame(() => {
+      const read = (key: string): unknown[] => {
+        try { const value: unknown = JSON.parse(localStorage.getItem(key) ?? "[]"); return Array.isArray(value) ? value : []; } catch { return []; }
+      };
+      setUserBoycotts(new Set(read("sah:boycotts").filter((v): v is string => typeof v === "string")));
+      setCompletedMissions(new Set(read("sah:missions").filter((v): v is string => typeof v === "string")));
+      setJourneyDays(new Set(read("sah:journey-days").filter((v): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 30)));
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const changeGeography = (next: Geography) => {
     setGeography(next);
     setPanel("story");
-    window.setTimeout(() => document.getElementById("awareness-opening")?.scrollIntoView({ behavior: "smooth" }), 20);
+    window.setTimeout(() => document.getElementById("awareness-opening")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }), 20);
   };
   const openPrayer = () => {
     sessionStorage.setItem("sah:mescidim:tab", "dua");
@@ -238,56 +246,49 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
   };
 
   const meta = GEOGRAPHY_META[geography];
+  const reducedMotion = useReducedMotion();
+  const tabs = [{ id: "story", label: "Öğren", icon: "book" }, { id: "actions", label: "Harekete Geç", icon: "heart-handshake" }, { id: "quiz", label: "Bilgi Testi", icon: "bulb" }] as const;
   return (
-    <div className={`awareness-experience awareness-${geography}`} style={{ "--awareness-accent": meta.accent } as React.CSSProperties}>
-      <header className="awareness-route-bar">
-        <div><span className="awareness-kicker"><AppIcon name="world-heart" /> HAFIZA · HAKİKAT · SORUMLULUK</span><h1>Mazlum Coğrafyalar</h1></div>
-        <div className="awareness-route-bar-right">
-          <AwarenessLevelBadge xp={xp} />
-          <div className="awareness-route-progress" aria-label="Okuma ilerlemesi"><span><i style={{ width: `${(readCount / Math.max(geographyItems.length, 1)) * 100}%` }} /></span><small>{readCount}/{geographyItems.length} bölüm</small></div>
+    <div className={`awareness-experience awareness-editorial awareness-${geography}`} style={{ "--awareness-accent": meta.accent } as React.CSSProperties}>
+      <header className="awareness-editorial-header">
+        <div><span className="awareness-kicker">HAFIZA · HAKİKAT · SORUMLULUK</span><h1>Mazlum Coğrafyalar</h1></div>
+        <div className="awareness-editorial-tools">
+          <label><span className="sr-only">Coğrafya seçimi</span><select value={geography} onChange={(event) => changeGeography(event.target.value as Geography)}>{(Object.keys(GEOGRAPHY_META) as Geography[]).map((key) => <option key={key} value={key}>{GEOGRAPHY_META[key].name}</option>)}</select></label>
+          <span className="awareness-xh" aria-label={`Toplam ${xp} XH`}><AppIcon name="sparkles" /> {xp.toLocaleString("tr-TR")} XH</span>
         </div>
       </header>
-
-      <CommunityImpact />
-
-      <nav className="awareness-geography-tabs" aria-label="Coğrafya seçimi">
-        {(Object.keys(GEOGRAPHY_META) as Geography[]).map((key) => (
-          <button key={key} className={key === geography ? "active" : ""} onClick={() => changeGeography(key)}>
-            <AppIcon name={GEOGRAPHY_META[key].icon} />
-            <span><strong>{GEOGRAPHY_META[key].name}</strong><small>{GEOGRAPHY_META[key].short}</small></span>
-          </button>
-        ))}
+      <nav className="awareness-editorial-tabs" role="tablist" aria-label="İçerik görünümü">
+        {tabs.map((tab, index) => <button key={tab.id} id={`awareness-tab-${tab.id}`} role="tab" aria-selected={panel === tab.id} aria-controls="awareness-panel" tabIndex={panel === tab.id ? 0 : -1} onClick={() => setPanel(tab.id)}
+          onKeyDown={(event) => { const offset = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0; const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (index + offset + tabs.length) % tabs.length; if (!offset && event.key !== "Home" && event.key !== "End") return; event.preventDefault(); setPanel(tabs[next].id); document.getElementById(`awareness-tab-${tabs[next].id}`)?.focus(); }}>
+          <AppIcon name={tab.icon} />{tab.label}
+        </button>)}
       </nav>
-
-      <nav className="awareness-mode-tabs" aria-label="İçerik görünümü">
-        <button className={panel === "story" ? "active" : ""} onClick={() => setPanel("story")}><AppIcon name="route" /> Anlatı</button>
-        <button className={panel === "actions" ? "active" : ""} onClick={() => setPanel("actions")}><AppIcon name="heart-handshake" /> Ne yapabiliriz?</button>
-        <button className={panel === "boycott" ? "active" : ""} onClick={() => setPanel("boycott")}><AppIcon name="ban" /> Boykot Rehberi</button>
-        <button className={panel === "quiz" ? "active" : ""} onClick={() => setPanel("quiz")}><AppIcon name="bulb" /> Bilgi testi</button>
-        <button className={panel === "journey" ? "active" : ""} onClick={() => setPanel("journey")}><AppIcon name="road" /> 30 Gün</button>
-      </nav>
-
-      {panel === "story" && (
-        <>
-          <WeeklyMissions completedMissions={completedMissions} onComplete={completeMission} />
-          <AwarenessTimeline geography={geography} />
-          <ScrollyNarrative key={geography} geography={geography} items={geographyItems} eventKeys={eventKeys}
-            onRead={(item) => void logEngagement("section_read", geography, item.id, { source_url: item.sourceUrl })}
-            onResolve={() => setShowCompassion(true)} />
-          <WitnessWall geography={geography} />
-          <PrayerWall geography={geography} />
-        </>
-      )}
-      {panel === "actions" && <ActionPanel geography={geography} onQuiz={() => setPanel("quiz")} onPrayer={openPrayer}
-        onAction={(href) => void logEngagement("action_opened", geography, href, { target_url: href })}
-        onShared={(channel) => void awardOnce("shared", geography, SHARE_REWARD, `${meta.name} kaynaklı farkındalık paylaşımı`, { channel })} />}
-      {panel === "boycott" && <BoycottGuide userBoycotts={userBoycotts} onToggleBoycott={toggleBoycott} />}
-      {panel === "quiz" && <Quiz geography={geography}
-        questions={questions.filter((item) => item.geography === geography).sort((a, b) => a.orderIndex - b.orderIndex)}
-        rewarded={completedQuizzes.has(geography)}
-        onRewarded={() => setCompletedQuizzes((items) => new Set(items).add(geography))}
-        onCompleted={(score) => void logEngagement("quiz_completed", geography, `quiz:${geography}`, { score })} />}
-      {panel === "journey" && <ThirtyDayJourney completedDays={journeyDays} onComplete={completeJourneyDay} />}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div key={panel} id="awareness-panel" role="tabpanel" aria-labelledby={`awareness-tab-${panel}`} tabIndex={0} initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.15 }}>
+          {panel === "story" && <>
+            <ScrollyNarrative key={geography} geography={geography} items={geographyItems} eventKeys={eventKeys}
+              onRead={(item) => void logEngagement("section_read", geography, item.id, { source_url: item.sourceUrl })}
+              onResolve={() => setShowCompassion(true)} />
+            <details className="awareness-disclosure"><summary>Tarih çizelgesi <span>Olayları bağlamında incele</span></summary><AwarenessTimeline key={geography} geography={geography} /></details>
+            <details className="awareness-disclosure"><summary>İnsan hikâyeleri <span>Kaynaklı özetler ve tanıklıklar</span></summary><WitnessWall geography={geography} /></details>
+            <details className="awareness-disclosure"><summary>Dua defteri <span>Kendine bir dua notu bırak</span></summary><PrayerWall geography={geography} /></details>
+          </>}
+          {panel === "actions" && <div className="awareness-action-stack">
+            <BoycottGuide userBoycotts={userBoycotts} onToggleBoycott={toggleBoycott} />
+            <details className="awareness-disclosure"><summary>Haftalık küçük adımlar <span>{completedMissions.size} görev tamamlandı</span></summary><WeeklyMissions completedMissions={completedMissions} onComplete={completeMission} /></details>
+            <details className="awareness-disclosure"><summary>30 günlük yolculuk <span>{journeyDays.size}/30 gün</span></summary><ThirtyDayJourney completedDays={journeyDays} onComplete={completeJourneyDay} /></details>
+            <details className="awareness-disclosure"><summary>Paylaş, öğren ve destek ol <span>Sana uygun bir yol seç</span></summary><ActionPanel geography={geography} onQuiz={() => setPanel("quiz")} onPrayer={openPrayer}
+              onAction={(href) => void logEngagement("action_opened", geography, href, { target_url: href })}
+              onShared={(channel) => void awardOnce("shared", geography, SHARE_REWARD, `${meta.name} kaynaklı farkındalık paylaşımı`, { channel })} /></details>
+          </div>}
+          {panel === "quiz" && <Quiz key={geography} geography={geography}
+            questions={questions.filter((item) => item.geography === geography).sort((a, b) => a.orderIndex - b.orderIndex)}
+            rewarded={completedQuizzes.has(geography)}
+            onRewarded={() => setCompletedQuizzes((items) => new Set(items).add(geography))}
+            onCompleted={(score) => void logEngagement("quiz_completed", geography, `quiz:${geography}`, { score })} />}
+        </motion.div>
+      </AnimatePresence>
+      <CommunityImpact readCount={readCount} totalCount={geographyItems.length} quizCount={completedQuizzes.size} shareCount={[...eventKeys].filter((key) => key.startsWith("shared:")).length} boycottCount={userBoycotts.size} />
 
       {showCompassion && <CompassionReset onContinue={() => { setShowCompassion(false); setPanel("actions"); }} />}
 
@@ -297,108 +298,50 @@ export default function AwarenessView({ onNavigate }: { onNavigate: (view: strin
 }
 
 function ScrollyNarrative({ geography, items, eventKeys, onRead, onResolve }: {
-  geography: Geography;
-  items: AwarenessContent[];
-  eventKeys: Set<string>;
-  onRead: (item: AwarenessContent) => void;
-  onResolve: () => void;
+  geography: Geography; items: AwarenessContent[]; eventKeys: Set<string>;
+  onRead: (item: AwarenessContent) => void; onResolve: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [showSourceDock, setShowSourceDock] = useState(false);
+  const reducedMotion = useReducedMotion();
   const opening = AWARENESS_OPENINGS[geography];
-  const meta = GEOGRAPHY_META[geography];
-
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
-    const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-story-index]"));
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting || entry.intersectionRatio < 0.42) continue;
-        const panel = entry.target as HTMLElement;
-        const index = Number(panel.dataset.storyIndex ?? 0);
-        setActiveIndex(index);
-        const item = items[index];
-        if (item) onRead(item);
-      }
-    }, { threshold: [0.42, 0.62], rootMargin: "-8% 0px -8% 0px" });
-    panels.forEach((panel) => observer.observe(panel));
-    return () => observer.disconnect();
-  }, [items, onRead]);
-
-  useEffect(() => {
-    const updateDock = () => {
-      const grid = rootRef.current?.querySelector<HTMLElement>(".awareness-story-grid");
-      if (!grid) return;
-      const rect = grid.getBoundingClientRect();
-      setShowSourceDock(rect.top < window.innerHeight * 0.55 && rect.bottom > window.innerHeight * 0.25);
-    };
-    updateDock();
-    window.addEventListener("scroll", updateDock, { passive: true });
-    return () => window.removeEventListener("scroll", updateDock);
-  }, []);
-
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!root || reducedMotion) return;
     let disposed = false;
     let revert: (() => void) | undefined;
-    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([gsapModule, triggerModule]) => {
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([{ gsap }, { ScrollTrigger }]) => {
       if (disposed) return;
-      const gsap = gsapModule.gsap;
-      const ScrollTrigger = triggerModule.ScrollTrigger;
       gsap.registerPlugin(ScrollTrigger);
       const context = gsap.context(() => {
-        root.querySelectorAll<HTMLElement>(".awareness-story-copy").forEach((copy) => {
-          gsap.fromTo(copy, { opacity: 0.18, y: 42 }, { opacity: 1, y: 0, ease: "none", scrollTrigger: {
-            trigger: copy, start: "top 84%", end: "center 54%", scrub: 0.7,
-          } });
+        root.querySelectorAll(".awareness-story-copy").forEach(copy => {
+          gsap.fromTo(copy, { y: 12 }, { y: 0, ease: "none", scrollTrigger: { trigger: copy, start: "top 95%", end: "top 65%", scrub: 0.5 } });
         });
-        gsap.to(root.querySelector(".awareness-orbit-line"), { rotate: 22, transformOrigin: "50% 50%", ease: "none", scrollTrigger: {
-          trigger: root, start: "top top", end: "bottom bottom", scrub: 1.2,
-        } });
       }, root);
       revert = () => context.revert();
     });
     return () => { disposed = true; revert?.(); };
-  }, [geography]);
-
-  if (!items.length) return <div className="awareness-source-empty"><AppIcon name="cloud-off" /><h2>Kaynak incelemesi sürüyor</h2><p>Doğrulanmamış metin yayımlamak yerine bu anlatı kaynak onayını bekliyor.</p></div>;
-  const active = items[Math.min(activeIndex, items.length - 1)];
-
-  return (
-    <div className="awareness-story" ref={rootRef}>
-      <section id="awareness-opening" className="awareness-opening">
-        <div className="awareness-opening-mark" aria-hidden><span /><span /><span /></div>
-        <div className="awareness-opening-copy"><span>{meta.name.toLocaleUpperCase("tr-TR")} · DOĞRULANMIŞ BAŞLANGIÇ</span><h2>{opening.statement}</h2><a href={opening.sourceUrl} target="_blank" rel="noopener noreferrer"><AppIcon name="external-link" /> {opening.sourceName}</a></div>
-        <button onClick={() => document.getElementById(`awareness-story-${items[0].id}`)?.scrollIntoView({ behavior: "smooth" })} className="awareness-scroll-cue"><span>Hikâyeyi kaynağıyla izle</span><AppIcon name="arrow-down" /></button>
-      </section>
-
-      <div className="awareness-story-grid">
-        <aside className="awareness-visual-rail" aria-hidden><div className="awareness-visual-frame">
-          <svg viewBox="0 0 420 520" role="img"><defs><linearGradient id={`awareness-gradient-${geography}`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#f6d7c8" stopOpacity=".25"/><stop offset="1" stopColor={meta.accent} stopOpacity=".95"/></linearGradient></defs><path className="awareness-orbit-line" d="M74 104C154 28 326 65 350 177c27 126-70 235-184 278-66 25-124-8-117-66 9-77 125-79 199-143 61-53 35-139-40-150-66-10-119 37-134 102" fill="none" stroke={`url(#awareness-gradient-${geography})`} strokeWidth="2" strokeLinecap="round" strokeDasharray="2 9"/><path d="M208 66v389" stroke="rgba(255,255,255,.14)" strokeWidth="1"/>{items.map((item, index) => { const y = 82 + index * 72; const selected = index === activeIndex; return <g key={item.id} transform={`translate(208 ${y})`}><circle r={selected ? 13 : 7} fill={selected ? meta.accent : "#6f7481"}/><circle r={selected ? 24 : 14} fill="none" stroke={selected ? meta.accent : "rgba(255,255,255,.18)"} opacity=".6"/><text x="-34" y="5" fill="#fff" fontSize="11" fontWeight="700" textAnchor="end">{String(index + 1).padStart(2, "0")}</text></g>; })}</svg>
-          <div><small>HAFIZA ÇİZGİSİ</small><strong>{AWARENESS_MILESTONES[geography][Math.min(activeIndex, AWARENESS_MILESTONES[geography].length - 1)]}</strong></div>
-        </div></aside>
-
-        <main className="awareness-story-panels">
-          {items.map((item, index) => <article id={`awareness-story-${item.id}`} key={item.id} data-story-index={index} className={`awareness-story-panel ${index === activeIndex ? "is-active" : ""}`}><div className="awareness-story-copy">
-            <header><span>{String(index + 1).padStart(2, "0")}</span><small>{sectionLabel(item.section)}</small>{eventKeys.has(`section_read:${geography}:${item.id}`) && <i title="Okundu"><AppIcon name="circle-check-filled" /></i>}</header>
+  }, [geography, reducedMotion]);
+  return <div className="awareness-story" ref={rootRef}>
+    <section id="awareness-opening" className="awareness-opening">
+      <div className="awareness-opening-copy"><span>{GEOGRAPHY_META[geography].name.toLocaleUpperCase("tr-TR")} · 6 KISA BÖLÜM</span><h2>{opening.statement}</h2><a href={opening.sourceUrl} target="_blank" rel="noopener noreferrer">{opening.sourceName} ↗</a></div>
+      <button className="awareness-scroll-cue" onClick={() => document.getElementById(`awareness-story-${items[0]?.id}`)?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" })}>Okumaya başla <AppIcon name="arrow-down" /></button>
+    </section>
+    <div className="awareness-story-grid"><div className="awareness-story-panels">
+      {items.map((item, index) => {
+        const read = eventKeys.has(`section_read:${geography}:${item.id}`);
+        return <article id={`awareness-story-${item.id}`} key={item.id} className="awareness-story-panel">
+          <div className="awareness-story-copy">
+            <header><span>{String(index + 1).padStart(2, "0")}</span><small>{GEOGRAPHY_META[geography].name}</small></header>
             <h2>{item.sectionTitle}</h2><p>{item.contentBody}</p>
-            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={() => onRead(item)}><span>KAYNAK</span><strong>{item.sourceName}</strong><AppIcon name="external-link" /></a>
-            <blockquote><AppIcon name="heart-handshake" /><span><small>SORUMLULUĞA DÖNÜŞTÜR</small>{item.actionCue}</span></blockquote>
-          </div></article>)}
-          <section className="awareness-resolution-bridge"><span>HAFIZA, EYLEMLE TAMAMLANIR.</span><h2>Şimdi ne yapabileceğini seç.</h2><p>Bilgiyi doğrula, güvenilir yardımı destekle, dua et veya kaynağıyla çevrene duyur.</p><button className="primary-button" onClick={onResolve}>Ne yapabiliriz? <AppIcon name="arrow-right" /></button></section>
-        </main>
-      </div>
-
-      {showSourceDock && <div className="awareness-source-dock" aria-live="polite"><span><i style={{ width: `${((activeIndex + 1) / items.length) * 100}%` }} /></span><div><small>ŞU ANKİ KAYNAK</small><a href={active.sourceUrl} target="_blank" rel="noopener noreferrer">{active.sourceName} <AppIcon name="external-link" /></a></div><b>{activeIndex + 1}/{items.length}</b></div>}
-    </div>
-  );
-}
-
-function sectionLabel(section: AwarenessContent["section"]) {
-  return ({ history: "TARİHSEL ARKA PLAN", displacement: "YERİNDEN EDİLME", today: "BUGÜNÜN GERÇEĞİ", human: "İNSAN BOYUTU", detention: "GÖZALTI VE MAHPUSLAR", culture: "KİMLİK VE KÜLTÜR", solidarity: "SEBAT VE DAYANIŞMA" } as const)[section];
+            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer"><span>KAYNAK</span><strong>{item.sourceName}</strong><AppIcon name="external-link" /></a>
+            <blockquote>{item.actionCue}</blockquote>
+            <button className="ghost-button" disabled={read} onClick={() => onRead(item)}><AppIcon name={read ? "check" : "bookmark"} />{read ? "Okundu" : "Okudum"}</button>
+          </div>
+        </article>;
+      })}
+      <section className="awareness-resolution-bridge"><h2>Bilgiden küçük bir adıma.</h2><p>Sana uygun, barışçıl bir dayanışma yolu seç.</p><button className="primary-button" onClick={onResolve}>Harekete geç <AppIcon name="arrow-right" /></button></section>
+    </div></div>
+  </div>;
 }
 
 function ActionPanel({ geography, onQuiz, onPrayer, onAction, onShared }: {
@@ -449,7 +392,7 @@ function Quiz({ geography, questions, rewarded, onRewarded, onCompleted }: {
   const [selected, setSelected] = useState<QuizOption | null>(null);
   const [done, setDone] = useState(false);
   const [notice, setNotice] = useState("");
-  const [wasRewarded] = useState(rewarded);
+  const [wasRewarded, setWasRewarded] = useState(rewarded);
   const [awardedThisRun, setAwardedThisRun] = useState(false);
   const question = questions[index];
   const meta = GEOGRAPHY_META[geography];
@@ -464,8 +407,8 @@ function Quiz({ geography, questions, rewarded, onRewarded, onCompleted }: {
     setDone(true);
     onCompleted(finalScore);
     const earned = quizReward(finalScore);
-    if (!wasRewarded) {
-      addXP(earned); setAwardedThisRun(true); onRewarded();
+    if (!wasRewarded && !rewarded) {
+      addXP(earned); setWasRewarded(true); setAwardedThisRun(true); onRewarded();
       const attemptId = crypto.randomUUID();
       await Promise.all([
         user ? supabase.from("user_quiz_attempts").insert({ id: attemptId, user_id: user.id, geography, score: finalScore, xh_awarded: earned }) : Promise.resolve(),
@@ -482,5 +425,5 @@ function Quiz({ geography, questions, rewarded, onRewarded, onCompleted }: {
 
   if (done) return <div className="quiz-result"><span className="result-orbit"><AppIcon name={score >= 8 ? "rosette-discount-check" : "sparkles"} /></span><p className="eyebrow">{meta.name.toLocaleUpperCase("tr-TR")} · TEST TAMAMLANDI</p><h3>{score}/10 doğru</h3><p>{score >= 8 ? "Kaynakları dikkatle takip ettin. Şimdi bu bilgiyi sakin, özenli ve doğrulanabilir biçimde paylaşabilirsin." : "Açıklamaları ve kaynakları yeniden inceleyerek bilgi zincirini güçlendirebilirsin."}</p><div className="quiz-reward"><span><AppIcon name="sparkles" /></span><div><strong>{awardedThisRun ? `+${reward} XH kazandın` : "Bu tur öğrenme amaçlıydı"}</strong><small>{awardedThisRun ? `40 tamamlama XH’si + ${score * 5} doğru cevap XH’si` : "XH ödülü her coğrafyada yalnızca ilk tamamlamada verilir."}</small></div></div><div className="result-actions"><button className="primary-button" onClick={() => void share()}><AppIcon name="share-3" /> Sonucu paylaş</button><button className="ghost-button" onClick={retry}><AppIcon name="refresh" /> Yeniden dene</button></div>{notice && <p className="inline-notice">{notice}</p>}</div>;
   const answeredCorrectly = selected === question.correctOption;
-  return <div className="quiz-layout awareness-quiz-v2"><aside><span className="quiz-index">{String(index + 1).padStart(2, "0")}<small>/10</small></span><div className="quiz-progress"><span style={{ width: `${((index + 1) / questions.length) * 100}%` }} /></div><p><strong>{score}</strong> doğru cevap</p><small>Her sorudan sonra açıklamayı ve kaynağı incele.</small></aside><section className="quiz-card"><header><span>{meta.name} bilgi testi</span><span>{index + 1} / {questions.length}</span></header><h3>{question.questionText}</h3><div className="quiz-options">{options.map((option) => { const isCorrect = selected && option === question.correctOption; const isWrong = selected === option && option !== question.correctOption; return <button key={option} className={`${isCorrect ? "correct" : ""} ${isWrong ? "wrong" : ""}`} onClick={() => answer(option)} disabled={Boolean(selected)}><b>{option}</b><span>{question.options[option]}</span>{isCorrect && <AppIcon name="circle-check-filled" />}{isWrong && <AppIcon name="circle-x-filled" />}</button>; })}</div>{selected && <motion.div className={`answer-explanation ${answeredCorrectly ? "correct" : "learn"}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}><span><AppIcon name={answeredCorrectly ? "circle-check" : "bulb"} /></span><div><strong>{answeredCorrectly ? "Doğru cevap" : `Doğru cevap: ${question.correctOption}`}</strong><p>{question.explanationText}</p><a href={question.sourceUrl} target="_blank" rel="noopener noreferrer">Kaynağı incele <AppIcon name="external-link" /></a></div></motion.div>}<footer><span>{wasRewarded ? "Tekrar turu · XH ödülü verilmez" : "İlk tamamlama ödülü: 40 + doğru başına 5 XH"}</span><button className="primary-button" disabled={!selected} onClick={() => void next()}>{index === questions.length - 1 ? "Sonucu gör" : "Sonraki soru"} <AppIcon name="arrow-right" /></button></footer></section></div>;
+  return <div className="quiz-layout awareness-quiz-v2"><aside><span className="quiz-index">{String(index + 1).padStart(2, "0")}<small>/10</small></span><div className="quiz-progress"><span style={{ width: `${((index + 1) / questions.length) * 100}%` }} /></div><p><strong>{score}</strong> doğru cevap</p><small>Her sorudan sonra açıklamayı ve kaynağı incele.</small></aside><section className="quiz-card"><header><span>{meta.name} bilgi testi</span><span>{index + 1} / {questions.length}</span></header><h3>{question.questionText}</h3><div className="quiz-options">{options.map((option) => { const isCorrect = selected && option === question.correctOption; const isWrong = selected === option && option !== question.correctOption; return <button key={option} className={`${isCorrect ? "correct" : ""} ${isWrong ? "wrong" : ""}`} onClick={() => answer(option)} disabled={Boolean(selected)}><b>{option}</b><span>{question.options[option]}</span>{isCorrect && <AppIcon name="circle-check-filled" />}{isWrong && <AppIcon name="circle-x-filled" />}</button>; })}</div>{selected && <motion.div role="status" className={`answer-explanation ${answeredCorrectly ? "correct" : "learn"}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}><span><AppIcon name={answeredCorrectly ? "circle-check" : "bulb"} /></span><div><strong>{answeredCorrectly ? "Doğru cevap" : `Doğru cevap: ${question.correctOption}`}</strong><p>{question.explanationText}</p><a href={question.sourceUrl} target="_blank" rel="noopener noreferrer">Kaynağı incele <AppIcon name="external-link" /></a></div></motion.div>}<footer><span>{wasRewarded ? "Tekrar turu · XH ödülü verilmez" : "İlk tamamlama ödülü: 40 + doğru başına 5 XH"}</span><button className="primary-button" disabled={!selected} onClick={() => void next()}>{index === questions.length - 1 ? "Sonucu gör" : "Sonraki soru"} <AppIcon name="arrow-right" /></button></footer></section></div>;
 }
