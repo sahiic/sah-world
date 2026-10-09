@@ -52,7 +52,7 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
       <header className="awareness-boycott-header">
         <span>BİLİNÇLİ TÜKETİM REHBERİ</span>
         <h2>Boykot et, yerli alternatifini keşfet.</h2>
-        <p>Her markanın durumu doğrulanabilir kaynaklara dayalıdır.</p>
+        <p>{BOYCOTT_ITEMS.filter((i) => i.isActive).length} marka · {BOYCOTT_CATEGORIES.length} kategori · her veri doğrulanabilir kaynaklara dayalıdır.</p>
       </header>
 
       <div className="awareness-boycott-stats">
@@ -117,6 +117,15 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
         </div>
       </div>
 
+      {(category !== "all" || statusFilter !== "all" || search) && (
+        <p className="awareness-boycott-filter-info">
+          <AppIcon name="filter" /> <strong>{filtered.length}</strong> marka gösteriliyor
+          {statusFilter !== "all" && <> · <span style={{ color: BOYCOTT_STATUS_META[statusFilter].color }}>{BOYCOTT_STATUS_META[statusFilter].label}</span></>}
+          {category !== "all" && <> · {BOYCOTT_CATEGORIES.find((c) => c.id === category)?.label}</>}
+          {search && <> · &ldquo;{search}&rdquo;</>}
+        </p>
+      )}
+
       <div className="awareness-boycott-grid" role="list">
         <AnimatePresence mode="popLayout">
           {filtered.map((item) => (
@@ -125,7 +134,7 @@ export default function BoycottGuide({ userBoycotts, onToggleBoycott }: {
         </AnimatePresence>
         {filtered.length === 0 && (
           <div className="awareness-boycott-empty">
-            <AppIcon name="search-off" />
+            <AppIcon name="search-x" />
             <p>Aramanızla eşleşen marka bulunamadı.</p>
           </div>
         )}

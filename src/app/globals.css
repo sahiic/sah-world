@@ -1969,6 +1969,11 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .awareness-boycott-cats button{padding:7px 12px;border:0;border-radius:10px;display:flex;align-items:center;gap:5px;color:#5a5055;background:#f4f2f0;font-size:9px;font-weight:750;cursor:pointer;transition:all .15s}
 .awareness-boycott-cats button.active{color:#fff;background:var(--awareness-accent)}
 .awareness-boycott-cats button:hover:not(.active){background:#ebe8e5}
+.awareness-boycott-filter-info{margin-bottom:14px;padding:8px 14px;border-radius:10px;display:flex;align-items:center;gap:6px;color:#5a5055;background:#f9f7f5;font-size:10px;font-weight:600;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+.awareness-boycott-filter-info .app-icon{color:#8a7f83;font-size:14px}
+.awareness-boycott-filter-info strong{color:#1a1416}
+[data-theme="dark"] .awareness-boycott-filter-info{background:rgba(255,255,255,.04);color:#a89ca0}
+[data-theme="dark"] .awareness-boycott-filter-info strong{color:#f0eaed}
 .awareness-boycott-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
 .awareness-boycott-card{padding:20px;border-radius:18px;background:#fff;box-shadow:0 4px 18px rgba(55,34,42,.06),inset 0 0 0 1px rgba(0,0,0,.04);transition:box-shadow .2s,transform .2s}
 .awareness-boycott-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(55,34,42,.12),inset 0 0 0 1px rgba(0,0,0,.07)}
