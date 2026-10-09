@@ -14,6 +14,7 @@ async function guest(page: Page, tab = "home") {
   await page.goto("/?view=quran-companion&tab=" + tab);
   await page.getByRole("button", { name: "DEV: Misafir görünümü" }).click();
   await expect(page.locator(".qc-ready")).toBeVisible();
+  await expect(page.getByLabel("Sekme yükleniyor")).toHaveCount(0);
 }
 test("fresh guest has zero progress and no fabricated appointments or achievements", async ({
   page,
@@ -30,12 +31,12 @@ test("fresh guest has zero progress and no fabricated appointments or achievemen
   });
   await page
     .locator(".quran-companion-tabs")
-    .getByRole("button", { name: "Randevularım", exact: true })
+    .getByRole("tab", { name: "Randevularım", exact: true })
     .click();
   await expect(page.getByText("Yaklaşan randevun yok")).toBeVisible();
   await page
     .locator(".quran-companion-tabs")
-    .getByRole("button", { name: "Başarımlarım", exact: true })
+    .getByRole("tab", { name: "Başarımlarım", exact: true })
     .click();
   await expect(page.locator(".qc-badge-grid article.earned")).toHaveCount(0);
 });
@@ -52,7 +53,7 @@ test("completion, tajweed, meaning and letters each provide 8 explained answers 
   ]) {
     await page
       .locator(".qc-mode-card")
-      .filter({ has: page.getByRole("heading", { name: label, exact: true }) })
+      .filter({ hasText: label })
       .click();
     for (let i = 1; i <= 8; i++) {
       await expect(
@@ -89,7 +90,7 @@ test("completion, tajweed, meaning and letters each provide 8 explained answers 
   }
   await page
     .locator(".quran-companion-tabs")
-    .getByRole("button", { name: "Başarımlarım", exact: true })
+    .getByRole("tab", { name: "Başarımlarım", exact: true })
     .click();
   await expect(
     page.locator(".qc-badge-grid article.earned").first(),
@@ -121,7 +122,7 @@ test("juz map includes cross-juz Bakara and progress can be set then reset", asy
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await page.getByLabel("Cüzlere göre grupla").check();
-  await expect(page.getByRole("heading", { name: /2\. Cüz/ })).toBeVisible();
+  await expect(page.locator('.qc-surah-group').getByRole("heading", { name: /^2\. Cüz/ })).toBeVisible();
   await page.screenshot({
     path: info.outputPath("quran-juz.png"),
     fullPage: true,
@@ -140,7 +141,7 @@ test("ordering supports keyboard selection, undo and a verified perfect result",
   await page
     .locator(".qc-mode-card")
     .filter({
-      has: page.getByRole("heading", { name: "Ayet Sıralama", exact: true }),
+      hasText: "Ayet Sıralama",
     })
     .click();
   const heading = await page.locator(".qc-exercise-active h2").innerText();
@@ -177,7 +178,7 @@ test("saved wrong verses create real review items and self-rating advances each 
   await page
     .locator(".qc-mode-card")
     .filter({
-      has: page.getByRole("heading", { name: "Ayet Tamamlama", exact: true }),
+      hasText: "Ayet Tamamlama",
     })
     .click();
   for (let i = 1; i <= 8; i++) {
@@ -210,7 +211,7 @@ test("saved wrong verses create real review items and self-rating advances each 
   await page
     .locator(".qc-mode-card")
     .filter({
-      has: page.getByRole("heading", { name: "Aralıklı Tekrar", exact: true }),
+      hasText: "Aralıklı Tekrar",
     })
     .click();
   await expect(page.locator(".qc-spaced-card")).toBeVisible();
@@ -233,7 +234,7 @@ test("saved wrong verses create real review items and self-rating advances each 
   await page
     .locator(".qc-mode-card")
     .filter({
-      has: page.getByRole("heading", { name: "Aralıklı Tekrar", exact: true }),
+      hasText: "Aralıklı Tekrar",
     })
     .click();
   await expect(

@@ -178,7 +178,7 @@ test("peer request uses a bounded modal, updates timeline and badges without pro
   await expect(
     page
       .locator(".quran-companion-tabs")
-      .getByRole("button", { name: /Kur'an Kardeşi/ })
+      .getByRole("tab", { name: /Kur'an Kardeşi/ })
       .locator(".qc-nav-badge"),
   ).toHaveText("2");
   const helper = page
@@ -213,7 +213,7 @@ test("lesson threads are isolated, read receipts update badges, archive is expli
   await expect(
     page
       .locator(".quran-companion-tabs")
-      .getByRole("button", { name: /Randevularım/ })
+      .getByRole("tab", { name: /Randevularım/ })
       .locator(".qc-nav-badge"),
   ).toHaveText("1");
   await chat.getByPlaceholder("Mesajını yaz…").fill("FAIL TEST");

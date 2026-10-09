@@ -485,6 +485,9 @@ export default function QuranCompanionView({
       setSchemaReady(false);
       setError("");
       setLoading(false);
+      // Guest/demo data is synchronous; there is no second network phase.
+      // Leaving this true traps progress/exercises/peers in a permanent skeleton.
+      setBgLoading(false);
       return;
     }
     if (!quiet) setLoading(true);
