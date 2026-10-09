@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFocusDialog } from "@/hooks/useFocusDialog";
 import { useTimer } from "@/hooks/useTimer";
 import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
@@ -40,12 +40,23 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
     (state) => state.pendingCompletedSession,
   );
   const [focusView, setFocusView] = useState<FocusView>("session");
+  const [taskDraft, setTaskDraft] = useState("");
+  const [fullscreenError, setFullscreenError] = useState("");
   const [showNiyet, setShowNiyet] = useState(false);
   const [soundOpen, setSoundOpen] = useState(false);
   const [backgroundOpen, setBackgroundOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [timelineOpen, setTimelineOpen] = useState(false);
   useFocusDialog(!pendingCompletedSession && (soundOpen || backgroundOpen || settingsOpen || showNiyet || timelineOpen));
+
+  const requestStart = useCallback(() => {
+    if (!currentNiyet && mode === "focus") {
+      if (!taskDraft.trim()) { setShowNiyet(true); return; }
+      useFocusStore.getState().setNiyet(taskDraft);
+      setTaskDraft("");
+    }
+    void start();
+  }, [currentNiyet, mode, taskDraft, start]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -67,8 +78,7 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
       if (event.code === "Space") {
         event.preventDefault();
         if (isRunning) pauseTimer();
-        else if (!currentNiyet && mode === "focus") setShowNiyet(true);
-        else void start();
+        else requestStart();
       }
       if (event.key.toLowerCase() === "r" && (!useFocusStore.getState().sessionStartTime || window.confirm("Süreyi kaydetmeden bu oturumu sıfırlamak istiyor musun?"))) resetTimer();
       if (event.key.toLowerCase() === "s") {
@@ -77,19 +87,20 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentNiyet, mode, isRunning, pauseTimer, resetTimer, start, soundOpen, backgroundOpen, settingsOpen, showNiyet, timelineOpen, pendingCompletedSession]);
+  }, [requestStart, isRunning, pauseTimer, resetTimer, soundOpen, backgroundOpen, settingsOpen, showNiyet, timelineOpen, pendingCompletedSession]);
 
   const toggleFullscreen = async () => {
     try {
+      setFullscreenError("");
       if (document.fullscreenElement) await document.exitFullscreen();
       else await document.documentElement.requestFullscreen();
     } catch {
-      // Fullscreen support is optional.
+      setFullscreenError("Bu tarayıcı tam ekranı açamadı. Oturumun normal görünümde devam eder.");
     }
   };
 
   return (
-    <main data-focus-studio="sanctuary-v2" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
+    <main data-focus-studio="sanctuary-v2" data-focus-release="quality-audit-v1" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
       <FocusBackdrop backgroundId={backgroundId} />
       <header className={`focus-topbar ${styles.topbar}`}>
         {onExit ? <button className={`focus-back-button ${styles.backLink}`} onClick={onExit} aria-label="Odak ekranını küçült"><ArrowLeft aria-hidden /><span>Geri</span></button> : <Link
@@ -145,10 +156,13 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
       </header>
 
       <div className={styles.focusLayout}>
+        {fullscreenError && <p className={styles.audioStatus} role="status">{fullscreenError}</p>}
         {focusView === "session" ? (
           <section className={styles.mainColumn}>
             <FocusTimer
-              onNeedNiyet={() => setShowNiyet(true)}
+              onStart={requestStart}
+              taskDraft={taskDraft}
+              setTaskDraft={setTaskDraft}
               onOpenTimerSettings={() => setSettingsOpen(true)}
               onOpenSound={() => setSoundOpen(true)}
               onOpenBackground={() => setBackgroundOpen(true)}

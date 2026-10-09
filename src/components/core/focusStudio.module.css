@@ -1,7 +1,7 @@
 .studio { --studio-mint: #c0f3df; isolation: isolate; color: #f7f5ec; font-family: var(--font-inter), sans-serif; }
 .backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #132e2d; overflow: hidden; }
 .landscape { object-fit: cover; animation: sceneEnter .65s ease-out; }
-.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(5 19 22 / 48%), rgb(5 19 22 / 20%) 45%, rgb(5 19 22 / 60%)), radial-gradient(ellipse at center, rgb(5 19 22 / 38%), transparent 75%); }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(5 19 22 / 48%), rgb(5 19 22 / 24%) 45%, rgb(5 19 22 / 65%)), radial-gradient(ellipse at center, rgb(5 19 22 / 64%), rgb(5 19 22 / 28%) 50%, transparent 85%); }
 .plain { background: radial-gradient(ellipse at 20% 20%, #235447, transparent 65%), linear-gradient(140deg, #173c36, #091f22); }
 .intro { text-align: center; margin-bottom: 14px; line-height: 1.3; }
 .intro > span { display: flex; gap: 7px; align-items: center; justify-content: center; font-size: 9px; letter-spacing: .2em; color: var(--studio-mint); }

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 const student = "11111111-1111-4111-8111-111111111111",
   teacher = "22222222-2222-4222-8222-222222222222";
 const fixtureURL = `http://127.0.0.1:${process.env.SAH_SOCIAL_FIXTURE_PORT ?? 3116}`;
@@ -152,7 +153,13 @@ test("rescheduling uses the atomic RPC and calendar export contains no private n
     .filter({ hasText: "Fâtiha · birinci ders" });
   const download = page.waitForEvent("download");
   await card.getByRole("button", { name: "Takvime ekle" }).click();
-  expect((await download).suggestedFilename()).toBe("kuran-dersi.ics");
+  const calendar = await download;
+  expect(calendar.suggestedFilename()).toMatch(/^kuran-randevu-\d{4}-\d{2}-\d{2}\.ics$/);
+  const calendarText = await readFile((await calendar.path())!, "utf8");
+  expect(calendarText).toContain("BEGIN:VCALENDAR");
+  expect(calendarText).toContain("DTSTART:");
+  expect(calendarText).not.toContain("Öğrencinin karşılıklı özel notu");
+  expect(calendarText).not.toContain("İkinci dersin özel mesajı");
   await card.getByRole("button", { name: "Yeniden planla" }).click();
   const modal = page.getByRole("dialog", { name: "Örnek Hoca randevu" });
   await expect(
@@ -178,7 +185,7 @@ test("peer request uses a bounded modal, updates timeline and badges without pro
   await expect(
     page
       .locator(".quran-companion-tabs")
-      .getByRole("button", { name: /Kur'an Kardeşi/ })
+      .getByRole("tab", { name: /Kur'an Kardeşi/ })
       .locator(".qc-nav-badge"),
   ).toHaveText("2");
   const helper = page
@@ -213,7 +220,7 @@ test("lesson threads are isolated, read receipts update badges, archive is expli
   await expect(
     page
       .locator(".quran-companion-tabs")
-      .getByRole("button", { name: /Randevularım/ })
+      .getByRole("tab", { name: /Randevularım/ })
       .locator(".qc-nav-badge"),
   ).toHaveText("1");
   await chat.getByPlaceholder("Mesajını yaz…").fill("FAIL TEST");

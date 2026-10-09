@@ -485,6 +485,9 @@ export default function QuranCompanionView({
       setSchemaReady(false);
       setError("");
       setLoading(false);
+      // Guest/demo data is synchronous; there is no second network phase.
+      // Leaving this true traps progress/exercises/peers in a permanent skeleton.
+      setBgLoading(false);
       return;
     }
     if (!quiet) setLoading(true);
@@ -2054,7 +2057,7 @@ function PeerMatching({
         <div className="peer-helper-note">
           <AppIcon name="heart-handshake" />
           <div>
-            <strong>Kur'an kardeşi olmak ister misin?</strong>
+            <strong>Kur’an kardeşi olmak ister misin?</strong>
             <span>
               Seviyeni &quot;Destek olabilirim&quot; veya &quot;Akıcı okuyorum&quot; olarak güncellersen, diğer kullanıcılar seni bulabilir.
             </span>
@@ -2439,7 +2442,7 @@ function HocaManagement({
     if (photoFile) {
       setPhotoUploading(true);
       const ext = photoFile.name.split(".").pop() || "jpg";
-      const path = `${managed.id}/${Date.now()}.${ext}`;
+      const path = `${managed.id}/${crypto.randomUUID()}.${ext}`;
       const { error: uploadError } = await supabase.storage
         .from("hoca-photos")
         .upload(path, photoFile, { upsert: true });

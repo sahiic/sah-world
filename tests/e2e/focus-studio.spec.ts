@@ -127,7 +127,7 @@ test("one clock survives exit, reload, pause, cross-tab and partial completion",
   await expect(
     page.getByRole("heading", { name: "Şimdi, yalnızca bu an." }),
   ).toBeVisible();
-  await expect(page.locator(".focus-controls > button").first()).toBeDisabled();
+  await expect(page.locator(".focus-controls > button").first()).toBeEnabled();
   await expect(page.getByRole("timer")).not.toContainText("25:00");
   await page.getByRole("button", { name: "Odak ekranını küçült" }).click();
   const mini = page.locator("[data-focus-mini]");
@@ -147,7 +147,7 @@ test("one clock survives exit, reload, pause, cross-tab and partial completion",
   await expect(second.getByRole("timer")).not.toContainText(paused!);
   await expect(
     second.locator(".focus-controls > button").first(),
-  ).toBeDisabled();
+  ).toBeEnabled();
   second.once("dialog", (dialog) => dialog.accept());
   await second.getByRole("button", { name: "Oturumu bitir ve kaydet" }).click();
   await expect(mini).toHaveCount(0);

@@ -49,7 +49,7 @@ test('Quran tabs survive reload and direct ayah/hadith access shares the same wh
   await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(/Çalışma Alanım/);
   for (const [tab,label] of [['teachers','Hocalar'],['appointments','Randevularım'],['peers',"Kur'an Kardeşi"],['achievements','Başarımlarım'],['study','Çalışma Alanım']] as const) {
     // The existing appointment tab includes a live count in its accessible name.
-    await page.locator('.quran-companion-tabs').getByRole('button',{name:new RegExp(`^${label}(?: \\d+)?$`)}).click();
+    await page.locator('.quran-companion-tabs').getByRole('tab',{name:new RegExp(`^${label}(?: \\d+)?$`)}).click();
     await expect(page).toHaveURL(new RegExp(`view=quran-companion&tab=${tab}`));
     await page.reload(); await page.getByRole('button',{name:'DEV: Misafir görünümü'}).click();
     await expect(page.locator('.quran-companion-tabs button.active')).toHaveText(new RegExp(`^${label}(?:\\d+)?$`));

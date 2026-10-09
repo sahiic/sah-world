@@ -354,9 +354,30 @@ async function run() {
   await assert.rejects(() => db.query("INSERT INTO appointment_notes(appointment_id,author_id,author_role,performance_note) VALUES($1,$2,'hoca','Forged teacher note')", [appt2,outsider]));
   // --- Message edit/delete (migration 038) ---
   await db.exec("RESET ROLE");
-  await db.exec(fs.readFileSync("supabase/migrations/038_quran_message_edit.sql", "utf8"));
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await db.exec(fs.readFileSync("supabase/migrations/037_quran_peer_expansion.sql", "utf8"));
+    await db.exec(fs.readFileSync("supabase/migrations/038_quran_message_edit.sql", "utf8"));
+  }
+  await db.query("UPDATE profiles SET quran_level='fluent' WHERE id=$1", [teacher]);
+  await as(student);
+  const pool = (await db.query("SELECT * FROM browse_quran_helpers()")).rows;
+  assert.ok(pool.some(p => p.id === helper && p.quran_level === 'helper'));
+  assert.ok(pool.some(p => p.id === teacher && p.quran_level === 'fluent'));
+  assert.ok(!pool.some(p => p.id === student));
+  assert.equal((await db.query("SELECT (send_quran_peer_request($1,'Fluent peer')).status s", [teacher])).rows[0].s, 'pending');
+  await assert.rejects(() => db.query("SELECT send_quran_peer_request($1,'Wrong level')", [outsider]));
   await as(student);
   const editMsg = (await send(appt2, "Typo here")).rows[0];
+  await assert.rejects(() => db.query("SELECT update_quran_message($1,NULL)", [editMsg.id]));
+  await assert.rejects(() => db.query("SELECT update_quran_message($1,'   ')", [editMsg.id]));
+  await assert.rejects(() => db.query("SELECT update_quran_message($1,repeat('x',2001))", [editMsg.id]));
+  // A receiver can acknowledge, but cannot forge edit/deletion metadata.
+  await as(teacher);
+  await assert.rejects(() => db.query("UPDATE chat_messages SET deleted_at=now(),is_read=true WHERE id=$1", [editMsg.id]));
+  await assert.rejects(() => db.query("UPDATE chat_messages SET edited_at=now(),is_read=true WHERE id=$1", [editMsg.id]));
+  await assert.rejects(() => db.query("SELECT delete_quran_message($1)", [editMsg.id]));
+  await db.query("SELECT mark_quran_thread_read($1,$2)", [appt2,[editMsg.id]]);
+  await as(student);
   await db.query("SELECT update_quran_message($1,'Fixed text')", [editMsg.id]);
   const edited = (await db.query("SELECT content,edited_at FROM chat_messages WHERE id=$1", [editMsg.id])).rows[0];
   assert.equal(edited.content, "Fixed text");
@@ -373,8 +394,15 @@ async function run() {
   // Cannot edit or delete again after soft-delete
   await assert.rejects(() => db.query("SELECT update_quran_message($1,'retry')", [editMsg.id]));
   await assert.rejects(() => db.query("SELECT delete_quran_message($1)", [editMsg.id]));
+  // A real legacy row older than fifteen minutes also cannot be edited/deleted.
+  const oldMessage = (await db.query("INSERT INTO chat_messages(sender_id,receiver_id,content,created_at) VALUES($1,$2,'Old message',now()-interval '16 minutes') RETURNING id", [student,teacher])).rows[0].id;
+  await assert.rejects(() => db.query("SELECT update_quran_message($1,'Too late')", [oldMessage]));
+  await assert.rejects(() => db.query("SELECT delete_quran_message($1)", [oldMessage]));
+  assert.equal((await db.query("SELECT content FROM chat_messages WHERE id=$1", [oldMessage])).rows[0].content, 'Old message');
 
   await db.exec("RESET ROLE;SET ROLE anon");
+  for (const query of ["SELECT * FROM browse_quran_helpers()", "SELECT update_quran_message(NULL,'No')", "SELECT delete_quran_message(NULL)"])
+    await assert.rejects(() => db.query(query));
   await assert.rejects(() =>
     db.query("SELECT * FROM get_quran_thread_summaries()"),
   );

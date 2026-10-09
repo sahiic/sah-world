@@ -71,8 +71,9 @@ class AmbientEngine {
     }
   }
   sync(volumes: Record<string, number>, volume: number) {
+    if (!Object.values(volumes).some((v) => v > 0) || volume === 0) this.report("");
     if (!this.context || !this.master || this.context.state !== "running") {
-      if (Object.values(volumes).some((v) => v > 0))
+      if (volume > 0 && Object.values(volumes).some((v) => v > 0))
         this.report("Sesleri etkinleştirmek için Dinlemeyi aç düğmesine bas.");
       return;
     }

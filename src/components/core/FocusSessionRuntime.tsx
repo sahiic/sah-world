@@ -58,7 +58,7 @@ export default function FocusSessionRuntime() {
         });
         if (!session) return;
         ambientEngine.stop();
-        ambientEngine.chime(next.soundVolume);
+        ambientEngine.chime(next.soundMuted ? 0 : next.soundVolume);
         if (session.mode !== "focus") {
           next.skipToNext();
           if(next.autoStartFocus) next.startTimer();
@@ -113,10 +113,10 @@ export default function FocusSessionRuntime() {
 
   useEffect(() => {
     ambientEngine.sync(
-      state.isPaused ? {} : state.soundVolumes,
+      state.isPaused || state.soundMuted ? {} : state.soundVolumes,
       state.soundVolume,
     );
-  }, [state.soundVolumes, state.soundVolume, state.isPaused]);
+  }, [state.soundVolumes, state.soundVolume, state.isPaused, state.soundMuted]);
 
   if (!ready) return null;
   return (

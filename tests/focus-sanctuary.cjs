@@ -38,6 +38,39 @@ const {
 function reset() {
   store.setState(store.getInitialState(), true);
 }
+test("sound mixes replace atomically, sanitize inputs and mute without losing levels", async () => {
+  reset();
+  store.getState().setSoundMix({ rain: 0.4, wind: 0.2 });
+  let changes = 0;
+  const unsubscribe = store.subscribe(() => changes++);
+  store.getState().setSoundMix({ ocean: 2, birds: NaN, train: -1, unknown: 0.5 });
+  unsubscribe();
+  assert.equal(changes, 1);
+  assert.deepEqual(store.getState().soundVolumes, { ocean: 1 });
+  store.getState().setSoundMuted(true);
+  await store.persist.rehydrate();
+  assert.equal(store.getState().soundMuted, true);
+  assert.deepEqual(store.getState().soundVolumes, { ocean: 1 });
+  store.getState().setSoundMuted(false);
+  store.getState().setMasterVolume(NaN);
+  assert.equal(store.getState().soundVolume, 0.65);
+  store.getState().setSoundMix({});
+  assert.deepEqual(store.getState().soundVolumes, {});
+  assert.equal(store.getState().activeSound, null);
+});
+test("switching from a break to stopwatch creates a focus session, not an endless break", () => {
+  reset();
+  store.getState().skipToNext();
+  assert.equal(store.getState().mode, "shortBreak");
+  store.getState().setTimerKind("stopwatch");
+  assert.equal(store.getState().mode, "focus");
+  store.getState().startTimer();
+  store.getState().tick(store.getState().lastTickAt + 60000);
+  assert.equal(store.getState().timeLeft, 60);
+  const saved = store.getState().completeSession({ completed: false });
+  assert.equal(saved.mode, "focus");
+  assert.equal(saved.duration, 1);
+});
 test("quota failure retains latest snapshot for runtime reads and retries honestly", () => {
   const setItem = global.localStorage.setItem;
   global.localStorage.setItem = () => {
