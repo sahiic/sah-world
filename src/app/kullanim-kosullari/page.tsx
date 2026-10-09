@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Kullanım Koşulları",
+  description: "SAH World kullanım koşulları — platform kuralları ve sorumluluklar.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/kullanim-kosullari" },
+};
 
 export default function TermsPage() {
   return (

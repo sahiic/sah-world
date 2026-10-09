@@ -1,0 +1,20 @@
+{
+  "name": "SAH World",
+  "short_name": "SAH",
+  "description": "Odaklanma, günlük, Kur'an yolculuğu ve manevi farkındalık için güvenli kişisel alan.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#006950",
+  "orientation": "portrait-primary",
+  "lang": "tr",
+  "categories": ["education", "lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

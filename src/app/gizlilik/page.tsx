@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Gizlilik Politikası",
+  description: "SAH World gizlilik politikası — verilerinizin nasıl korunduğunu öğrenin.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/gizlilik" },
+};
 
 export default function PrivacyPage() {
   return (

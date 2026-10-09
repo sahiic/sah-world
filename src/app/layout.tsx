@@ -92,6 +92,20 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "SAH World",
+  url: siteUrl.href,
+  applicationCategory: "EducationalApplication",
+  operatingSystem: "Web",
+  inLanguage: "tr",
+  description:
+    "Odaklanma, günlük, Kur'an yolculuğu ve manevi farkındalık için güvenli, sakin ve kişisel gelişim alanı.",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "TRY" },
+  author: { "@type": "Organization", name: "SAH World" },
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -103,10 +117,13 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrains.variable} ${notoSerif.variable}`}
     >
       <head>
-        {/* Tabler Icons */}
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className="antialiased overflow-x-hidden">
