@@ -6,6 +6,7 @@
   .phase-two-shell .core-sidebar.collapsed{width:72px;padding:24px 12px 16px}
   .phase-two-shell .core-sidebar.collapsed .nav-label,.phase-two-shell .core-sidebar.collapsed .sidebar-brand>span:last-child,.phase-two-shell .core-sidebar.collapsed .sidebar-nav section>p,.phase-two-shell .core-sidebar.collapsed .sidebar-support>p,.phase-two-shell .core-sidebar.collapsed .sidebar-legal{display:none}
   .core-sidebar.collapsed .sidebar-brand{padding:0;justify-content:center}
+  .phase-two-shell .core-sidebar.collapsed .sidebar-legal{display:none!important}
   .core-sidebar.collapsed .sidebar-nav button,.core-sidebar.collapsed .sidebar-support button{width:48px;height:48px;min-height:48px;padding:12px;justify-content:center;position:relative}
   .core-sidebar.collapsed .sidebar-nav button .app-icon{flex-shrink:0}
   .core-sidebar.collapsed [data-tooltip]:is(:hover,:focus)::after{content:attr(data-tooltip);position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:12px;padding:8px 12px;border-radius:8px;background:var(--surface-raised);color:var(--ink-primary);font-family:var(--font-inter);font-size:var(--text-small);white-space:nowrap;box-shadow:var(--shadow-card);z-index:90;pointer-events:none}

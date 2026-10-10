@@ -6,6 +6,7 @@
 .qc-community-shortcuts{display:flex;gap:8px;flex-wrap:wrap}.qc-community-shortcuts a{padding:12px 16px;border:1px solid var(--qc-line);border-radius:12px;color:var(--qc-forest);text-decoration:none;min-height:48px;background:var(--qc-surface)}
 .qc-module-details{border:1px solid var(--qc-line);border-radius:16px;padding:20px;background:var(--qc-surface);color:var(--qc-forest)}.qc-module-details>summary{cursor:pointer;min-height:44px;align-content:center;font-weight:650}.qc-module-details[open]>summary{margin-bottom:20px}
 .qc-learning-stack .qc-study-overview{grid-column:1 / -1;align-self:start}
+.qc-ready .page-heading h1{color:var(--qc-forest)}
 .core-app .qc-reading-summary .qc-dashboard{gap:16px}.core-app .qc-reading-summary .qc-hero{padding:24px;display:block}
 .qc-reading-summary .qc-today-plan,.qc-reading-summary .qc-social-block,.qc-reading-summary .qc-mini-grid,.qc-reading-summary .qc-hero-actions,.qc-reading-summary .qc-freeze{display:none}
 .core-app .qc-reading-summary .qc-hero h1{font-size:var(--text-h2)}.core-app .qc-reading-summary .qc-progress-preview{padding:20px}

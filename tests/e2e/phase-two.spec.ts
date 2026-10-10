@@ -38,6 +38,7 @@ test('three quick actions and persistent accessible icon rail', async ({ page },
   await expect(sidebar).toHaveCSS('width','260px');
   await page.getByRole('button',{name:'Menüyü daralt',exact:true}).click();
   await expect(sidebar).toHaveCSS('width','72px');
+  await expect(sidebar.locator('.sidebar-legal')).toBeHidden();
   const journal = sidebar.getByRole('button',{name:'Günlük',exact:true});
   await journal.focus();
   expect(await journal.evaluate(el => getComputedStyle(el,'::after').content)).toContain('Günlük');
@@ -45,6 +46,7 @@ test('three quick actions and persistent accessible icon rail', async ({ page },
   await expect(page.locator('.journal-notebook')).toBeVisible();
   await page.reload(); await page.getByRole('button',{name:'DEV: Misafir görünümü'}).click();
   await expect(sidebar).toHaveCSS('width','72px');
+  await expect(page.locator('.journal-notebook')).toBeVisible();
   await page.screenshot({path:info.outputPath('sidebar-collapsed.png')});
   await page.setViewportSize({width:375,height:812});
   await expect(sidebar).toBeHidden();
@@ -66,6 +68,7 @@ test('Quran has three areas, legacy destinations and responsive dark/light layou
     await page.setViewportSize({width,height:900});
     for(const theme of ['light','dark']) {
       await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+      if (theme === 'dark') await expect(page.locator('.qc-ready .page-heading h1')).toHaveCSS('color','rgb(226, 237, 230)');
       expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await page.screenshot({path:info.outputPath('quran-'+width+'-'+theme+'.png')});
     }
