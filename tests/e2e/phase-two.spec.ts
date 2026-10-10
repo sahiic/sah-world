@@ -68,7 +68,7 @@ test('Quran has three areas, legacy destinations and responsive dark/light layou
     await page.setViewportSize({width,height:900});
     for(const theme of ['light','dark']) {
       await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
-      if (theme === 'dark') await expect(page.locator('.qc-ready .page-heading h1')).toHaveCSS('color','rgb(226, 237, 230)');
+      if (theme === 'dark') await expect(page.getByRole('heading',{name:'Oku, çalış, birlikte ilerle.',exact:true})).toHaveCSS('color','rgb(226, 237, 230)');
       expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await page.screenshot({path:info.outputPath('quran-'+width+'-'+theme+'.png')});
     }
