@@ -1,6 +1,20 @@
 import { CATEGORY_META, dayKey, type ActivityEvent } from '@/lib/activity'
 import type { JournalEntry } from '@/types'
 
+/** Compare local-day windows, excluding future and invalid events. */
+export function buildComparativeInsight(thisWeekEvents: ActivityEvent[], allEvents: ActivityEvent[], now = new Date()): string {
+  const currentStart = new Date(now); currentStart.setHours(0, 0, 0, 0); currentStart.setDate(currentStart.getDate() - 6);
+  const previousStart = new Date(currentStart); previousStart.setDate(previousStart.getDate() - 7);
+  const current = thisWeekEvents.filter(event => { const date = new Date(event.createdAt); return date >= currentStart && date <= now; }).length;
+  const previous = allEvents.filter(event => { const date = new Date(event.createdAt); return date >= previousStart && date < currentStart; }).length;
+  if (!previous && !current) return 'Bu hafta henüz bir adım bırakmadın. Tek bir küçük kayıtla başlayabilirsin.';
+  if (!previous) return `Bu hafta ${current} adım bıraktın — yolculuğun başlıyor!`;
+  const change = Math.round((current - previous) / previous * 100);
+  if (change > 0) return `Bu hafta geçen haftadan %${change} daha aktifsin. ${current} küçük adım biriktirdin.`;
+  if (change < 0) return 'Geçen haftaya kıyasla biraz daha sakinsin — ama her geri dönüş yeni bir başlangıç.';
+  return `Geçen haftayla aynı ritimdesin — ${current} adım. İstikrar güçlü bir erdem.`;
+}
+
 const DAY_NAMES=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi']
 
 /** A practical invitation, not a clinical interpretation or a mandatory routine. */

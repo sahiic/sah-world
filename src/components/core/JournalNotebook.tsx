@@ -6,6 +6,7 @@ import { useActivityLog } from '@/hooks/useActivityLog';
 import { useJournalGratitude } from '@/hooks/useJournalGratitude';
 import { buildActivityFeed, dayKey } from '@/lib/activity';
 import { recordXpEvent } from '@/lib/xp';
+import { FIRST_INTENTION_EVENT } from '@/lib/onboarding';
 import { ensureUUID, useJourneyStore } from '@/store/useJourneyStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { DebouncedDrafts } from '@/lib/debouncedDrafts';
@@ -202,6 +203,7 @@ export default function JournalNotebook({ onNavigate, entries, requestedDate, re
       }
     }
     current.checkBadges(); setNotice(status === 'local' ? 'Kayıt bu cihazda saklandı. Bulut kaydı için giriş yap.' : 'Kayıt gönderime alındı; durumunu aşağıdan takip edebilirsin.');
+    window.dispatchEvent(new CustomEvent(FIRST_INTENTION_EVENT, { detail: { owner, id } }));
   };
   const updateList = (key: 'moments' | 'gratitude', index: number, value: string) => setDraft(current => ({ ...current, [key]: current[key].map((item, i) => i === index ? value : item) }));
   const goToday = () => { cache.flush(); setSelectedDate(today); setRitual(initialRitual()); onToday?.(); };

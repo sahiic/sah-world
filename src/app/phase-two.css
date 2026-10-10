@@ -1,0 +1,18 @@
+/* Match the existing shell's 900px mobile breakpoint; mobile navigation is untouched. */
+@media(min-width:901px){
+  .core-app.phase-two-shell:not(.focus-mode){grid-template-columns:260px minmax(0,1fr);transition:grid-template-columns .25s cubic-bezier(.16,1,.3,1)}
+  .core-app.phase-two-shell.sidebar-collapsed:not(.focus-mode){grid-template-columns:72px minmax(0,1fr)}
+  .phase-two-shell .core-sidebar{width:260px;transition:width .25s cubic-bezier(.16,1,.3,1);overflow:visible;height:auto;min-height:100vh;align-self:start}
+  .phase-two-shell .core-sidebar.collapsed{width:72px;padding:24px 12px 16px}
+  .phase-two-shell .core-sidebar.collapsed .nav-label,.phase-two-shell .core-sidebar.collapsed .sidebar-brand>span:last-child,.phase-two-shell .core-sidebar.collapsed .sidebar-nav section>p,.phase-two-shell .core-sidebar.collapsed .sidebar-support>p,.phase-two-shell .core-sidebar.collapsed .sidebar-legal{display:none}
+  .core-sidebar.collapsed .sidebar-brand{padding:0;justify-content:center}
+  .core-sidebar.collapsed .sidebar-nav button,.core-sidebar.collapsed .sidebar-support button{width:48px;height:48px;min-height:48px;padding:12px;justify-content:center;position:relative}
+  .core-sidebar.collapsed .sidebar-nav button .app-icon{flex-shrink:0}
+  .core-sidebar.collapsed [data-tooltip]:is(:hover,:focus)::after{content:attr(data-tooltip);position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:12px;padding:8px 12px;border-radius:8px;background:var(--surface-raised);color:var(--ink-primary);font-family:var(--font-inter);font-size:var(--text-small);white-space:nowrap;box-shadow:var(--shadow-card);z-index:90;pointer-events:none}
+  .core-sidebar.collapsed .sidebar-badge{position:absolute;right:0;top:0;min-width:16px;height:16px;padding:0 3px;font-size:9px}
+  .core-sidebar .sidebar-collapse-toggle{margin-top:16px;min-height:48px}
+}
+.core-app .quick-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+.core-app .quick-actions button:first-child{grid-column:auto}
+@media(max-width:620px){.core-app .quick-actions{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.core-app.phase-two-shell,.phase-two-shell .core-sidebar{transition:none}}

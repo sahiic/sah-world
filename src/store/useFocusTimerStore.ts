@@ -72,7 +72,7 @@ const initialState = {
   startedAt: null,
   sessionStartedAt: null,
   pausedElapsedSeconds: 0,
-  plannedDurationSeconds: 50 * 60,
+  plannedDurationSeconds: 25 * 60,
   timerType: 'countdown' as FocusTimerType,
   taskLabel: '',
   intentionText: '',

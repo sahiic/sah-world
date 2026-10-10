@@ -11,7 +11,7 @@ import { buildActivityFeed, CATEGORY_META, dayKey, getCategoryCounts, mapIntegra
 import { getLevelForXP } from '@/lib/constants'
 import { useActivityLog } from '@/hooks/useActivityLog'
 
-const quickActions = [
+const suggestedActions = [
   { id: 'focus', icon: 'target-arrow', title: 'Odaklan', note: 'Kesintisiz bir çalışma alanı aç' },
   { id: 'daily-wheel', icon: 'refresh', title: 'Bugünün çarkı', note: 'Ayet veya hadis hatırlatması seç' },
   { id: 'journal', icon: 'pencil', title: 'Günlük yaz', note: 'Bugünü birkaç cümleyle kaydet' },
@@ -19,6 +19,8 @@ const quickActions = [
   { id: 'matrix', icon: 'layout-grid', title: 'Görev ekle', note: 'Bir sonraki önceliğini seç' },
   { id: 'mescidim', icon: 'building-mosque', title: 'Mescidim', note: 'Kısa bir farkındalık molası' },
 ]
+
+const quickActions = suggestedActions.filter(action => ['focus', 'journal', 'mescidim'].includes(action.id))
 
 export default function DashboardView({ onNavigate }: { onNavigate: (view: string, cue?: GrowthNavigationCue) => void }) {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -44,10 +46,10 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   const hour = new Date().getHours()
   const streakAtRisk = hour >= 20 && !hasActivityToday && store.streak.lastDate !== todayKey
   const personalizedActions = useMemo(() => {
-    const usage: Record<string, number> = { focus: counts.focus, journal: counts.journal, quran: counts.quran, hadis: counts.hadis, sukur: counts.sukur, matrix: counts.matrix, mescidim: counts.mescidim }
-    return quickActions.filter((action) => !['daily-wheel', 'focus'].includes(action.id)).sort((a, b) => (usage[b.id] ?? 0) - (usage[a.id] ?? 0)).slice(0, 2)
+    const usage: Record<string, number> = { focus: counts.focus, journal: counts.journal, 'daily-wheel': counts.quran + counts.hadis, sukur: counts.sukur, matrix: counts.matrix, mescidim: counts.mescidim }
+    return suggestedActions.filter((action) => action.id !== 'focus').sort((a, b) => (usage[b.id] ?? 0) - (usage[a.id] ?? 0)).slice(0, 2)
   }, [counts.focus, counts.hadis, counts.journal, counts.matrix, counts.mescidim, counts.quran, counts.sukur])
-  const suggested = personalizedActions[0] ?? quickActions[2]
+  const suggested = personalizedActions[0] ?? quickActions[1]
   const intentionMessage = hour < 12 ? 'Güne sakin bir notla başlamak ister misin?' : hour < 18 ? 'Bugünden sende kalanları iki dakikada kaydedebilirsin.' : 'Günü kapatmadan önce kendine kısa bir alan aç.'
 
   useEffect(() => {

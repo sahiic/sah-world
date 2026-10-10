@@ -53,6 +53,10 @@ export default function FocusTimer({
   const isPaused = useFocusStore((state) => state.isPaused);
   const backgroundId = useFocusStore((state) => state.backgroundId);
   const setNiyet = useFocusStore((state) => state.setNiyet);
+  const returning = useFocusStore(state => state.sessions.length > 0 || state.recentNiyets.length > 0
+    || state.focusDuration !== 25 || state.timerKind !== 'pomodoro' || state.backgroundId !== 'kaaba-night'
+    || Object.values(state.soundVolumes).some(volume => volume > 0));
+  const showSetup = Boolean(returning || sessionStartTime || currentNiyet);
 
   const radius = 150;
   const circumference = 2 * Math.PI * radius;
@@ -98,7 +102,7 @@ export default function FocusTimer({
         </span>
       </div>
 
-      <div className="focus-task-slot">
+      {showSetup && <div className="focus-task-slot">
         {currentNiyet ? (
           <span className="focus-task-chip">
             <i aria-hidden />
@@ -128,9 +132,9 @@ export default function FocusTimer({
             <button type="submit">Ekle</button>
           </form>
         )}
-      </div>
+      </div>}
 
-      {!sessionStartTime && <FocusPresets
+      {showSetup && !sessionStartTime && <FocusPresets
         minutes={timerKind === "pomodoro" && mode === "focus" ? totalTime / 60 : null}
         disabled={Boolean(sessionStartTime)}
         onSelect={(minutes) => {
@@ -176,9 +180,9 @@ export default function FocusTimer({
         </div>
       </div>
 
-      <TimerControls onStart={onStart} />
+      <TimerControls onStart={onStart} simple={!showSetup} />
 
-      <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
+      {showSetup && <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
         <button onClick={onOpenTimerSettings}>
           <span>
             <Hourglass aria-hidden />
@@ -200,8 +204,8 @@ export default function FocusTimer({
           <strong>Arka Plan</strong>
           <small>{activeBackground.label}</small>
         </button>
-      </nav>
-      <p className={styles.sessionHint}>{isPaused ? "Süren korundu. Hazır olduğunda kaldığın yerden devam et." : sessionStartTime ? "Geri dön; oturumun ana sayfadaki küçük sayaçta devam eder." : "Niyetini yaz. Süreni seç. Kendine bir alan aç."}</p>
+      </nav>}
+      <p className={styles.sessionHint}>{isPaused ? "Süren korundu. Hazır olduğunda kaldığın yerden devam et." : sessionStartTime ? "Geri dön; oturumun ana sayfadaki küçük sayaçta devam eder." : showSetup ? "Son tercihlerin hazır. Kendine bir alan aç." : "25 dakika, sessiz bir başlangıç. Diğer seçenekler başladığında yanında."}</p>
     </section>
   );
 }
