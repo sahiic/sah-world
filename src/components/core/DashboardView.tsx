@@ -12,12 +12,12 @@ import { getLevelForXP } from '@/lib/constants'
 import { useActivityLog } from '@/hooks/useActivityLog'
 
 const suggestedActions = [
-  { id: 'focus', icon: 'target-arrow', title: 'Odaklan', note: 'Kesintisiz bir çalışma alanı aç' },
+  { id: 'focus', icon: 'target-arrow', title: 'Odaklan', note: 'Kesintisiz bir çalışma seansı başlat' },
   { id: 'daily-wheel', icon: 'refresh', title: 'Bugünün çarkı', note: 'Ayet veya hadis hatırlatması seç' },
   { id: 'journal', icon: 'pencil', title: 'Günlük yaz', note: 'Bugünü birkaç cümleyle kaydet' },
   { id: 'sukur', icon: 'sparkles', title: 'Şükür ekle', note: 'Fark ettiğin bir nimeti yaz' },
   { id: 'matrix', icon: 'layout-grid', title: 'Görev ekle', note: 'Bir sonraki önceliğini seç' },
-  { id: 'mescidim', icon: 'building-mosque', title: 'Mescidim', note: 'Kısa bir farkındalık molası' },
+  { id: 'mescidim', icon: 'building-mosque', title: 'Mescidim', note: 'Vakit ve zikir alanına git' },
 ]
 
 const quickActions = suggestedActions.filter(action => ['focus', 'journal', 'mescidim'].includes(action.id))
@@ -39,6 +39,10 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   const activeDays = new Set(events.filter((event) => new Date(event.createdAt) >= weekStart).map((event) => dayKey(event.createdAt))).size
   const weekEvents = events.filter((event) => new Date(event.createdAt) >= weekStart)
   const weeklyCategory = (Object.entries(weekEvents.reduce<Record<string, number>>((result, event) => ({ ...result, [event.category]: (result[event.category] ?? 0) + 1 }), {})).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'journal') as ActivityCategory
+  const prevWeekStart = new Date(weekStart)
+  prevWeekStart.setDate(prevWeekStart.getDate() - 7)
+  const prevWeekCount = events.filter((e) => { const d = new Date(e.createdAt); return d >= prevWeekStart && d < weekStart }).length
+  const weekChange = prevWeekCount > 0 ? Math.round(((weekEvents.length - prevWeekCount) / prevWeekCount) * 100) : null
   const firstName = profile?.display_name?.trim().split(/\s+/)[0] || 'Yolcu'
   const today = new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())
   const todayKey = dayKey(new Date())
@@ -167,8 +171,8 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
         <section className="surface-card insight-card">
           <div className="insight-visual" aria-hidden><span><AppIcon name="leaf" /></span><i /><i /><i /></div>
           <span className="eyebrow">HAFTALIK İÇGÖRÜ</span>
-          <h2>{activeDays > 0 ? `Bu hafta en çok ${CATEGORY_META[weeklyCategory].label} alanına döndün.` : 'Bu haftanın ilk adımı seni bekliyor.'}</h2>
-          <p>{activeDays > 0 ? `${weekEvents.length} küçük hareket, ${activeDays} farklı güne yayıldı. Ritminin hangi alanlarda güçlendiğini raporlarında görebilirsin.` : 'Uzun bir başlangıca ihtiyacın yok. Tek bir şükür veya günlük notuyla başlayabilirsin.'}</p>
+          <h2>{activeDays > 0 ? (weekChange !== null && weekChange > 0 ? `Bu hafta geçen haftadan %${weekChange} daha aktifsin.` : weekChange !== null && weekChange < 0 ? `Geçen haftaya kıyasla biraz daha sakinsin — ama her geri dönüş yeni bir başlangıç.` : `Bu hafta en çok ${CATEGORY_META[weeklyCategory].label} alanına döndün.`) : 'Bu haftanın ilk adımı seni bekliyor.'}</h2>
+          <p>{activeDays > 0 ? `${weekEvents.length} küçük hareket, ${activeDays} farklı güne yayıldı.${weekChange !== null ? ` Geçen hafta ${prevWeekCount} adımdı.` : ''} Ritmini raporlarında görebilirsin.` : 'Uzun bir başlangıca ihtiyacın yok. Tek bir şükür veya günlük notuyla başlayabilirsin.'}</p>
           <button className="ghost-button" onClick={() => onNavigate('reports')}>Haftayı incele <AppIcon name="chart-line" /></button>
           <p className="ethics-note"><AppIcon name="info-circle" /> XH, yalnızca uygulamadaki düzenli katılımı gösterir; manevi değer veya üstünlük ölçüsü değildir.</p>
         </section>

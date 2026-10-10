@@ -522,6 +522,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .sidebar-nav button.active{background:#eef0ff;color:var(--core-brand);box-shadow:inset 3px 0 var(--core-brand)}
 .sidebar-nav button .app-icon,.sidebar-support button .app-icon{width:22px;color:#8792a7}.sidebar-nav button.active .app-icon{color:var(--core-brand)}
 .sidebar-badge{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:#009B77;color:#fff;font-size:10px;font-weight:800;font-style:normal;line-height:1}
+.sidebar-collapse-toggle{width:100%;min-height:36px;margin-top:12px;border:0;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--core-muted);background:transparent;font-size:11px;font-weight:600;cursor:pointer;transition:background .18s,color .18s}
+.sidebar-collapse-toggle:hover{color:var(--core-ink);background:rgba(0,0,0,.04)}
 .sidebar-support{margin-top:auto;padding-top:20px;border-top:1px solid var(--core-line)}.sidebar-support button{width:100%}.sidebar-support p{margin:12px;padding:12px;border-radius:12px;background:#f8f9fc;color:#7a879c;font-size:9px;line-height:1.55}.sidebar-support p .app-icon{margin-right:5px;font-size:13px;color:#4f46e5}
 .app-workspace{min-width:0}.app-header{position:sticky;top:0;z-index:70;height:72px;padding:0 32px;display:flex;align-items:center;justify-content:space-between;background:rgba(246,247,251,.86);backdrop-filter:blur(22px);box-shadow:0 1px 0 rgba(72,86,119,.1)}
 .route-context{display:flex;flex-direction:column}.route-context>span{font-size:9px;color:#929daf;text-transform:uppercase;letter-spacing:.12em;font-weight:750}.route-context>strong{font-size:15px;color:var(--core-ink)}
@@ -1154,6 +1156,7 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .sidebar-support p{color:#aebfb7;background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
 .sidebar-support p .app-icon{color:var(--sah-gold)}
 .sidebar-legal a,.sidebar-legal span{color:#7f968c!important}
+.sidebar-collapse-toggle{color:#91aaa0}.sidebar-collapse-toggle:hover{color:#fff;background:rgba(255,255,255,.07)}
 
 .app-header{height:76px;padding:0 28px;gap:24px;background:rgba(251,249,246,.9);border-color:rgba(0,105,80,.1);box-shadow:0 4px 20px rgba(0,35,102,.03);backdrop-filter:blur(20px)}
 .header-search-area{min-width:0;flex:1;display:flex;align-items:center;gap:22px}

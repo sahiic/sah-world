@@ -118,7 +118,7 @@ export default function SahApp({
   const [moreOpen, setMoreOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   useEffect(() => {
-    try { const collapsed = localStorage.getItem('sah:sidebar-collapsed') === 'true'; queueMicrotask(() => setSidebarCollapsed(collapsed)); } catch { /* optional device preference */ }
+    try { const collapsed = ['true', '1'].includes(localStorage.getItem('sah:sidebar-collapsed') ?? ''); queueMicrotask(() => setSidebarCollapsed(collapsed)); } catch { /* optional device preference */ }
   }, []);
   const toggleSidebar = () => {
     const next = !sidebarCollapsed;
@@ -432,7 +432,7 @@ export default function SahApp({
             <a href="/kullanim-kosullari">Koşullar</a>
           </div>
           <button className="sidebar-collapse-toggle" onClick={toggleSidebar} aria-expanded={!sidebarCollapsed} aria-label={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} data-tooltip={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}>
-            <AppIcon name="layout-sidebar-right" /><span className="nav-label">Menüyü daralt</span>
+            <AppIcon name={sidebarCollapsed ? "layout-sidebar-right" : "layout-sidebar-left-collapse"} /><span className="nav-label">Menüyü daralt</span>
           </button>
         </div>
       </aside>
