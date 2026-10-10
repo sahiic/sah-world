@@ -1,5 +1,16 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// Existing settings/mixer regression cases represent returning users.
+// A separate phase-two suite covers the genuinely fresh one-button entry.
+test.beforeEach(async ({ page }, testInfo) => {
+  // This case supplies its own nearly-complete session and must seed it first.
+  if (testInfo.title.startsWith("large chart stays")) return;
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("sah-focus-sanctuary-v1"))
+      localStorage.setItem("sah-focus-sanctuary-v1", JSON.stringify({ version: 1, state: { recentNiyets: ["Önceki çalışma"] } }));
+  });
+});
+
 test('quota failure does not rewind a running clock and recovers after storage works',async({page})=>{
   await page.addInitScript(()=>{
     const original=Storage.prototype.setItem;
