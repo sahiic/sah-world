@@ -69,6 +69,8 @@ export default function FocusTimerView({
   const circleRadius = 154;
   const circumference = 2 * Math.PI * circleRadius;
   const activeBackground = getFocusBackground(timer.backgroundId);
+  const showSetup = Boolean(timer.isActive || timer.completedSession || timer.taskLabel || journey.focusSessions.length
+    || timer.plannedDurationSeconds !== 25 * 60 || timer.timerType !== 'countdown' || timer.sound !== 'none' || timer.backgroundId !== 'kaaba-night');
 
   useEffect(() => {
     timer.setFullscreen(true);
@@ -124,7 +126,7 @@ export default function FocusTimerView({
   };
 
   const start = async () => {
-    if (!timer.taskLabel.trim()) return;
+    if (!timer.taskLabel.trim()) timer.setTaskLabel(taskDraft.trim() || 'Odak oturumu');
     lastBeepSecondRef.current = null;
     timer.start();
     await requestNotifications();
@@ -320,7 +322,7 @@ export default function FocusTimerView({
                     </button>
                   </aside>
                 )}
-              <div className="focus-task-slot">
+              {showSetup && <div className="focus-task-slot">
                 {timer.taskLabel ? (
                   <span className="focus-task-chip">
                     <i />
@@ -355,7 +357,7 @@ export default function FocusTimerView({
                     <button type="submit">Ekle</button>
                   </form>
                 )}
-              </div>
+              </div>}
               {timer.taskLabel && !timer.isActive && (
                 <details className="focus-intention">
                   <summary><AppIcon name="flag" /> Oturum niyeti · isteğe bağlı</summary>
@@ -371,11 +373,11 @@ export default function FocusTimerView({
                   />
                 </details>
               )}
-              <FocusPresets
+              {showSetup && <FocusPresets
                 minutes={timer.timerType === "countdown" ? timer.plannedDurationSeconds / 60 : null}
                 disabled={timer.isActive}
                 onSelect={(minutes) => timer.configure({ timerType: "countdown", plannedDurationSeconds: minutes * 60 })}
-              />
+              />}
               <div
                 className="focus-dial"
                 aria-label={
@@ -427,9 +429,8 @@ export default function FocusTimerView({
                   <button
                     className="focus-start-button"
                     onClick={() => void start()}
-                    disabled={!timer.taskLabel}
                   >
-                    <AppIcon name="player-play-filled" /> Odaklanmaya Başlayın
+                    <AppIcon name="player-play-filled" /> Başla
                   </button>
                 )}
                 {phase === "running" && (
@@ -455,12 +456,9 @@ export default function FocusTimerView({
                     <AppIcon name="player-stop-filled" /> Oturumu bitir
                   </button>
                 )}
-                {!timer.taskLabel && phase === "idle" && (
-                  <small>Başlamak için önce odaklanacağın şeyi yaz.</small>
-                )}
               </div>
 
-              <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
+              {showSetup && <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
                 <button onClick={openTimerModal} disabled={timer.isActive}>
                   <span>
                     <AppIcon name="hourglass" />
@@ -489,7 +487,7 @@ export default function FocusTimerView({
                   <strong>Tam Ekran</strong>
                   <small>Dikkat dağıtanları gizle</small>
                 </button>
-              </nav>
+              </nav>}
               <FocusScenePicker compact backgroundId={timer.backgroundId} onSelect={timer.setBackgroundId} />
             </section>
             <p className="focus-privacy">

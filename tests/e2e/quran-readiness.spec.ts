@@ -31,12 +31,12 @@ test("fresh guest has zero progress and no fabricated appointments or achievemen
   });
   await page
     .locator(".quran-companion-tabs")
-    .getByRole("tab", { name: "Randevularım", exact: true })
+    .getByRole("tab", { name: "TOPLULUK", exact: true })
     .click();
   await expect(page.getByText("Yaklaşan randevun yok")).toBeVisible();
   await page
     .locator(".quran-companion-tabs")
-    .getByRole("tab", { name: "Başarımlarım", exact: true })
+    .getByRole("tab", { name: "ÇALIŞ", exact: true })
     .click();
   await expect(page.locator(".qc-badge-grid article.earned")).toHaveCount(0);
 });
@@ -90,7 +90,7 @@ test("completion, tajweed, meaning and letters each provide 8 explained answers 
   }
   await page
     .locator(".quran-companion-tabs")
-    .getByRole("tab", { name: "Başarımlarım", exact: true })
+    .getByRole("tab", { name: "ÇALIŞ", exact: true })
     .click();
   await expect(
     page.locator(".qc-badge-grid article.earned").first(),

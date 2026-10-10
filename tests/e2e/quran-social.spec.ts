@@ -40,7 +40,7 @@ async function login(page: Page, id = student, tab = "peers") {
     },
   ]);
   await page.goto(`/?view=quran-companion&tab=${tab}`);
-  await expect(page.locator(".quran-companion-tabs")).toBeVisible();
+  await expect(page.locator(".qc-community-shortcuts")).toBeVisible();
 }
 test.beforeEach(async ({ request }) => {
   await request.get(fixtureURL + "/reset");
@@ -184,8 +184,8 @@ test("peer request uses a bounded modal, updates timeline and badges without pro
   await login(page);
   await expect(
     page
-      .locator(".quran-companion-tabs")
-      .getByRole("tab", { name: /Kur'an Kardeşi/ })
+      .locator(".qc-community-shortcuts")
+      .getByRole("link", { name: /Kur’an Kardeşi/ })
       .locator(".qc-nav-badge"),
   ).toHaveText("2");
   const helper = page
@@ -219,8 +219,8 @@ test("lesson threads are isolated, read receipts update badges, archive is expli
   await expect(chat.getByText("İkinci dersin özel mesajı")).not.toBeVisible();
   await expect(
     page
-      .locator(".quran-companion-tabs")
-      .getByRole("tab", { name: /Randevularım/ })
+      .locator(".qc-community-shortcuts")
+      .getByRole("link", { name: /Randevularım/ })
       .locator(".qc-nav-badge"),
   ).toHaveText("1");
   await chat.getByPlaceholder("Mesajını yaz…").fill("FAIL TEST");

@@ -4,7 +4,7 @@ test("Quran pilot demo supports appointment chat and a completed lesson reflecti
   await page.goto("/?view=quran-companion&tab=appointments&pilot=demo");
   await page.getByRole("button", { name: "DEV: Misafir görünümü" }).click();
 
-  await expect(page.getByRole("heading", { name: "İmam Hatip Ramazan Hoca" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Randevularım", exact: true }).getByRole("heading", { name: "İmam Hatip Ramazan Hoca" })).toBeVisible();
   await page.getByRole("button", { name: "Mesajlaş" }).click();
   await expect(page.getByRole("dialog", { name: /randevu mesajlaşması/ })).toBeVisible();
   await page.getByPlaceholder("Mesajını yaz…").fill("Fâtiha suresinin mahreçlerini çalışmak istiyorum.");

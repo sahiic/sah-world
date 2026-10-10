@@ -21,7 +21,7 @@ import {
 import type { FocusSession } from "@/types";
 import { useActivityLog } from "@/hooks/useActivityLog";
 import { supabase } from "@/lib/supabase";
-import { buildWeeklyInsights, getWeeklyNextStep } from "@/lib/weeklyInsights";
+import { buildComparativeInsight, buildWeeklyInsights, getWeeklyNextStep } from "@/lib/weeklyInsights";
 import { openAppView } from "@/lib/appLocation";
 import { getFocusHistoryStats } from "@/lib/focusInsights";
 import SectionTagline from "./SectionTagline";
@@ -66,6 +66,7 @@ export default function ReportsView() {
   const now = useMemo(() => new Date(), []);
   const today = dayKey(now);
   const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
   weekStart.setDate(now.getDate() - 6);
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const weekCount = events.filter(
@@ -164,7 +165,8 @@ export default function ReportsView() {
           <span className="eyebrow">BU HAFTANIN ÖZETİ</span>
           <h2>Verilerin bu haftanın hikâyesini anlatıyor.</h2>
           <ul>
-            {(weeklyInsights.length ? weeklyInsights : localWeeklyInsights).map(
+            <li className="report-comparative-insight">{buildComparativeInsight(events, events, now)}</li>
+            {(weeklyInsights.length ? weeklyInsights : localWeeklyInsights).filter(text => !text.startsWith('Bu hafta en çok')).map(
               (text, index) => (
                 <li key={index}>{text}</li>
               ),

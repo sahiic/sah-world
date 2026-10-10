@@ -51,8 +51,7 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
 
   const requestStart = useCallback(() => {
     if (!currentNiyet && mode === "focus") {
-      if (!taskDraft.trim()) { setShowNiyet(true); return; }
-      useFocusStore.getState().setNiyet(taskDraft);
+      useFocusStore.getState().setNiyet(taskDraft.trim() || "Odak oturumu");
       setTaskDraft("");
     }
     void start();

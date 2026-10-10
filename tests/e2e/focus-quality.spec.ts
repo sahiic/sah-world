@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+// Existing settings/mixer regression cases represent returning users.
+// A separate phase-two suite covers the genuinely fresh one-button entry.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("sah-focus-sanctuary-v1"))
+      localStorage.setItem("sah-focus-sanctuary-v1", JSON.stringify({ version: 1, state: { recentNiyets: ["Önceki çalışma"] } }));
+  });
+});
+
 test("session and sound library remain readable on compact screens", async ({ page }, testInfo) => {
   await page.setViewportSize(testInfo.project.name === "mobile" ? { width: 390, height: 700 } : { width: 1280, height: 720 });
   await page.goto("/focus");

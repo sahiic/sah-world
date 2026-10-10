@@ -8,8 +8,10 @@ import styles from "../focus.module.css";
 
 export default function TimerControls({
   onStart,
+  simple = false,
 }: {
   onStart: () => void;
+  simple?: boolean;
 }) {
   const isRunning = useFocusStore((state) => state.isRunning);
   const isPaused = useFocusStore((state) => state.isPaused);
@@ -36,14 +38,14 @@ export default function TimerControls({
         {isRunning ? <Pause aria-hidden /> : <Play aria-hidden />}
         <span>{isRunning ? "Duraklat" : isPaused ? "Devam Et" : "Başla"}</span>
       </button>
-      <button
+      {!simple && <button
         className={`focus-secondary-btn ${styles.roundControl}`}
         onClick={() => { if (!sessionStartTime || window.confirm("Süreyi kaydetmeden bu oturumu sıfırlamak istiyor musun?")) reset(); }}
         aria-label="Zamanlayıcıyı sıfırla"
         title="Sıfırla (R)"
       >
         <RotateCcw aria-hidden />
-      </button>
+      </button>}
       {sessionStartTime ? (
         <button
           className={`focus-secondary-btn ${styles.roundControl} ${styles.dangerControl}`}
@@ -53,7 +55,7 @@ export default function TimerControls({
         >
           <Square aria-hidden />
         </button>
-      ) : timerKind === "pomodoro" ? (
+      ) : !simple && timerKind === "pomodoro" ? (
         <button
           className={`focus-secondary-btn ${styles.roundControl}`}
           onClick={skip}

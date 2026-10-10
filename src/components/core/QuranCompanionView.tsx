@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { QURAN_TABS, openAppView, selectedValue } from "@/lib/appLocation";
+import { QURAN_TABS, LEGACY_QURAN_TABS, readQuranTab, openAppView, selectedValue, type QuranTab } from "@/lib/appLocation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppIcon } from "@/components/ui/AppIcon";
@@ -64,7 +64,7 @@ import DailyWisdomWheel, { type WisdomEntry } from "./DailyWisdomWheel";
 import AppointmentChat from "./AppointmentChat";
 import AppointmentReview from "./AppointmentReview";
 
-type CompanionTab =
+type CompanionTab = QuranTab
   | "home"
   | "progress"
   | "exercises"
@@ -245,8 +245,8 @@ export default function QuranCompanionView({
   const searchParams = useSearchParams();
   const requestedTab = selectedValue(
     searchParams.get("tab"),
-    QURAN_TABS,
-    "home",
+    [...QURAN_TABS, ...LEGACY_QURAN_TABS],
+    "oku",
   );
   const pilotDemo = searchParams.get("pilot") === "demo";
   const tab =
@@ -255,6 +255,7 @@ export default function QuranCompanionView({
     profile?.role !== "admin"
       ? "home"
       : requestedTab;
+  const mainTab = readQuranTab(tab);
   const setTab = (next: CompanionTab) => openAppView("quran-companion", next);
   const reducedMotion = useReducedMotion();
   const [teachers, setTeachers] = useState<HocaProfileRow[]>([]);
@@ -912,37 +913,11 @@ export default function QuranCompanionView({
     (item) => item.nextReviewDate <= quranToday(),
   );
 
-  const navItems: Array<{
-    id: CompanionTab;
-    label: string;
-    icon: string;
-    badge?: number;
-  }> = [
-    { id: "home", label: "Ana Sayfa", icon: "home-heart" },
-    { id: "progress", label: "İlerleme Haritası", icon: "map-2" },
-    { id: "exercises", label: "Alıştırmalar", icon: "brain" },
-    { id: "teachers", label: "Hocalar", icon: "calendar-user" },
-    {
-      id: "appointments",
-      label: "Randevularım",
-      icon: "calendar-check",
-      badge: unreadCounts.appointments || undefined,
-    },
-    {
-      id: "peers",
-      label: "Kur'an Kardeşi",
-      icon: "heart-handshake",
-      badge:
-        unreadCounts.peers +
-          matches.filter(
-            (m) => m.direction === "received" && m.status === "pending",
-          ).length || undefined,
-    },
-    { id: "study", label: "Çalışma Alanım", icon: "notebook" },
-    { id: "achievements", label: "Başarımlarım", icon: "award" },
-    ...(isHoca || isAdmin
-      ? [{ id: "manage" as const, label: "Hoca yönetimi", icon: "settings" }]
-      : []),
+  const navItems: Array<{ id: QuranTab; label: string; icon: string; badge?: number }> = [
+    { id: "oku", label: "OKU", icon: "book-2" },
+    { id: "calis", label: "ÇALIŞ", icon: "brain" },
+    { id: "topluluk", label: "TOPLULUK", icon: "heart-handshake",
+      badge: unreadCounts.appointments + unreadCounts.peers + matches.filter(m => m.direction === "received" && m.status === "pending").length },
   ];
 
   return (
@@ -956,47 +931,48 @@ export default function QuranCompanionView({
         </div>
       )}
 
-      {tab !== "home" && (
-        <header className="page-heading">
-          <div>
-            <span className="eyebrow">KUR’AN-I KERİM KARDEŞİM</span>
-            <h1>
-              {tab === "wheel"
-                ? "Ayet ve hadis notlarım"
-                : navItems.find((item) => item.id === tab)?.label}
-            </h1>
-          </div>
-        </header>
-      )}
+      <header className="page-heading"><div><span className="eyebrow">KUR’AN-I KERİM KARDEŞİM</span><h1>Oku, çalış, birlikte ilerle.</h1><p>Kendi ritminde bir ayet, küçük bir pratik, güvenilir bir kardeşlik.</p></div></header>
 
       <nav
         ref={tabsRef}
         className="quran-companion-tabs"
         role="tablist"
         aria-label="Kur'an Kardeşim alanları"
+        onKeyDown={event => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+          event.preventDefault();
+          const index = QURAN_TABS.indexOf(mainTab);
+          const next = event.key === "Home" ? 0 : event.key === "End" ? 2 : (index + (event.key === "ArrowRight" ? 1 : 2)) % 3;
+          setTab(QURAN_TABS[next]);
+          tabsRef.current?.querySelectorAll<HTMLButtonElement>("[role=tab]")[next]?.focus();
+        }}
       >
         {navItems.map((item) => (
           <button
             key={item.id}
             role="tab"
-            className={tab === item.id ? "active" : ""}
-            aria-selected={tab === item.id}
+            aria-label={item.label}
+            className={mainTab === item.id ? "active" : ""}
+            aria-selected={mainTab === item.id}
+            id={`quran-tab-${item.id}`}
+            aria-controls="quran-main-panel"
+            tabIndex={mainTab === item.id ? 0 : -1}
             onClick={() => setTab(item.id)}
           >
             <AppIcon name={item.icon} />
             <span>{item.label}</span>
-            {item.badge && item.badge > 0 && (
+            {Boolean(item.badge && item.badge > 0) && (
               <em
                 className="qc-nav-badge"
                 aria-label={`${item.badge} okunmamış mesaj veya bekleyen istek`}
               >
-                {item.badge > 99 ? "99+" : item.badge}
+                {(item.badge ?? 0) > 99 ? "99+" : item.badge}
               </em>
             )}
           </button>
         ))}
       </nav>
-      {isRealUser && ["teachers", "appointments", "peers"].includes(tab) && (
+      {isRealUser && mainTab === "topluluk" && (
         <label className="qc-presence-preference">
           <input
             type="checkbox"
@@ -1007,13 +983,13 @@ export default function QuranCompanionView({
           katılımcılarıyla paylaş
         </label>
       )}
-      {socialError && ["appointments", "peers"].includes(tab) && (
+      {socialError && mainTab === "topluluk" && (
         <p className="quran-inline-error" role="alert">
           {socialError}
         </p>
       )}
-      {tab === "home" && !loading && (
-        <QuranDashboard
+      {mainTab === "oku" && !loading && tab !== "wheel" && (
+        <div className="qc-reading-summary"><QuranDashboard
           progress={surahProgress}
           streak={streak}
           summary={weeklySummary}
@@ -1023,10 +999,10 @@ export default function QuranCompanionView({
           nextAppointment={upcoming[0]}
           onOpen={setTab}
           demo={pilotDemo}
-        />
+        /></div>
       )}
 
-      {tab === "home" && !loading && isRealUser && !profile?.quran_level && (
+      {mainTab === "oku" && !loading && isRealUser && !profile?.quran_level && (
         <LevelOnboarding onSelect={(level) => void saveLevel(level)} />
       )}
 
@@ -1040,10 +1016,11 @@ export default function QuranCompanionView({
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={loading ? "loading" : tab}
+          key={loading ? "loading" : mainTab}
           className="quran-tab-transition"
           role="tabpanel"
-          aria-label={navItems.find((item) => item.id === tab)?.label ?? tab}
+          id="quran-main-panel"
+          aria-labelledby={`quran-tab-${mainTab}`}
           initial={reducedMotion ? false : { opacity: 0, y: 7 }}
           animate={{ opacity: 1, y: 0 }}
           exit={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -4 }}
@@ -1052,64 +1029,10 @@ export default function QuranCompanionView({
             ease: [0.22, 1, 0.36, 1],
           }}
         >
-          {loading ? (
-            <CompanionSkeleton />
-          ) : tab === "home" ? null : tab === "progress" ? (
-            bgLoading ? <TabSkeleton /> :
-            <QuranProgressMap
-              surahProgress={surahProgress}
-              onUpdate={saveProgressToDb}
-            />
-          ) : tab === "exercises" ? (
-            bgLoading ? <TabSkeleton /> :
-            <QuranExercises
-              surahProgress={surahProgress}
-              spacedItems={spacedItems}
-              streak={streak}
-              onRecordExercise={recordExercise}
-              onReview={saveReview}
-              totalHasanat={totalHasanat}
-            />
-          ) : tab === "teachers" ? (
-            <TeacherDiscovery
-              teachers={teachers.filter((t) => t.is_active && (isRealUser ? !t.is_placeholder : true))}
-              onBooked={async () => {
-                await load();
-                setTab("appointments");
-                flash("Randevun onaylandı.");
-              }}
-              realUser={isRealUser}
-              presence={presence}
-            />
-          ) : tab === "appointments" ? (
-            <AppointmentsView
-              key={`${userId}-${pilotDemo}`}
-              appointments={appointments}
-              userId={userId}
-              onReload={() => load(true)}
-              teachers={teachers}
-              threads={threads}
-              onRead={() => void refreshThreads()}
-              presence={presence}
-              onReminders={() => void enableReminders()}
-              onNotice={flash}
-            />
-          ) : tab === "peers" ? (
-            bgLoading ? <TabSkeleton /> :
-            <PeerMatching
-              key={`${userId}-${pilotDemo}`}
-              helpers={helpers}
-              matches={matches}
-              level={profile?.quran_level || null}
-              userId={userId}
-              realUser={isRealUser}
-              onReload={() => load(true)}
-              threads={threads}
-              onRead={() => void refreshThreads()}
-              presence={presence}
-            />
-          ) : tab === "study" ? (
-            <QuranStudyWorkspace
+          {loading ? <CompanionSkeleton /> : <div className="qc-learning-stack">
+            {mainTab === "oku" && <>
+              {tab === "wheel" ? <DailyWisdomWheel /> : <>
+                <section id="quran-study" aria-label="Okuma ve günlük hedef"><QuranStudyWorkspace
               goal={goal}
               notes={journey.quranNotes}
               appointments={appointments}
@@ -1129,26 +1052,79 @@ export default function QuranCompanionView({
               streak={streak}
               weeklySummary={weeklySummary}
               results={recentExercises}
-            />
-          ) : tab === "wheel" ? (
-            <DailyWisdomWheel />
-          ) : tab === "achievements" ? (
-            bgLoading ? <TabSkeleton /> :
-            <QuranAchievements
+            /></section>
+                <details className="qc-module-details"><summary>Ayet ve hadis notlarım</summary><DailyWisdomWheel /></details>
+              </>}
+            </>}
+            {mainTab === "calis" && (bgLoading ? <TabSkeleton /> : <>
+              <section id="quran-exercises" aria-label="Alıştırmalar"><QuranExercises
+              surahProgress={surahProgress}
+              spacedItems={spacedItems}
+              streak={streak}
+              onRecordExercise={recordExercise}
+              onReview={saveReview}
+              totalHasanat={totalHasanat}
+            /></section>
+              <section id="quran-progress" aria-label="İlerleme haritası"><QuranProgressMap
+              surahProgress={surahProgress}
+              onUpdate={saveProgressToDb}
+            /></section>
+              <section id="quran-achievements" aria-label="Başarımlarım"><QuranAchievements
               progress={surahProgress}
               streak={streak}
               results={recentExercises}
               hasanat={totalHasanat}
-            />
-          ) : (
-            <HocaManagement
+            /></section>
+            </>)}
+            {mainTab === "topluluk" && <>
+              <nav className="qc-community-shortcuts" aria-label="Topluluk içinde gezin">
+                <a href="#quran-teachers">Hocalar</a>
+                <a href="#quran-appointments">Randevularım{unreadCounts.appointments > 0 && <em className="qc-nav-badge">{unreadCounts.appointments}</em>}</a>
+                <a href="#quran-peers">Kur’an Kardeşi{unreadCounts.peers + matches.filter(m => m.direction === "received" && m.status === "pending").length > 0 && <em className="qc-nav-badge">{unreadCounts.peers + matches.filter(m => m.direction === "received" && m.status === "pending").length}</em>}</a>
+              </nav>
+              <section id="quran-teachers" aria-label="Hocalar"><TeacherDiscovery
+              teachers={teachers.filter((t) => t.is_active && (isRealUser ? !t.is_placeholder : true))}
+              onBooked={async () => {
+                await load();
+                setTab("appointments");
+                flash("Randevun onaylandı.");
+              }}
+              realUser={isRealUser}
+              presence={presence}
+            /></section>
+              <section id="quran-appointments" aria-label="Randevularım"><AppointmentsView
+              key={`${userId}-${pilotDemo}`}
+              appointments={appointments}
+              userId={userId}
+              onReload={() => load(true)}
+              teachers={teachers}
+              threads={threads}
+              onRead={() => void refreshThreads()}
+              presence={presence}
+              onReminders={() => void enableReminders()}
+              onNotice={flash}
+            /></section>
+              <section id="quran-peers" aria-label="Kur'an Kardeşi">{bgLoading ? <TabSkeleton /> : <PeerMatching
+              key={`${userId}-${pilotDemo}`}
+              helpers={helpers}
+              matches={matches}
+              level={profile?.quran_level || null}
+              userId={userId}
+              realUser={isRealUser}
+              onReload={() => load(true)}
+              threads={threads}
+              onRead={() => void refreshThreads()}
+              presence={presence}
+            />}</section>
+              {(isHoca || isAdmin) && <details className="qc-module-details" open={tab === "manage"}><summary>Hoca yönetimi</summary><HocaManagement
               teachers={teachers}
               ownedHoca={ownedHoca}
               appointments={appointments}
               isAdmin={isAdmin}
               onReload={load}
-            />
-          )}
+            /></details>}
+            </>}
+          </div>}
         </motion.div>
       </AnimatePresence>
       {newBadges.length > 0 && (

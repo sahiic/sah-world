@@ -116,19 +116,18 @@ export default function SahApp({
     openAppView(readAppView(new URLSearchParams({ view: next })));
   }, []);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useEffect(() => {
+    try { const collapsed = ['true', '1'].includes(localStorage.getItem('sah:sidebar-collapsed') ?? ''); queueMicrotask(() => setSidebarCollapsed(collapsed)); } catch { /* optional device preference */ }
+  }, []);
+  const toggleSidebar = () => {
+    const next = !sidebarCollapsed;
+    setSidebarCollapsed(next);
+    try { localStorage.setItem('sah:sidebar-collapsed', String(next)); } catch { /* still works this visit */ }
+  };
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    try { return typeof window !== 'undefined' && localStorage.getItem('sah:sidebar-collapsed') === '1' } catch { return false }
-  });
-  const toggleSidebar = useCallback(() => {
-    setSidebarCollapsed(prev => {
-      const next = !prev;
-      try { localStorage.setItem('sah:sidebar-collapsed', next ? '1' : '0') } catch {}
-      return next;
-    });
-  }, []);
   const [onboardingPreview, setOnboardingPreview] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [milestone, setMilestone] = useState<Milestone>(null);
@@ -156,7 +155,7 @@ export default function SahApp({
   }, [quranThreads]);
   useEffect(() => {
     const uid = user?.id;
-    if (!uid) { setQuranThreads([]); return; }
+    if (!uid) { queueMicrotask(() => setQuranThreads([])); return; }
     let active = true;
     const fetch = () =>
       void supabase.rpc("get_quran_thread_summaries").then(({ data }) => {
@@ -380,23 +379,9 @@ export default function SahApp({
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(activeProfile?.display_name || "Yolcu")}`;
 
   return (
-    <div className={`core-app ${view === "focus" ? "focus-mode" : ""} ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-      {activeProfile?.created_at && (
-        <WelcomeGuide
-          profileId={activeProfile.id}
-          createdAt={activeProfile.created_at}
-          completed={
-            onboardingPreview ? false : activeProfile.onboarding_completed
-          }
-          preview={onboardingPreview}
-          onComplete={() =>
-            useAuthStore.getState().patchProfile({ onboarding_completed: true })
-          }
-          onStart={() => navigate("journal")}
-        />
-      )}
+    <div className={`core-app phase-two-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${view === "focus" ? "focus-mode" : ""}`}>
 
-      <aside className="app-sidebar" aria-label="Ana navigasyon">
+      <aside className={`app-sidebar core-sidebar ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Ana navigasyon">
         <button
           className="brand sidebar-brand"
           onClick={() => navigate("dashboard")}
@@ -418,10 +403,11 @@ export default function SahApp({
                 className={view === item.id ? "active" : ""}
                 onClick={() => navigate(item.id)}
                 aria-current={view === item.id ? "page" : undefined}
+                aria-label={item.label}
                 data-tooltip={item.label}
               >
                 <AppIcon name={item.icon} />
-                <span>{item.label}</span>
+                <span className="nav-label">{item.label}</span>
                 {item.id === "quran-companion" && quranUnread > 0 && (
                   <em className="sidebar-badge" aria-label={`${quranUnread} okunmamış mesaj`}>
                     {quranUnread > 99 ? "99+" : quranUnread}
@@ -433,9 +419,9 @@ export default function SahApp({
         </nav>
 
         <div className="sidebar-support">
-          <button onClick={() => openPage("/feedback")}>
+          <button onClick={() => openPage("/feedback")} aria-label="Görüş ve Öneri" data-tooltip="Görüş ve Öneri">
             <AppIcon name="message-heart" />
-            <span>Görüş ve Öneri</span>
+            <span className="nav-label">Görüş ve Öneri</span>
           </button>
           <p>
             <AppIcon name="lock" /> Özel kayıtların yalnızca sana görünür.
@@ -445,13 +431,8 @@ export default function SahApp({
             <span>·</span>
             <a href="/kullanim-kosullari">Koşullar</a>
           </div>
-          <button
-            className="sidebar-collapse-toggle"
-            onClick={toggleSidebar}
-            aria-label={sidebarCollapsed ? "Menüyü genişlet" : "Menüyü daralt"}
-          >
-            <AppIcon name={sidebarCollapsed ? "layout-sidebar-right" : "layout-sidebar-left-collapse"} />
-            <span>{sidebarCollapsed ? "Genişlet" : "Daralt"}</span>
+          <button className="sidebar-collapse-toggle" onClick={toggleSidebar} aria-expanded={!sidebarCollapsed} aria-label={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} data-tooltip={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}>
+            <AppIcon name={sidebarCollapsed ? "layout-sidebar-right" : "layout-sidebar-left-collapse"} /><span className="nav-label">Menüyü daralt</span>
           </button>
         </div>
       </aside>
@@ -586,6 +567,25 @@ export default function SahApp({
         </AnimatePresence>
 
         <main className="app-main" id="main-content">
+      {activeProfile?.created_at && (
+        <WelcomeGuide
+          key={`${activeProfile.id}-${onboardingPreview}`}
+          name={activeProfile.display_name || 'Yolcu'}
+          currentView={view}
+          hasActivity={store.xp > 0 || store.journal.length > 0 || (activeProfile.xp ?? 0) > 0}
+          profileId={activeProfile.id}
+          createdAt={activeProfile.created_at}
+          completed={
+            onboardingPreview ? false : activeProfile.onboarding_completed
+          }
+          preview={onboardingPreview}
+          onComplete={() =>
+            useAuthStore.getState().patchProfile({ onboarding_completed: true })
+          }
+          onStart={() => navigate("journal")}
+          onReturn={() => navigate("dashboard")}
+        />
+      )}
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={view}
