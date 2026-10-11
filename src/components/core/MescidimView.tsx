@@ -50,7 +50,7 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
     {localCommunity && <section className="mosque-identity-hero">
       <div className="mosque-identity-art" aria-hidden="true">
         <span className="mosque-moon" />
-        <svg viewBox="0 0 420 230" role="img">
+        <svg viewBox="0 0 420 230" aria-hidden="true" focusable="false">
           <defs><linearGradient id="mosqueDome" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#f6d98f"/><stop offset="1" stopColor="#d89b3e"/></linearGradient><linearGradient id="mosqueWall" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#fffdf5"/><stop offset="1" stopColor="#e7e2d4"/></linearGradient></defs>
           <path d="M57 189h306v24H57z" fill="#2f685d" opacity=".28"/>
           <path d="M118 102h184v91H118z" fill="url(#mosqueWall)"/>
