@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { type CSSProperties, type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
+import QuranNoteEditor from '@/components/quran/QuranNoteEditor'
 import { HADITH_REFLECTIONS, VERSE_REFLECTIONS, getDailyReflectionIndex, type ReflectionKind } from '@/lib/dailyReflections'
 import { supabase } from '@/lib/supabase'
 import { recordXpEvent } from '@/lib/xp'
@@ -466,15 +467,7 @@ function ArchiveView({ items, filter, setFilter, composerKind, setComposerKind, 
       <div className="wisdom-filter">{([['all', 'Tümü'], ['verse', 'Kur’an'], ['hadith', 'Hadis']] as const).map(([key, label]) => <button key={key} className={filter === key ? 'active' : ''} onClick={() => setFilter(key)}>{label}</button>)}</div>
       <span><AppIcon name="lock" /> Yalnızca sana görünür · {items.length} kayıt</span>
     </div>
-    {composerKind && <form className="wisdom-note-composer" onSubmit={onSubmit}>
-      <header><div><span className="eyebrow">{composerKind === 'verse' ? 'YENİ KUR’AN NOTU' : 'YENİ HADİS NOTU'}</span><h3>Düşünceni kayda dönüştür</h3></div><button type="button" onClick={() => setComposerKind(null)} aria-label="Formu kapat"><AppIcon name="x" /></button></header>
-      <div className="two-fields">
-        {composerKind === 'verse' ? <><label>Sure<input name="sure" required placeholder="Örn. İnşirah" /></label><label>Ayet / referans<input name="reference" required placeholder="Örn. 94:5-6" /></label></> : <><label>Kaynak<input name="reference" required placeholder="Örn. Buhârî, Edeb, 31" /></label><label>Konu<input name="theme" required placeholder="Örn. Sabır" /></label></>}
-      </div>
-      <label>{composerKind === 'verse' ? 'Tefsir / not' : 'Hadis metni / kısa not'}<textarea name="text" required rows={4} placeholder="Sende kalan anlam…" /></label>
-      <label>Hayata taşıyacağım ders<textarea name="reflection" required rows={3} placeholder="Bugün uygulayabileceğim küçük adım…" /></label>
-      <footer><button className="ghost-button" type="button" onClick={() => setComposerKind(null)}>Vazgeç</button><button className="primary-button" type="submit"><AppIcon name="bookmark" /> Güvenle kaydet</button></footer>
-    </form>}
+    {composerKind && <QuranNoteEditor kind={composerKind} onSubmit={onSubmit} onClose={() => setComposerKind(null)} />}
     {items.length ? <div className="wisdom-note-grid">{items.map((item) => <article key={`${item.kind}-${item.id}`}>
       <header><span className={`note-kind ${item.kind}`}><AppIcon name={modeMeta[item.kind].icon} /> {item.kind === 'verse' ? 'Kur’an notu' : 'Hadis notu'}</span><time dateTime={item.date}>{new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }).format(dateFromKey(item.date))}</time></header>
       <h3>{item.title}</h3><p>{item.body}</p>{item.reflection && <blockquote>{item.reflection.replace(/\[wheel:[^\]]+\]\s*/, '')}</blockquote>}

@@ -12,6 +12,7 @@ import type {
 import type { AppointmentView } from "../core/QuranCompanionView";
 import { useJourneyStore } from "@/store/useJourneyStore";
 import { EmptyState, formatAppointment } from "./shared";
+import QuranProgressPanel from './QuranProgressPanel';
 export default function QuranStudyWorkspace({
   goal,
   notes,
@@ -83,29 +84,7 @@ export default function QuranStudyWorkspace({
   };
   return (
     <section className="qc-study-workspace study-workspace">
-      <div className="qc-study-overview">
-        <article className="qc-study-stat">
-          <AppIcon name="flame" />
-          <div>
-            <strong>{streak.current} gün</strong>
-            <span>Aktif seri</span>
-          </div>
-        </article>
-        <article className="qc-study-stat">
-          <AppIcon name="book-2" />
-          <div>
-            <strong>{weeklySummary.totalAyahs}</strong>
-            <span>Bu hafta çalışılan ayet</span>
-          </div>
-        </article>
-        <article className="qc-study-stat">
-          <AppIcon name="clock" />
-          <div>
-            <strong>{weeklySummary.totalMinutes} dk</strong>
-            <span>Bu hafta pratik</span>
-          </div>
-        </article>
-      </div>
+      <QuranProgressPanel streak={streak} weeklySummary={weeklySummary} />
       <article className="study-goal-card">
         <header>
           <span>
