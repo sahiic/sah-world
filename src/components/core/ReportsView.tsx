@@ -1,5 +1,10 @@
 "use client";
 import EmptyState from "@/components/ui/EmptyState";
+import dynamic from 'next/dynamic';
+import SectionErrorBoundary from './SectionErrorBoundary';
+
+const CategoryProgressCard = dynamic(() => import('@/components/ui/CategoryProgressCard'));
+const ActivityCalendar = dynamic(() => import('@/components/ui/ActivityCalendar'));
 
 import { useEffect, useMemo, useState } from "react";
 import { useJourneyStore } from "@/store/useJourneyStore";
@@ -183,6 +188,7 @@ export default function ReportsView() {
           <AppIcon name="calendar-week" /> Son 7 gün
         </span>
       </section>
+      <SectionErrorBoundary sectionName="Kategori gelişimi"><CategoryProgressCard /></SectionErrorBoundary>
       <section className="surface-card focus-report-card">
         <div className="card-heading">
           <div>
@@ -289,6 +295,7 @@ export default function ReportsView() {
           <span>Daha çok</span>
         </div>
       </section>
+      <SectionErrorBoundary sectionName="Aktivite takvimi"><ActivityCalendar /></SectionErrorBoundary>
       <div className="reports-grid">
         <section className="surface-card">
           <div className="card-heading">

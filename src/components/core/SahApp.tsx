@@ -55,12 +55,16 @@ const QuranCompanionView = dynamic(() => import("./QuranCompanionView"), {
   loading: () => <SectionSkeleton />,
 });
 const AccountSettingsDialog = dynamic(() => import("./AccountSettingsDialog"));
+const ProfileView = dynamic(() => import('@/components/ui/ProfileView'), {
+  loading: () => <SectionSkeleton shape="report" />,
+});
 
 type ViewKey =
   | "dashboard"
   | "growth"
   | "community"
   | "reports"
+  | "profile"
   | "focus"
   | "awareness"
   | "profession-school"
@@ -99,6 +103,7 @@ const viewLabels: Partial<Record<ViewKey, string>> = Object.fromEntries(
 viewLabels.dashboard = "Evrenim";
 viewLabels.community = "Topluluk";
 viewLabels.growth = "Gelişim detaylarım";
+viewLabels.profile = "Profilim";
 
 export default function SahApp({
   initialUser,
@@ -529,6 +534,9 @@ export default function SahApp({
                 <ProfessionProfileSummary
                   onOpen={() => navigate("profession-school")}
                 />
+                <button role="menuitem" onClick={() => navigate("profile")}>
+                  <AppIcon name="user-circle" /> Profilim ve rozetlerim
+                </button>
                 <button role="menuitem" onClick={() => navigate("reports")}>
                   <AppIcon name="chart-histogram" /> Gelişim raporlarım
                 </button>
@@ -624,6 +632,8 @@ export default function SahApp({
                 <DashboardView onNavigate={navigate} />
               ) : view === "reports" ? (
                 <ReportsView />
+              ) : view === "profile" ? (
+                <ProfileView />
               ) : view === "community" ? (
                 <CommunityView />
               ) : view === "quran-companion" ? (
