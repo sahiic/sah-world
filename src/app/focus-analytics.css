@@ -1,0 +1,140 @@
+/* ============================================================
+   FOCUS ANALYTICS PANEL
+   ============================================================ */
+
+.focus-analytics{display:flex;flex-direction:column;gap:20px;max-width:640px}
+
+/* Empty state */
+.fa-empty{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:40px 20px;text-align:center;color:var(--core-muted,#6f7c94)
+}
+.fa-empty .app-icon{font-size:32px;opacity:.4}
+.fa-empty strong{font-size:14px;color:var(--core-heading,#111827)}
+.fa-empty p{font-size:13px;max-width:320px;line-height:1.5}
+
+/* Score card */
+.fa-score-card{
+  display:flex;align-items:center;gap:20px;
+  padding:20px;border-radius:16px;
+  background:var(--core-surface,#fff);
+  box-shadow:inset 0 0 0 1px var(--core-line,rgba(0,0,0,.08))
+}
+.fa-score-ring{position:relative;width:80px;height:80px;flex-shrink:0}
+.fa-ring-svg{width:100%;height:100%}
+.fa-score-value{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:var(--core-heading,#111827)
+}
+.fa-score-info strong{font-size:16px;font-weight:700;color:var(--core-heading,#111827)}
+.fa-score-info p{font-size:12px;color:var(--core-muted,#6f7c94);margin:4px 0 0;line-height:1.5}
+
+:root{--fa-track:rgba(0,0,0,.06);--fa-accent:#4f46e5}
+
+/* Quick stats */
+.fa-quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fa-stat{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:14px 6px;border-radius:12px;text-align:center;
+  background:var(--core-surface,#fff);
+  box-shadow:inset 0 0 0 1px var(--core-line,rgba(0,0,0,.08))
+}
+.fa-stat .app-icon{font-size:18px;color:var(--fa-accent)}
+.fa-stat strong{font-size:15px;font-weight:800;color:var(--core-heading,#111827);line-height:1.2}
+.fa-stat small{font-size:10px;color:var(--core-muted,#6f7c94)}
+
+/* Section */
+.fa-section{display:flex;flex-direction:column;gap:10px}
+.fa-section h4{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;color:var(--core-heading,#111827);margin:0
+}
+.fa-section h4 .app-icon{font-size:16px;color:var(--fa-accent)}
+
+/* Hour chart */
+.fa-hour-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 4px}
+.fa-hour-bar{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  height:100%;position:relative;min-width:0
+}
+.fa-hour-fill{
+  width:100%;max-width:24px;border-radius:4px 4px 0 0;
+  background:var(--fa-accent);opacity:.7;margin-top:auto;
+  transition:height .3s ease
+}
+.fa-hour-bar small{font-size:8px;color:var(--core-muted,#6f7c94);margin-top:4px}
+.fa-best-badge{
+  position:absolute;top:-4px;
+  font-size:10px;color:#f59e0b
+}
+
+.fa-hint{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--core-muted,#6f7c94);margin:0
+}
+.fa-hint .app-icon{font-size:14px;color:#f59e0b}
+.fa-hint strong{color:var(--core-heading,#111827)}
+
+/* Trend chart */
+.fa-trend-chart{display:flex;align-items:flex-end;gap:4px;height:60px}
+.fa-trend-bar{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  height:100%;min-width:0
+}
+.fa-trend-fill{
+  width:100%;max-width:20px;border-radius:3px 3px 0 0;
+  background:var(--fa-accent);opacity:.6;margin-top:auto;
+  transition:height .3s ease
+}
+.fa-trend-bar small{font-size:8px;color:var(--core-muted,#6f7c94);margin-top:3px}
+
+/* Tag breakdown */
+.fa-tag-list{display:flex;flex-direction:column;gap:6px}
+.fa-tag-row{display:grid;grid-template-columns:100px 1fr 50px;align-items:center;gap:8px}
+.fa-tag-name{font-size:12px;font-weight:600;color:var(--core-heading,#111827);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fa-tag-bar{height:6px;border-radius:3px;background:var(--core-line,rgba(0,0,0,.08));overflow:hidden}
+.fa-tag-fill{height:100%;border-radius:3px;background:var(--fa-accent);opacity:.7;transition:width .3s ease}
+.fa-tag-value{font-size:11px;font-weight:700;color:var(--core-muted,#6f7c94);text-align:right}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+[data-theme="dark"]{--fa-track:rgba(199,210,254,.06);--fa-accent:#818cf8}
+
+[data-theme="dark"] .fa-empty strong{color:#eef2ff}
+[data-theme="dark"] .fa-empty{color:#8a95ad}
+
+[data-theme="dark"] .fa-score-card{
+  background:rgba(20,27,47,.96);
+  box-shadow:inset 0 0 0 1px rgba(199,210,254,.08)
+}
+[data-theme="dark"] .fa-score-value{color:#eef2ff}
+[data-theme="dark"] .fa-score-info strong{color:#eef2ff}
+[data-theme="dark"] .fa-score-info p{color:#8a95ad}
+
+[data-theme="dark"] .fa-stat{
+  background:rgba(20,27,47,.96);
+  box-shadow:inset 0 0 0 1px rgba(199,210,254,.08)
+}
+[data-theme="dark"] .fa-stat strong{color:#eef2ff}
+[data-theme="dark"] .fa-stat small{color:#8a95ad}
+
+[data-theme="dark"] .fa-section h4{color:#eef2ff}
+[data-theme="dark"] .fa-tag-name{color:#e0e7ff}
+[data-theme="dark"] .fa-tag-bar{background:rgba(199,210,254,.06)}
+[data-theme="dark"] .fa-hint strong{color:#eef2ff}
+
+/* ============================================================
+   SAH WORLD THEME
+   ============================================================ */
+.core-app{--fa-accent:#009b77}
+[data-theme="dark"] .core-app{--fa-accent:#34d399}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:620px){
+  .fa-quick-stats{grid-template-columns:repeat(2,1fr)}
+  .fa-score-card{flex-direction:column;text-align:center}
+  .fa-tag-row{grid-template-columns:80px 1fr 44px}
+}
