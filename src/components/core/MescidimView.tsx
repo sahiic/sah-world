@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MESCIDIM_TABS, openAppView, selectedValue } from '@/lib/appLocation'
 import { AppIcon } from '@/components/ui/AppIcon'
+import { getMosqueProfile } from '@/lib/mosqueProfile'
 import PrayerTimes from './PrayerTimes'
 import MescidimLibrary from './MescidimLibrary'
 import MosqueEventArchive from './MosqueEventArchive'
@@ -11,6 +12,7 @@ import MosqueEventArchive from './MosqueEventArchive'
 type MescidimTab = 'vakitler' | 'asma' | 'dua' | 'etkinlikler'
 
 export default function MescidimView({ reward }: { reward: (amount: number, label: string, sourceType: string, sourceId: string) => void }) {
+  const mosque = getMosqueProfile()
   const params = useSearchParams()
   const [legacyTab] = useState<MescidimTab>(() => {
     if (typeof window === 'undefined') return 'vakitler'
@@ -34,10 +36,16 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
     return () => window.clearTimeout(timer)
   }, [localCommunity, tab])
   return <div className="mescidim-experience">
-    <header className="page-heading"><div><span className="eyebrow">MESCİDİM</span><h1>{localCommunity ? 'Yerel cami topluluğu' : 'Kişisel manevi alanım'}</h1><p>{localCommunity ? 'Bursa Teknik Üniversitesi camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.' : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p></div></header>
-    <nav className="mescidim-scope-tabs" aria-label="Mescidim kapsamı">
-      <button role="tab" aria-selected={!localCommunity} onClick={() => openSection('vakitler')}><AppIcon name="lock" /> Kişisel alanım</button>
-      <button role="tab" aria-selected={localCommunity} onClick={() => openAppView('mescidim', 'etkinlikler')}><AppIcon name="building-mosque" /> BTÜ cami topluluğu</button>
+    <header className="page-heading"><div><span className="eyebrow">MESCİDİM</span><h1>{localCommunity ? `${mosque.campus} cami topluluğu` : 'Kişisel manevi alanım'}</h1><p>{localCommunity ? `${mosque.campus} camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.` : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p></div></header>
+    <nav className="mescidim-scope-tabs" role="tablist" aria-label="Mescidim kapsamı" onKeyDown={event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+      event.preventDefault()
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : localCommunity ? 0 : 1
+      event.currentTarget.querySelectorAll<HTMLButtonElement>('button')[next]?.focus()
+      if (next === 0) openSection('vakitler'); else openAppView('mescidim', 'etkinlikler')
+    }}>
+      <button role="tab" tabIndex={localCommunity ? -1 : 0} aria-selected={!localCommunity} onClick={() => openSection('vakitler')}><AppIcon name="lock" /> Kişisel alanım</button>
+      <button role="tab" tabIndex={localCommunity ? 0 : -1} aria-selected={localCommunity} onClick={() => openAppView('mescidim', 'etkinlikler')}><AppIcon name="building-mosque" /> {mosque.campus} cami topluluğu</button>
     </nav>
     {localCommunity && <section className="mosque-identity-hero">
       <div className="mosque-identity-art" aria-hidden="true">
@@ -53,7 +61,7 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
           <path d="M185 193v-52a25 25 0 0 1 50 0v52" fill="#194c46"/><path d="M137 130h25v30h-25zm121 0h25v30h-25z" fill="#8dd6c0" opacity=".72"/>
         </svg>
       </div>
-      <div className="mosque-identity-copy"><span className="eyebrow">BURSA TEKNİK ÜNİVERSİTESİ · MESCİDİM</span><h2>Şehit Astsubay Ömer Halisdemir Camii</h2><p>Vakitlerin, tefekkürün ve üniversite topluluğunun ortak hafızası. İbadet ritmini takip et; kaynaklı manevi kütüphaneyi ve camimizin etkinlik arşivini keşfet.</p><div><span><AppIcon name="map-pin" /> Bursa</span><span><AppIcon name="shield-check" /> Güvenli topluluk arşivi</span></div></div>
+      <div className="mosque-identity-copy"><span className="eyebrow">{mosque.eyebrow}</span><h2>{mosque.name}</h2><p>{mosque.description} İbadet ritmini takip et; kaynaklı manevi kütüphaneyi ve camimizin etkinlik arşivini keşfet.</p><div><span><AppIcon name="map-pin" /> {mosque.city}</span><span><AppIcon name="shield-check" /> Güvenli topluluk arşivi</span></div></div>
     </section>}
     {!localCommunity && <>
       <section className="mescidim-today-hero">

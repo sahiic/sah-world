@@ -27,7 +27,7 @@ test('personal mosque is a single flow; deep links and local identity survive re
   await expect(page).toHaveURL(/tab=dua/);
   await page.reload();await page.getByRole('button',{name:'DEV: Misafir görünümü'}).click();
   await expect(page.locator('#mescidim-dua')).toBeVisible();
-  await page.getByRole('tab',{name:'BTÜ cami topluluğu'}).click();
+  await page.getByRole('tab',{name:'Bursa Teknik Üniversitesi cami topluluğu'}).click();
   await expect(page).toHaveURL(/tab=etkinlikler/);
   await expect(page.locator('.mosque-identity-hero')).toBeVisible();
   await expect(page.locator('.mescidim-main-tabs')).toHaveCount(0);

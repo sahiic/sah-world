@@ -1,4 +1,6 @@
 "use client";
+import QuranProgressChart from "./QuranProgressChart";
+import QuranSurahList from "./QuranSurahList";
 import { useRef, useState } from "react";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { SURAHS, type SurahProgress } from "@/lib/quranSurahs";
@@ -83,26 +85,7 @@ export default function QuranProgressMap({
           Cüzlere göre grupla
         </label>
       </header>
-      <div className="qc-juz-journey" aria-label="30 cüz ilerlemesi">
-        {Array.from({ length: 30 }, (_, i) => i + 1).map((id) => {
-          const s = stats(id);
-          return (
-            <button
-              key={id}
-              aria-pressed={juz === id}
-              aria-label={`${id}. Cüz: ${s.done}/${s.total} ayet`}
-              className={
-                s.done === s.total ? "completed" : s.done > 0 ? "started" : ""
-              }
-              onClick={() => setJuz(juz === id ? 0 : id)}
-            >
-              <strong>{id}</strong>
-              <progress value={s.done} max={s.total} />
-              <span>{Math.round((s.done / s.total) * 100)}%</span>
-            </button>
-          );
-        })}
-      </div>
+      <QuranProgressChart juz={juz} setJuz={setJuz} stats={stats} />
       <div className="qc-learning-toolbar">
         <label className="qc-search">
           Sure ara
@@ -144,29 +127,7 @@ export default function QuranProgressMap({
                 </small>
               </h3>
             )}
-            <div className="qc-surah-grid">
-              {shown.map(({ surah: s, start, end }) => (
-                <button
-                  key={s.id}
-                  className={`qc-surah-cell ${progress(s.id)?.readStatus ?? "none"}`}
-                  onClick={() => {
-                    setError("");
-                    setSelected(s.id);
-                  }}
-                >
-                  <span className="qc-surah-num">{s.id}</span>
-                  <strong>{s.name}</strong>
-                  <small>
-                    {id ? `${start}–${end}. ayet` : `${s.ayahCount} ayet`}
-                  </small>
-                  {progress(s.id)?.memorizeStatus === "memorized" && (
-                    <i className="qc-mem-badge">
-                      <AppIcon name="star-filled" />
-                    </i>
-                  )}
-                </button>
-              ))}
-            </div>
+            <QuranSurahList shown={shown} id={id} progress={progress} onSelect={id => {setError("");setSelected(id);}} />
             {shown.length === 0 && <p>Bu görünümde eşleşen sure yok.</p>}
           </section>
         );

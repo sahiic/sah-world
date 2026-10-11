@@ -1,4 +1,5 @@
 "use client";
+import EmptyState from "@/components/ui/EmptyState";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { getLevelForXP } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
@@ -697,14 +698,7 @@ function JoinGroupForm({
 function Roster({ members }: { members: RosterMember[] }) {
   if (!members.length)
     return (
-      <div className="empty-state">
-        <i>◎</i>
-        <strong>Henüz başka üye yok</strong>
-        <p>
-          Davet kodunu güvendiğin kişilerle paylaşarak topluluğunu
-          büyütebilirsin.
-        </p>
-      </div>
+      <EmptyState icon="◎" title="Henüz başka üye yok" description="Davet kodunu güvendiğin kişilerle paylaşarak topluluğunu büyütebilirsin." />
     );
   return (
     <div className="roster">
@@ -775,11 +769,7 @@ function GroupChat({
           </button>
         )}
         {!messages.length ? (
-          <div className="empty-state">
-            <i>◌</i>
-            <strong>Sohbet henüz sessiz</strong>
-            <p>İlk destek mesajını göndererek alanı başlat.</p>
-          </div>
+          <EmptyState icon="◌" title="Sohbet henüz sessiz" description="İlk destek mesajını göndererek alanı başlat." />
         ) : (
           messages.map((message) => {
             const own = message.sender_id === userId;

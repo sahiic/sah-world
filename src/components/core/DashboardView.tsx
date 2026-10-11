@@ -1,4 +1,5 @@
 'use client'
+import EmptyState from "@/components/ui/EmptyState";
 
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -155,7 +156,7 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
       <div className="dashboard-lower-grid dashboard-reveal">
         <section className="surface-card activity-card">
           <div className="card-heading"><div><span className="eyebrow">YOLCULUK KAYITLARI</span><h2>Son Manevi Mühürler</h2></div><button className="text-button" onClick={() => onNavigate('reports')}>Tüm raporlar <AppIcon name="arrow-right" /></button></div>
-          {events.length === 0 ? <Empty /> : (
+          {events.length === 0 ? <EmptyState icon="notes" title="Yolculuğun ilk izi seni bekliyor" description="Bugünden tek bir cümle bırak; zaman akışın sakin sakin şekillenmeye başlasın." compact /> : (
             <motion.ol className="activity-list" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: .045 } } }}>
               {events.slice(0, 7).map((event) => { const meta = CATEGORY_META[event.category]; return <motion.li key={`${event.category}-${event.id}`} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
                 <button className="activity-row" onClick={() => onNavigate(event.category === 'profession' ? 'profession-school' : event.category)} aria-label={`${event.label} kaydını ${meta.label} bölümünde aç`}>
@@ -187,8 +188,4 @@ function DashboardPreloader() {
 
 function Metric({ icon, value, suffix = '', label, detail, tone }: { icon: string; value: number; suffix?: string; label: string; detail: string; tone: string }) {
   return <article className="metric-card"><span className={`stat-icon ${tone}`}><AppIcon name={icon} /></span><div><small>{label}</small><strong><AnimatedNumber value={value} suffix={suffix} /></strong><span>{detail}</span></div></article>
-}
-
-function Empty() {
-  return <div className="empty-state compact"><i><AppIcon name="notes" /></i><strong>Yolculuğun ilk izi seni bekliyor</strong><p>Bugünden tek bir cümle bırak; zaman akışın sakin sakin şekillenmeye başlasın.</p></div>
 }

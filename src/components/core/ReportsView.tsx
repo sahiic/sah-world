@@ -1,4 +1,5 @@
 "use client";
+import EmptyState from "@/components/ui/EmptyState";
 
 import { useEffect, useMemo, useState } from "react";
 import { useJourneyStore } from "@/store/useJourneyStore";
@@ -332,16 +333,7 @@ export default function ReportsView() {
           </strong>
         </div>
         {tasks.length === 0 ? (
-          <div className="empty-state compact">
-            <i>
-              <AppIcon name="layout-grid" />
-            </i>
-            <strong>Önceliklerin şekillenmeye hazır</strong>
-            <p>
-              İlk görevini eklediğinde hangi alanlara enerji verdiğini burada
-              sakin ve net biçimde görebilirsin.
-            </p>
-          </div>
+          <EmptyState icon="layout-grid" title="Önceliklerin şekillenmeye hazır" description="İlk görevini eklediğinde hangi alanlara enerji verdiğini burada sakin ve net biçimde görebilirsin." compact />
         ) : (
           <div className="quadrant-progress">
             {(["q1", "q2", "q3", "q4"] as const).map((q, i) => {

@@ -1,4 +1,5 @@
 "use client";
+import QuranExerciseCard from "./QuranExerciseCard";
 import { useRef, useState } from "react";
 import { AppIcon } from "@/components/ui/AppIcon";
 import {
@@ -183,43 +184,7 @@ export default function QuranExercises({
             "spaced",
           ] as Mode[]
         ).map((m, i) => (
-          <button
-            className={`qc-mode-card ${m}`}
-            key={m}
-            onClick={() => setMode(m)}
-          >
-            <span>
-              <AppIcon
-                name={
-                  [
-                    "abc",
-                    "text-recognition",
-                    "arrows-sort",
-                    "vocabulary",
-                    "book-2",
-                    "refresh",
-                  ][i]
-                }
-              />
-            </span>
-            <h3>{EXERCISE_LABELS[m]}</h3>
-            <p>
-              {
-                [
-                  "28 harfi tanı; sesli okuma için hocayla çalış.",
-                  `${COMPLETION_QUESTIONS.length} kaynaklı sorudan 8 soruluk pratik.`,
-                  "Ayetleri klavyeyle veya dokunarak sırala.",
-                  `${TAJWEED_QUESTIONS.length} açıklamalı harf birleşimi örneği.`,
-                  "Arapça ayet ile kısa Türkçe anlam özetini eşleştir.",
-                  `${due.length} tekrar hazır. Öz değerlendirmeyle ritmini koru.`,
-                ][i]
-              }
-            </p>
-            <em>
-              {m === "spaced" && due.length === 0 ? "Tekrar listesi" : "Başla"}
-              <AppIcon name="arrow-right" />
-            </em>
-          </button>
+          <QuranExerciseCard key={m} m={m} i={i} label={EXERCISE_LABELS[m]} dueCount={due.length} onSelect={() => setMode(m)} />
         ))}
       </div>
       <p className="qc-caption">

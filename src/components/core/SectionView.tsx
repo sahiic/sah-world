@@ -1,4 +1,5 @@
 "use client";
+import EmptyState from "@/components/ui/EmptyState";
 
 import { useState } from "react";
 import { useJourneyStore } from "@/store/useJourneyStore";
@@ -443,16 +444,7 @@ function EntrySection({
           <span className="quiet-chip">{items.length} toplam</span>
         </div>
         {items.length === 0 ? (
-          <div className="empty-state">
-            <i>
-              <AppIcon name="notes" />
-            </i>
-            <strong>Bu sayfa ilk izini bekliyor</strong>
-            <p>
-              Bugünden kalan tek bir cümle, zamanla anlamlı bir yolculuğa
-              dönüşebilir.
-            </p>
-          </div>
+          <EmptyState icon="notes" title="Bu sayfa ilk izini bekliyor" description="Bugünden kalan tek bir cümle, zamanla anlamlı bir yolculuğa dönüşebilir." />
         ) : (
           <div className="simple-records">
             {items.slice(0, 8).map((item) => (
