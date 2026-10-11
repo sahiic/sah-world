@@ -1,4 +1,5 @@
 'use client'
+import EmptyState from "@/components/ui/EmptyState";
 
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -166,7 +167,7 @@ function AsmaLibrary({ dailyName, state, onSelect, compact = false }: { dailyNam
     {state.notice && <div className="spiritual-notice" role="status"><AppIcon name="check" /> {state.notice}</div>}
     <div id="mescidim-asma-results" className="asma-grid">{visibleNames.map((name) => <article key={name.order} className={`asma-card ${name.order === dailyName.order ? 'daily' : ''}`}><button type="button" className="asma-card-main" onClick={() => onSelect(name)}><span>{name.order}</span><strong lang="ar" dir="rtl">{name.arabic}</strong><h3>{name.transliteration}</h3><p>{name.meaning}</p>{name.order === dailyName.order && <em>Günün ismi</em>}</button><button type="button" aria-label={`${name.transliteration} favori`} className={`asma-card-favorite ${state.favoriteAsma.includes(name.order) ? 'active' : ''}`} onClick={() => void state.toggleAsma(name.order)}><AppIcon name="heart" /></button></article>)}</div>
     {compact && !normalized && !favoritesOnly && <button className="mescidim-show-more" aria-expanded={expanded} aria-controls="mescidim-asma-results" onClick={() => setExpanded((value) => !value)}>{expanded ? 'Seçkiye dön' : '99 ismin tamamını göster'} <AppIcon name={expanded ? 'chevron-up' : 'chevron-down'} /></button>}
-    {names.length === 0 && <EmptyState label="Aramana uyan bir isim bulunamadı." />}
+    {names.length === 0 && <EmptyState icon="search" title="Aramana uyan bir isim bulunamadı." description="Arama kelimeni veya seçili filtreleri değiştirebilirsin." className="spiritual-empty" />}
   </section>
 }
 
@@ -197,7 +198,7 @@ function DuaLibrary({ initialOccasion, state, compact = false }: { initialOccasi
     {state.notice && <div className="spiritual-notice" role="status"><AppIcon name="check" /> {state.notice}</div>}
     <div id="mescidim-dua-results" className="dua-library-list">{visibleDuas.map((dua) => <DuaCard key={dua.id} dua={dua} favorite={state.favoriteDuas.includes(dua.id)} logged={state.loggedToday.includes(`dua:${dua.id}`)} amin={amin.includes(dua.id)} onFavorite={() => void state.toggleDua(dua.id)} onAmin={() => setAmin((current) => current.includes(dua.id) ? current.filter((id) => id !== dua.id) : [...current, dua.id])} onLog={() => void state.logToJournal('dua', dua.id, '', `${dua.title}${dua.title.toLocaleLowerCase('tr-TR').endsWith('duası') ? '' : ' duası'} okundu`)} />)}</div>
     {compact && !normalized && !favoritesOnly && category === 'Tümü' && occasion === 'Tümü' && <button className="mescidim-show-more" aria-expanded={expanded} aria-controls="mescidim-dua-results" onClick={() => setExpanded((value) => !value)}>{expanded ? 'Seçkiye dön' : `${DUA_LIBRARY.length} duanın tamamını göster`} <AppIcon name={expanded ? 'chevron-up' : 'chevron-down'} /></button>}
-    {duas.length === 0 && <EmptyState label="Bu filtrelerde bir dua bulunamadı." />}
+    {duas.length === 0 && <EmptyState icon="search" title="Bu filtrelerde bir dua bulunamadı." description="Arama kelimeni veya seçili filtreleri değiştirebilirsin." className="spiritual-empty" />}
     <p className="spiritual-cap-note"><AppIcon name="info-circle" /> Günlüğe eklenen ilk {DAILY_LIMIT} farklı manevî kayıt günde 10’ar XH kazandırır. Sonrakiler günlüğe eklenir ancak XH vermez.</p>
   </section>
 }
@@ -205,5 +206,3 @@ function DuaLibrary({ initialOccasion, state, compact = false }: { initialOccasi
 function DuaCard({ dua, favorite, logged, amin, onFavorite, onAmin, onLog }: { dua: DuaItem; favorite: boolean; logged: boolean; amin: boolean; onFavorite: () => void; onAmin: () => void; onLog: () => void }) {
   return <article className="dua-library-card"><header><div><span>{dua.category}</span><em>{dua.occasion}</em></div><button className={favorite ? 'active' : ''} onClick={onFavorite} aria-label={`${dua.title} favori`}><AppIcon name="heart" /></button></header><h3>{dua.title}</h3><blockquote lang="ar" dir="rtl">{dua.arabic}</blockquote><p>{dua.meaning}</p><aside><AppIcon name="bulb"/><span>{dua.context}</span></aside><footer><a href={dua.sourceUrl} target="_blank" rel="noreferrer"><AppIcon name="external-link" /> {dua.source}</a><div><button className={amin ? 'active' : ''} onClick={onAmin}><AppIcon name="sparkles" /> {amin ? 'Âmin denildi' : 'Âmin'}</button><button onClick={onLog} disabled={logged}><AppIcon name="notebook" /> {logged ? 'Günlükte' : 'Günlüğe ekle'}</button></div></footer></article>
 }
-
-function EmptyState({ label }: { label: string }) { return <div className="empty-state spiritual-empty"><i><AppIcon name="search"/></i><strong>{label}</strong><p>Arama kelimeni veya seçili filtreleri değiştirebilirsin.</p></div> }

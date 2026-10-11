@@ -14,7 +14,7 @@ import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { quranUnreadCounts } from "@/lib/quranSocial";
 import { ownedRealtimeChannel } from "@/lib/ownedRealtimeChannel";
 import type { QuranThreadSummary } from "@/types/database";
@@ -112,6 +112,24 @@ export default function SahApp({
   const searchParams = useSearchParams();
   const router = useRouter();
   const view = readAppView(searchParams);
+  const mainRef = useRef<HTMLElement>(null);
+  const previousView = useRef(view);
+  useEffect(() => {
+    if (previousView.current === view) return;
+    previousView.current = view;
+    const frame = requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }));
+    return () => cancelAnimationFrame(frame);
+  }, [view]);
+  const handleSidebarKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
+    const current = buttons.indexOf(event.target as HTMLButtonElement);
+    if (current < 0) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 :
+      (current + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length;
+    buttons[next]?.focus();
+  };
   const setView = useCallback((next: string) => {
     openAppView(readAppView(new URLSearchParams({ view: next })));
   }, []);
@@ -380,7 +398,8 @@ export default function SahApp({
 
   return (
     <div className={`core-app phase-two-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${view === "focus" ? "focus-mode" : ""}`}>
-
+      <a href="#main-content" className="skip-link">İçeriğe atla</a>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">{milestone?.title ?? `Toplam ${store.xp} XH`}</div>
       <aside className={`app-sidebar core-sidebar ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Ana navigasyon">
         <button
           className="brand sidebar-brand"
@@ -395,7 +414,7 @@ export default function SahApp({
         </button>
 
         <nav className="sidebar-nav">
-          <section aria-label="Ana bölümler">
+          <section aria-label="Ana bölümler" onKeyDown={handleSidebarKeyDown}>
             <p>ANA BÖLÜMLER</p>
             {navigationItems.map((item) => (
               <button
@@ -465,6 +484,7 @@ export default function SahApp({
           <div className="header-actions" ref={profileMenuRef}>
             <button
               className="header-quick-add"
+              aria-label="Vird ve amel ekle"
               onClick={() => navigate("journal")}
             >
               <AppIcon name="plus" />
@@ -472,6 +492,7 @@ export default function SahApp({
             </button>
             <button
               className="header-feedback"
+              aria-label="Görüş bırak"
               onClick={() => openPage("/feedback")}
             >
               <AppIcon name="message-heart" />
@@ -479,6 +500,7 @@ export default function SahApp({
             </button>
             <button
               className="profile-button"
+              aria-label="Hesap menüsü"
               onClick={() => setProfileOpen((value) => !value)}
               aria-expanded={profileOpen}
               aria-haspopup="menu"
@@ -566,7 +588,7 @@ export default function SahApp({
           )}
         </AnimatePresence>
 
-        <main className="app-main" id="main-content">
+        <main className="app-main" id="main-content" ref={mainRef} tabIndex={-1}>
       {activeProfile?.created_at && (
         <WelcomeGuide
           key={`${activeProfile.id}-${onboardingPreview}`}

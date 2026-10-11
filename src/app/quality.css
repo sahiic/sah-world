@@ -1,0 +1,19 @@
+/* Keyboard-only affordances do not move the visual layout. */
+.skip-link{position:fixed;top:-100%;left:16px;z-index:999;padding:12px 20px;border-radius:12px;color:#fff;background:#006950;font:700 14px var(--font-inter);text-decoration:none}
+.skip-link:focus{top:16px;outline:3px solid #8ff2d2;outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;white-space:nowrap}
+.app-main:focus{outline:none}
+.core-app :is(button,a,input,textarea,select,summary):focus-visible{outline:3px solid var(--core-brand);outline-offset:4px}
+[data-theme="dark"] .core-app :is(button,a,input,textarea,select,summary):focus-visible{outline-color:#8ff2d2}
+
+/* Late, scoped overrides preserve the existing light theme and green identity. */
+[data-theme="dark"] .core-app .mescidim-scope-tabs{background:#10261d}
+[data-theme="dark"] .core-app .mescidim-scope-tabs button{color:#b1c4b6}
+[data-theme="dark"] .core-app .mescidim-scope-tabs button[aria-selected="true"]{color:#8ff2d2;background:#193b2c;box-shadow:none}
+[data-theme="dark"] .core-app .mosque-identity-hero{background:linear-gradient(135deg,#10261d,#193b2c)}
+[data-theme="dark"] .core-app .mosque-identity-copy{color:#effaf4}
+[data-theme="dark"] .core-app .mosque-identity-copy :is(p,.eyebrow){color:#b1c4b6}
+[data-theme="dark"] .core-app :is(.mescidim-today-hero,.profession-selector,.lesson-path,.lesson-reader){color:#effaf4;background:#10261d}
+[data-theme="dark"] .core-app :is(.profession-track-grid>button,.path-label,.lesson-opening,.lesson-reflection textarea){color:#effaf4;background:#193b2c}
+[data-theme="dark"] .core-app :is(.profession-selector,.lesson-path,.lesson-reader) :is(h2,h3){color:#effaf4}
+[data-theme="dark"] .core-app .lesson-explanation>p:last-child{color:#b1c4b6}

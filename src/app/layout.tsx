@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Noto_Serif } from "next/font/google";
 import "./globals.css";
+import "./quality.css";
 import FocusTimerFloatingWidget from "@/components/core/FocusTimerRoot";
 import FocusSessionRuntime from "@/components/core/FocusSessionRuntime";
 import MotionPreferences from "@/components/ui/MotionPreferences";
@@ -104,9 +105,10 @@ export default function RootLayout({
     >
       <head>
         {/* Tabler Icons */}
+        <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" as="style" />
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"
         />
       </head>
       <body className="antialiased overflow-x-hidden">
