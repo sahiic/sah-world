@@ -37,7 +37,7 @@ export default function DailyChallengeCard() {
           </h3>
         </div>
         <div className={`dc-progress-ring ${summary.allCompleted ? 'complete' : ''}`}>
-          <svg viewBox="0 0 36 36">
+          <svg viewBox="0 0 36 36" aria-hidden="true" focusable="false">
             <circle cx="18" cy="18" r="15" fill="none" stroke="var(--dc-track)" strokeWidth="3" />
             <circle
               cx="18" cy="18" r="15" fill="none"
@@ -53,7 +53,7 @@ export default function DailyChallengeCard() {
 
       <ul className="dc-list">
         {summary.challenges.map(c => (
-          <li key={c.id} className={`dc-item ${c.completed ? 'done' : ''}`}>
+          <li key={c.id} className={`dc-item ${c.completed ? 'done' : ''}`} aria-label={`${c.title}: ${c.completed ? 'tamamlandı' : 'henüz tamamlanmadı'}. ${c.description}`}>
             <span className="dc-check">
               {c.completed ? <AppIcon name="circle-check-filled" /> : <AppIcon name="circle" />}
             </span>

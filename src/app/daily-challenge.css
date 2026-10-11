@@ -115,7 +115,7 @@
 
 .dc-item.done .dc-item-content strong {
   text-decoration: line-through;
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .dc-item-content small {

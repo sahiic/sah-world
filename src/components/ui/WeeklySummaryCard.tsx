@@ -12,6 +12,7 @@ const DAY_NAMES = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct']
 export default function WeeklySummaryCard() {
   const store = useJourneyStore()
   const [copied, setCopied] = useState(false)
+  const [copyStatus, setCopyStatus] = useState('')
 
   const summary = useMemo(() => {
     const source: ActivitySource = {
@@ -36,8 +37,9 @@ export default function WeeklySummaryCard() {
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
+      setCopyStatus('Haftalık özet panoya kopyalandı.')
       setTimeout(() => setCopied(false), 2000)
-    } catch {}
+    } catch { setCopyStatus('Kopyalanamadı. Tarayıcı pano iznini kontrol edip yeniden dene.') }
   }, [summary])
 
   return (
@@ -56,6 +58,7 @@ export default function WeeklySummaryCard() {
           {copied ? 'Kopyalandı' : 'Kopyala'}
         </button>
       </header>
+      <p className="sr-only" role="status" aria-live="polite">{copyStatus}</p>
 
       <div className="ws-stats-row">
         <div className="ws-stat">
@@ -78,7 +81,7 @@ export default function WeeklySummaryCard() {
 
       <div className="ws-daily-chart">
         {summary.dailyCounts.map((count, i) => (
-          <div key={i} className="ws-day-col">
+          <div key={i} className="ws-day-col" aria-label={`${i + 1}. gün: ${count} kayıt`}>
             <div className="ws-day-bar-track">
               <div
                 className={`ws-day-bar-fill ${count > 0 ? 'active' : ''}`}

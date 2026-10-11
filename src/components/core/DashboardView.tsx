@@ -1,5 +1,10 @@
 'use client'
 import EmptyState from "@/components/ui/EmptyState";
+import dynamic from 'next/dynamic'
+import SectionErrorBoundary from './SectionErrorBoundary'
+
+const DailyChallengeCard = dynamic(() => import('@/components/ui/DailyChallengeCard'))
+const WeeklySummaryCard = dynamic(() => import('@/components/ui/WeeklySummaryCard'))
 
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -181,6 +186,8 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
           <button className="ghost-button" onClick={() => onNavigate('reports')}>Haftayı incele <AppIcon name="chart-line" /></button>
           <p className="ethics-note"><AppIcon name="info-circle" /> XH, yalnızca uygulamadaki düzenli katılımı gösterir; manevi değer veya üstünlük ölçüsü değildir.</p>
         </section>
+        <SectionErrorBoundary sectionName="Günün görevleri"><DailyChallengeCard /></SectionErrorBoundary>
+        <SectionErrorBoundary sectionName="Haftalık özet"><WeeklySummaryCard /></SectionErrorBoundary>
       </div>
     </div>
   )

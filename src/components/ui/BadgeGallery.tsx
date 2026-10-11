@@ -21,7 +21,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 function BadgeCard({ status }: { status: BadgeStatus }) {
   const { badge } = status
   return (
-    <div className={`badge-card ${status.earned ? '' : 'locked'}`}>
+    <article className={`badge-card ${status.earned ? '' : 'locked'}`} aria-label={`${badge.name}: ${status.earned ? 'kazanıldı' : 'devam ediyor'}`}>
       <div className={`badge-icon ${badge.tier}`}>
         <AppIcon name={badge.icon} />
       </div>
@@ -29,7 +29,7 @@ function BadgeCard({ status }: { status: BadgeStatus }) {
       <p>{badge.desc}</p>
       {!status.earned && (
         <>
-          <div className="badge-progress">
+          <div className="badge-progress" role="progressbar" aria-label={`${badge.name} ilerlemesi`} aria-valuemin={0} aria-valuemax={(status as LockedBadge).target} aria-valuenow={Math.min((status as LockedBadge).current, (status as LockedBadge).target)}>
             <div
               className={`badge-progress-fill ${badge.tier}`}
               style={{ width: `${Math.round(((status as LockedBadge).current / (status as LockedBadge).target) * 100)}%` }}
@@ -40,7 +40,7 @@ function BadgeCard({ status }: { status: BadgeStatus }) {
           </span>
         </>
       )}
-    </div>
+    </article>
   )
 }
 
