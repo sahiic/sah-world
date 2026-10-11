@@ -13,7 +13,7 @@
 }
 .badge-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06),inset 0 0 0 1px var(--core-line,rgba(0,0,0,.08))}
 
-.badge-card.locked{opacity:.5;filter:grayscale(.7)}
+.badge-card.locked .badge-icon{filter:grayscale(.7)}
 .badge-card.locked .badge-icon{background:var(--core-bg-muted,#f1f3f5)}
 
 .badge-icon{
@@ -103,7 +103,7 @@
   background:linear-gradient(135deg,rgba(0,155,119,.06),rgba(197,160,89,.04));
   box-shadow:inset 0 0 0 1px rgba(0,155,119,.12)
 }
-.core-app .badge-count{background:rgba(0,155,119,.1);color:#009b77}
+.core-app .badge-count{background:rgba(0,155,119,.1);color:#00664f}
 
 .core-app .badge-progress-fill.silver{background:#009b77}
 
