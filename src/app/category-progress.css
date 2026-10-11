@@ -198,10 +198,6 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .cp-card {
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-muted: #8a95ad;
   --bar-last: rgba(255, 255, 255, 0.08);
   --bar-current: #818cf8;
 }
@@ -223,10 +219,6 @@
 [data-theme="sah"][data-mode="dark"] .cp-card,
 [data-theme="sah"].dark .cp-card {
   --bar-current: #34d399;
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-muted: #8a95ad;
   --bar-last: rgba(255, 255, 255, 0.08);
 }
 

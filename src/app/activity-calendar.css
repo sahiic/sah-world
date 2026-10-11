@@ -147,10 +147,6 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .ac-card {
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-muted: #8a95ad;
   --hover-bg: rgba(255, 255, 255, 0.06);
   --ac-accent: #818cf8;
   --ac-l0: rgba(255, 255, 255, 0.03);
@@ -177,10 +173,6 @@
   --ac-l2: rgba(52, 211, 153, 0.3);
   --ac-l3: rgba(52, 211, 153, 0.5);
   --ac-l4: #34d399;
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-muted: #8a95ad;
   --hover-bg: rgba(255, 255, 255, 0.06);
 }
 

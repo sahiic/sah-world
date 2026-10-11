@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./_card-tokens.css";
 @import "./journal.css";
 @import "./phase-two.css";
 @import "./achievements.css";

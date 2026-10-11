@@ -1,0 +1,17 @@
+/* Scoped to journey cards: do not change the journal or immersive timer palette. */
+:is(.ws-card,.dc-card,.mt-card,.cp-card,.ac-card) {
+  --card-bg: #fff;
+  --card-border: rgba(0,0,0,.08);
+  --text-primary: #111827;
+  --text-secondary: #475569;
+  --text-muted: #596579;
+  min-width: 0;
+}
+
+:is([data-theme="dark"],[data-theme="sah"][data-mode="dark"],[data-theme="sah"].dark) :is(.ws-card,.dc-card,.mt-card,.cp-card,.ac-card) {
+  --card-bg: #141b2f;
+  --card-border: rgba(255,255,255,.08);
+  --text-primary: #eef2ff;
+  --text-secondary: #c1c9db;
+  --text-muted: #a4afc4;
+}

@@ -158,11 +158,6 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .ws-card {
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-secondary: #c1c9db;
-  --text-muted: #8a95ad;
   --hover-bg: rgba(255, 255, 255, 0.06);
   --bar-track: rgba(255, 255, 255, 0.05);
   --bar-inactive: rgba(255, 255, 255, 0.08);
@@ -180,11 +175,6 @@
 [data-theme="sah"].dark .ws-card {
   --ws-accent: #34d399;
   --highlight-bg: rgba(52, 211, 153, 0.1);
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-secondary: #c1c9db;
-  --text-muted: #8a95ad;
   --hover-bg: rgba(255, 255, 255, 0.06);
   --bar-track: rgba(255, 255, 255, 0.05);
   --bar-inactive: rgba(255, 255, 255, 0.08);
