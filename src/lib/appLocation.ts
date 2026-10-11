@@ -1,4 +1,4 @@
-export const APP_VIEWS = ['dashboard', 'growth', 'focus', 'quran-companion', 'mescidim', 'journal', 'awareness', 'reports', 'profession-school', 'community'] as const;
+export const APP_VIEWS = ['dashboard', 'growth', 'focus', 'quran-companion', 'mescidim', 'journal', 'awareness', 'reports', 'profile', 'profession-school', 'community'] as const;
 export type AppView = typeof APP_VIEWS[number];
 export const JOURNAL_TABS = ['journal', 'matrix', 'sukur', 'lessons'] as const;
 export const QURAN_TABS = ['oku', 'calis', 'topluluk'] as const;

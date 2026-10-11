@@ -12,6 +12,8 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import dynamic from 'next/dynamic';
+import SectionErrorBoundary from '@/components/core/SectionErrorBoundary';
 import { useCallback, useEffect, useState } from "react";
 import { useFocusDialog } from "@/hooks/useFocusDialog";
 import { useTimer } from "@/hooks/useTimer";
@@ -26,6 +28,7 @@ import SessionConfig from "./SessionConfig";
 import styles from "../focus.module.css";
 
 type FocusView = "session" | "history";
+const FocusAnalyticsPanel = dynamic(() => import('@/components/focus/FocusAnalyticsPanel'));
 
 export default function FocusExperience({ onExit }: { onExit?: () => void } = {}) {
   const mode = useFocusStore((state) => state.mode);
@@ -174,6 +177,9 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
               <FocusStats />
               <FocusHistory />
             </div>
+            <section className={styles.analyticsPanel} aria-label="Odak analizi" data-theme="dark">
+              <SectionErrorBoundary sectionName="Odak analizi"><FocusAnalyticsPanel /></SectionErrorBoundary>
+            </section>
           </section>
         )}
       </div>

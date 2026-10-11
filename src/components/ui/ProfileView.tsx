@@ -4,11 +4,16 @@ import { useMemo } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import AvatarImage from '@/components/ui/AvatarImage'
 import ActivityHeatmap from '@/components/ui/ActivityHeatmap'
-import BadgeGallery from '@/components/ui/BadgeGallery'
+import dynamic from 'next/dynamic'
+import SectionErrorBoundary from '@/components/core/SectionErrorBoundary'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useJourneyStore } from '@/store/useJourneyStore'
 import { buildActivityFeed, CATEGORY_META, type ActivitySource } from '@/lib/activity'
 import { getLevelForXP } from '@/lib/constants'
+
+const BadgeGallery = dynamic(() => import('./BadgeGallery'))
+const MilestoneTimeline = dynamic(() => import('./MilestoneTimeline'))
+const ActivityCalendar = dynamic(() => import('./ActivityCalendar'))
 
 export default function ProfileView() {
   const profile = useAuthStore(s => s.profile)
@@ -42,11 +47,11 @@ export default function ProfileView() {
     <div className="profile-view">
       <header className="profile-header">
         <div className="profile-avatar">
-          <AvatarImage
-            src={profile?.avatar_url ?? ''}
+          {profile?.avatar_url ? <AvatarImage
+            src={profile.avatar_url}
             alt={profile?.display_name || 'Kullanıcı'}
             size={72}
-          />
+          /> : <AppIcon name="user-circle" />}
         </div>
         <div className="profile-identity">
           <h2>{profile?.display_name || 'Yolcu'}</h2>
@@ -91,6 +96,7 @@ export default function ProfileView() {
         <h3><AppIcon name="chart-dots-2" /> Aktivite Haritası</h3>
         <ActivityHeatmap events={events} weeks={20} />
       </section>
+      <SectionErrorBoundary sectionName="Aktivite takvimi"><ActivityCalendar /></SectionErrorBoundary>
 
       {categoryStats.length > 0 && (
         <section className="profile-section">
@@ -120,9 +126,9 @@ export default function ProfileView() {
       )}
 
       <section className="profile-section">
-        <h3><AppIcon name="trophy" /> Rozetlerin</h3>
-        <BadgeGallery />
+        <SectionErrorBoundary sectionName="Rozetlerin"><BadgeGallery /></SectionErrorBoundary>
       </section>
+      <SectionErrorBoundary sectionName="Yolculuk kilometre taşları"><MilestoneTimeline /></SectionErrorBoundary>
     </div>
   )
 }

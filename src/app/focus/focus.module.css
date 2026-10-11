@@ -1,3 +1,17 @@
+.analyticsPanel {
+  --core-heading: #f7f3ed;
+  --core-muted: #b3c2cc;
+  --core-surface: #162032;
+  --core-line: rgba(255, 255, 255, .12);
+  width: 100%;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--core-line);
+  border-radius: 24px;
+  background: var(--core-surface);
+}
+
+.analyticsPanel > :global(.focus-analytics) { max-width: none; }
+
 .focusPage {
   --focus-bg: #0f1923;
   --focus-surface: #162032;
