@@ -1,0 +1,212 @@
+.ws-card {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, rgba(0, 0, 0, 0.08));
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ws-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ws-eyebrow {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+}
+
+.ws-header h3 {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary, #111);
+}
+
+.ws-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--card-border, rgba(0, 0, 0, 0.12));
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ws-copy-btn:hover {
+  background: var(--hover-bg, rgba(0, 0, 0, 0.04));
+  color: var(--text-primary, #111);
+}
+
+.ws-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.ws-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ws-stat strong {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary, #111);
+  line-height: 1.1;
+}
+
+.ws-stat strong span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+}
+
+.ws-stat small {
+  font-size: 0.7rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.ws-daily-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+  height: 80px;
+  align-items: end;
+}
+
+.ws-day-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  height: 100%;
+}
+
+.ws-day-bar-track {
+  flex: 1;
+  width: 100%;
+  max-width: 28px;
+  border-radius: 6px;
+  background: var(--bar-track, rgba(0, 0, 0, 0.04));
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.ws-day-bar-fill {
+  width: 100%;
+  border-radius: 6px;
+  background: var(--bar-inactive, rgba(0, 0, 0, 0.08));
+  transition: height 0.3s ease;
+}
+
+.ws-day-bar-fill.active {
+  background: var(--ws-accent, #4f46e5);
+}
+
+.ws-day-col small {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+}
+
+.ws-day-col small.active {
+  color: var(--text-primary, #111);
+  font-weight: 600;
+}
+
+.ws-top-category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--highlight-bg, rgba(79, 70, 229, 0.06));
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: var(--text-secondary, #374151);
+}
+
+.ws-top-category .ti {
+  color: var(--ws-accent, #4f46e5);
+  font-size: 1rem;
+}
+
+.ws-message {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-secondary, #374151);
+  font-style: italic;
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .ws-card {
+  --card-bg: rgba(20, 27, 47, 0.96);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #eef2ff;
+  --text-secondary: #c1c9db;
+  --text-muted: #8a95ad;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --bar-track: rgba(255, 255, 255, 0.05);
+  --bar-inactive: rgba(255, 255, 255, 0.08);
+  --ws-accent: #818cf8;
+  --highlight-bg: rgba(129, 140, 248, 0.1);
+}
+
+/* ── SAH World theme ── */
+[data-theme="sah"] .ws-card {
+  --ws-accent: #009b77;
+  --highlight-bg: rgba(0, 155, 119, 0.06);
+}
+
+[data-theme="sah"][data-mode="dark"] .ws-card,
+[data-theme="sah"].dark .ws-card {
+  --ws-accent: #34d399;
+  --highlight-bg: rgba(52, 211, 153, 0.1);
+  --card-bg: rgba(20, 27, 47, 0.96);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #eef2ff;
+  --text-secondary: #c1c9db;
+  --text-muted: #8a95ad;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --bar-track: rgba(255, 255, 255, 0.05);
+  --bar-inactive: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .ws-card {
+    padding: 1.15rem;
+    border-radius: 12px;
+  }
+
+  .ws-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem 0.5rem;
+  }
+
+  .ws-stat strong {
+    font-size: 1.15rem;
+  }
+
+  .ws-daily-chart {
+    height: 64px;
+  }
+}
