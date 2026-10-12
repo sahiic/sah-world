@@ -9,6 +9,7 @@ export interface WeeklySummary {
   streakCurrent: number
   xpEarned: number
   dailyCounts: number[]
+  dailyLabels: string[]
   message: string
 }
 
@@ -69,10 +70,12 @@ export function buildWeeklySummary(
   }
 
   const dailyCounts: number[] = []
+  const dailyLabels: string[] = []
   for (let i = 0; i < 7; i++) {
     const d = new Date(start)
     d.setDate(start.getDate() + i)
     const key = dayKey(d)
+    dailyLabels.push(DAY_NAMES[d.getDay()])
     dailyCounts.push(weekEvents.filter(e => dayKey(e.createdAt) === key).length)
   }
 
@@ -84,6 +87,7 @@ export function buildWeeklySummary(
     streakCurrent,
     xpEarned,
     dailyCounts,
+    dailyLabels,
     message: pickMessage(weekEvents.length, activeDaysSet.size, streakCurrent),
   }
 }
@@ -98,7 +102,7 @@ export function summaryToText(summary: WeeklySummary): string {
     `🔥 Seri: ${summary.streakCurrent} gün`,
     `⭐ ${summary.xpEarned} XP kazanıldı`,
     ``,
-    `📈 ${DAY_NAMES.map((d, i) => `${d}:${summary.dailyCounts[i] || '·'}`).join(' ')}`,
+    `📈 ${summary.dailyLabels.map((d, i) => `${d}:${summary.dailyCounts[i] || '·'}`).join(' ')}`,
     ``,
     summary.message,
   ]

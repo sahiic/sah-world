@@ -34,12 +34,15 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   const store = useJourneyStore()
   const profile = useAuthStore((state) => state.profile)
   const remoteActivity = useActivityLog()
-  const events = remoteActivity.items.length ? mapIntegratedActivities(remoteActivity.items) : buildActivityFeed(store)
-  const counts = getCategoryCounts(store)
-  const tasks = Object.values(store.eisenhower).flat()
-  const done = tasks.filter((task) => task.done).length
+  const localEvents = useMemo(() => buildActivityFeed(store), [store.journal, store.quranNotes, store.hadisNotes, store.eisenhower, store.lessons, store.sukurList, store.focusSessions])
+  const events = useMemo(() => remoteActivity.items.length ? mapIntegratedActivities(remoteActivity.items) : localEvents, [remoteActivity.items, localEvents])
+  const counts = useMemo(() => getCategoryCounts(store), [store.journal, store.quranNotes, store.hadisNotes, store.eisenhower, store.lessons, store.sukurList, store.totalZikir, store.focusSessions])
+  const tasks = useMemo(() => Object.values(store.eisenhower).flat(), [store.eisenhower])
+  const done = useMemo(() => tasks.filter((task) => task.done).length, [tasks])
   const { level } = getLevelForXP(store.xp)
-  const weekStart = new Date()
+  const todayKey = dayKey(new Date())
+  const { activeDays, weekEvents, weeklyCategory, prevWeekCount, weekChange } = useMemo(() => {
+  const weekStart = new Date(`${todayKey}T00:00:00`)
   weekStart.setHours(0, 0, 0, 0)
   weekStart.setDate(weekStart.getDate() - 6)
   const activeDays = new Set(events.filter((event) => new Date(event.createdAt) >= weekStart).map((event) => dayKey(event.createdAt))).size
@@ -49,9 +52,10 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   prevWeekStart.setDate(prevWeekStart.getDate() - 7)
   const prevWeekCount = events.filter((e) => { const d = new Date(e.createdAt); return d >= prevWeekStart && d < weekStart }).length
   const weekChange = prevWeekCount > 0 ? Math.round(((weekEvents.length - prevWeekCount) / prevWeekCount) * 100) : null
+  return { activeDays, weekEvents, weeklyCategory, prevWeekCount, weekChange }
+  }, [events, todayKey])
   const firstName = profile?.display_name?.trim().split(/\s+/)[0] || 'Yolcu'
   const today = new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())
-  const todayKey = dayKey(new Date())
   const hasActivityToday = events.some((event) => dayKey(event.createdAt) === todayKey)
   const hour = new Date().getHours()
   const streakAtRisk = hour >= 20 && !hasActivityToday && store.streak.lastDate !== todayKey

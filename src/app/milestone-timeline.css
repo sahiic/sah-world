@@ -138,10 +138,6 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .mt-card {
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-muted: #8a95ad;
   --mt-accent: #818cf8;
   --mt-accent-bg: rgba(129, 140, 248, 0.12);
   --dot-bg: rgba(255, 255, 255, 0.06);
@@ -158,10 +154,6 @@
 [data-theme="sah"].dark .mt-card {
   --mt-accent: #34d399;
   --mt-accent-bg: rgba(52, 211, 153, 0.12);
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-muted: #8a95ad;
   --dot-bg: rgba(255, 255, 255, 0.06);
   --connector: rgba(255, 255, 255, 0.08);
 }

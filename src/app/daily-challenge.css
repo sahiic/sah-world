@@ -146,11 +146,6 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .dc-card {
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-secondary: #c1c9db;
-  --text-muted: #8a95ad;
   --dc-track: rgba(255, 255, 255, 0.06);
   --dc-accent: #818cf8;
   --dc-done: #34d399;
@@ -169,11 +164,6 @@
 [data-theme="sah"].dark .dc-card {
   --dc-accent: #34d399;
   --dc-done: #34d399;
-  --card-bg: rgba(20, 27, 47, 0.96);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text-primary: #eef2ff;
-  --text-secondary: #c1c9db;
-  --text-muted: #8a95ad;
   --dc-track: rgba(255, 255, 255, 0.06);
   --item-bg: rgba(255, 255, 255, 0.03);
   --item-done-bg: rgba(52, 211, 153, 0.08);
