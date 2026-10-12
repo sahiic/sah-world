@@ -147,6 +147,11 @@ export function BotanicalScene({ uid, stage, fedAreas, vitality, playing, pulse,
       <ellipse cx="276" cy="414" rx="27" ry="7" fill="var(--shadow)" opacity=".5" filter={`url(#${uid}-contact)`}/>
     </g>
 
+    {/* Selsebil stream bed — always visible as a faint dry path */}
+    <g data-layer="stream-bed" className={styles.streamBed}>
+      <path d={streamPath} fill="none" stroke="var(--path)" strokeWidth={4} strokeLinecap="round" strokeDasharray="6 8" />
+    </g>
+
     {/* Selsebil Stream — flows based on streak */}
     {streakDays > 0 && <g data-layer="stream" className={styles.stream} opacity={streamIntensity}>
       <path d={streamPath} fill="none" stroke={`url(#${uid}-stream)`} strokeWidth={3 + streakDays * .3} strokeLinecap="round" />
@@ -187,6 +192,14 @@ export function BotanicalScene({ uid, stage, fedAreas, vitality, playing, pulse,
                 <path d={`M8 ${-cluster.ry*.76}Q${cluster.rx*.7} ${-cluster.ry*.8} ${cluster.rx*.82} -8`} stroke="var(--leaf-rim)" strokeWidth="1.5" fill="none" opacity=".6"/>
               </g>
             </g>)}
+
+            {/* Flower buds — always visible from stage 1 as waiting seeds */}
+            {maturity >= 1 && flowerCount === 0 && <g data-layer="buds" className={styles.buds}>
+              {flowerPositions.slice(0, Math.min(4, Math.ceil(maturity))).map((f, i) => <g key={i} transform={`translate(${f.cx} ${f.cy}) scale(${f.s})`}>
+                <circle r={2.2} fill="var(--flower-center)" opacity=".35" className={styles.bud} style={{ animationDelay: `-${i * 2.3}s` }} />
+                <circle r={1} fill="var(--flower-inner)" opacity=".5" />
+              </g>)}
+            </g>}
 
             {/* Flowers — rose motif, bloom based on fedAreas */}
             {flowerCount > 0 && maturity >= 3 && <g data-layer="flowers" className={styles.flowers}>
@@ -238,11 +251,27 @@ export function BotanicalScene({ uid, stage, fedAreas, vitality, playing, pulse,
       </g>
     </g>
 
+    {/* Islamic geometric ground motif — rub el hizb pattern */}
+    <g data-layer="geometric" className={styles.geometric} transform="translate(275 425)" opacity=".18">
+      <rect x="-8" y="-8" width="16" height="16" fill="var(--pollen)" transform="rotate(0)" />
+      <rect x="-8" y="-8" width="16" height="16" fill="var(--pollen)" transform="rotate(45)" />
+      <circle r="4" fill="var(--flower-center)" opacity=".6" />
+    </g>
+
     {/* Grain overlay */}
     <rect width="560" height="560" fill={`url(#${uid}-grain)`} opacity=".55" pointerEvents="none"/>
 
     {/* Pollen / mote particles */}
     <g className={styles.pollen} aria-hidden="true">{Array.from({length:12},(_,index)=><circle key={index} cx={65+(index*97)%439} cy={140+(index*61)%260} r={index%3===0?1.8:1} fill="var(--pollen)" className={styles.mote} style={{animationDelay:`-${index*.8}s`,animationDuration:`${6+index%4}s`}}/>)}</g>
+
+    {/* Ambient nur — subtle golden particles visible during day/dawn */}
+    {!isNight && !isDusk && !reduced && <g data-layer="nur-ambient" className={styles.nurAmbient} aria-hidden="true">
+      {Array.from({ length: 5 }, (_, i) => {
+        const x = 100 + (i * 137) % 360
+        const y = 160 + (i * 109) % 220
+        return <circle key={i} cx={x} cy={y} r={2 + (i % 2)} fill="var(--pollen)" className={styles.nurAmbientParticle} style={{ animationDelay: `-${i * 1.8}s`, animationDuration: `${9 + i % 4}s` }} />
+      })}
+    </g>}
 
     {/* Nur particles — Islamic light particles, replace generic fireflies */}
     {(isNight || isDusk) && !reduced && <g data-layer="nur" className={styles.nurLayer} aria-hidden="true">

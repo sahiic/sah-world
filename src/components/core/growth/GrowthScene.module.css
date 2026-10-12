@@ -21,7 +21,7 @@
   box-shadow:0 24px 64px rgba(9,54,42,.2),inset 0 0 0 1px var(--line);
   font-variant-numeric:tabular-nums; position:relative;
 }
-.root[data-time="dawn"] {--sky-top:#c5cdd0;--sky-mid:#f0ddd0;--sky-low:#f6e7bf;--hill-far:#c5bdb1}
+.root[data-time="dawn"] {--sky-top:#c5cdd0;--sky-mid:#f0ddd0;--sky-low:#f6d8a8;--hill-far:#c5bdb1;--sun-core:#ffe0a0;--haze:#fff0d0;--meadow-light:#a8be80;--pollen:#ffd68a}
 .root[data-time="dusk"] {--sky-top:#a0a9b7;--sky-mid:#d4c6bc;--sky-low:#f0d7aa;--hill-far:#a2afa7;--sun-core:#ffe0a0;--nur-core:#ffd477}
 .root[data-time="night"] {
   --sky-top:#0c1a2e;--sky-mid:#152a42;--sky-low:#1e3a50;--sun-core:#2a3f5a;
@@ -91,11 +91,18 @@
 .nurParticle {animation:nurDrift 7s ease-in-out infinite}
 .nurBurst {animation:nurPulse 1.5s ease-out both}
 
+/* Selsebil stream bed — dry path always visible */
+.streamBed {opacity:.2}
+
 /* Selsebil stream */
 .stream {transition:opacity 1.5s}
 .streamFlow {stroke-dasharray:4 96;animation:streamAnimate 8s linear infinite}
 .streamSparkle {stroke-dasharray:1 12;animation:streamAnimate 5s linear infinite reverse}
 .streamDrop {animation:streamDropAnim 3s ease-in-out infinite}
+
+/* Flower buds — waiting seeds */
+.buds {opacity:.6}
+.bud {animation:budPulse 4s ease-in-out infinite}
 
 /* Flowers — gül motifi */
 .flowers {opacity:0;animation:flowerBloom 2s ease-out forwards}
@@ -108,6 +115,13 @@
 /* Extra roots growing */
 .extraRoot {opacity:0;animation:rootGrow 1.5s ease-out forwards}
 
+/* Ambient daytime nur particles */
+.nurAmbient {opacity:.5}
+.nurAmbientParticle {animation:nurAmbientFloat 10s ease-in-out infinite}
+
+/* Islamic geometric ground motif */
+.geometric {transition:opacity 1s}
+
 /* Additional birds flock */
 .birds2 {animation:cloud 60s linear infinite alternate}
 
@@ -117,6 +131,10 @@
 .root[data-ready="true"] [data-layer="moon"] {animation:reveal 1.5s .4s both}
 .root[data-ready="true"] [data-layer="nur"] {animation:reveal 1.5s .6s both}
 .root[data-ready="true"] [data-layer="stream"] {animation:reveal 1s .3s both}
+.root[data-ready="true"] [data-layer="stream-bed"] {animation:reveal 1.2s .2s both}
+.root[data-ready="true"] [data-layer="buds"] {animation:reveal 1s .4s both}
+.root[data-ready="true"] [data-layer="nur-ambient"] {animation:reveal 1.5s .5s both}
+.root[data-ready="true"] [data-layer="geometric"] {animation:reveal 1s .3s both}
 .root[data-ready="true"] [data-layer="flowers"] {animation:flowerBloom 2s .5s both}
 
 .root[aria-busy="true"] .art::after {content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,var(--surface) 48%,transparent 70%);animation:shimmer 1.6s infinite}.root[aria-busy="true"] .habitat {pointer-events:none}.root[aria-busy="true"] .week {opacity:.3}
@@ -147,6 +165,8 @@
 @keyframes flowerSway {0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
 @keyframes leafFall {0%{transform:translate(0,0) rotate(0);opacity:.6}50%{transform:translate(20px,80px) rotate(180deg);opacity:.4}100%{transform:translate(-10px,160px) rotate(360deg);opacity:0}}
 @keyframes rootGrow {from{opacity:0;stroke-dasharray:0 100}to{opacity:.6;stroke-dasharray:100 0}}
+@keyframes budPulse {0%,100%{opacity:.3;transform:scale(.9)}50%{opacity:.6;transform:scale(1.1)}}
+@keyframes nurAmbientFloat {0%{transform:translate(0,0);opacity:.15}25%{opacity:.35}50%{transform:translate(6px,-10px);opacity:.25}75%{opacity:.1}100%{transform:translate(-3px,4px);opacity:.15}}
 
 /* Responsive */
 @media (min-width:1280px) and (max-width:1450px) {.info{padding:24px}.habitat{padding:8px;grid-template-columns:24px minmax(0,1fr) 12px}.habitatIcon{width:24px;height:32px;font-size:17px}.habitatCopy strong{font-size:10px}.habitatCopy small{font-size:9px}.period{flex-wrap:wrap}.orbit{min-height:560px}.art{inset:20% 25% 16%}.output{top:32px;right:16px}}
@@ -163,4 +183,4 @@
   .habitats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; padding:8px 0; }
   .habitat,.habitat[data-habitat] { width:100%; min-width:0; }
 }
-@media (prefers-reduced-motion:reduce) {.root *,.root *::after{animation:none!important;transition:none!important}.cloud,.treeWind{will-change:auto}.flowLight,.liveFlow,.rootDrop,.burst,.nurParticle,.fallingLeaf,.streamFlow,.streamSparkle,.streamDrop,.star,.moon,.flower,.flowerGlow,.extraRoot,.nurBurst,.birds2{display:none}.root[data-ready="true"] [data-layer]{opacity:1}.flowers{opacity:1}.stream{opacity:1}}
+@media (prefers-reduced-motion:reduce) {.root *,.root *::after{animation:none!important;transition:none!important}.cloud,.treeWind{will-change:auto}.flowLight,.liveFlow,.rootDrop,.burst,.nurParticle,.nurAmbientParticle,.fallingLeaf,.streamFlow,.streamSparkle,.streamDrop,.star,.moon,.flower,.flowerGlow,.extraRoot,.nurBurst,.birds2,.bud{display:none}.root[data-ready="true"] [data-layer]{opacity:1}.flowers{opacity:1}.stream{opacity:1}.buds{opacity:.6}}
