@@ -27,6 +27,8 @@ test('profession path preserves locking, reading, completion and reflection', as
   await expect(dialog.getByRole('textbox')).toHaveValue('Bugün işimin kontrol listesini gözden geçireceğim.');
   await expect(dialog.getByRole('button',{name:'Tamamlandı',exact:true})).toBeDisabled();
   await dialog.getByRole('button',{name:'Dersi kapat'}).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Yansımalarım',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Yansımalarım',exact:true}).click();
   await expect(page.locator('.reflection-card')).toHaveCount(1);
   await expect(page.locator('.reflection-note')).toHaveText('Bugün işimin kontrol listesini gözden geçireceğim.');
