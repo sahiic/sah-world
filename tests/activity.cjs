@@ -4,6 +4,18 @@ const load = require('./helpers/load-typescript.cjs');
 const {buildActivityFeed, getCategoryCounts, dayKey, relativeTime} = load('src/lib/activity.ts');
 const empty = () => ({journal:[],quranNotes:[],hadisNotes:[],eisenhower:{q1:[],q2:[],q3:[],q4:[]},lessons:[],sukurList:[],totalZikir:0,focusSessions:[]});
 
+test('remote profession and awareness records are counted once without changing local counts', () => {
+  const source = empty();
+  source.journal = [{id:'local'}];
+  const events = [{id:'p1',category:'profession'}, {id:'p2',category:'profession'}, {id:'p1',category:'profession'}, {id:'a1',category:'awareness'}, {id:'j1',category:'journal'}];
+  const snapshot = structuredClone(events);
+  const result = getCategoryCounts(source, events);
+  assert.equal(result.profession, 2);
+  assert.equal(result.awareness, 1);
+  assert.equal(result.journal, 1);
+  assert.deepEqual(events, snapshot);
+});
+
 test('empty activity has no synthetic events and all categories are zero', () => {
   assert.deepEqual(buildActivityFeed(empty()), []);
   assert.equal(Object.keys(getCategoryCounts(empty())).length, 10);

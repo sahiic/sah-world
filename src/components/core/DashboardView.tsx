@@ -36,7 +36,7 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   const remoteActivity = useActivityLog()
   const localEvents = useMemo(() => buildActivityFeed(store), [store.journal, store.quranNotes, store.hadisNotes, store.eisenhower, store.lessons, store.sukurList, store.focusSessions])
   const events = useMemo(() => remoteActivity.items.length ? mapIntegratedActivities(remoteActivity.items) : localEvents, [remoteActivity.items, localEvents])
-  const counts = useMemo(() => getCategoryCounts(store), [store.journal, store.quranNotes, store.hadisNotes, store.eisenhower, store.lessons, store.sukurList, store.totalZikir, store.focusSessions])
+  const counts = useMemo(() => getCategoryCounts(store, events), [store.journal, store.quranNotes, store.hadisNotes, store.eisenhower, store.lessons, store.sukurList, store.totalZikir, store.focusSessions, events])
   const tasks = useMemo(() => Object.values(store.eisenhower).flat(), [store.eisenhower])
   const done = useMemo(() => tasks.filter((task) => task.done).length, [tasks])
   const { level } = getLevelForXP(store.xp)
