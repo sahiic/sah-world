@@ -154,6 +154,7 @@ export default function SahApp({
   const [onboardingPreview, setOnboardingPreview] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [milestone, setMilestone] = useState<Milestone>(null);
+  const [professionModalOpen, setProfessionModalOpen] = useState(false);
   const [transitionCue, setTransitionCue] = useState<(GrowthNavigationCue & { nonce: number }) | null>(null);
   const reducedMotion = useReducedMotion();
   const transitionCueTimer = useRef<number | null>(null);
@@ -651,7 +652,7 @@ export default function SahApp({
               ) : view === "awareness" ? (
                 <AwarenessView onNavigate={navigate} />
               ) : view === "profession-school" ? (
-                <ProfessionSchoolView onNavigate={navigate} />
+                <ProfessionSchoolView onNavigate={navigate} onModalChange={setProfessionModalOpen}/>
               ) : (
                 <SectionView section={view} onNavigate={navigate} />
               )}
@@ -717,7 +718,7 @@ export default function SahApp({
         />
       )}
       <MilestoneCelebration
-        milestone={milestone}
+        milestone={professionModalOpen ? null : milestone}
         onClose={() => setMilestone(null)}
       />
     </div>

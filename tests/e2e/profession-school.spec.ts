@@ -35,3 +35,33 @@ test('profession path preserves locking, reading, completion and reflection', as
   await dialog.getByRole('button',{name:'Dersi kapat'}).click();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test('eight completed lessons show an accessible reduced-motion certificate', async ({page},testInfo) => {
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await openSchool(page);
+  await page.locator('.profession-track-grid button').filter({hasText:'Avukat'}).click();
+  await page.getByRole('button',{name:'Yansımalarım',exact:true}).click();
+  await expect(page.locator('.reflection-empty')).toContainText('Henüz yansıma notu yazmadın');
+  await page.getByRole('button',{name:'Ders yoluna dön'}).click();
+  for(let i=0;i<8;i++){
+    await page.locator('.lesson-path button').nth(i).click();
+    await page.getByRole('dialog').getByRole('button',{name:/Tamamladım/}).click();
+    if(i<7){
+      await expect(page.locator('.lesson-reader')).toHaveCount(0);
+      const milestone=page.getByRole('button',{name:'Bu anı karşıla'});
+      if(await milestone.isVisible())await milestone.click();
+    }
+  }
+  const certificate=page.getByRole('dialog',{name:'Meslek Ahlakı Sertifikası'});
+  await expect(certificate).toBeVisible();
+  await expect(certificate).toContainText('8 dersin tamamını');
+  await expect(certificate).toContainText('240 XH');
+  await expect(certificate).toContainText('Avukat');
+  await expect(page.getByRole('button',{name:'Sertifikayı kapat'})).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(certificate.getByRole('button',{name:'Yolculuğuma devam et'})).toBeFocused();
+  await page.screenshot({path:testInfo.outputPath('profession-certificate.png')});
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.locator('.lesson-path .is-complete')).toHaveCount(8);
+});

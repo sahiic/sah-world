@@ -1,10 +1,14 @@
 "use client";
 import { AppIcon } from "@/components/ui/AppIcon";
 import type { ProfessionLesson, ProfessionTrack } from "@/lib/professionSchool";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useProfessionDialog } from './useProfessionDialog';
 
 type Props = {activeLesson: ProfessionLesson | null; activeTrack?: ProfessionTrack; reflection: string; completedIds: Set<string>; saving: boolean; onReflection: (value: string) => void; onClose: () => void; onComplete: () => void};
-export default function ProfessionLessonReader({activeLesson, activeTrack, reflection, completedIds, saving, onReflection, onClose, onComplete}: Props) { return (<AnimatePresence>
+export default function ProfessionLessonReader({activeLesson, activeTrack, reflection, completedIds, saving, onReflection, onClose, onComplete}: Props) {
+  const ref=useProfessionDialog(Boolean(activeLesson),onClose);
+  const reduced=useReducedMotion();
+  return (<AnimatePresence>
         {activeLesson && (
           <motion.div
             className="lesson-reader-backdrop"
@@ -16,13 +20,16 @@ export default function ProfessionLessonReader({activeLesson, activeTrack, refle
             }
           >
             <motion.article
+              ref={ref}
+              tabIndex={-1}
               className="lesson-reader"
               role="dialog"
               aria-modal="true"
               aria-labelledby="lesson-reader-title"
-              initial={{ opacity: 0, y: 22, scale: 0.98 }}
+              initial={reduced ? false : { opacity: 0, y: 22, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.99 }}
+              exit={reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.99 }}
+              transition={{duration:reduced?0:.2}}
             >
               <button
                 className="lesson-close"
