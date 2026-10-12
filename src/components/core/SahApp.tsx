@@ -48,7 +48,7 @@ const FocusTimerView = dynamic(() => import("@/app/focus/components/FocusExperie
 const AwarenessView = dynamic(() => import("./AwarenessView"), {
   loading: () => <SectionSkeleton shape="scene" />,
 });
-const ProfessionSchoolView = dynamic(() => import("./ProfessionSchoolView"), {
+const ProfessionSchoolView = dynamic(() => import("../profession/ProfessionSchoolView"), {
   loading: () => <SectionSkeleton />,
 });
 const QuranCompanionView = dynamic(() => import("./QuranCompanionView"), {
