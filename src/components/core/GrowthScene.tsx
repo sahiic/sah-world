@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { getLevelForXP, LEVELS } from '@/lib/constants'
-import { getVitality, type GrowthSceneData } from '@/lib/growthScene'
+import { getVitality, getSeason, type GrowthSceneData } from '@/lib/growthScene'
 import { growthInputForCategory, type GrowthInputKey } from '@/lib/growthDiagram'
 import type { ActivityEvent } from '@/lib/activity'
 import type { GrowthNavigationCue } from './GrowthTree'
@@ -101,13 +101,14 @@ export default function GrowthScene({ data, events = [], loading = false, now, o
   }, [pulse])
 
   const hour = clock === null ? 12 : new Date(clock).getHours()
-  const time = hour >= 6 && hour < 10 ? 'dawn' : hour >= 10 && hour < 17 ? 'day' : 'dusk'
+  const time = hour >= 21 || hour < 5 ? 'night' : hour >= 5 && hour < 10 ? 'dawn' : hour >= 10 && hour < 17 ? 'day' : 'dusk'
+  const season = getSeason(data.vitalityScore, data.activeDays)
   const dates = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(now ?? clock ?? 0)
     date.setDate(date.getDate() - 6 + index)
     return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })
   })
-  return <section ref={root} className={styles.root} data-growth-scene="botanical-v1" data-playing={playing} data-ready={revealed && !loading} data-vitality={vitality} data-time={time} data-highlight={hovered ?? pulse?.source ?? ''} aria-labelledby={`${uid}-title`} aria-busy={loading}>
+  return <section ref={root} className={styles.root} data-growth-scene="botanical-v1" data-playing={playing} data-ready={revealed && !loading} data-vitality={vitality} data-time={time} data-season={season} data-highlight={hovered ?? pulse?.source ?? ''} aria-labelledby={`${uid}-title`} aria-busy={loading}>
     <div className={styles.info}>
       <span className={styles.eyebrow}>YAŞAYAN GELİŞİM ALANIN</span>
       <div className={styles.heading}><h2 id={`${uid}-title`}>{level.name}</h2><span>Seviye {data.level} / 10</span></div>
@@ -128,7 +129,7 @@ export default function GrowthScene({ data, events = [], loading = false, now, o
       <header className={styles.period}><span><i />SON 7 GÜN · CANLI ETKİNLİK</span><button type="button" onClick={() => onNavigate('reports')}>Etkinlik akışını aç <AppIcon name="arrow-right" /></button></header>
       <div className={styles.orbit}>
         <div className={styles.art}>
-          <BotanicalScene uid={uid} stage={data.stage} fedAreas={data.fedAreas} vitality={vitality} playing={playing} pulse={pulse !== null} label={`${level.name}, seviye ${data.level}/10, son 7 günde ${data.weeklyActions} hareket, ${data.fedAreas} alan besleniyor`} />
+          <BotanicalScene uid={uid} stage={data.stage} fedAreas={data.fedAreas} vitality={vitality} playing={playing} pulse={pulse !== null} label={`${level.name}, seviye ${data.level}/10, son 7 günde ${data.weeklyActions} hareket, ${data.fedAreas} alan besleniyor`} time={time} streakDays={data.activeDays} season={season} />
           <span className={styles.output}><AppIcon name="arrow-up" /><span><strong>{pulse ? `+${pulse.amount} XH` : 'XH'}</strong><small>Gelişim çıktısı</small></span></span>
         </div>
         <svg className={styles.connections} viewBox="0 0 880 624" preserveAspectRatio="none" aria-hidden="true">
