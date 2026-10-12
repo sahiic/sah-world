@@ -2,8 +2,8 @@
 import { AppIcon } from "@/components/ui/AppIcon";
 import type { ProfessionLesson, ProfessionTrack } from "@/lib/professionSchool";
 
-type Props = {tracks: ProfessionTrack[]; lessons: ProfessionLesson[]; followed: Set<string>; completedIds: Set<string>; activeTrackId: string; onFollow: (id: string) => void};
-export default function ProfessionTrackSelector({tracks, lessons, followed, completedIds, activeTrackId, onFollow}: Props) { return (<section
+type Props = {tracks: ProfessionTrack[]; lessons: ProfessionLesson[]; followed: Set<string>; completedIds: Set<string>; activeTrackId: string; onFollow: (id: string) => void; loading: boolean};
+export default function ProfessionTrackSelector({tracks, lessons, followed, completedIds, activeTrackId, onFollow, loading}: Props) { return (<section
         className="profession-selector"
         aria-labelledby="profession-select-title"
       >
@@ -32,6 +32,7 @@ export default function ProfessionTrackSelector({tracks, lessons, followed, comp
             return (
               <button
                 key={track.id}
+                disabled={loading}
                 className={`${isFollowed ? "is-followed" : ""} ${activeTrackId === track.id ? "is-active" : ""}`}
                 style={
                   { "--track-accent": track.colorAccent } as React.CSSProperties
