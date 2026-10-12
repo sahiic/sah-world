@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const load = require('./helpers/load-typescript.cjs');
 const {PROFESSION_TRACKS: tracks, PROFESSION_LESSONS: lessons, professionProgress} = load('src/lib/professionSchool.ts');
-test('school has at least six real tracks', () => assert.ok(tracks.length >= 6));
+test('school has ten real tracks and eighty lessons', () => {assert.equal(tracks.length,10);assert.equal(lessons.length,80)});
 test('tracks have all display fields', () => tracks.forEach(t => ['id','professionName','icon','description','colorAccent'].forEach(k => assert.ok(t[k]?.trim()))));
 test('track IDs are unique', () => assert.equal(new Set(tracks.map(t=>t.id)).size, tracks.length));
 test('track names are unique', () => assert.equal(new Set(tracks.map(t=>t.professionName)).size, tracks.length));
