@@ -12,19 +12,41 @@
   --stone:#85897a; --stone-light:#b3b5a0; --pollen:#f7e4a1; --grain:#263f2d; --bird:#475d4c;
   --habitat-quran:#e4bd68; --habitat-focus:#9cb4fe; --habitat-sukur:#dfb76c;
   --habitat-lessons:#eda7b7; --habitat-journal:#c2a7ee; --habitat-profession:#b3c5ff; --habitat-mescidim:#63dbb3;
+  --star:#fffbe6; --moon-face:#f5f0d0; --moon-glow:#fff8d6;
+  --nur-core:#ffe8a0; --leaf-autumn:#d4965a;
+  --flower-inner:#f7c5d0; --flower-mid:#e89aad; --flower-outer:#d4748f; --flower-center:#f5d76e;
+  --stream-start:#7ec8e3; --stream-mid:#a0d8ef; --stream-end:#7ec8e3; --stream-sparkle:#e0f4ff;
   color:var(--ink); background:var(--paper); border-radius:24px; isolation:isolate;
   display:grid; grid-template-columns:minmax(280px,31%) minmax(0,1fr); min-width:0;
   box-shadow:0 24px 64px rgba(9,54,42,.2),inset 0 0 0 1px var(--line);
   font-variant-numeric:tabular-nums; position:relative;
 }
 .root[data-time="dawn"] {--sky-top:#c5cdd0;--sky-mid:#f0ddd0;--sky-low:#f6e7bf;--hill-far:#c5bdb1}
-.root[data-time="dusk"] {--sky-top:#a0a9b7;--sky-mid:#d4c6bc;--sky-low:#f0d7aa;--hill-far:#a2afa7;--sun-core:#ffe0a0}
+.root[data-time="dusk"] {--sky-top:#a0a9b7;--sky-mid:#d4c6bc;--sky-low:#f0d7aa;--hill-far:#a2afa7;--sun-core:#ffe0a0;--nur-core:#ffd477}
+.root[data-time="night"] {
+  --sky-top:#0c1a2e;--sky-mid:#152a42;--sky-low:#1e3a50;--sun-core:#2a3f5a;
+  --haze:#1a2f45;--cloud:#1a2f45;
+  --hill-far:#1a3040;--hill-middle:#162838;--hill-near:#1a3530;
+  --meadow-light:#3a5a3a;--meadow-dark:#1e3a28;--grass:#1e3825;--path:#4a5a50;
+  --bark-shadow:#2a2520;--bark-mid:#5a4a38;--bark-light:#7a6a4a;--bark-rim:#9a8a6a;
+  --leaf-rim:#7a9a5a;--leaf-light:#506a3a;--leaf-mid:#304a2a;--leaf-shadow:#1a2a1a;
+  --stone:#4a5050;--stone-light:#6a7068;--pollen:#d4c880;--grain:#1a2a20;--bird:#3a4a3e;
+  --nur-core:#ffeebb;--star:#fffbe6;--moon-face:#f5f0d0;--moon-glow:#fff8d6;
+  --flower-inner:#c89aaa;--flower-mid:#b07a8a;--flower-outer:#9a6070;--flower-center:#d4b850;
+  --stream-mid:#5a8aa0;--stream-sparkle:#8ac0d8;
+}
+.root[data-season="gaflet"] {--leaf-rim:#a0a878;--leaf-light:#7a8a5a;--leaf-mid:#4a6040;--leaf-shadow:#2a3a28;--meadow-light:#8a9a70;--meadow-dark:#4a6040}
+.root[data-season="tovbe"] {--leaf-rim:#c8e090;--leaf-light:#a0c870;--flower-inner:#f0d0e0;--flower-mid:#e8b0c8;--flower-center:#f8e080}
+.root[data-season="tefekkur"] {--leaf-rim:#d8b060;--leaf-light:#c0a050;--leaf-mid:#8a6a30;--leaf-shadow:#5a4020;--leaf-autumn:#d4965a;--meadow-light:#b0a068;--meadow-dark:#706030;--flower-inner:#e0a878;--flower-mid:#c88a58;--flower-outer:#a06a40}
 :global([data-theme="dark"]) .root {
   --paper:#152923;--surface:rgba(30,50,43,.94);--glass:rgba(32,52,45,.91);--ink:#ecf3e7;--muted:#b5c5b7;--line:rgba(212,235,209,.16);--brand:#c1acff;
   --sky-top:#25323d;--sky-mid:#4d5960;--sky-low:#958b77;--haze:#abbbaa;--cloud:#8faaa4;--sun-core:#f0d29b;
   --hill-far:#647978;--hill-middle:#425e55;--hill-near:#2d4c3e;--meadow-light:#566e43;--meadow-dark:#263e2d;--grass:#263d30;
   --leaf-rim:#bdd894;--leaf-light:#819e68;--leaf-mid:#3f6345;--leaf-shadow:#1c3c30;
   --habitat-quran:#e9c575;--habitat-focus:#b6b4ff;--habitat-sukur:#e4bc73;--habitat-lessons:#e9a4b6;--habitat-journal:#c9adf6;--habitat-profession:#bcb1f0;--habitat-mescidim:#8ad1b2;
+  --nur-core:#f0d29b;--star:#e8e0c8;--moon-face:#d8d0b0;--moon-glow:#e8e0c0;
+  --flower-inner:#c89aaa;--flower-mid:#b07a8a;--flower-outer:#9a6070;--flower-center:#d4b850;
+  --stream-mid:#4a7a90;--stream-sparkle:#6aa0b8;
 }
 .info {padding:32px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--line);border-radius:24px 0 0 24px;background:linear-gradient(140deg,var(--surface),transparent);min-width:0}
 .eyebrow {font-size:11px;font-weight:700;letter-spacing:.13em;color:var(--muted)}
@@ -54,15 +76,79 @@
 .part {transition:filter .25s,opacity .25s}
 .root[data-highlight="quran"] [data-part="quran"],.root[data-highlight="focus"] [data-part="focus"],.root[data-highlight="sukur"] [data-part="sukur"],.root[data-highlight="lessons"] [data-part="lessons"],.root[data-highlight="journal"] [data-part="journal"],.root[data-highlight="profession"] [data-part="profession"],.root[data-highlight="mescidim"] [data-part="mescidim"] {filter:drop-shadow(0 0 5px var(--pollen));opacity:1}
 .root[data-highlight="quran"] [data-flow="quran"],.root[data-highlight="focus"] [data-flow="focus"],.root[data-highlight="sukur"] [data-flow="sukur"],.root[data-highlight="lessons"] [data-flow="lessons"],.root[data-highlight="journal"] [data-flow="journal"],.root[data-highlight="profession"] [data-flow="profession"],.root[data-highlight="mescidim"] [data-flow="mescidim"] {opacity:1;filter:drop-shadow(0 0 3px var(--habitat))}
+
+/* Existing animations */
 .cloud {animation:cloud 90s ease-in-out infinite alternate;will-change:transform}.rays {animation:rays 12s ease-in-out infinite;transform-origin:442px 83px}.treeWind {transform-origin:280px 414px;animation:wind 9s ease-in-out infinite;will-change:transform}.foliage {animation:leafWind 7s ease-in-out infinite;transform-origin:center}.grass {transform-origin:0 0;animation:grass 6s ease-in-out infinite}.mote {animation:mote 8s ease-in-out infinite;opacity:.6}.pollen {opacity:.6}.root[data-vitality="dormant"] .pollen {opacity:.14}.rootTip {animation:rootGlow 4s ease-in-out infinite}.rootDrop {stroke-dasharray:3 97;animation:lightTravel 1.3s ease-out both}.burst {animation:burst 1.3s ease-out both}.birds {animation:cloud 80s linear infinite alternate}
+
+/* Stars */
+.star {animation:starTwinkle 4s ease-in-out infinite}
+
+/* Moon */
+.moon {animation:moonFloat 20s ease-in-out infinite}
+
+/* Nur particles — divine light, not generic fireflies */
+.nurLayer {opacity:.7}
+.nurParticle {animation:nurDrift 7s ease-in-out infinite}
+.nurBurst {animation:nurPulse 1.5s ease-out both}
+
+/* Selsebil stream */
+.stream {transition:opacity 1.5s}
+.streamFlow {stroke-dasharray:4 96;animation:streamAnimate 8s linear infinite}
+.streamSparkle {stroke-dasharray:1 12;animation:streamAnimate 5s linear infinite reverse}
+.streamDrop {animation:streamDropAnim 3s ease-in-out infinite}
+
+/* Flowers — gül motifi */
+.flowers {opacity:0;animation:flowerBloom 2s ease-out forwards}
+.flower {animation:flowerSway 6s ease-in-out infinite}
+.flowerGlow {animation:rootGlow 3s ease-in-out infinite}
+
+/* Falling leaves — tefekkür */
+.fallingLeaf {animation:leafFall 10s ease-in-out infinite}
+
+/* Extra roots growing */
+.extraRoot {opacity:0;animation:rootGrow 1.5s ease-out forwards}
+
+/* Additional birds flock */
+.birds2 {animation:cloud 60s linear infinite alternate}
+
+/* Reveal and loading */
 .root[data-ready="true"] [data-layer="sky"] {animation:reveal .6s both}.root[data-ready="true"] [data-layer="hills"] {animation:reveal .8s .1s both}.root[data-ready="true"] [data-layer="tree"] {animation:reveal .8s .2s both}
+.root[data-ready="true"] [data-layer="stars"] {animation:reveal 1.2s .3s both}
+.root[data-ready="true"] [data-layer="moon"] {animation:reveal 1.5s .4s both}
+.root[data-ready="true"] [data-layer="nur"] {animation:reveal 1.5s .6s both}
+.root[data-ready="true"] [data-layer="stream"] {animation:reveal 1s .3s both}
+.root[data-ready="true"] [data-layer="flowers"] {animation:flowerBloom 2s .5s both}
+
 .root[aria-busy="true"] .art::after {content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,var(--surface) 48%,transparent 70%);animation:shimmer 1.6s infinite}.root[aria-busy="true"] .habitat {pointer-events:none}.root[aria-busy="true"] .week {opacity:.3}
 .root[data-playing="false"] *, .root[data-playing="false"] *::after {animation-play-state:paused!important}.root[data-playing="false"] .cloud,.root[data-playing="false"] .treeWind {will-change:auto}
-@keyframes shimmer {to{transform:translateX(100%)}}@keyframes stageRing {50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 7%,transparent)}}
-@keyframes flowDash {to{stroke-dashoffset:-60}}@keyframes lightTravel {from{stroke-dashoffset:1}to{stroke-dashoffset:-99}}
-@keyframes cloud {from{transform:translateX(-24px)}to{transform:translateX(32px)}}@keyframes rays {50%{opacity:.65;transform:rotate(2deg)}}
-@keyframes wind {0%,100%{transform:rotate(-.55deg)}50%{transform:rotate(.65deg)}}@keyframes leafWind {50%{transform:translate(1px,-1px) rotate(.7deg)}}@keyframes grass {50%{transform:skewX(10deg)}}
-@keyframes mote {0%,100%{transform:translate(0,0);opacity:.2}50%{transform:translate(12px,-20px);opacity:.9}}@keyframes rootGlow {50%{opacity:.4}}@keyframes burst {from{transform:translateY(0);opacity:1}to{transform:translateY(-32px);opacity:0}}@keyframes reveal {from{opacity:.3}to{opacity:1}}
+
+/* Keyframes */
+@keyframes shimmer {to{transform:translateX(100%)}}
+@keyframes stageRing {50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 7%,transparent)}}
+@keyframes flowDash {to{stroke-dashoffset:-60}}
+@keyframes lightTravel {from{stroke-dashoffset:1}to{stroke-dashoffset:-99}}
+@keyframes cloud {from{transform:translateX(-24px)}to{transform:translateX(32px)}}
+@keyframes rays {50%{opacity:.65;transform:rotate(2deg)}}
+@keyframes wind {0%,100%{transform:rotate(-.55deg)}50%{transform:rotate(.65deg)}}
+@keyframes leafWind {50%{transform:translate(1px,-1px) rotate(.7deg)}}
+@keyframes grass {50%{transform:skewX(10deg)}}
+@keyframes mote {0%,100%{transform:translate(0,0);opacity:.2}50%{transform:translate(12px,-20px);opacity:.9}}
+@keyframes rootGlow {50%{opacity:.4}}
+@keyframes burst {from{transform:translateY(0);opacity:1}to{transform:translateY(-32px);opacity:0}}
+@keyframes reveal {from{opacity:.3}to{opacity:1}}
+
+@keyframes starTwinkle {0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes moonFloat {0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes nurDrift {0%{transform:translate(0,0);opacity:.2}25%{opacity:.9}50%{transform:translate(8px,-14px);opacity:.7}75%{opacity:.4}100%{transform:translate(-4px,6px);opacity:.2}}
+@keyframes nurPulse {from{r:8;opacity:.5}to{r:40;opacity:0}}
+@keyframes streamAnimate {from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+@keyframes streamDropAnim {0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-3px);opacity:.8}}
+@keyframes flowerBloom {from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes flowerSway {0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes leafFall {0%{transform:translate(0,0) rotate(0);opacity:.6}50%{transform:translate(20px,80px) rotate(180deg);opacity:.4}100%{transform:translate(-10px,160px) rotate(360deg);opacity:0}}
+@keyframes rootGrow {from{opacity:0;stroke-dasharray:0 100}to{opacity:.6;stroke-dasharray:100 0}}
+
+/* Responsive */
 @media (min-width:1280px) and (max-width:1450px) {.info{padding:24px}.habitat{padding:8px;grid-template-columns:24px minmax(0,1fr) 12px}.habitatIcon{width:24px;height:32px;font-size:17px}.habitatCopy strong{font-size:10px}.habitatCopy small{font-size:9px}.period{flex-wrap:wrap}.orbit{min-height:560px}.art{inset:20% 25% 16%}.output{top:32px;right:16px}}
 @media (max-width:1279px) {
   .root{grid-template-columns:1fr}.info{padding:32px;border-right:0;border-bottom:1px solid var(--line);border-radius:24px 24px 0 0;display:grid;grid-template-columns:1fr 1fr;column-gap:32px;align-content:start}.eyebrow,.heading,.description{grid-column:1}.heading{margin-bottom:16px}.description{grid-row:3/6;margin-bottom:0}.stats{grid-column:2;grid-row:1/3;margin-bottom:8px}.note{grid-column:2;margin-bottom:0;padding:8px 0}.progressCopy{grid-column:2}.progress{grid-column:2}.journey,.journeyCaption,.next{grid-column:1/-1}.next{margin-top:16px}.journey{margin-top:24px}.visual{padding:24px;border-radius:0 0 24px 24px}.orbit{min-height:0;aspect-ratio:auto;display:flex;flex-direction:column;gap:24px}.art{position:relative;inset:auto;width:min(100%,560px);height:auto;aspect-ratio:1;margin:auto;border-radius:40% 40% 24px 24px / 25% 25% 24px 24px}.connections{display:none}.habitats{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 4px 16px;scrollbar-width:thin;scrollbar-color:var(--habitat-mescidim) var(--line);overscroll-behavior-inline:contain}.habitat,.habitat[data-habitat]{position:relative;inset:auto;width:240px;min-width:240px;min-height:96px;scroll-snap-align:start}.hint{margin-top:8px}
@@ -77,4 +163,4 @@
   .habitats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; padding:8px 0; }
   .habitat,.habitat[data-habitat] { width:100%; min-width:0; }
 }
-@media (prefers-reduced-motion:reduce) {.root *,.root *::after{animation:none!important;transition:none!important}.cloud,.treeWind{will-change:auto}.flowLight,.liveFlow,.rootDrop,.burst{display:none}.root[data-ready="true"] [data-layer]{opacity:1}}
+@media (prefers-reduced-motion:reduce) {.root *,.root *::after{animation:none!important;transition:none!important}.cloud,.treeWind{will-change:auto}.flowLight,.liveFlow,.rootDrop,.burst,.nurParticle,.fallingLeaf,.streamFlow,.streamSparkle,.streamDrop,.star,.moon,.flower,.flowerGlow,.extraRoot,.nurBurst,.birds2{display:none}.root[data-ready="true"] [data-layer]{opacity:1}.flowers{opacity:1}.stream{opacity:1}}

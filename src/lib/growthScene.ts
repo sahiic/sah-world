@@ -24,11 +24,22 @@ export type GrowthSceneData = {
   fedAreas: number
   vitalityScore: number
   habitats: GrowthHabitat[]
+  activeDays: number
 }
 export type Vitality = 'dormant' | 'sprouting' | 'flourishing' | 'radiant'
+export type Season = 'gaflet' | 'tovbe' | 'ihsan' | 'tefekkur'
+
 export function getVitality(score: number): Vitality {
   return score <= 0 ? 'dormant' : score < 25 ? 'sprouting' : score < 75 ? 'flourishing' : 'radiant'
 }
+
+export function getSeason(vitalityScore: number, activeDays: number): Season {
+  if (vitalityScore <= 10) return 'gaflet'
+  if (vitalityScore < 40 && activeDays <= 3) return 'tovbe'
+  if (vitalityScore >= 70) return 'ihsan'
+  return 'tefekkur'
+}
+
 export function buildGrowthSceneData(xh: number, events: ActivityEvent[], now = Date.now()): GrowthSceneData {
   const { level, nextLevel, index } = getLevelForXP(xh)
   const inputs = buildGrowthInputs(events, now)
@@ -38,7 +49,7 @@ export function buildGrowthSceneData(xh: number, events: ActivityEvent[], now = 
   const progress = nextLevel ? Math.max(0, Math.min(1, (xh - level.xp) / (nextLevel.xp - level.xp))) : 1
   return {
     stage: index + progress, level: index + 1, xh, xhToNext: Math.max(0, (nextLevel?.xp ?? xh) - xh),
-    weeklyActions, fedAreas,
+    weeklyActions, fedAreas, activeDays,
     vitalityScore: Math.min(100, Math.round(fedAreas / 7 * 40 + activeDays / 7 * 35 + Math.min(weeklyActions, 21) / 21 * 25)),
     habitats: inputs.map((input) => ({ id: input.id, name: input.id === 'quran' ? "Kur'an Kerim Kardeşim" : input.label, icon: input.icon, count7d: input.count, daily: input.daily, status: input.status, target: input.target, description: input.metaphor, intensity: input.intensity })),
   }
