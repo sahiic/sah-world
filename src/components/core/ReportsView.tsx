@@ -43,7 +43,7 @@ export default function ReportsView() {
     ? mapIntegratedActivities(remoteActivity.items)
     : buildActivityFeed(store);
   const daily = useMemo(() => getDailyActivity(events), [events]);
-  const localCounts = getCategoryCounts(store);
+  const localCounts = getCategoryCounts(store, events);
   const counts = useMemo(
     () =>
       events.length

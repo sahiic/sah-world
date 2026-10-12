@@ -98,7 +98,7 @@ export function dayKey(value: string | Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-export function getCategoryCounts(source: ActivitySource): Record<ActivityCategory, number> {
+export function getCategoryCounts(source: ActivitySource, events: readonly ActivityEvent[] = []): Record<ActivityCategory, number> {
   const tasks = Object.values(source.eisenhower).flat();
   return {
     journal: source.journal.length,
@@ -109,8 +109,8 @@ export function getCategoryCounts(source: ActivitySource): Record<ActivityCatego
     sukur: source.sukurList.length,
     mescidim: Math.floor(source.totalZikir / 33),
     focus: source.focusSessions.length,
-    profession: 0,
-    awareness: 0,
+    profession: new Set(events.filter((event) => event.category === 'profession').map((event) => event.id)).size,
+    awareness: new Set(events.filter((event) => event.category === 'awareness').map((event) => event.id)).size,
   };
 }
 
