@@ -34,3 +34,13 @@
 [data-theme="dark"] .core-app :is(.profession-track-grid>button,.path-label,.lesson-opening,.lesson-reflection textarea){color:#effaf4;background:#193b2c}
 [data-theme="dark"] .core-app :is(.profession-selector,.lesson-path,.lesson-reader) :is(h2,h3){color:#effaf4}
 [data-theme="dark"] .core-app .lesson-explanation>p:last-child{color:#b1c4b6}
+.reflection-toggle{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;margin-top:24px;padding:12px 16px;border:1px solid #6a8379;border-radius:12px;background:#fff;color:#0d2b1d;font-weight:700;text-align:left}
+.reflection-list{min-width:0;padding:24px;border-radius:24px;background:var(--core-surface,#fbf9f6);color:var(--core-ink,#0d2b1d)}
+.reflection-list h2{margin:8px 0;font-size:26px}.reflection-list header>p,.reflection-empty{color:var(--core-muted,#52675d);font-size:14px;line-height:1.7}
+.reflection-card{padding:24px;margin-top:16px;border:1px solid var(--core-line,#dce5df);border-radius:18px;background:var(--core-surface,#fff);overflow-wrap:anywhere}
+.reflection-card h3{margin:0 0 8px;font-size:18px;line-height:1.4}.reflection-card time{font-size:12px;color:var(--core-muted,#52675d)}
+.reflection-note{white-space:pre-wrap;font-size:15px;line-height:1.8}.reflection-card a{display:block;color:#006950;font-size:13px;line-height:1.7;margin:12px 0}
+.reflection-card button{min-height:44px;padding:10px 16px;border:1px solid #9cb7a9;border-radius:10px;background:transparent;color:inherit;font-weight:650}
+[data-theme="dark"] .reflection-list,[data-theme="dark"] .reflection-card{background:#10261d;color:#effaf4;border-color:#345245}
+[data-theme="dark"] .reflection-card a{color:#8ff2d2}[data-theme="dark"] .reflection-toggle{background:#193b2c;color:#effaf4}
+@media(max-width:600px){.reflection-list,.reflection-card{padding:18px}}

@@ -2,9 +2,10 @@
 import { AppIcon } from "@/components/ui/AppIcon";
 import type { ProfessionLesson, ProfessionTrack } from "@/lib/professionSchool";
 import { professionProgress } from "@/lib/professionSchool";
+import type { ReactNode } from 'react';
 
-type Props = {activeTrack: ProfessionTrack; activeTrackLessons: ProfessionLesson[]; completedIds: Set<string>; onOpenLesson: (lesson: ProfessionLesson, unlocked: boolean) => void};
-export default function ProfessionLearningShell({activeTrack, activeTrackLessons, completedIds, onOpenLesson}: Props) { return (<section
+type Props = {activeTrack: ProfessionTrack; activeTrackLessons: ProfessionLesson[]; completedIds: Set<string>; onOpenLesson: (lesson: ProfessionLesson, unlocked: boolean) => void; reflections?: ReactNode; showReflections: boolean; onToggleReflections: () => void};
+export default function ProfessionLearningShell({activeTrack, activeTrackLessons, completedIds, onOpenLesson, reflections, showReflections, onToggleReflections}: Props) { return (<section
           className="profession-learning-shell"
           style={
             { "--track-accent": activeTrack.colorAccent } as React.CSSProperties
@@ -39,8 +40,9 @@ export default function ProfessionLearningShell({activeTrack, activeTrackLessons
               <span>İhsan</span>
               <span>Adalet</span>
             </div>
+            <button className="reflection-toggle" type="button" aria-expanded={showReflections} aria-controls="profession-reflections" onClick={onToggleReflections}><AppIcon name="notebook"/> {showReflections ? 'Ders yoluna dön' : 'Yansımalarım'}</button>
           </aside>
-          <div
+          {showReflections ? reflections : <div
             className="lesson-path"
             aria-label={`${activeTrack.professionName} ders yolu`}
           >
@@ -70,5 +72,5 @@ export default function ProfessionLearningShell({activeTrack, activeTrackLessons
                 </button>
               );
             })}
-          </div>
+          </div>}
         </section>); }

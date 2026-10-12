@@ -11,6 +11,7 @@ import ProfessionTrackSelector from './ProfessionTrackSelector'
 import ProfessionLearningShell from './ProfessionLearningShell'
 import ProfessionLessonReader from './ProfessionLessonReader'
 import ProfessionEmptyState from './ProfessionEmptyState'
+import ProfessionReflections from './ProfessionReflections'
 
 export default function ProfessionSchoolView({onNavigate}: {onNavigate:(view:string)=>void}) {
   const user = useAuthStore(state=>state.user)
@@ -24,6 +25,7 @@ export default function ProfessionSchoolView({onNavigate}: {onNavigate:(view:str
   const [reflection, setReflection] = useState('')
   const [notice, setNotice] = useState('')
   const [saving, setSaving] = useState(false)
+  const [showReflections, setShowReflections] = useState(false)
   useEffect(()=>{
     let active = true
     void loadProfessionSchool().then(data=>{
@@ -76,7 +78,7 @@ export default function ProfessionSchoolView({onNavigate}: {onNavigate:(view:str
     <ProfessionHero followed={followed} completedIds={completedIds} overall={overall}/>
     {notice && <div className="profession-notice" role="status"><AppIcon name="circle-check"/> {notice}</div>}
     <ProfessionTrackSelector tracks={tracks} lessons={lessons} followed={followed} completedIds={completedIds} activeTrackId={activeTrackId} onFollow={follow}/>
-    {activeTrack ? <ProfessionLearningShell activeTrack={activeTrack} activeTrackLessons={activeTrackLessons} completedIds={completedIds} onOpenLesson={openLesson}/> : <ProfessionEmptyState/>}
+    {activeTrack ? <ProfessionLearningShell activeTrack={activeTrack} activeTrackLessons={activeTrackLessons} completedIds={completedIds} onOpenLesson={openLesson} showReflections={showReflections} onToggleReflections={()=>setShowReflections(value=>!value)} reflections={<ProfessionReflections lessons={lessons} progress={progress} onOpenLesson={openLesson}/>}/> : <ProfessionEmptyState/>}
     <div className="context-links"><span><AppIcon name="link"/> Öğrendiğini günlük hayata taşı</span><div>
       <button type="button" onClick={()=>onNavigate('journal')}><AppIcon name="notebook"/> Ders üzerine günlük notu yaz<AppIcon name="arrow-right"/></button>
       <button type="button" onClick={()=>onNavigate('matrix')}><AppIcon name="layout-grid"/> Uygulama adımını planla<AppIcon name="arrow-right"/></button>
