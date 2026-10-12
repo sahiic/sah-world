@@ -33,6 +33,7 @@ jobs:
         run: |
           node scripts/test-quran-database.cjs
           node scripts/test-quran-social-database.cjs
+          node scripts/test-profession-database.cjs
       - run: npm run build
       # Traces contain test-only synthetic text. Never run these tests with real personal data.
       - uses: actions/upload-artifact@v4
