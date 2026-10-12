@@ -98,3 +98,23 @@ test('summaryToText produces readable output', () => {
   assert.ok(text.includes('Seri: 5'));
   assert.ok(text.includes('XP'));
 });
+
+test('rolling weekday labels and copied counts align for every ending weekday', () => {
+  const names = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
+  for (let endDay = 11; endDay <= 17; endDay++) {
+    const now = new Date(2026, 9, endDay, 18);
+    const summary = buildWeeklySummary([{ ...event(0), createdAt: now.toISOString() }], 1, now);
+    assert.deepEqual(summary.dailyCounts, [0, 0, 0, 0, 0, 0, 1]);
+    assert.deepEqual(summary.dailyLabels, Array.from({ length: 7 }, (_, i) => names[(now.getDay() + 1 + i) % 7]));
+    assert.ok(summaryToText(summary).includes(`${names[now.getDay()]}:1`));
+  }
+});
+
+test('rolling labels cross year and leap-day boundaries without shifting', () => {
+  for (const [date, expected] of [
+    ['2026-01-02T18:00:00', ['Ct', 'Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu']],
+    ['2024-03-02T18:00:00', ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct']],
+  ]) {
+    assert.deepEqual(buildWeeklySummary([], 0, new Date(date)).dailyLabels, expected);
+  }
+});

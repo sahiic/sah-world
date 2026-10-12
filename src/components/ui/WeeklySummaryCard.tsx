@@ -7,8 +7,6 @@ import { buildActivityFeed, type ActivitySource } from '@/lib/activity'
 import { computeGlobalStreaks } from '@/lib/streaks'
 import { buildWeeklySummary, summaryToText } from '@/lib/weeklySummary'
 
-const DAY_NAMES = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct']
-
 export default function WeeklySummaryCard() {
   const store = useJourneyStore()
   const [copied, setCopied] = useState(false)
@@ -88,7 +86,7 @@ export default function WeeklySummaryCard() {
                 style={{ height: `${count > 0 ? Math.max(12, Math.round((count / maxDaily) * 100)) : 0}%` }}
               />
             </div>
-            <small className={count > 0 ? 'active' : ''}>{DAY_NAMES[i]}</small>
+            <small className={count > 0 ? 'active' : ''}>{summary.dailyLabels[i]}</small>
           </div>
         ))}
       </div>
