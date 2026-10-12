@@ -3,12 +3,13 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import type { ProfessionLesson, ProfessionTrack } from "@/lib/professionSchool";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useProfessionDialog } from './useProfessionDialog';
+import { createPortal } from 'react-dom';
 
 type Props = {activeLesson: ProfessionLesson | null; activeTrack?: ProfessionTrack; reflection: string; completedIds: Set<string>; saving: boolean; onReflection: (value: string) => void; onClose: () => void; onComplete: () => void};
 export default function ProfessionLessonReader({activeLesson, activeTrack, reflection, completedIds, saving, onReflection, onClose, onComplete}: Props) {
   const ref=useProfessionDialog(Boolean(activeLesson),onClose);
   const reduced=useReducedMotion();
-  return (<AnimatePresence>
+  return typeof document==='undefined' ? null : createPortal(<AnimatePresence>
         {activeLesson && (
           <motion.div
             className="lesson-reader-backdrop"
@@ -122,4 +123,4 @@ export default function ProfessionLessonReader({activeLesson, activeTrack, refle
             </motion.article>
           </motion.div>
         )}
-      </AnimatePresence>); }
+      </AnimatePresence>,document.querySelector('.core-app') || document.body); }

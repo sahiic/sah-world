@@ -57,6 +57,9 @@ test('eight completed lessons show an accessible reduced-motion certificate', as
   await expect(certificate).toContainText('8 dersin tamamını');
   await expect(certificate).toContainText('240 XH');
   await expect(certificate).toContainText('Avukat');
+  const bounds=await certificate.boundingBox();
+  expect(bounds!.y).toBeGreaterThanOrEqual(0);
+  expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   await expect(page.getByRole('button',{name:'Sertifikayı kapat'})).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(certificate.getByRole('button',{name:'Yolculuğuma devam et'})).toBeFocused();
