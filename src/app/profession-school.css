@@ -56,3 +56,11 @@
 [data-theme="dark"] .certificate-note,[data-theme="dark"] .certificate-card time{color:#c6d9cc}[data-theme="dark"] .certificate-close{background:#254736;color:#effaf4}
 @media(max-width:600px){.certificate-backdrop{padding:12px}.certificate-card{padding:48px 20px 28px;max-height:calc(100dvh - 24px)}}
 @media(prefers-reduced-motion:reduce){.certificate-card,.lesson-reader{animation:none!important;transition:none!important}}
+.daily-lesson-card{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:16px;padding:22px;border:1px solid #b5d1c4;border-radius:20px;background:#f4faf6;color:#0d2b1d;min-width:0}
+.profession-hero>.daily-lesson-card{grid-column:1 / -1;background:#fbf9f6}.daily-lesson-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#dff1e7;color:#006950;font-size:26px}
+.daily-lesson-eyebrow{font-size:10px;letter-spacing:.12em;font-weight:800;color:#006950}.daily-lesson-card h2{margin:6px 0;font-size:18px;line-height:1.4;overflow-wrap:anywhere}.daily-lesson-card p{margin:0;font-size:13px;color:#52675d}
+.daily-lesson-card button{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:12px 18px;border:0;border-radius:12px;background:#006950;color:#fff;font-weight:700;white-space:nowrap}
+.dashboard-welcome-shell>.section-error-boundary:has(.daily-lesson-card),.dashboard-welcome-shell>.daily-lesson-card{grid-column:1 / -1}
+[data-theme="dark"] .daily-lesson-card,[data-theme="dark"] .profession-hero>.daily-lesson-card{background:#10261d;color:#effaf4;border-color:#345245}
+[data-theme="dark"] .daily-lesson-card p{color:#c6d9cc}[data-theme="dark"] .daily-lesson-eyebrow{color:#8ff2d2}
+@media(max-width:600px){.daily-lesson-card{grid-template-columns:40px minmax(0,1fr);padding:18px;gap:12px}.daily-lesson-icon{width:40px;height:40px}.daily-lesson-card button{grid-column:1 / -1;width:100%}}

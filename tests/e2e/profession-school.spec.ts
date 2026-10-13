@@ -9,12 +9,13 @@ async function openSchool(page: Page) {
 test('profession path preserves locking, reading, completion and reflection', async ({page}) => {
   await openSchool(page);
   await page.locator('.profession-track-grid button').filter({hasText:'Mühendis'}).click();
+  await expect(page.locator('.profession-hero .daily-lesson-card')).toContainText('Niyet: işi ibadet bilinciyle başlatmak');
   const steps=page.locator('.lesson-path button');
   await expect(steps).toHaveCount(8);
   await steps.nth(1).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('status')).toContainText('önceki adımı');
-  await steps.nth(0).click();
+  await page.locator('.daily-lesson-card').getByRole('button',{name:/Derse başla/}).click();
   const dialog=page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('.lesson-sources a')).toHaveCount(1);
@@ -23,6 +24,7 @@ test('profession path preserves locking, reading, completion and reflection', as
   await expect(dialog).toHaveCount(0);
   await expect(steps.nth(0)).toHaveAttribute('aria-label',/tamamlandı/);
   await expect(steps.nth(1)).toHaveAttribute('aria-label',/açık/);
+  await expect(page.locator('.daily-lesson-card')).toContainText('Amanah: yetki, bilgi ve zaman');
   await steps.nth(0).click();
   await expect(dialog.getByRole('textbox')).toHaveValue('Bugün işimin kontrol listesini gözden geçireceğim.');
   await expect(dialog.getByRole('button',{name:'Tamamlandı',exact:true})).toBeDisabled();
@@ -67,4 +69,5 @@ test('eight completed lessons show an accessible reduced-motion certificate', as
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.locator('.lesson-path .is-complete')).toHaveCount(8);
+  await expect(page.locator('.daily-lesson-card')).toHaveCount(0);
 });

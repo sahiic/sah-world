@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
-import { PROFESSION_LESSONS, PROFESSION_TRACKS, type ProfessionLesson, type ProfessionTrack } from '@/lib/professionSchool'
+import { PROFESSION_LESSONS, PROFESSION_TRACKS, getDailyLesson, type ProfessionLesson, type ProfessionTrack } from '@/lib/professionSchool'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/useAuthStore'
 import { isValidUUID, useJourneyStore } from '@/store/useJourneyStore'
@@ -44,6 +44,8 @@ export default function ProfessionSchoolView({onNavigate,onModalChange}: {onNavi
     return ()=>{active=false}
   },[userId])
   const completedIds = useMemo(()=>new Set(progress.keys()),[progress])
+  const suggestion = useMemo(()=>getDailyLesson([...followed],completedIds),[followed,completedIds])
+  const dailyLesson = lessons.find(lesson=>lesson.id===suggestion?.id) ?? null
   const activeTrack = tracks.find(track=>track.id===activeTrackId)
   const activeTrackLessons = lessons.filter(lesson=>lesson.trackId===activeTrackId).sort((a,b)=>a.orderIndex-b.orderIndex)
   const overall = followed.size ? Math.round([...followed].reduce((sum,id)=>{
@@ -63,6 +65,7 @@ export default function ProfessionSchoolView({onNavigate,onModalChange}: {onNavi
   }
   const openLesson = (lesson:ProfessionLesson,unlocked:boolean)=>{
     if (!unlocked) {flash('Bu ders, önceki adımı tamamladığında açılacak.');return}
+    setActiveTrackId(lesson.trackId)
     setActiveLesson(lesson);setReflection(progress.get(lesson.id)?.reflectionNote || '')
   }
   const complete = async ()=>{
@@ -90,7 +93,7 @@ export default function ProfessionSchoolView({onNavigate,onModalChange}: {onNavi
     else window.setTimeout(()=>setActiveLesson(current=>current?.id===activeLesson.id ? null : current),650)
   }
   return <div className="view-stack profession-school">
-    <ProfessionHero followed={followed} completedIds={completedIds} overall={overall}/>
+    <ProfessionHero followed={followed} completedIds={completedIds} overall={overall} dailyLesson={dailyLesson} dailyTrack={tracks.find(track=>track.id===dailyLesson?.trackId)} onOpenLesson={openLesson}/>
     {notice && <div className="profession-notice" role="status"><AppIcon name="circle-check"/> {notice}</div>}
     <ProfessionTrackSelector tracks={tracks} lessons={lessons} followed={followed} completedIds={completedIds} activeTrackId={activeTrackId} onFollow={follow} loading={loading}/>
     {activeTrack ? <ProfessionLearningShell activeTrack={activeTrack} activeTrackLessons={activeTrackLessons} completedIds={completedIds} onOpenLesson={openLesson} showReflections={showReflections} onToggleReflections={()=>setShowReflections(value=>!value)} reflections={<ProfessionReflections lessons={lessons} progress={progress} onOpenLesson={openLesson}/>}/> : <ProfessionEmptyState/>}

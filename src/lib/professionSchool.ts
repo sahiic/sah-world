@@ -157,3 +157,13 @@ export function professionProgress(completedLessonIds: Set<string>, trackId: str
   const completed = lessons.filter((lesson) => completedLessonIds.has(lesson.id)).length
   return { completed, total: lessons.length, percent: lessons.length ? Math.round((completed / lessons.length) * 100) : 0 }
 }
+
+// Stable tie-breaking follows the user's track order; no clock or network side effects.
+export function getDailyLesson(followedTrackIds: string[], completedLessonIds: Set<string>): ProfessionLesson | null {
+  const candidates = [...new Set(followedTrackIds)].map(trackId=>{
+    const lessons=PROFESSION_LESSONS.filter(lesson=>lesson.trackId===trackId).sort((a,b)=>a.orderIndex-b.orderIndex)
+    const next=lessons.find(lesson=>!completedLessonIds.has(lesson.id))
+    return {next, ratio:lessons.length ? lessons.filter(lesson=>completedLessonIds.has(lesson.id)).length/lessons.length : 1}
+  }).filter(item=>item.next).sort((a,b)=>a.ratio-b.ratio)
+  return candidates[0]?.next ?? null
+}
