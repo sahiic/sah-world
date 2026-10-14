@@ -112,10 +112,10 @@ test('exportToJSON returns valid JSON', () => {
   assert.ok(parsed.sections);
 });
 
-test('exportToText contains SAH World header', () => {
+test('exportToText contains SAHİ World header', () => {
   const data = buildExportData(source, ['stats']);
   const text = exportToText(data);
-  assert.ok(text.includes('SAH World'));
+  assert.ok(text.includes('SAHİ World'));
   assert.ok(text.includes('İSTATİSTİKLER'));
 });
 

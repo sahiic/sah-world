@@ -147,7 +147,7 @@ export function exportToJSON(data: ExportData): string {
 export function exportToText(data: ExportData): string {
   const lines: string[] = [
     '═══════════════════════════════════════',
-    '  SAH World — Veri Dışa Aktarma',
+    '  SAHİ World — Veri Dışa Aktarma',
     `  ${formatDate(data.exportDate)}`,
     '═══════════════════════════════════════',
     '',
@@ -231,7 +231,7 @@ export function exportToText(data: ExportData): string {
   }
 
   lines.push('═══════════════════════════════════════')
-  lines.push('  SAH World — sah-world.vercel.app')
+  lines.push('  SAHİ World — sah-world.vercel.app')
   lines.push('═══════════════════════════════════════')
 
   return lines.join('\n')

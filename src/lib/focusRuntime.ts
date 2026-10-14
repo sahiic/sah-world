@@ -49,7 +49,7 @@ export function finalizeFocusSession(naturalCompletion: boolean): FocusSession |
   timer.complete(session)
 
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-    new Notification('SAH · Odak oturumu tamamlandı', {
+    new Notification('SAHİ · Odak oturumu tamamlandı', {
       body: `${session.taskLabel} · ${formatFocusDuration(actualDurationSeconds)}`,
       icon: '/favicon.ico',
     })

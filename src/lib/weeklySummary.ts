@@ -94,7 +94,7 @@ export function buildWeeklySummary(
 
 export function summaryToText(summary: WeeklySummary): string {
   const lines = [
-    `📊 SAH World — Haftalık Özet`,
+    `📊 SAHİ World — Haftalık Özet`,
     `📅 ${summary.weekLabel}`,
     ``,
     `✅ ${summary.totalEvents} kayıt · ${summary.activeDays}/7 aktif gün`,

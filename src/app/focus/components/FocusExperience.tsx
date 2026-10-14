@@ -108,7 +108,7 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
         {onExit ? <button className={`focus-back-button ${styles.backLink}`} onClick={onExit} aria-label="Odak ekranını küçült"><ArrowLeft aria-hidden /><span>Geri</span></button> : <Link
           href="/"
           className={`focus-back-button ${styles.backLink}`}
-          aria-label="SAH World ana sayfasına dön"
+          aria-label="SAHİ World ana sayfasına dön"
         >
           <ArrowLeft aria-hidden />
           <span>Geri</span>

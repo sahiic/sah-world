@@ -6,7 +6,7 @@ import styles from "./global-error.module.css";
 export default function GlobalError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
   return (
     <html lang="tr">
-      <head><title>Yeniden deneyelim | SAH World</title></head>
+      <head><title>Yeniden deneyelim | SAHİ World</title></head>
       <body className={styles.page}>
         <main className={styles.card} role="alert">
           <span className={styles.mark} aria-hidden="true">S</span>

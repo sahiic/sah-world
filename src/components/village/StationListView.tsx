@@ -41,7 +41,7 @@ export default function StationListView({
           </button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="SAH World istasyonları">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="SAHİ World istasyonları">
           {stations.map(location => {
             const status = statuses[location.id] ?? { summary: 'Henüz kayıt yok', detail: 'İlk adımını at' };
 

@@ -1,0 +1,86 @@
+/* A single composition at every size; the motif is never hidden or cropped. */
+.page.page {
+  grid-template-columns: minmax(0, 1.15fr) minmax(400px, .85fr);
+  min-height: 100svh;
+}
+.story {
+  position: relative; isolation: isolate; display: flex; flex-direction: column;
+  align-items: stretch; min-width: 0; padding: 32px clamp(24px, 3.2vw, 64px) 24px;
+  color: #f4f2ff;
+  background: radial-gradient(ellipse at 50% 44%, #3d316546, transparent 64%),
+    radial-gradient(ellipse at 0 100%, #233d5e66, transparent 55%), #12152b;
+}
+.story::before {
+  content: ''; position: absolute; z-index: -1; inset: 0; pointer-events: none;
+  background-image: radial-gradient(#b5b9e022 .7px, transparent .7px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, #000, transparent 70%);
+}
+.header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.brand { display: flex; align-items: center; min-height: 44px; font-size: 30px; letter-spacing: -.025em; }
+.jump { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #ffffff20; border-radius: 50%; color: #dfdcf4; }
+.jump:hover { color: white; background: #ffffff09; }
+.experience { width: 100%; margin: auto; padding: 26px 0 10px; text-align: center; }
+.reveal { isolation: isolate; }
+.motif { position: relative; width: min(100%, 54svh, 540px); margin: 0 auto; aspect-ratio: 1; }
+.motif svg { display: block; width: 100%; height: 100%; }
+.outerRing { fill: none; stroke: #c4b5fd15; stroke-width: .8; stroke-dasharray: 2 8; }
+.boundary { fill: none; stroke: #bcb6e14d; stroke-width: .7; }
+.thread {
+  stroke-width: .85; vector-effect: non-scaling-stroke; opacity: var(--thread-opacity);
+  stroke-dasharray: 1; stroke-dashoffset: 0;
+  animation: drawThread 950ms cubic-bezier(.22, .68, .3, 1) var(--draw-delay) both;
+}
+.points { fill: #e2d9ff8c; }
+.quote { margin: 24px auto 8px; max-width: 680px; font-size: clamp(25px, 2.1vw, 38px); line-height: 1.32; letter-spacing: -.045em; font-weight: 450; text-wrap: balance; }
+.quoteLine { display: block; }
+.quoteAccent { color: #c7b7ff; }
+.word { display: inline-block; animation: wordArrives 760ms cubic-bezier(.16, 1, .3, 1) var(--word-delay) both; }
+.replay {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 44px; height: 44px; margin-top: 8px; padding: 0; border: 1px solid transparent; border-radius: 100px;
+  background: transparent; color: #b5aecf; font-size: 11px; cursor: pointer;
+  transition: color 180ms, background 180ms, border-color 180ms;
+}
+.replay:hover { color: white; background: #ffffff09; border-color: #ffffff20; }
+.story :is(button, a):focus-visible { outline: 2px solid #dfd2ff; outline-offset: 4px; }
+.page :global(.login-panel) { padding: clamp(24px, 3vw, 56px); min-width: 0; }
+.page :global(.login-card) { padding: clamp(28px, 3vw, 44px); }
+.page :global(.login-card-heading h2) { font-size: clamp(26px, 2vw, 34px); }
+.page :global(.login-label) { font-size: 12px; }
+.page :global(.login-legal) { font-size: 11px; }
+.page :global(.login-privacy-note) { font-size: 12px; }
+.page :global(.login-separator) { font-size: 11px; }
+.page :global(.login-email-row button) { font-size: 12px; min-height: 48px; }
+@keyframes drawThread { from { stroke-dashoffset: 1; opacity: 0; } to { stroke-dashoffset: 0; opacity: var(--thread-opacity); } }
+@keyframes wordArrives {
+  from { opacity: 0; transform: translate3d(0, 14px, 0) rotate(2deg); filter: blur(5px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); filter: blur(0); }
+}
+@media (min-width: 1001px) and (max-height: 850px) {
+  .story { padding-top: 24px; }
+  .experience { padding-top: 16px; }
+  .motif { width: min(100%, 440px); }
+  .quote { margin-top: 18px; font-size: clamp(25px, 1.9vw, 34px); }
+}
+@media (max-width: 1000px) {
+  .page.page { grid-template-columns: 1fr; }
+  .story { padding: 24px 28px; }
+  .experience { padding: 20px 0 0; }
+  .motif { width: min(100%, 420px); }
+  .quote { font-size: 30px; margin-top: 20px; }
+  .page :global(.login-panel) { padding: 32px 24px 48px; }
+}
+@media (max-width: 520px) {
+  .story { padding: 18px 20px 22px; }
+  .brand { font-size: 23px; }
+  .experience { padding-top: 18px; }
+  .motif { width: min(100%, 340px); }
+  .quote { margin-top: 18px; font-size: clamp(21px, 5.9vw, 28px); line-height: 1.38; }
+  .page :global(.login-panel) { padding: 24px 16px 40px; }
+  .page :global(.login-card) { padding: 24px; border-radius: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thread, .word { animation: none !important; }
+  .replay { transition: none; }
+}

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "SAH World — Niyetini hayata taşı";
+export const alt = "SAHİ World — Niyetini hayata taşı";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -70,7 +70,7 @@ export default function OpenGraphImage() {
               S
             </span>
             <span style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>
-              SAH WORLD
+              SAHİ WORLD
             </span>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>

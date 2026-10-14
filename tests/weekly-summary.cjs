@@ -94,7 +94,7 @@ test('message changes based on activity', () => {
 test('summaryToText produces readable output', () => {
   const summary = buildWeeklySummary([event(0), event(1)], 5, NOW);
   const text = summaryToText(summary);
-  assert.ok(text.includes('SAH World'));
+  assert.ok(text.includes('SAHİ World'));
   assert.ok(text.includes('Seri: 5'));
   assert.ok(text.includes('XP'));
 });

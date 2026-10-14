@@ -194,7 +194,7 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
 }
 
 function DashboardPreloader() {
-  return <div className="dashboard-preloader" role="status" aria-live="polite" aria-label="SAH alanın hazırlanıyor"><div className="preloader-mark"><span>S</span><i /><i /></div><div className="preloader-wordmark"><strong>SAH</strong><span>Kendine ait alan hazırlanıyor</span></div><div className="preloader-line"><span /></div></div>
+  return <div className="dashboard-preloader" role="status" aria-live="polite" aria-label="SAHİ alanın hazırlanıyor"><div className="preloader-mark"><span>S</span><i /><i /></div><div className="preloader-wordmark"><strong>SAHİ</strong><span>Kendine ait alan hazırlanıyor</span></div><div className="preloader-line"><span /></div></div>
 }
 
 function Metric({ icon, value, suffix = '', label, detail, tone }: { icon: string; value: number; suffix?: string; label: string; detail: string; tone: string }) {

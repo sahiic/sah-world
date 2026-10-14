@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowDownRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getGoogleAuthAvailability, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
 import CardioidMotif from "./CardioidMotif";
+import styles from "./LoginExperience.module.css";
 
 type Step = "email" | "otp";
 type GoogleAvailability = "checking" | "enabled" | "disabled" | "unknown";
@@ -174,47 +176,22 @@ export default function LoginScreen() {
   };
 
   return (
-    <main className="login-page">
-      <section className="login-story" aria-labelledby="login-title">
-        <div className="login-brand">
-          <span>S</span>
-          <strong>SAH</strong>
-        </div>
-        <div className="login-story-copy">
-          <p className="login-story-eyebrow">
-            <span aria-hidden /> Kişisel gelişim platformu
-          </p>
-          <h1 id="login-title">
-            İyi alışkanlıkların,
-            <br />
-            <em>kendi evrenini kurar.</em>
-          </h1>
-          <p>
-            Günlüğünü, hedeflerini ve manevi yolculuğunu tek bir sakin alanda
-            takip et. Her kayıt ilerlemene dönüşsün.
-          </p>
+    <main className={`login-page ${styles.page}`}>
+      <section className={styles.story} aria-labelledby="login-title">
+        <div className={styles.header}>
+          <div className={styles.brand}><strong>SAHİ</strong></div>
+          <a className={styles.jump} href="#login-form" aria-label="Giriş formuna git"><ArrowDownRight size={20} aria-hidden="true" /></a>
         </div>
         <CardioidMotif />
-        <ul className="login-trust-list" aria-label="Platform özellikleri">
-          <li>
-            <span>✓</span> Yedi sade yaşam alanı
-          </li>
-          <li>
-            <span>✓</span> XH ve gelişim raporları
-          </li>
-          <li>
-            <span>✓</span> Özel kayıtların sana ait
-          </li>
-        </ul>
       </section>
 
-      <section className="login-panel" aria-label="Giriş formu">
+      <section className="login-panel" id="login-form" aria-label="Giriş formu" tabIndex={-1}>
         <div className="login-card">
           {step === "email" ? (
             <>
               <div className="login-card-heading">
                 <p className="eyebrow">Tekrar hoş geldin</p>
-                <h2>SAH hesabına giriş yap</h2>
+                <h2>SAHİ hesabına giriş yap</h2>
                 <p>
                   İlerlemen güvenle saklansın ve tüm cihazlarında seninle
                   kalsın.
