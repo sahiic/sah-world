@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "SAH World — Niyetini Hayata Taşı",
-    short_name: "SAH World",
+    name: "SAHİ World — Niyetini Hayata Taşı",
+    short_name: "SAHİ World",
     description:
       "Odaklanma, günlük, Kur’an yolculuğu ve manevi farkındalık için kişisel gelişim alanı.",
     start_url: "/",

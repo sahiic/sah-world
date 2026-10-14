@@ -102,7 +102,7 @@ export default function PrayerTimes({ reward }: { reward: (amount: number, label
       const notificationId = `sah-prayer-notified-${day.date.gregorian.date}-${prayer.key}`
       if (window.localStorage.getItem(notificationId)) return
       window.localStorage.setItem(notificationId, '1')
-      new Notification(`SAH · ${prayer.label} vakti`, { body: `${location?.city || 'Konumun'} için ${prayer.label} vakti geldi.`, icon: '/favicon.ico' })
+      new Notification(`SAHİ · ${prayer.label} vakti`, { body: `${location?.city || 'Konumun'} için ${prayer.label} vakti geldi.`, icon: '/favicon.ico' })
     }
     check()
     const interval = window.setInterval(check, 30_000)

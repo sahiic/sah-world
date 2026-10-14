@@ -515,12 +515,12 @@ export const HUMANITARIAN_ORGANIZATIONS = [
 export const AWARENESS_SHARE_COPY: Record<Geography, { title: string; text: string; sourceUrl: string }> = {
   filistin: {
     title: 'Filistin: Hafızayı kaynağıyla koru',
-    text: 'Dijital Hafıza, 1948’deki yerinden edilme sürecini Nekbe — Büyük Felaket — başlığıyla anlatıyor. Kaynaklı ve insan onurunu koruyan kısa anlatıyı SAH World’de oku.',
+    text: 'Dijital Hafıza, 1948’deki yerinden edilme sürecini Nekbe — Büyük Felaket — başlığıyla anlatıyor. Kaynaklı ve insan onurunu koruyan kısa anlatıyı SAHİ World’de oku.',
     sourceUrl: SOURCES.nakba,
   },
   dogu_turkistan: {
     title: 'Doğu Türkistan: Bilgiyi kaynağıyla taşı',
-    text: 'Dijital Hafıza’nın zaman tüneli 1759’u Mançuların Doğu Türkistan’daki ilk istilası olarak kayda geçiriyor. Kaynaklı ve sakin anlatıyı SAH World’de oku.',
+    text: 'Dijital Hafıza’nın zaman tüneli 1759’u Mançuların Doğu Türkistan’daki ilk istilası olarak kayda geçiriyor. Kaynaklı ve sakin anlatıyı SAHİ World’de oku.',
     sourceUrl: SOURCES.history,
   },
 }

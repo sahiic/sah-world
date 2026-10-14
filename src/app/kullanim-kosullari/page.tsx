@@ -5,12 +5,12 @@ export default function TermsPage() {
     <main className="legal-page">
       <article className="legal-card">
         <Link className="legal-back" href="/">
-          ← SAH’a dön
+          ← SAHİ’ye dön
         </Link>
-        <p className="eyebrow">SAH platformu</p>
+        <p className="eyebrow">SAHİ platformu</p>
         <h1>Kullanım Koşulları</h1>
         <p>
-          SAH; günlük tutma, odaklanma, öğrenme ve manevi farkındalık için
+          SAHİ; günlük tutma, odaklanma, öğrenme ve manevi farkındalık için
           destekleyici bir kişisel alan sunar. Fetva, terapi, tıbbi, hukuki veya
           profesyonel danışmanlığın yerine geçmez.
         </p>

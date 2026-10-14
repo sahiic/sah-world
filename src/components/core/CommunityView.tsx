@@ -780,7 +780,7 @@ function GroupChat({
                   <AvatarImage
                     src={
                       member?.avatar_url ||
-                      `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(member?.display_name || "SAH")}`
+                      `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(member?.display_name || "SAHİ")}`
                     }
                     size={32}
                   />

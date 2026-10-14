@@ -18,7 +18,7 @@ export function FocusBackdrop({ backgroundId }: { backgroundId: string }) {
 export function FocusStudioIntro({ active }: { active: boolean }) {
   return (
     <header className={styles.intro}>
-      <span><Leaf aria-hidden="true" /> SAH WORLD · ODAK STÜDYOSU</span>
+      <span><Leaf aria-hidden="true" /> SAHİ WORLD · ODAK STÜDYOSU</span>
       <h1>{active ? "Şimdi, yalnızca bu an." : "Bir işe alan aç."}</h1>
       <p>{active ? "Küçük adımlar, derin bir iz bırakır." : "Niyetini seç. Nefes al. Gerisini zamana bırak."}</p>
     </header>

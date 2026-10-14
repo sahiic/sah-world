@@ -5,12 +5,12 @@ export default function PrivacyPage() {
     <main className="legal-page">
       <article className="legal-card">
         <Link className="legal-back" href="/">
-          ← SAH’a dön
+          ← SAHİ’ye dön
         </Link>
         <p className="eyebrow">Şeffaflık</p>
         <h1>Gizlilik Politikası</h1>
         <p>
-          SAH, hesabını ve kişisel gelişim kayıtlarını yalnızca hizmeti sunmak
+          SAHİ, hesabını ve kişisel gelişim kayıtlarını yalnızca hizmeti sunmak
           için işler. Oturum doğrulama Supabase Auth üzerinden yürütülür; Google
           ile girişte uygulama Google şifreni görmez veya saklamaz.
         </p>

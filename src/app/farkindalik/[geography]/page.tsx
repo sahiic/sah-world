@@ -38,12 +38,12 @@ export default async function AwarenessSharePage({ params }: { params: Promise<{
 
   return <main className={styles.page}>
     <section className={styles.hero}>
-      <nav><Link href="/">SAH WORLD</Link><span>KAYNAKLI FARKINDALIK</span></nav>
+      <nav><Link href="/">SAHİ WORLD</Link><span>KAYNAKLI FARKINDALIK</span></nav>
       <div className={styles.orbit} aria-hidden><i /><i /><i /></div>
       <div className={styles.copy}><span>{meta.name.toLocaleUpperCase("tr-TR")}</span><h1>{copy.title}</h1><p>{copy.text}</p><a href={copy.sourceUrl} target="_blank" rel="noopener noreferrer">Ana kaynağı incele ↗</a></div>
       <small>Grafik görüntü içermez · Her olgusal cümle doğrudan kaynağa bağlanır</small>
     </section>
     <section className={styles.sources}><header><span>KAYNAK ZİNCİRİ</span><h2>Kendin doğrula.</h2><p>Bu sayfa kanaat değil, izin verilen kaynaklara giden sakin bir başlangıç noktasıdır.</p></header><div>{sources.map((source) => <a key={source.sourceUrl} href={source.sourceUrl} target="_blank" rel="noopener noreferrer"><small>{source.sectionTitle}</small><strong>{source.sourceName}</strong><span>Kaynağı aç ↗</span></a>)}</div></section>
-    <footer className={styles.footer}><div><strong>SAH World</strong><p>Hafıza · Hakikat · Sorumluluk</p></div><Link href="/">Uygulamaya dön</Link></footer>
+    <footer className={styles.footer}><div><strong>SAHİ World</strong><p>Hafıza · Hakikat · Sorumluluk</p></div><Link href="/">Uygulamaya dön</Link></footer>
   </main>;
 }

@@ -16,7 +16,7 @@ export default function ProfessionCertificate({certificate,onClose}:{certificate
     <motion.article ref={ref} tabIndex={-1} className="certificate-card" role="dialog" aria-modal="true" aria-labelledby="certificate-title" style={{'--track-accent':track.colorAccent} as CSSProperties} initial={reduced?false:{opacity:0,scale:.94}} animate={{opacity:1,scale:1}} transition={{duration:reduced?0:.25}}>
       <button className="certificate-close" type="button" aria-label="Sertifikayı kapat" onClick={onClose}><AppIcon name="x"/></button>
       <span className="certificate-seal" aria-hidden="true"><AppIcon name="certificate"/></span>
-      <p className="certificate-eyebrow">SAH WORLD · ÖĞRENME YOLCULUĞU</p>
+      <p className="certificate-eyebrow">SAHİ WORLD · ÖĞRENME YOLCULUĞU</p>
       <h2 id="certificate-title">Meslek Ahlakı Sertifikası</h2>
       <p className="certificate-profession"><AppIcon name={track.icon}/>{track.professionName}</p>
       <p>{lessonCount} dersin tamamını başarıyla tamamladın.</p>

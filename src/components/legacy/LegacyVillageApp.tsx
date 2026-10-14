@@ -378,7 +378,7 @@ function VillageWorld() {
               S
             </div>
             <span className="text-xs font-black tracking-wider bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">
-              SAH WORLD
+              SAHİ WORLD
             </span>
           </div>
 

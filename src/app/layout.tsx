@@ -34,8 +34,8 @@ const siteUrl = new URL(
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: {
-    default: "SAH World | Niyetini hayata taşı",
-    template: "%s | SAH World",
+    default: "SAHİ World | Niyetini hayata taşı",
+    template: "%s | SAHİ World",
   },
   description:
     "Odaklanma, günlük, Kur’an yolculuğu ve manevi farkındalık için güvenli, sakin ve kişisel gelişim alanı.",
@@ -49,9 +49,9 @@ export const metadata: Metadata = {
     "zikirmatik",
     "kişisel gelişim",
   ],
-  authors: [{ name: "SAH World" }],
-  creator: "SAH World",
-  applicationName: "SAH World",
+  authors: [{ name: "SAHİ World" }],
+  creator: "SAHİ World",
+  applicationName: "SAHİ World",
   manifest: "/manifest.webmanifest",
   alternates: { canonical: "/" },
   icons: {
@@ -62,25 +62,25 @@ export const metadata: Metadata = {
     apple: "/favicon.ico",
   },
   openGraph: {
-    title: "SAH World | Niyetini hayata taşı",
+    title: "SAHİ World | Niyetini hayata taşı",
     description:
       "Odaklanma, günlük, Kur’an yolculuğu ve manevi farkındalık için güvenli kişisel alan.",
     type: "website",
     locale: "tr_TR",
     url: "/",
-    siteName: "SAH World",
+    siteName: "SAHİ World",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "SAH World kişisel gelişim alanı",
+        alt: "SAHİ World kişisel gelişim alanı",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SAH World | Niyetini hayata taşı",
+    title: "SAHİ World | Niyetini hayata taşı",
     description:
       "Küçük ve istikrarlı adımları tek bir güvenli alanda biriktir.",
     images: ["/opengraph-image"],

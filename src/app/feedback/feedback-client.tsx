@@ -17,7 +17,7 @@ export function FeedbackClient({ initialItems }: { initialItems: FeedbackRow[] }
   useEffect(() => { if (state.status === 'success') formRef.current?.reset() }, [state.status])
 
   return <div className="feedback-shell">
-    <section className="feedback-hero"><div><p className="eyebrow">Birlikte daha iyi</p><h1>Görüş ve Öneri</h1><p>SAH’ı kullanırken fark ettiğin her ayrıntı değerlidir. Mesajın doğrudan ürün takip sistemine eklenir.</p></div><div className="feedback-promise"><span>↗</span><strong>Şeffaf takip</strong><small>Durumu ve yönetici yanıtını burada görürsün.</small></div></section>
+    <section className="feedback-hero"><div><p className="eyebrow">Birlikte daha iyi</p><h1>Görüş ve Öneri</h1><p>SAHİ’yi kullanırken fark ettiğin her ayrıntı değerlidir. Mesajın doğrudan ürün takip sistemine eklenir.</p></div><div className="feedback-promise"><span>↗</span><strong>Şeffaf takip</strong><small>Durumu ve yönetici yanıtını burada görürsün.</small></div></section>
 
     <div className="feedback-grid">
       <form ref={formRef} action={action} className="surface-card feedback-form">
@@ -36,7 +36,7 @@ export function FeedbackClient({ initialItems }: { initialItems: FeedbackRow[] }
         {initialItems.length === 0 ? <div className="empty-state"><i>✦</i><strong>Henüz bir gönderimin yok</strong><p>İlk görüşünü gönderdiğinde durumu ve yanıtı burada takip edebilirsin.</p></div> : <div className="feedback-list">{initialItems.map((item) => <article key={item.id}>
           <div className="feedback-item-top"><span className={`feedback-status ${item.status}`}>{statusLabels[item.status]}</span><time dateTime={item.created_at}>{new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(item.created_at))}</time></div>
           <h3>{item.title}</h3><p>{item.message}</p><div className="feedback-item-meta"><span>{types.find((type) => type.value === item.type)?.label}</span>{item.rating && <span>{'★'.repeat(item.rating)}<i>{'★'.repeat(5-item.rating)}</i></span>}</div>
-          {item.admin_response && <blockquote><strong>SAH ekibinin yanıtı</strong><p>{item.admin_response}</p></blockquote>}
+          {item.admin_response && <blockquote><strong>SAHİ ekibinin yanıtı</strong><p>{item.admin_response}</p></blockquote>}
         </article>)}</div>}
       </section>
     </div>

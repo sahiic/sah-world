@@ -410,11 +410,11 @@ export default function SahApp({
         <button
           className="brand sidebar-brand"
           onClick={() => navigate("dashboard")}
-          aria-label="SAH ana sayfa"
+          aria-label="SAHİ ana sayfa"
         >
           <span className="brand-mark"><AppIcon name="leaf" /></span>
           <span>
-            <strong>SAH World</strong>
+            <strong>SAHİ World</strong>
             <small>Tefekkür Vahası</small>
           </span>
         </button>
@@ -467,14 +467,14 @@ export default function SahApp({
           <button
             className="mobile-brand"
             onClick={() => navigate("dashboard")}
-            aria-label="SAH ana sayfa"
+            aria-label="SAHİ ana sayfa"
           >
             <span className="brand-mark"><AppIcon name="leaf" /></span>
-            <strong>SAH World</strong>
+            <strong>SAHİ World</strong>
           </button>
           <div className="header-search-area">
             <div className="route-context">
-              <span>SAH World</span>
+              <span>SAHİ World</span>
               <strong>{viewLabels[view] ?? "Kişisel alan"}</strong>
             </div>
             <button

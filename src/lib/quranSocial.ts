@@ -76,7 +76,7 @@ export function appointmentCalendar(item: {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//SAH World//Quran Study//TR",
+    "PRODID:-//SAHİ World//Quran Study//TR",
     "BEGIN:VEVENT",
     `UID:${item.id}@sah-world`,
     `DTSTAMP:${stamp(new Date().toISOString())}`,

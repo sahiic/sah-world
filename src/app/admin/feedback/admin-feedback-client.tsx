@@ -56,7 +56,7 @@ export function AdminFeedbackClient({
       <header className="admin-header">
         <Link className="standalone-brand" href="/">
           <span>S</span>
-          <strong>SAH</strong>
+          <strong>SAHİ</strong>
         </Link>
         <div>
           <span>Yönetim Merkezi</span>
