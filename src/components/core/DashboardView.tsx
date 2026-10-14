@@ -5,6 +5,7 @@ import SectionErrorBoundary from './SectionErrorBoundary';
 
 const DailyChallengeCard = dynamic(() => import('@/components/ui/DailyChallengeCard'))
 const WeeklySummaryCard = dynamic(() => import('@/components/ui/WeeklySummaryCard'))
+const ProfessionDashboardRecommendation = dynamic(() => import('@/components/profession/ProfessionDashboardRecommendation'))
 
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -117,6 +118,7 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
           <span className="ritual-icon"><AppIcon name={streakAtRisk ? 'flame' : 'sunrise'} /></span><div className="ritual-copy"><span className="eyebrow">{streakAtRisk ? 'SERİNİ KORUMAK İÇİN' : 'BUGÜNÜN KÜÇÜK NİYETİ'}</span><h2>{streakAtRisk ? 'Bugün için tek bir küçük kayıt yeter.' : intentionMessage}</h2><p>{streakAtRisk ? 'Bunu bir görev gibi değil, günün içinde kendine dönmek için kısa bir durak gibi düşün.' : `${suggested.title}, son dönemde en sık kullandığın alanlardan biri.`}</p></div>
           <button onClick={() => onNavigate(suggested.id)}>{suggested.title}<AppIcon name="arrow-right" /></button>
         </motion.section>}
+        <SectionErrorBoundary sectionName="Bugünkü meslek dersin"><ProfessionDashboardRecommendation onNavigate={onNavigate}/></SectionErrorBoundary>
       </section>
 
       <header className="dashboard-section-heading">
