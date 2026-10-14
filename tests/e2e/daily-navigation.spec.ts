@@ -22,7 +22,7 @@ test('home shows the growth simulation by default on desktop, tablet and mobile'
   }
   await page.getByRole('button', { name: 'Günlük', exact: true }).filter({ visible: true }).first().click();
   await expect(page.locator('.journal-notebook')).toBeVisible();
-  await page.getByRole('button', { name: 'SAH ana sayfa', exact: true }).filter({ visible: true }).first().click();
+  await page.getByRole('button', { name: 'SAHİ ana sayfa', exact: true }).filter({ visible: true }).first().click();
   await expect(page.locator('[data-growth-scene]')).toBeVisible();
 });
 
