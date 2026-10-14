@@ -40,7 +40,7 @@ test('cardioid and complete quote stay visible at every breakpoint without overl
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('finite animation reveals the quote with the shape and can replay without clearing the form', async ({ page }) => {
+test('typewriter syncs with the cardioid, loops after a one-second pause, and preserves the form', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   await page.getByLabel('E-posta adresi', { exact: true }).fill('presentation@example.com');
@@ -48,20 +48,21 @@ test('finite animation reveals the quote with the shape and can replay without c
   await replay.click();
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '1');
   const finalThread = page.getByRole('figure').locator('line').last();
-  const words = page.locator('#login-title [data-word]');
-  await expect(words).toHaveCount(8);
-  const delays = await words.evaluateAll(items => items.map(el => parseFloat(getComputedStyle(el).animationDelay)));
+  const glyphs = page.locator('#login-title [data-glyph]');
+  expect(await glyphs.count()).toBe(Array.from(quote.replace(/\s/g, '')).length);
+  const delays = await glyphs.evaluateAll(items => items.map(el => parseFloat(getComputedStyle(el).animationDelay)));
   expect(delays.every((delay, index) => index === 0 || delay > delays[index - 1])).toBe(true);
-  const finalWords = words.last();
+  const finalGlyph = glyphs.last();
   await expect(finalThread).toHaveCSS('opacity', '0');
-  await expect(finalWords).toHaveCSS('opacity', '0');
-  await expect(finalWords).toHaveCSS('opacity', '1', { timeout: 6000 });
+  await expect(finalGlyph).toHaveCSS('opacity', '0');
+  await expect(finalGlyph).toHaveCSS('opacity', '1', { timeout: 6000 });
   await expect(finalThread).toHaveCSS('stroke-dashoffset', '0px', { timeout: 6000 });
-  expect(await finalThread.evaluate(el => getComputedStyle(el).animationIterationCount)).toBe('1');
+  await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '2', { timeout: 6500 });
+  await expect(page.getByTestId('login-reveal').locator('[data-glyph]').last()).toHaveCSS('opacity', '0');
   await expect(page.getByLabel('E-posta adresi', { exact: true })).toHaveValue('presentation@example.com');
   await replay.focus();
   await replay.press('Enter');
-  await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '2');
+  await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '3');
   await expect(replay).toBeFocused();
 });
 
@@ -71,7 +72,9 @@ test('reduced motion immediately renders the complete illustration and keyboard 
   const finalThread = page.getByRole('figure').locator('line').last();
   await expect(finalThread).toHaveCSS('animation-name', 'none');
   await expect(finalThread).toHaveCSS('stroke-dashoffset', '0px');
-  await expect(page.locator('#login-title [data-word]').last()).toHaveCSS('opacity', '1');
+  await expect(page.locator('#login-title [data-glyph]').last()).toHaveCSS('opacity', '1');
+  await expect(page.getByTestId('starfield').locator('circle')).toHaveCount(180);
+  await expect(page.getByTestId('starfield').locator('circle').first()).toHaveCSS('animation-name', 'none');
   await page.getByRole('link', { name: 'Giriş formuna git' }).press('Enter');
   await expect(page.locator('#login-form')).toBeFocused();
   await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeInViewport();
