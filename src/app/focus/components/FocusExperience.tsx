@@ -1,5 +1,10 @@
 "use client";
 
+import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
+import SectionErrorBoundary from '@/components/core/SectionErrorBoundary';
+import { useFocusDialog } from "@/hooks/useFocusDialog";
+import { useTimer } from "@/hooks/useTimer";
+import { useFocusStore } from "@/stores/focusStore";
 import {
   ArrowLeft,
   CalendarDays,
@@ -11,21 +16,16 @@ import {
   Video,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import dynamic from 'next/dynamic';
-import SectionErrorBoundary from '@/components/core/SectionErrorBoundary';
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { useFocusDialog } from "@/hooks/useFocusDialog";
-import { useTimer } from "@/hooks/useTimer";
-import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
-import { useFocusStore } from "@/stores/focusStore";
+import styles from "../focus.module.css";
 import AmbientSoundMixer from "./AmbientSoundMixer";
 import FocusHistory from "./FocusHistory";
 import FocusStats from "./FocusStats";
 import FocusTimer from "./FocusTimer";
 import NiyetCard from "./NiyetCard";
 import SessionConfig from "./SessionConfig";
-import styles from "../focus.module.css";
 
 type FocusView = "session" | "history";
 const FocusAnalyticsPanel = dynamic(() => import('@/components/focus/FocusAnalyticsPanel'));
@@ -262,10 +262,11 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
       />
 
       <div className={styles.shortcutHint}>
-        <Headphones aria-hidden />
-        <span>
-          <kbd>Space</kbd> başlat/durdur · <kbd>R</kbd> sıfırla · <kbd>S</kbd>{" "}
-          sesler
+        <Headphones aria-hidden className={styles.shortcutIcon} />
+        <span className={styles.shortcutText}>
+          <kbd>Space</kbd> başlat/durdur <span className={styles.separator}>·</span>{" "}
+          <kbd>R</kbd> sıfırla <span className={styles.separator}>·</span>{" "}
+          <kbd>S</kbd> sesler
         </span>
       </div>
       {showNiyet && !isRunning && !pendingCompletedSession && (

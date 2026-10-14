@@ -1,13 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { MESCIDIM_TABS, openAppView, selectedValue } from '@/lib/appLocation'
 import { AppIcon } from '@/components/ui/AppIcon'
+import { MESCIDIM_TABS, openAppView, selectedValue } from '@/lib/appLocation'
 import { getMosqueProfile } from '@/lib/mosqueProfile'
-import PrayerTimes from './PrayerTimes'
+import { useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 import MescidimLibrary from './MescidimLibrary'
 import MosqueEventArchive from './MosqueEventArchive'
+import PrayerTimes from './PrayerTimes'
 
 type MescidimTab = 'vakitler' | 'asma' | 'dua' | 'etkinlikler'
 
@@ -36,7 +36,13 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
     return () => window.clearTimeout(timer)
   }, [localCommunity, tab])
   return <div className="mescidim-experience">
-    <header className="page-heading"><div><span className="eyebrow">MESCİDİM</span><h1>{localCommunity ? `${mosque.campus} cami topluluğu` : 'Kişisel manevi alanım'}</h1><p>{localCommunity ? `${mosque.campus} camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.` : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p></div></header>
+    <header className="page-heading">
+      <div>
+        <span className="eyebrow">MESCİDİM</span>
+        <h1>{localCommunity ? `${mosque.campus} cami topluluğu` : 'Kişisel manevi alanım'}</h1>
+        <p>{localCommunity ? `${mosque.campus} camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.` : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p>
+      </div>
+    </header>
     <nav className="mescidim-scope-tabs" role="tablist" aria-label="Mescidim kapsamı" onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
       event.preventDefault()

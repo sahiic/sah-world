@@ -4,14 +4,16 @@ import QuranAchievements from "@/components/quran/QuranAchievements";
 import QuranDashboard from "@/components/quran/QuranDashboard";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { QURAN_TABS } from "@/lib/appLocation";
-import { AnimatePresence,motion } from "framer-motion";
-
+import { AnimatePresence, motion } from "framer-motion";
 
 import SectionSkeleton from "@/components/ui/SectionSkeleton";
+import { getMosqueProfile } from '@/lib/mosqueProfile';
 import dynamic from "next/dynamic";
 import CompanionSkeleton from "./CompanionSkeleton";
 import LevelOnboarding from "./LevelOnboarding";
 import { useQuranCompanion } from "./useQuranCompanion";
+type MescidimTab = 'vakitler' | 'asma' | 'dua' | 'etkinlikler'
+
 const QuranReadTab = dynamic(() => import("./QuranReadTab"), { loading: () => <SectionSkeleton /> });
 const QuranStudyTab = dynamic(() => import("./QuranStudyTab"), { loading: () => <SectionSkeleton /> });
 const QuranCommunityTab = dynamic(() => import("./QuranCommunityTab"), { loading: () => <SectionSkeleton /> });
@@ -19,6 +21,10 @@ interface QuranCompanionViewProps { onNavigate: (view: string) => void; wheelEnt
 export default function QuranCompanionView({onNavigate}: QuranCompanionViewProps) {
  const controller = useQuranCompanion();
  const {profile, tab, mainTab, setTab, reducedMotion, teachers, loading, notice, error, isRealUser, surahProgress, streak, totalHasanat, recentExercises, newBadges, setNewBadges, weeklySummary, tabsRef, socialError, sharePresence, setSharePresence, pilotDemo, upcoming, saveLevel, todaysReviews, navItems, load} = controller;
+    
+ 
+  const mosque = getMosqueProfile()
+  const localCommunity = false
   return (
     <div
       className="quran-companion qc-v2 qc-ready"
@@ -30,7 +36,31 @@ export default function QuranCompanionView({onNavigate}: QuranCompanionViewProps
         </div>
       )}
 
-      <header className="page-heading"><div><span className="eyebrow">KUR’AN-I KERİM KARDEŞİM</span><h1>Oku, çalış, birlikte ilerle.</h1><p>Kendi ritminde bir ayet, küçük bir pratik, güvenilir bir kardeşlik.</p></div></header>
+
+
+
+      <header className="page-heading">
+        <div>
+          <span className="eyebrow">KUR’AN-I KERİM KARDEŞİM</span>
+          <h1>Oku, çalış, birlikte ilerle.</h1>
+          <p>Kendi ritminde bir ayet, küçük bir pratik, güvenilir bir kardeşlik.</p>
+        </div>
+      </header>
+
+<header className="page-heading">
+      <div>
+        <span className="eyebrow">MESCİDİM</span>
+        <h1>{localCommunity ? `${mosque.campus} cami topluluğu` : 'Kişisel manevi alanım'}</h1>
+        <p>{localCommunity ? `${mosque.campus} camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.` : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p>
+      </div>
+    </header>
+    
+
+
+
+
+
+
 
       <nav
         ref={tabsRef}

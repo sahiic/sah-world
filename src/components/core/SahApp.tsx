@@ -5,19 +5,19 @@ import AvatarImage from "@/components/ui/AvatarImage";
 import SectionSkeleton from "@/components/ui/SectionSkeleton";
 import { openAppView, readAppView } from "@/lib/appLocation";
 import { getLevelForXP } from "@/lib/constants";
+import { ownedRealtimeChannel } from "@/lib/ownedRealtimeChannel";
+import { quranUnreadCounts } from "@/lib/quranSocial";
 import type { Profile } from "@/lib/supabase";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useFocusTimerStore } from "@/store/useFocusTimerStore";
 import { useJourneyStore } from "@/store/useJourneyStore";
+import type { QuranThreadSummary } from "@/types/database";
 import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { quranUnreadCounts } from "@/lib/quranSocial";
-import { ownedRealtimeChannel } from "@/lib/ownedRealtimeChannel";
-import type { QuranThreadSummary } from "@/types/database";
 import AwarenessProfileSummary from "./AwarenessProfileSummary";
 import CommandPalette from "./CommandPalette";
 import type { GrowthNavigationCue } from "./GrowthTree";
@@ -355,7 +355,7 @@ export default function SahApp({
       transitionCueTimer.current = window.setTimeout(() => setTransitionCue(null), 520);
     }
     if (next === "focus") {
-      router.push("/focus");
+      openAppView("focus", next);
       return;
     } else if (next === "quran" || next === "hadis") {
       openAppView("quran-companion", "wheel", { wisdom: "archive", archive: next === "quran" ? "verse" : "hadith" });

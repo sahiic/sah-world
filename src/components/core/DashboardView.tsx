@@ -1,21 +1,21 @@
 'use client'
 import EmptyState from "@/components/ui/EmptyState";
-import dynamic from 'next/dynamic'
-import SectionErrorBoundary from './SectionErrorBoundary'
+import dynamic from 'next/dynamic';
+import SectionErrorBoundary from './SectionErrorBoundary';
 
 const DailyChallengeCard = dynamic(() => import('@/components/ui/DailyChallengeCard'))
 const WeeklySummaryCard = dynamic(() => import('@/components/ui/WeeklySummaryCard'))
 
-import { motion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import GrowthTree, { type GrowthNavigationCue } from './GrowthTree'
-import { AppIcon } from '@/components/ui/AppIcon'
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
-import { useAuthStore } from '@/store/useAuthStore'
-import { useJourneyStore } from '@/store/useJourneyStore'
-import { buildActivityFeed, CATEGORY_META, dayKey, getCategoryCounts, mapIntegratedActivities, relativeTime, type ActivityCategory } from '@/lib/activity'
-import { getLevelForXP } from '@/lib/constants'
-import { useActivityLog } from '@/hooks/useActivityLog'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { useActivityLog } from '@/hooks/useActivityLog';
+import { buildActivityFeed, CATEGORY_META, dayKey, getCategoryCounts, mapIntegratedActivities, relativeTime, type ActivityCategory } from '@/lib/activity';
+import { getLevelForXP } from '@/lib/constants';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useJourneyStore } from '@/store/useJourneyStore';
+import { motion } from 'framer-motion';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import GrowthTree, { type GrowthNavigationCue } from './GrowthTree';
 
 const suggestedActions = [
   { id: 'focus', icon: 'target-arrow', title: 'Odaklan', note: 'Kesintisiz bir çalışma seansı başlat' },

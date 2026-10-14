@@ -1,0 +1,711 @@
+.cove-shell {
+  --timer-size: 3.5rem;
+  --intention-size: 1.0625rem;
+  --mode-size: 0.6875rem;
+  --quote-size: 0.8125rem;
+  --todo-size: 0.9375rem;
+  --status-size: 0.9375rem;
+  --chrome-size: 0.8125rem;
+  --ring-size: 19.75rem;
+  --pause-size: 3rem;
+  --top-pad: calc(12px + env(safe-area-inset-top));
+  --side-pad: 16px;
+  --bottom-pad: calc(52px + env(safe-area-inset-bottom));
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: var(--color-fg);
+  background: var(--scene-fallback, var(--color-ink));
+  font-family: var(--font-sans);
+}
+
+.cove-shell.has-todos {
+  --ring-size: 16.5rem;
+}
+
+@media (min-width: 900px) {
+  .cove-shell {
+    --timer-size: 7.25rem;
+    --intention-size: 1.625rem;
+    --mode-size: 0.8125rem;
+    --quote-size: 1rem;
+    --todo-size: 1.125rem;
+    --status-size: 1.125rem;
+    --chrome-size: 0.9375rem;
+    --ring-size: 34rem;
+    --pause-size: 3.5rem;
+    --top-pad: 22px;
+    --side-pad: 28px;
+    --bottom-pad: 56px;
+  }
+
+  .cove-shell.has-todos {
+    --ring-size: 26rem;
+  }
+}
+
+.cove-bg,
+.cove-bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cove-bg img {
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity var(--motion-slow) var(--ease-out);
+}
+
+.cove-bg img.is-on {
+  opacity: 1;
+}
+
+.cove-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgb(8 24 26 / 0.08) 0%, rgb(8 24 26 / 0.38) 100%),
+    linear-gradient(180deg, rgb(8 24 26 / 0.28) 0%, transparent 22%, transparent 78%, rgb(8 24 26 / 0.42) 100%);
+  pointer-events: none;
+}
+
+.cove-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  padding: var(--top-pad) var(--side-pad) var(--bottom-pad);
+}
+
+.cove-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.cove-icon-row,
+.cove-top-end {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cove-top-end {
+  justify-content: flex-end;
+}
+
+.cove-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--color-fg);
+  backdrop-filter: blur(12px);
+  transition:
+    background var(--motion-quick) var(--ease-out),
+    transform var(--motion-quick) var(--ease-out);
+}
+
+.cove-icon-btn:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.cove-icon-btn:active {
+  transform: scale(0.96);
+}
+
+.cove-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(12 36 38 / 0.28);
+  backdrop-filter: blur(16px);
+  font-size: var(--status-size);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.cove-status b {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-pause);
+  box-shadow: 0 0 0 4px rgb(78 154 151 / 0.18);
+}
+
+.cove-status b.live {
+  animation: cove-pulse 1.8s var(--ease-out) infinite;
+}
+
+.cove-status button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 0.14);
+  color: var(--color-fg);
+}
+
+.cove-minutes {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--color-fg);
+  font-size: var(--chrome-size);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.cove-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+  padding-top: 8px;
+}
+
+@media (min-width: 900px) {
+  .cove-center {
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .cove-shell.has-todos .cove-center {
+    justify-content: flex-start;
+    padding-top: 4px;
+  }
+}
+
+.cove-dial {
+  position: relative;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  flex: 0 0 auto;
+}
+
+.cove-dial svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 24px rgb(0 0 0 / 0.18));
+}
+
+.cove-track {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.28);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.cove-progress {
+  fill: none;
+  stroke: var(--color-ring-active);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  transition: stroke-dasharray 200ms linear;
+}
+
+.cove-dot {
+  fill: var(--color-ring-active);
+  filter: drop-shadow(0 0 6px rgb(255 255 255 / 0.85));
+}
+
+.cove-dial-face {
+  position: absolute;
+  inset: 17% 16% 24%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-top: 4%;
+  text-align: center;
+}
+
+.cove-modes {
+  display: flex;
+  gap: 22px;
+  font-size: var(--mode-size);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.cove-modes button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: rgb(255 255 255 / 0.48);
+  transition: color var(--motion-quick) var(--ease-out);
+}
+
+.cove-modes button.is-on {
+  color: var(--color-fg);
+}
+
+.cove-modes button:disabled {
+  cursor: default;
+}
+
+.cove-time {
+  margin: 0;
+  font-size: var(--timer-size);
+  font-weight: 200;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 6px 28px rgb(0 0 0 / 0.28);
+}
+
+.cove-intention {
+  width: min(100%, 18rem);
+}
+
+.cove-intention input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--color-fg);
+  font-family: inherit;
+  font-size: var(--intention-size);
+  font-weight: 300;
+  line-height: 1.25;
+  text-align: center;
+  outline: none;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 0.35);
+}
+
+.cove-intention input::placeholder {
+  color: rgb(255 255 255 / 0.78);
+}
+
+@media (min-width: 900px) {
+  .cove-intention {
+    width: min(100%, 24rem);
+  }
+
+  .cove-dial-face {
+    inset: 18% 18% 24%;
+    gap: 16px;
+    padding-top: 6%;
+  }
+}
+
+.cove-play {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: var(--pause-size);
+  height: var(--pause-size);
+  transform: translateX(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: rgb(78 154 151 / 0.92);
+  color: var(--color-fg);
+  box-shadow: 0 8px 24px rgb(12 36 38 / 0.28);
+  transition:
+    transform var(--motion-quick) var(--ease-out),
+    background var(--motion-quick) var(--ease-out);
+}
+
+.cove-play:hover {
+  background: #5aa8a4;
+}
+
+.cove-play:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
+.cove-play .icon-swap {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.cove-play .icon-swap span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transition:
+    opacity var(--motion-fast) ease-in-out,
+    transform var(--motion-fast) ease-in-out,
+    filter var(--motion-fast) ease-in-out;
+}
+
+.cove-play .icon-swap span.is-off {
+  opacity: 0;
+  transform: scale(0.25);
+  filter: blur(4px);
+}
+
+.cove-todos {
+  width: min(100%, 22rem);
+  max-height: 28vh;
+  overflow: auto;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgb(12 36 38 / 0.28);
+  backdrop-filter: blur(16px);
+  scrollbar-width: thin;
+}
+
+@media (min-width: 900px) {
+  .cove-todos {
+    width: min(100%, 26rem);
+    max-height: 22vh;
+  }
+}
+
+.cove-todo {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  color: var(--color-fg);
+  font-size: var(--todo-size);
+  font-weight: 400;
+  animation: cove-rise var(--motion-fast) var(--ease-out);
+}
+
+.cove-todo.is-done span {
+  color: rgb(255 255 255 / 0.55);
+  text-decoration: line-through;
+}
+
+.cove-check {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1.5px solid rgb(255 255 255 / 0.7);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+  color: transparent;
+  transition:
+    background var(--motion-quick) var(--ease-out),
+    border-color var(--motion-quick) var(--ease-out),
+    color var(--motion-quick) var(--ease-out);
+}
+
+.cove-todo.is-done .cove-check {
+  background: rgb(255 255 255 / 0.92);
+  border-color: rgb(255 255 255 / 0.92);
+  color: var(--color-ink);
+}
+
+.cove-todo-x {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(255 255 255 / 0.5);
+  opacity: 0;
+  transition: opacity var(--motion-quick) var(--ease-out);
+}
+
+.cove-todo:hover .cove-todo-x,
+.cove-todo:focus-within .cove-todo-x {
+  opacity: 1;
+}
+
+.cove-quote {
+  margin: 0 auto;
+  max-width: 40rem;
+  color: rgb(255 255 255 / 0.86);
+  font-family: var(--font-serif);
+  font-size: var(--quote-size);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: pretty;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 0.45);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.cove-add-another {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: rgb(255 255 255 / 0.78);
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.cove-quote cite {
+  font-style: normal;
+  font-size: 0.92em;
+  opacity: 0.8;
+}
+
+.cove-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: end center;
+  padding: 16px;
+  background: rgb(8 24 26 / 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+
+.cove-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cove-panel {
+  width: min(100%, 420px);
+  margin-bottom: env(safe-area-inset-bottom);
+  padding: 20px 20px 16px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 28px;
+  background: rgb(12 36 38 / 0.72);
+  color: var(--color-fg);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.28);
+  backdrop-filter: blur(22px);
+  transform: translateY(12px) scale(0.98);
+  transition:
+    transform var(--motion-fast) var(--ease-out),
+    opacity var(--motion-fast) var(--ease-out);
+}
+
+.cove-backdrop.is-open .cove-panel {
+  transform: translateY(0) scale(1);
+}
+
+.cove-panel h2 {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.cove-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cove-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.cove-field span {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.62);
+}
+
+.cove-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cove-chips button,
+.cove-scene-btn {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.06);
+  color: var(--color-fg);
+  font-size: 0.9rem;
+}
+
+.cove-chips button.is-on,
+.cove-sound-list button.is-on {
+  background: rgb(255 255 255 / 0.18);
+  border-color: rgb(255 255 255 / 0.4);
+}
+
+.cove-chips label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.cove-chips input[type="number"] {
+  width: 3.2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.cove-scenes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.cove-scenes button {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.cove-scenes button.is-on {
+  border-color: rgb(255 255 255 / 0.88);
+}
+
+.cove-scenes img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cove-sound-list {
+  display: grid;
+  gap: 6px;
+}
+
+.cove-sound-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.05);
+  color: inherit;
+  text-align: left;
+}
+
+.cove-sound-list small {
+  color: rgb(255 255 255 / 0.55);
+}
+
+.cove-volume {
+  width: 100%;
+  accent-color: var(--color-pause);
+}
+
+.cove-confirm {
+  display: grid;
+  gap: 12px;
+}
+
+.cove-confirm p {
+  margin: 0;
+  color: rgb(255 255 255 / 0.84);
+  line-height: 1.45;
+}
+
+.cove-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cove-actions button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+  color: inherit;
+}
+
+.cove-actions .primary {
+  background: var(--color-fg);
+  color: var(--color-ink);
+}
+
+.cove-actions .danger {
+  background: #b85c4a;
+  color: var(--color-fg);
+}
+
+@keyframes cove-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgb(78 154 151 / 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgb(78 154 151 / 0.08);
+  }
+}
+
+@keyframes cove-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cove-bg img,
+  .cove-icon-btn,
+  .cove-play,
+  .cove-progress,
+  .cove-todo,
+  .cove-backdrop,
+  .cove-panel,
+  .cove-play .icon-swap span {
+    transition: none;
+    animation: none;
+  }
+}

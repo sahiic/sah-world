@@ -10,8 +10,6 @@ import {
   type FocusSoundId,
 } from "@/lib/focusAudio";
 import { getFocusBackground } from "@/lib/focusBackgrounds";
-import { FocusBackdrop, FocusPresets, FocusScenePicker, FocusStudioIntro } from "./FocusAmbience";
-import studioStyles from "./focusStudio.module.css";
 import { getAdaptiveFocusSuggestion } from "@/lib/focusInsights";
 import { finalizeFocusSession } from "@/lib/focusRuntime";
 import {
@@ -23,6 +21,8 @@ import { useJourneyStore } from "@/store/useJourneyStore";
 import type { FocusTimerType } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FocusBackdrop, FocusPresets, FocusScenePicker, FocusStudioIntro } from "./FocusAmbience";
+import studioStyles from "./focusStudio.module.css";
 type Modal = "timer-type" | "sound" | "background" | "stop" | null;
 
 export default function FocusTimerView({
