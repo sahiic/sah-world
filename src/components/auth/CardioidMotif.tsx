@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useId, useState, type CSSProperties } from 'react'
+import { useEffect, useId, useState, type CSSProperties } from 'react'
 import { RotateCcw } from 'lucide-react'
 import styles from './LoginExperience.module.css'
 
@@ -9,15 +9,19 @@ const OUTER_DOT_COUNT = 114
 const CENTER = 260
 const RADIUS = 222
 const FORMATION_DURATION_MS = (POINT_COUNT - 1) * 14 + 950
-const WORD_LOOP_PAUSE_MS = 1000
-const LOOP_DURATION_MS = FORMATION_DURATION_MS + WORD_LOOP_PAUSE_MS
-const WORD_REVEAL_MS = 240
-const WORD_REVEAL_START_MS = 120
 const quoteLines = [
-  ['İnsan', 'yaratılış', 'bilgeliğini'],
-  ['kavradıkça', 'sorumluluğunun'],
-  ['çemberini', 'de', 'genişletir.'],
+  'İnsan yaratılış bilgeliğini',
+  'kavradıkça sorumluluğunun',
+  'çemberini de genişletir.',
 ]
+const quoteLineCharacters = quoteLines.map((line) => Array.from(line))
+const quoteLineOffsets = quoteLineCharacters.map((_, index) =>
+  quoteLineCharacters.slice(0, index).reduce((total, characters) => total + characters.length, 0),
+)
+const quoteCharacterCount = quoteLineCharacters.reduce((total, characters) => total + characters.length, 0)
+const quote = quoteLines.join(' ')
+const LOOP_PAUSE_MS = 1000
+const LOOP_DURATION_MS = FORMATION_DURATION_MS + LOOP_PAUSE_MS
 
 function pointAt(index: number, count = POINT_COUNT, radius = RADIUS) {
   const angle = (index / count) * Math.PI * 2
@@ -34,8 +38,6 @@ const threads = Array.from({ length: POINT_COUNT }, (_, index) => ({
 export default function CardioidMotif() {
   const uid = useId().replace(/:/g, '')
   const [replay, setReplay] = useState(0)
-  let wordIndex = 0
-  const wordCount = quoteLines.reduce((total, line) => total + line.length, 0)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -70,11 +72,11 @@ export default function CardioidMotif() {
               style={{ '--star-opacity': opacity, '--twinkle-delay': `${-((index * 37) % 7000)}ms`, '--twinkle-duration': `${4200 + (index % 8) * 700}ms` } as CSSProperties} />
           })}
         </svg>
-        <figure className={styles.motif} aria-label="Güneydoğuya yönelmiş kardiyoid: çemberden doğan bütün">
+        <figure className={styles.motif} aria-label="Kıble yönüne dönük, hafifçe süzülen kardiyoid motifi">
           <svg viewBox="0 0 520 520" role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
-            <title id={`${uid}-title`}>Güneydoğuya yönelen kardiyoid</title>
+            <title id={`${uid}-title`}>Kıble yönüne dönük kardiyoid</title>
             <desc id={`${uid}-desc`}>
-              Dış çemberde 114 ışıklı nokta vardır. İkiyle çarpım çizgilerinin sivri ucu güneyden 29 derece doğuya bakar.
+              Çemberin üzerinde, çizgi örgüsüyle aynı hizada duran 114 ışıklı nokta. Sivri uç Türkiye’den kıble yönüne bakar.
             </desc>
             <defs>
               <linearGradient id={`${uid}-thread`} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -90,7 +92,6 @@ export default function CardioidMotif() {
             </defs>
             <g data-testid="cardioid-orientation" data-bearing="151°" transform={`rotate(241 ${CENTER} ${CENTER})`}>
               <circle cx={CENTER} cy={CENTER} r="256" fill={`url(#${uid}-atmosphere)`} />
-              <circle className={styles.outerRing} cx={CENTER} cy={CENTER} r="249" />
               <circle className={styles.boundary} cx={CENTER} cy={CENTER} r={RADIUS} />
               <g aria-hidden="true">
                 {threads.map((thread, index) => (
@@ -107,31 +108,71 @@ export default function CardioidMotif() {
               </g>
               <g className={styles.points} data-testid="cardioid-points" aria-hidden="true">
                 {Array.from({ length: OUTER_DOT_COUNT }, (_, index) => {
-                  const point = pointAt(index, OUTER_DOT_COUNT, 249)
+                  const point = pointAt(index, OUTER_DOT_COUNT, RADIUS)
                   return <circle key={index} cx={point.x} cy={point.y} r="1.6" />
                 })}
               </g>
             </g>
           </svg>
         </figure>
-        <h1 id="login-title" className={styles.quote} aria-label={quoteLines.map((line) => line.join(' ')).join(' ')}>
-          {quoteLines.map((words, row) => (
-            <span key={row} className={`${styles.quoteLine} ${row === 2 ? styles.quoteAccent : ''}`}>
-              {words.map((word) => {
-                const index = wordIndex++
-                const delay = WORD_REVEAL_START_MS + (index / Math.max(1, wordCount - 1)) * (FORMATION_DURATION_MS - WORD_REVEAL_START_MS - WORD_REVEAL_MS)
-                return <Fragment key={word}>
-                  <span className={styles.word} data-word={index}
-                    style={{ '--word-delay': `${delay}ms` } as CSSProperties}>{word}</span>{' '}
-                </Fragment>
-              })}
-            </span>
-          ))}
-        </h1>
+        <AnimatedQuote />
       </div>
       <button type="button" className={styles.replay} aria-label="Kardiyoid ve söz animasyonunu yeniden oynat" onClick={() => setReplay((value) => value + 1)}>
         <RotateCcw size={16} aria-hidden="true" />
       </button>
     </div>
+  )
+}
+
+function AnimatedQuote() {
+  const [typedCount, setTypedCount] = useState(0)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const timer = window.setTimeout(() => setTypedCount(quoteCharacterCount), 0)
+      return () => window.clearTimeout(timer)
+    }
+
+    const startedAt = performance.now()
+    let characterIndex = 0
+    let timer = 0
+    const typeNextCharacter = () => {
+      characterIndex += 1
+      setTypedCount(characterIndex)
+      if (characterIndex < quoteCharacterCount) {
+        const nextCharacterAt = startedAt + ((characterIndex + 1) * FORMATION_DURATION_MS) / quoteCharacterCount
+        timer = window.setTimeout(typeNextCharacter, Math.max(0, nextCharacterAt - performance.now()))
+      }
+    }
+
+    const firstCharacterAt = startedAt + FORMATION_DURATION_MS / quoteCharacterCount
+    timer = window.setTimeout(typeNextCharacter, Math.max(0, firstCharacterAt - performance.now()))
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  const currentLine = quoteLineCharacters.findIndex((characters, index) =>
+    typedCount < quoteLineOffsets[index] + characters.length,
+  )
+
+  return (
+    <h1 id="login-title" className={styles.quote} aria-label={quote} data-testid="login-quote"
+      data-typed-count={typedCount} data-character-count={quoteCharacterCount}
+      data-typing-duration-ms={FORMATION_DURATION_MS}>
+      {quoteLines.map((line, index) => {
+        const characters = quoteLineCharacters[index]
+        const typedOnLine = Math.min(characters.length, Math.max(0, typedCount - quoteLineOffsets[index]))
+        return (
+          <span key={line} className={`${styles.quoteLine} ${index === 2 ? styles.quoteAccent : ''}`}>
+            <span className={styles.lineFrame} aria-hidden="true">
+              <span className={styles.quoteMeasure}>{line}</span>
+              <span className={styles.typedLine}>
+                {characters.slice(0, typedOnLine).join('')}
+                {currentLine === index && <span className={styles.caret} />}
+              </span>
+            </span>
+          </span>
+        )
+      })}
+    </h1>
   )
 }
