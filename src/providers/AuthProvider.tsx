@@ -28,44 +28,56 @@ export function AuthProvider({ children, initialUser, initialProfile }: { childr
   useEffect(() => startJournalSync(), [userId]);
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-    setUser(initialUser);
-    setProfile(initialProfile);
-    setIsAuthLoading(false);
+    // Seed server identity once, but always restore the subscription after effect
+    // cleanup (Strict Mode, refresh, or updated server props).
+    if (!initialized.current) {
+      initialized.current = true;
+      setUser(initialUser);
+      setProfile(initialProfile);
+      setIsAuthLoading(false);
+    }
+    let active = true;
+    let receivedAuthEvent = false;
 
     // Cookie tabanlı ilk durum sunucuda doğrulanır; bu çağrı yalnızca browser
     // session nesnesini eşler. Keyfi timeout, geçerli oturumu login ekranına düşürmez.
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
+        // A late bootstrap response must never undo a newer SIGNED_OUT event.
+        if (!active || receivedAuthEvent) return;
         setSession(session);
         setUser(session?.user ?? null);
+        if (!session) setProfile(null);
       })
       .catch((err) => {
         console.error('[SAH Auth] Browser session eşleme hatası', { name: err instanceof Error ? err.name : 'UnknownError' });
       })
       .finally(() => {
-        setIsAuthLoading(false);
+        if (active) setIsAuthLoading(false);
       });
 
     // 2. Auth state değişikliklerini dinle
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!active) return;
+        receivedAuthEvent = true;
         setSession(session);
         setUser(session?.user ?? null);
+        if (!session) setProfile(null);
         setIsAuthLoading(false);
 
         if (event === 'SIGNED_OUT') {
           reset();
           useJourneyStore.getState().resetStore();
           if (typeof window !== 'undefined') {
-            localStorage.removeItem('sah-world-store');
+            try { localStorage.removeItem('sah-world-store'); } catch { /* Storage may be blocked. */ }
           }
         }
       }
     );
 
     return () => {
+      active = false;
       subscription.unsubscribe();
     };
   }, [initialProfile, initialUser, reset, setIsAuthLoading, setProfile, setSession, setUser]);

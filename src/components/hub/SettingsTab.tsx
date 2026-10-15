@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState } from 'react';
+import { useSignOut } from '@/hooks/useSignOut';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useJourneyStore } from '@/store/useJourneyStore';
@@ -9,6 +10,7 @@ import { useJourneyStore } from '@/store/useJourneyStore';
 export default function SettingsTab() {
   const { profile, patchProfile } = useAuthStore();
   const store = useJourneyStore();
+  const { signOut, isSigningOut, signOutError } = useSignOut();
 
   const [name, setName] = useState(profile?.display_name || '');
   const [isSavingName, setIsSavingName] = useState(false);
@@ -31,10 +33,6 @@ export default function SettingsTab() {
     } finally {
       setIsSavingName(false);
     }
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
   };
 
   const handleNewAvatar = async () => {
@@ -140,11 +138,13 @@ export default function SettingsTab() {
           <p className="text-xs text-rose-400/70">Köyden ayrılır ama verilerin güvende kalır.</p>
         </div>
         <button
-          onClick={handleSignOut}
+          onClick={() => void signOut()}
+          disabled={isSigningOut}
           className="sah-button-danger px-6 py-3 w-full sm:w-auto whitespace-nowrap"
         >
-          Çıkış Yap
+          {isSigningOut ? 'Çıkış yapılıyor…' : 'Çıkış Yap'}
         </button>
+        {signOutError && <p role="alert">{signOutError}</p>}
       </section>
 
     </div>
