@@ -16,7 +16,7 @@ test('cardioid and complete quote stay visible at every breakpoint without overl
   await expect(page).toHaveTitle(/SAHİ World/);
   await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
   await expect(page.locator('.login-privacy-note')).toContainText('Tek kullanımlık kod ile giriş yapmak için lütfen e-posta adresinizi giriniz.');
-  const motif = page.getByRole('figure', { name: 'Güneydoğuya yönelmiş kardiyoid: çemberden doğan bütün' });
+  const motif = page.getByRole('figure', { name: 'Kıble yönüne dönük, hafifçe süzülen kardiyoid motifi' });
   const heading = page.getByRole('heading', { name: quote, exact: true });
   const heroText = await page.locator('section[aria-labelledby="login-title"]').innerText();
   expect(heroText.replace(/\s+/g, ' ').trim()).toBe(`SAHİ ${quote}`);
@@ -27,6 +27,15 @@ test('cardioid and complete quote stay visible at every breakpoint without overl
     await expect(motif.locator('line')).toHaveCount(200);
     await expect(motif.getByTestId('cardioid-points').locator('circle')).toHaveCount(114);
     await expect(motif.getByTestId('cardioid-orientation')).toHaveAttribute('data-bearing', '151°');
+    const dotRadii = await motif.getByTestId('cardioid-points').locator('circle').evaluateAll(circles =>
+      circles.map(circle => {
+        const dot = circle as SVGCircleElement;
+        return Math.hypot(Number(dot.getAttribute('cx')) - 260, Number(dot.getAttribute('cy')) - 260);
+      }),
+    );
+    expect(dotRadii.every(radius => Math.abs(radius - 222) < 0.01)).toBe(true);
+    await expect(motif.locator('circle[class*="outerRing"]')).toHaveCount(0);
+    await expect(motif).toHaveCSS('animation-name', 'none');
     // Viewport changes can arrive before the browser's responsive layout settles.
     await expect.poll(async () => (await motif.boundingBox())?.width ?? 0)
       .toBeGreaterThanOrEqual(width <= 390 ? 270 : 380);
@@ -44,7 +53,7 @@ test('cardioid and complete quote stay visible at every breakpoint without overl
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('typewriter syncs with the cardioid, loops after a one-second pause, and preserves the form', async ({ page }) => {
+test('keyboard-style quote finishes with the qibla-aligned cardioid, loops, and preserves the form', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   await page.getByLabel('E-posta adresi', { exact: true }).fill('presentation@example.com');
@@ -52,24 +61,21 @@ test('typewriter syncs with the cardioid, loops after a one-second pause, and pr
   await replay.click();
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '1');
   const finalThread = page.getByRole('figure').locator('line').last();
-  const words = page.locator('#login-title [data-word]');
-  expect(await words.count()).toBe(8);
-  const delays = await words.evaluateAll(items => items.map(el => parseFloat(getComputedStyle(el).animationDelay)));
-  expect(delays.every((delay, index) => index === 0 || delay > delays[index - 1])).toBe(true);
-  const finalWord = words.last();
+  const animatedQuote = page.getByTestId('login-quote');
+  const characterCount = Number(await animatedQuote.getAttribute('data-character-count'));
+  const typingDuration = Number(await animatedQuote.getAttribute('data-typing-duration-ms'));
+  expect(characterCount).toBe(Array.from('İnsan yaratılış bilgeliğinikavradıkça sorumluluğununçemberini de genişletir.').length);
+  expect(Number(await animatedQuote.getAttribute('data-typed-count'))).toBeLessThan(characterCount);
   expect(await finalThread.evaluate(element => getComputedStyle(element).animationName.endsWith('drawThread'))).toBe(true);
-  expect(await finalWord.evaluate(element => getComputedStyle(element).animationName.endsWith('wordReveal'))).toBe(true);
-  const finalWordTiming = await finalWord.evaluate(element => {
-    const style = getComputedStyle(element);
-    return parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
-  });
   const finalThreadTiming = await finalThread.evaluate(element => {
     const style = getComputedStyle(element);
     return parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
   });
-  expect(Math.abs(finalWordTiming - finalThreadTiming)).toBeLessThanOrEqual(1);
+  await expect(animatedQuote).toHaveAttribute('data-typed-count', String(characterCount), { timeout: 5000 });
+  expect(Math.abs(typingDuration - finalThreadTiming * 1000)).toBeLessThanOrEqual(1);
+  expect(await page.getByRole('figure').evaluate(element => getComputedStyle(element).animationName.endsWith('qiblaDrift'))).toBe(true);
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '2', { timeout: 6500 });
-  await expect(page.getByTestId('login-reveal').locator('[data-word]').last()).toHaveCSS('clip-path', 'inset(0px 100% 0px 0px)');
+  expect(Number(await page.getByTestId('login-quote').getAttribute('data-typed-count'))).toBeLessThan(10);
   await expect(page.getByLabel('E-posta adresi', { exact: true })).toHaveValue('presentation@example.com');
   await replay.focus();
   await replay.press('Enter');
@@ -83,7 +89,11 @@ test('reduced motion immediately renders the complete illustration and keyboard 
   const finalThread = page.getByRole('figure').locator('line').last();
   await expect(finalThread).toHaveCSS('animation-name', 'none');
   await expect(finalThread).toHaveCSS('stroke-dashoffset', '0px');
-  await expect(page.locator('#login-title [data-word]').last()).toHaveCSS('clip-path', 'none');
+  const animatedQuote = page.getByTestId('login-quote');
+  const characterCount = await animatedQuote.getAttribute('data-character-count');
+  expect(characterCount).not.toBeNull();
+  await expect(animatedQuote).toHaveAttribute('data-typed-count', characterCount!);
+  await expect(page.getByRole('figure')).toHaveCSS('animation-name', 'none');
   await expect(page.getByTestId('starfield').locator('circle')).toHaveCount(180);
   await expect(page.getByTestId('starfield').locator('circle').first()).toHaveCSS('animation-name', 'none');
   await page.getByRole('link', { name: 'Giriş formuna git' }).press('Enter');
