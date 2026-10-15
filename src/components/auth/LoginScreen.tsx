@@ -190,12 +190,7 @@ export default function LoginScreen() {
           {step === "email" ? (
             <>
               <div className="login-card-heading">
-                <p className="eyebrow">Tekrar hoş geldin</p>
-                <h2>SAHİ hesabına giriş yap</h2>
-                <p>
-                  İlerlemen güvenle saklansın ve tüm cihazlarında seninle
-                  kalsın.
-                </p>
+                <h2>Kendini SAHİ’den Gör…</h2>
               </div>
               <button
                 className="google-button"
@@ -255,8 +250,7 @@ export default function LoginScreen() {
                 </button>
               </div>
               <p className="login-privacy-note">
-                <span aria-hidden>⌁</span> Şifre istemiyoruz. Tek kullanımlık
-                kod veya Google hesabınla güvenli giriş yaparsın.
+                <span aria-hidden>⌁</span> Tek kullanımlık kod ile giriş yapmak için lütfen e-posta adresinizi giriniz.
               </p>
               {authError && (
                 <div className="login-error" role="alert">

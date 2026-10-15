@@ -54,7 +54,7 @@ for (const entry of ['menu', 'settings'] as const) {
     } else {
       await page.getByRole('menuitem', { name: 'Oturumu kapat' }).click();
     }
-    await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Hesap menüsü' })).toHaveCount(0);
     expect(calls).toBe(1);
     expect((await page.context().cookies()).filter(cookie => cookie.name.startsWith('sb-127-auth-token'))).toHaveLength(0);
@@ -62,10 +62,10 @@ for (const entry of ['menu', 'settings'] as const) {
     await expect(page).toHaveURL(/\/$/);
     await page.unroute('**/*');
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Hesap menüsü' })).toHaveCount(0);
     await page.goto('/?view=journal', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
   });
 }
 
@@ -76,7 +76,7 @@ test('server logout failure still exits locally and explains the unconfirmed rev
   }));
   await page.getByRole('button', { name: 'Hesap menüsü' }).click();
   await page.getByRole('menuitem', { name: 'Oturumu kapat' }).click();
-  await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
   await expect(page.locator('#login-form').getByRole('alert')).toContainText('Bu cihazdaki oturum kapatıldı');
   await expect(page.getByRole('button', { name: 'Hesap menüsü' })).toHaveCount(0);
   expect((await page.context().cookies()).filter(cookie => cookie.name.startsWith('sb-127-auth-token'))).toHaveLength(0);
@@ -90,7 +90,7 @@ test('logout in another tab also removes the existing account view', async ({ pa
   await otherTab.getByRole('button', { name: 'Hesap menüsü' }).click();
   await otherTab.getByRole('menuitem', { name: 'Oturumu kapat' }).click();
   // The original tab never navigates and retains its server initialUser props.
-  await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hesap menüsü' })).toHaveCount(0);
   await otherTab.close();
 });

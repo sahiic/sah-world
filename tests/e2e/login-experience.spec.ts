@@ -14,7 +14,9 @@ test('cardioid and complete quote stay visible at every breakpoint without overl
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page).toHaveTitle(/SAHİ World/);
-  const motif = page.getByRole('figure', { name: 'Kardiyoid: bir çemberden doğan bütün' });
+  await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeVisible();
+  await expect(page.locator('.login-privacy-note')).toContainText('Tek kullanımlık kod ile giriş yapmak için lütfen e-posta adresinizi giriniz.');
+  const motif = page.getByRole('figure', { name: 'Güneydoğuya yönelmiş kardiyoid: çemberden doğan bütün' });
   const heading = page.getByRole('heading', { name: quote, exact: true });
   const heroText = await page.locator('section[aria-labelledby="login-title"]').innerText();
   expect(heroText.replace(/\s+/g, ' ').trim()).toBe(`SAHİ ${quote}`);
@@ -23,6 +25,8 @@ test('cardioid and complete quote stay visible at every breakpoint without overl
     await expect(motif).toBeVisible();
     await expect(heading).toBeVisible();
     await expect(motif.locator('line')).toHaveCount(200);
+    await expect(motif.getByTestId('cardioid-points').locator('circle')).toHaveCount(114);
+    await expect(motif.getByTestId('cardioid-orientation')).toHaveAttribute('data-bearing', '151°');
     // Viewport changes can arrive before the browser's responsive layout settles.
     await expect.poll(async () => (await motif.boundingBox())?.width ?? 0)
       .toBeGreaterThanOrEqual(width <= 390 ? 270 : 380);
@@ -48,17 +52,24 @@ test('typewriter syncs with the cardioid, loops after a one-second pause, and pr
   await replay.click();
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '1');
   const finalThread = page.getByRole('figure').locator('line').last();
-  const glyphs = page.locator('#login-title [data-glyph]');
-  expect(await glyphs.count()).toBe(Array.from(quote.replace(/\s/g, '')).length);
-  const delays = await glyphs.evaluateAll(items => items.map(el => parseFloat(getComputedStyle(el).animationDelay)));
+  const words = page.locator('#login-title [data-word]');
+  expect(await words.count()).toBe(8);
+  const delays = await words.evaluateAll(items => items.map(el => parseFloat(getComputedStyle(el).animationDelay)));
   expect(delays.every((delay, index) => index === 0 || delay > delays[index - 1])).toBe(true);
-  const finalGlyph = glyphs.last();
-  await expect(finalThread).toHaveCSS('opacity', '0');
-  await expect(finalGlyph).toHaveCSS('opacity', '0');
-  await expect(finalGlyph).toHaveCSS('opacity', '1', { timeout: 6000 });
-  await expect(finalThread).toHaveCSS('stroke-dashoffset', '0px', { timeout: 6000 });
+  const finalWord = words.last();
+  expect(await finalThread.evaluate(element => getComputedStyle(element).animationName.endsWith('drawThread'))).toBe(true);
+  expect(await finalWord.evaluate(element => getComputedStyle(element).animationName.endsWith('wordReveal'))).toBe(true);
+  const finalWordTiming = await finalWord.evaluate(element => {
+    const style = getComputedStyle(element);
+    return parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
+  });
+  const finalThreadTiming = await finalThread.evaluate(element => {
+    const style = getComputedStyle(element);
+    return parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
+  });
+  expect(Math.abs(finalWordTiming - finalThreadTiming)).toBeLessThanOrEqual(1);
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '2', { timeout: 6500 });
-  await expect(page.getByTestId('login-reveal').locator('[data-glyph]').last()).toHaveCSS('opacity', '0');
+  await expect(page.getByTestId('login-reveal').locator('[data-word]').last()).toHaveCSS('clip-path', 'inset(0px 100% 0px 0px)');
   await expect(page.getByLabel('E-posta adresi', { exact: true })).toHaveValue('presentation@example.com');
   await replay.focus();
   await replay.press('Enter');
@@ -72,12 +83,12 @@ test('reduced motion immediately renders the complete illustration and keyboard 
   const finalThread = page.getByRole('figure').locator('line').last();
   await expect(finalThread).toHaveCSS('animation-name', 'none');
   await expect(finalThread).toHaveCSS('stroke-dashoffset', '0px');
-  await expect(page.locator('#login-title [data-glyph]').last()).toHaveCSS('opacity', '1');
+  await expect(page.locator('#login-title [data-word]').last()).toHaveCSS('clip-path', 'none');
   await expect(page.getByTestId('starfield').locator('circle')).toHaveCount(180);
   await expect(page.getByTestId('starfield').locator('circle').first()).toHaveCSS('animation-name', 'none');
   await page.getByRole('link', { name: 'Giriş formuna git' }).press('Enter');
   await expect(page.locator('#login-form')).toBeFocused();
-  await expect(page.getByRole('heading', { name: 'SAHİ hesabına giriş yap' })).toBeInViewport();
+  await expect(page.getByRole('heading', { name: 'Kendini SAHİ’den Gör…' })).toBeInViewport();
 });
 
 test('mocked email-code flow still works and errors leave the entry composition intact', async ({ page }) => {
