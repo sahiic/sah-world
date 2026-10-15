@@ -44,8 +44,8 @@ const INPUT_DEFINITIONS: GrowthInputDefinition[] = [
   },
   {
     id: 'focus',
-    label: 'Odaklanma',
-    accessibleLabel: 'Odaklanma Zamanlayıcısı',
+    label: 'Attention Is All You Need',
+    accessibleLabel: 'Attention Is All You Need odak zamanlayıcısı',
     icon: 'sun-high',
     target: 'focus',
     accent: '#8ea5ff',
@@ -99,8 +99,8 @@ const INPUT_DEFINITIONS: GrowthInputDefinition[] = [
   },
   {
     id: 'mescidim',
-    label: 'Mescidim',
-    accessibleLabel: 'Mescidim',
+    label: 'Allah’a en sevimli olan mekânlar',
+    accessibleLabel: 'Allah’a en sevimli olan mekânlar',
     icon: 'building-mosque',
     target: 'mescidim',
     accent: '#68d9ad',

@@ -121,7 +121,7 @@ export default function ReportsView() {
       <header className="page-heading">
         <div>
           <span className="eyebrow">GELİŞİM İÇGÖRÜLERİ</span>
-          <h1>Raporlarım</h1>
+          <h1>Gelişim Raporlarım</h1>
           <p>
             Rakamları yargı için değil, ritmini anlamak ve dengen için kullan.
           </p>

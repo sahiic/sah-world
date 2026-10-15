@@ -121,7 +121,7 @@ export default function WelcomeGuide({ profileId, createdAt, completed = false, 
             if (step === 'welcome') setStep('intention');
             else if (step === 'intention') { try { writeOnboarding(localStorage, owner, { stage: 'writing' }); } catch { /* still allow writing */ } setStep('writing'); onStart(); }
             else { setStep('closed'); onReturn(); }
-          }}>{saving ? 'Kaydediliyor…' : step === 'welcome' ? 'Devam et' : step === 'intention' ? 'İlk niyetimi yaz' : 'Evrenime dön'} <AppIcon name="arrow-right" /></button>
+          }}>{saving ? 'Kaydediliyor…' : step === 'welcome' ? 'Devam et' : step === 'intention' ? 'İlk niyetimi yaz' : 'Âleme dön'} <AppIcon name="arrow-right" /></button>
         </motion.div>
       </AnimatePresence>
     </section>

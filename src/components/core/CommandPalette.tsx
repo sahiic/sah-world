@@ -7,12 +7,13 @@ import { buildSearchIndex } from "@/lib/activity";
 import { useJourneyStore } from "@/store/useJourneyStore";
 
 const destinations = [
-  ["focus", "Odaklanma", "target-arrow"],
+  ["dashboard", "Âlem", "home"],
+  ["focus", "Attention Is All You Need", "target-arrow"],
   ["quran-companion", "Kur’an’ı Kerim Kardeşim", "book-2"],
-  ["mescidim", "Mescidim", "building-mosque"],
+  ["mescidim", "Allah’a en sevimli olan mekânlar", "building-mosque"],
   ["journal", "Günlük", "notebook"],
   ["awareness", "Mazlum Coğrafyalar", "world-heart"],
-  ["reports", "Raporlarım", "chart-histogram"],
+  ["reports", "Gelişim Raporlarım", "chart-histogram"],
   ["profession-school", "Meslek ve Ahlak Okulu", "certificate"],
 ] as const;
 

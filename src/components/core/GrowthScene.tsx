@@ -18,18 +18,18 @@ type Props = {
   now?: number
   onNavigate: (view: string, cue?: GrowthNavigationCue) => void
 }
-const stageIcons = ['seeding', 'plant', 'plant-2', 'tree', 'trees', 'mountain', 'star', 'sun', 'galaxy', 'universe']
+const stageIcons = ['niyet', 'gayret', 'sebat', 'istikamet', 'muhasebe', 'tefekkur', 'hikmet', 'basiret', 'marifet', 'alem']
 const descriptions = [
-  'Başlangıç görünmez olabilir; yine de kök salmaya başladı.',
-  'İlk filiz, tekrar etmeye değer küçük bir niyeti temsil ediyor.',
-  'Fidanın gövdesi güçleniyor; alışkanlıkların biçim kazanıyor.',
-  'Ağaç artık kendi gölgesini kuruyor; ritmin belirginleşiyor.',
-  'Tek bir ağaç çevresine hayat çağırıyor; istikrarın yayılıyor.',
-  'Dağ silueti beliriyor; uzun soluklu emeğin ufku genişliyor.',
-  'Yıldızlar sahneye katılıyor; sürekliliğin yeni işaretler bırakıyor.',
-  'Güneş doğuyor; kökle gökyüzü aynı hikâyede buluşuyor.',
-  'Galaksi halkaları açılıyor; farklı alanlardaki emeklerin birleşiyor.',
-  'Evren tamamlandı; sahnen, uzun yolculuğunun yaşayan bir haritası.',
+  'Niyet, görünmeyen başlangıcı anlamlı bir yöne çevirir.',
+  'Gayret, niyetini günlük hayatın içinde küçük bir harekete dönüştürür.',
+  'Sebat, iyi olanı tekrar etmeyi sakin ve güvenilir bir ritme kavuşturur.',
+  'İstikamet, gayretini değerlerinle aynı yönde tutmana yardımcı olur.',
+  'Muhasebe, yolculuğuna yargılamadan bakıp öğrendiğini ayırt etmektir.',
+  'Tefekkür, görünenin ardındaki anlamla daha derin bir bağ kurar.',
+  'Hikmet, öğrendiğin ile yaptığın arasında dengeli bir köprü kurar.',
+  'Basiret, seçimlerinin etkisini daha berrak görmene alan açar.',
+  'Marifet, bilgiyi davranışa ve kalıcı bir farkındalığa dönüştürür.',
+  'Âlem, bütün gelişim alanlarının birbirini beslediği geniş ufuktur.',
 ]
 // Ends enter the matching botanical region; coordinates share the orbit's viewBox.
 const flows: Record<GrowthInputKey, string> = {
@@ -121,8 +121,8 @@ export default function GrowthScene({ data, events = [], loading = false, now, o
       <div className={styles.progressCopy}><strong><Count value={data.xh} run={playing} /> XH</strong><span>{next ? `${progress}% · ${next.name} için ${data.xhToNext} XH` : 'Yolculuğun en geniş ufku'}</span></div>
       <div className={styles.progress} role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Sonraki seviyeye ilerleme"><span style={{ width: `${progress}%` }} /></div>
       <ol className={styles.journey} aria-label="On seviyelik gelişim yolculuğu">{LEVELS.map((item, index) => <li key={item.name} data-current={index === levelIndex} data-complete={index < levelIndex}><span tabIndex={0} aria-current={index === levelIndex ? 'step' : undefined} aria-label={`${item.name}, ${index + 1}. seviye, ${item.xp} XH`}><StageIcon index={index} /><small role="tooltip">{item.name} · {item.xp} XH</small></span></li>)}</ol>
-      <div className={styles.journeyCaption}><span>Tohum</span><span>10 AŞAMALI YOLCULUK</span><span>Evren</span></div>
-      <div className={styles.next}><StageIcon index={Math.min(9, levelIndex + 1)} /><div><strong>{next ? 'Sıradaki gelişim sahnesi' : 'Gelişim sahnen tamamlandı'}</strong><p>{next ? `${next.name} · ${data.xhToNext} XH kaldı` : 'Evrenin bütün katmanları görünür'}</p></div></div>
+      <div className={styles.journeyCaption}><span>Niyet</span><span>10 AŞAMALI MANEVİ GELİŞİM</span><span>Âlem</span></div>
+      <div className={styles.next}><StageIcon index={Math.min(9, levelIndex + 1)} /><div><strong>{next ? 'Sıradaki manevi gelişim sahnesi' : 'Manevi gelişim sahnen tamamlandı'}</strong><p>{next ? `${next.name} · ${data.xhToNext} XH kaldı` : 'Âlemin bütün gelişim katmanları görünür'}</p></div></div>
       {!loading && !data.weeklyActions && <button className={styles.emptyAction} onClick={() => onNavigate('journal')}><AppIcon name="plus" />İlk hareketini yap</button>}
     </div>
     <div className={styles.visual}>
@@ -177,8 +177,18 @@ function Count({ value, run }: { value: number; run: boolean }) {
 }
 
 function StageIcon({ index }: { index: number }) {
-  // Small inline illustrations avoid missing glyphs in the legacy icon font.
+  // Quiet, abstract symbols keep the journey spiritual without assigning
+  // religious worth to a user's activity score.
   return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" data-stage-icon={stageIcons[index]}>
-    {index === 0 ? <path d="M7 17C3 8 15 4 17 8S18 18 7 17ZM8 16l7-7" /> : index < 3 ? <><path d="M12 21V10M12 15C4 15 3 8 5 7c6 0 7 5 7 8ZM12 10c0-6 4-8 8-7 1 6-4 8-8 7Z" />{index === 2 && <path d="M12 18c5 0 8-3 8-6-5-1-8 2-8 6Z" />}</> : index < 5 ? <><path d="M12 22v-9M8 22h8M12 17l-3-3M12 15l4-3M6 16c-6-2-4-8 0-9 0-7 11-7 12-1 6 2 5 10-1 10Z" />{index === 4 && <path d="M3 22v-4M21 22v-4" />}</> : index === 5 ? <path d="M2 21 10 3l5 10 3-5 5 13ZM7 10l3 2 3-3" /> : index === 6 ? <path d="m12 2 3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1Z" /> : index === 7 ? <><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/></> : <><ellipse cx="12" cy="12" rx="11" ry="5" transform="rotate(-30 12 12)"/><circle cx="12" cy="12" r={index === 8 ? 4 : 7}/>{index === 9 && <ellipse cx="12" cy="12" rx="4" ry="11" transform="rotate(-30 12 12)"/>}</>}
+    {index === 0 ? <><circle cx="12" cy="12" r="3"/><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/></> :
+      index === 1 ? <><path d="m5 18 5-5 3 3 6-8"/><path d="M15 8h4v4"/></> :
+      index === 2 ? <><path d="M12 3v18M5 8h14"/><path d="M7 21h10M7 8c0 4-4 4-4 0m18 0c0 4-4 4-4 0"/></> :
+      index === 3 ? <><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/></> :
+      index === 4 ? <><path d="M12 4v16M5 7h14M7 7l-3 7h6L7 7Zm10 0-3 7h6l-3-7Z"/></> :
+      index === 5 ? <><path d="M9 21h6M10 17h4"/><path d="M12 3c3 3 4 5 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8Z"/></> :
+      index === 6 ? <><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H12v18H7.5A3.5 3.5 0 0 0 4 23V5.5ZM20 5.5A3.5 3.5 0 0 0 16.5 2H12v18h4.5A3.5 3.5 0 0 1 20 23V5.5Z"/></> :
+      index === 7 ? <><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></> :
+      index === 8 ? <><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8Z"/><path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7Z"/></> :
+      <><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="5"/><ellipse cx="12" cy="12" rx="5" ry="10"/></>}
   </svg>
 }
