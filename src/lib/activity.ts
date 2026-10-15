@@ -29,7 +29,7 @@ export const CATEGORY_META: Record<ActivityCategory, { label: string; icon: stri
   matrix: { label: 'Matris', icon: 'layout-grid', color: '#0284c7' },
   lessons: { label: 'Hatalar', icon: 'history', color: '#be123c' },
   sukur: { label: 'Şükür', icon: 'sparkles', color: '#059669' },
-  mescidim: { label: 'Mescidim', icon: 'building-mosque', color: '#7c3aed' },
+  mescidim: { label: 'Allah’a en sevimli olan mekânlar', icon: 'building-mosque', color: '#7c3aed' },
   focus: { label: 'Odak', icon: 'target-arrow', color: '#0d9488' },
   profession: { label: 'Meslek ve Ahlak', icon: 'certificate', color: '#7c3aed' },
   awareness: { label: 'Farkındalık', icon: 'world-heart', color: '#db2777' },

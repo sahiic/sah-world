@@ -1,0 +1,35 @@
+.readableDashboard :global(.dashboard-heading p) {
+  font-size: 15px !important;
+  line-height: 1.75 !important;
+}
+
+.readableDashboard :global(.dashboard-section-heading p) {
+  font-size: 12.5px !important;
+  line-height: 1.65;
+}
+
+.readableDashboard :global(.daily-ritual-card .ritual-copy h2) {
+  font-size: 17px !important;
+}
+
+.readableDashboard :global(.daily-ritual-card .ritual-copy p),
+.readableDashboard :global(.today-card .card-heading p),
+.readableDashboard :global(.today-card .quick-actions small) {
+  font-size: 10px !important;
+  line-height: 1.55;
+}
+
+.readableDashboard :global(.today-card .quick-actions strong) {
+  font-size: 12.5px !important;
+  line-height: 1.35;
+}
+
+.readableDashboard :global(.dashboard-section-heading h2) {
+  font-size: 28px;
+}
+
+@media (max-width: 620px) {
+  .readableDashboard :global(.dashboard-heading p) { font-size: 13px !important; }
+  .readableDashboard :global(.dashboard-section-heading h2) { font-size: 23px; }
+  .readableDashboard :global(.dashboard-section-heading p) { font-size: 11.5px !important; }
+}

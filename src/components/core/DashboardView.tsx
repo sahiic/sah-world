@@ -17,6 +17,7 @@ import { useJourneyStore } from '@/store/useJourneyStore';
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import GrowthTree, { type GrowthNavigationCue } from './GrowthTree';
+import polish from './DashboardPolish.module.css';
 
 const suggestedActions = [
   { id: 'focus', icon: 'target-arrow', title: 'Odaklan', note: 'Kesintisiz bir çalışma seansı başlat' },
@@ -24,7 +25,7 @@ const suggestedActions = [
   { id: 'journal', icon: 'pencil', title: 'Günlük yaz', note: 'Bugünü birkaç cümleyle kaydet' },
   { id: 'sukur', icon: 'sparkles', title: 'Şükür ekle', note: 'Fark ettiğin bir nimeti yaz' },
   { id: 'matrix', icon: 'layout-grid', title: 'Görev ekle', note: 'Bir sonraki önceliğini seç' },
-  { id: 'mescidim', icon: 'building-mosque', title: 'Mescidim', note: 'Vakit ve zikir alanına git' },
+  { id: 'mescidim', icon: 'building-mosque', title: 'Allah’a en sevimli olan mekânlar', note: 'Vakit, dua ve zikir alanına git' },
 ]
 
 const quickActions = suggestedActions.filter(action => ['focus', 'journal', 'mescidim'].includes(action.id))
@@ -105,11 +106,11 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
   }, [introVisible])
 
   return (
-    <div className="view-stack dashboard-view dashboard-cinematic" ref={rootRef}>
+    <div className={`view-stack dashboard-view dashboard-cinematic ${polish.readableDashboard}`} ref={rootRef}>
       {introVisible && <DashboardPreloader />}
       <section className="dashboard-welcome-shell" aria-labelledby="dashboard-welcome-title">
         <header className="page-heading dashboard-heading">
-          <div><span className="eyebrow">{today.toLocaleUpperCase('tr-TR')}</span><h1 id="dashboard-welcome-title">{`Selam ve afiyetle, ${firstName}.`.split(' ').map((word, index) => <span className="hero-word-wrap" key={`${word}-${index}`}><span className="hero-word">{word}&nbsp;</span></span>)}</h1><p>Niyetini sakin adımlarla hayata taşı. Bugünün küçük ameli, yarının yaşayan filizine dönüşsün.</p></div>
+          <div><span className="eyebrow">{today.toLocaleUpperCase('tr-TR')}</span><h1 id="dashboard-welcome-title">{`Selam ve afiyetle, ${firstName}.`.split(' ').map((word, index) => <span className="hero-word-wrap" key={`${word}-${index}`}><span className="hero-word">{word}&nbsp;</span></span>)}</h1><p>Ameller ancak niyetlere göredir; herkese ancak niyet ettiğinin karşılığı vardır…</p></div>
           <button className="primary-button" onClick={() => onNavigate('journal')}><AppIcon name="plus" /> Hızlı niyet</button>
         </header>
 
@@ -122,8 +123,8 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
       </section>
 
       <header className="dashboard-section-heading">
-        <div><span className="eyebrow">MANEVİ İKLİM</span><h2>Yaşayan Filiz</h2></div>
-        <p>Her küçük amel, gelişim bahçende görünür bir iz bırakır.</p>
+        <div><span className="eyebrow">MANEVİ GELİŞİM</span><h2>Manevi Gelişim Sahnesi</h2></div>
+        <p>Niyet, gayret ve istikrar; gelişim yolculuğunda anlamlı bir iz bırakır.</p>
       </header>
 
       <div className="dashboard-hero-grid">

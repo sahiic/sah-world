@@ -54,7 +54,7 @@ export const CURVE_POINTS: [number, number, number][] = [
 // LIFE STATIONS along the curve (progress = 0.0–1.0)
 // ============================================================
 export const STATIONS: StationDef[] = [
-  { id: 0, name: 'Evren',    label: 'Başlangıç',             progress: 0.00, panelId: 'hero',      color: '#4f46e5', threeColor: 0x4f46e5, icon: 'ti-compass',         xpReward: 0  },
+  { id: 0, name: 'Âlem',     label: 'Başlangıç',             progress: 0.00, panelId: 'hero',      color: '#4f46e5', threeColor: 0x4f46e5, icon: 'ti-compass',         xpReward: 0  },
   { id: 1, name: 'Günlük',   label: 'Günlük Seyir Defteri',  progress: 0.12, panelId: 'gunluk',    color: '#4f46e5', threeColor: 0x4f46e5, icon: 'ti-notebook',        xpReward: 50 },
   { id: 2, name: 'Kuran',    label: 'Kuran-ı Kerim Günlüğü', progress: 0.25, panelId: 'kuran',     color: '#b8860b', threeColor: 0xb8860b, icon: 'ti-book',            xpReward: 60 },
   { id: 3, name: 'Hadis',    label: 'Hadis-i Şerif Günlüğü', progress: 0.38, panelId: 'hadis',     color: '#059669', threeColor: 0x059669, icon: 'ti-quote',           xpReward: 60 },
@@ -72,16 +72,16 @@ export const STATION_PROXIMITY = 0.055;
 // XP LEVELS (Spiritual Ranks)
 // ============================================================
 export const LEVELS: LevelDef[] = [
-  { xp: 0,     name: 'Tohum',   icon: '🌱' },
-  { xp: 200,   name: 'Filiz',   icon: '🌿' },
-  { xp: 500,   name: 'Fidan',   icon: '🪴' },
-  { xp: 1000,  name: 'Ağaç',    icon: '🌳' },
-  { xp: 2000,  name: 'Orman',   icon: '🌲' },
-  { xp: 4000,  name: 'Dağ',     icon: '⛰️' },
-  { xp: 7000,  name: 'Yıldız',  icon: '⭐' },
-  { xp: 12000, name: 'Güneş',   icon: '☀️' },
-  { xp: 20000, name: 'Galaksi', icon: '🌌' },
-  { xp: 35000, name: 'Evren',   icon: '♾️' },
+  { xp: 0,     name: 'Niyet',      icon: '◌' },
+  { xp: 200,   name: 'Gayret',     icon: '↗' },
+  { xp: 500,   name: 'Sebat',      icon: '◇' },
+  { xp: 1000,  name: 'İstikamet',  icon: '⌁' },
+  { xp: 2000,  name: 'Muhasebe',   icon: '⚖' },
+  { xp: 4000,  name: 'Tefekkür',   icon: '◐' },
+  { xp: 7000,  name: 'Hikmet',     icon: '▤' },
+  { xp: 12000, name: 'Basiret',    icon: '◉' },
+  { xp: 20000, name: 'Marifet',    icon: '✦' },
+  { xp: 35000, name: 'Âlem',       icon: '◎' },
 ];
 
 export function getLevelForXP(xp: number): { level: LevelDef; index: number; nextLevel: LevelDef | null } {

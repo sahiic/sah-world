@@ -65,7 +65,7 @@ const meta: Record<
     icon: "sparkles",
   },
   mescidim: {
-    title: "Mescidim",
+    title: "Allah’a en sevimli olan mekânlar",
     eyebrow: "MANEVİ MOLA",
     description: "Kısa bir duruş, zikir sayacı ve günün tefekkür notları.",
     icon: "building-mosque",

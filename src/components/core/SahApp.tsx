@@ -27,6 +27,7 @@ import ProfessionProfileSummary from "./ProfessionProfileSummary";
 import SectionErrorBoundary from "./SectionErrorBoundary";
 import type { SectionKey } from "./SectionView";
 import WelcomeGuide from "./WelcomeGuide";
+import polish from "./SahAppPolish.module.css";
 
 const DashboardView = dynamic(() => import("./DashboardView"), {
   loading: () => <SectionSkeleton shape="scene" />,
@@ -71,16 +72,16 @@ type ViewKey =
   | "profession-school"
   | "quran-companion"
   | SectionKey;
-type NavigationItem = { id: ViewKey; label: string; icon: string };
+type NavigationItem = { id: ViewKey; label: string; mobileLabel?: string; icon: string };
 
 const navigationItems: NavigationItem[] = [
-  { id: "dashboard", label: "Evrenim", icon: "home" },
-  { id: "focus", label: "Odaklanma", icon: "target-arrow" },
+  { id: "dashboard", label: "Âlem", icon: "home" },
+  { id: "focus", label: "Attention Is All You Need", mobileLabel: "Attention", icon: "target-arrow" },
   { id: "quran-companion", label: "Kur’an’ı Kerim Kardeşim", icon: "book-2" },
-  { id: "mescidim", label: "Mescidim", icon: "building-mosque" },
+  { id: "mescidim", label: "Allah’a en sevimli olan mekânlar", mobileLabel: "Mekânlar", icon: "building-mosque" },
   { id: "journal", label: "Günlük", icon: "notebook" },
   { id: "awareness", label: "Mazlum Coğrafyalar", icon: "world-heart" },
-  { id: "reports", label: "Raporlarım", icon: "chart-histogram" },
+  { id: "reports", label: "Gelişim Raporlarım", icon: "chart-histogram" },
   {
     id: "profession-school",
     label: "Meslek ve Ahlak Okulu",
@@ -101,7 +102,7 @@ const mobileNavigationItems = mobileNavigationIds
 const viewLabels: Partial<Record<ViewKey, string>> = Object.fromEntries(
   navigationItems.map((item) => [item.id, item.label]),
 );
-viewLabels.dashboard = "Evrenim";
+viewLabels.dashboard = "Âlem";
 viewLabels.community = "Topluluk";
 viewLabels.growth = "Gelişim detaylarım";
 viewLabels.profile = "Profilim";
@@ -415,10 +416,7 @@ export default function SahApp({
           aria-label="SAHİ ana sayfa"
         >
           <span className="brand-mark"><AppIcon name="leaf" /></span>
-          <span>
-            <strong>SAHİ World</strong>
-            <small>Tefekkür Vahası</small>
-          </span>
+          <span><strong className={polish.brandWordmark}>SAHİ</strong></span>
         </button>
 
         <nav className="sidebar-nav">
@@ -427,14 +425,14 @@ export default function SahApp({
             {navigationItems.map((item) => (
               <button
                 key={item.id}
-                className={view === item.id ? "active" : ""}
+                className={`${view === item.id ? "active" : ""} ${polish.navButton} ${item.mobileLabel ? polish.longNavButton : ""}`}
                 onClick={() => navigate(item.id)}
                 aria-current={view === item.id ? "page" : undefined}
                 aria-label={item.label}
                 data-tooltip={item.label}
               >
                 <AppIcon name={item.icon} />
-                <span className="nav-label">{item.label}</span>
+                <span className={`nav-label ${polish.navLabel}`}>{item.label}</span>
                 {item.id === "quran-companion" && quranUnread > 0 && (
                   <em className="sidebar-badge" aria-label={`${quranUnread} okunmamış mesaj`}>
                     {quranUnread > 99 ? "99+" : quranUnread}
@@ -472,12 +470,12 @@ export default function SahApp({
             aria-label="SAHİ ana sayfa"
           >
             <span className="brand-mark"><AppIcon name="leaf" /></span>
-            <strong>SAHİ World</strong>
+            <strong className={polish.mobileWordmark}>SAHİ</strong>
           </button>
           <div className="header-search-area">
             <div className="route-context">
-              <span>SAHİ World</span>
-              <strong>{viewLabels[view] ?? "Kişisel alan"}</strong>
+              <span className={polish.routeBrand}>SAHİ</span>
+              <strong className={polish.routeTitle}>{viewLabels[view] ?? "Kişisel alan"}</strong>
             </div>
             <button
               className="global-search-button"
@@ -492,19 +490,11 @@ export default function SahApp({
           <div className="header-actions" ref={profileMenuRef}>
             <button
               className="header-quick-add"
-              aria-label="Vird ve amel ekle"
+              aria-label="Gününü Gün Etmek İçin Yaz"
               onClick={() => navigate("journal")}
             >
               <AppIcon name="plus" />
-              <span>Vird &amp; Amel Ekle</span>
-            </button>
-            <button
-              className="header-feedback"
-              aria-label="Görüş bırak"
-              onClick={() => openPage("/feedback")}
-            >
-              <AppIcon name="message-heart" />
-              <span>Görüş bırak</span>
+              <span className={polish.quickAddLabel}>Gününü Gün Etmek İçin Yaz</span>
             </button>
             <button
               className="profile-button"
@@ -540,9 +530,6 @@ export default function SahApp({
                 <button role="menuitem" onClick={() => navigate("profile")}>
                   <AppIcon name="user-circle" /> Profilim ve rozetlerim
                 </button>
-                <button role="menuitem" onClick={() => navigate("reports")}>
-                  <AppIcon name="chart-histogram" /> Gelişim raporlarım
-                </button>
                 <button role="menuitem" onClick={() => navigate("community")}>
                   <AppIcon name="users-group" /> Topluluklarım
                 </button>
@@ -558,9 +545,6 @@ export default function SahApp({
                 <button role="menuitem" onClick={toggleTheme}>
                   <AppIcon name={theme === "light" ? "moon" : "sun"} />{" "}
                   {theme === "light" ? "Gece görünümü" : "Aydınlık görünüm"}
-                </button>
-                <button role="menuitem" onClick={() => openPage("/feedback")}>
-                  <AppIcon name="message-heart" /> Görüş ve öneri
                 </button>
                 {activeUser?.app_metadata?.role === "admin" && (
                   <button
@@ -676,7 +660,7 @@ export default function SahApp({
           >
             <AppIcon name={item.icon} />
             <span>
-              {item.label === "Kur’an’ı Kerim Kardeşim" ? "Kur’an" : item.label}
+              {item.mobileLabel ?? (item.label === "Kur’an’ı Kerim Kardeşim" ? "Kur’an" : item.label)}
             </span>
           </button>
         ))}

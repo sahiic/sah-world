@@ -16,7 +16,7 @@ test('progressive welcome completes only after a saved intention and never repea
   await expect(page.getByRole('heading', { name: 'İlk adımın tamamlandı!' })).toBeVisible();
   await page.screenshot({ path: info.outputPath('onboarding-celebration.png') });
   const xp = await page.evaluate(() => JSON.parse(localStorage.getItem('sah-world-store')!).state.xp);
-  await page.getByRole('button', { name: 'Evrenime dön' }).click();
+  await page.getByRole('button', { name: 'Âleme dön' }).click();
   await page.reload(); await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
   await expect(page.locator('.welcome-guide-overlay')).toHaveCount(0);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sah-world-store')!).state.xp)).toBe(xp);
@@ -33,7 +33,15 @@ test('three quick actions and persistent accessible icon rail', async ({ page },
   await expect(page.locator('.quick-actions > button')).toHaveCount(3);
   await expect(page.locator('.quick-actions')).toContainText('Odaklan');
   await expect(page.locator('.quick-actions')).toContainText('Günlük yaz');
-  await expect(page.locator('.quick-actions')).toContainText('Mescidim');
+  await expect(page.locator('.quick-actions')).toContainText('Allah’a en sevimli olan mekânlar');
+  await expect(page.locator('.header-feedback')).toHaveCount(0);
+  await expect(page.locator('.sidebar-brand')).toHaveText('SAHİ');
+  await page.getByRole('button', { name: 'Hesap menüsü' }).click();
+  const profileMenu = page.locator('.profile-popover');
+  await expect(profileMenu).toBeVisible();
+  await expect(profileMenu.getByText('Gelişim raporlarım', { exact: true })).toHaveCount(0);
+  await expect(profileMenu.getByText('Görüş ve öneri', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Hesap menüsü' }).click();
   const sidebar = page.getByRole('complementary',{name:'Ana navigasyon'});
   await expect(sidebar).toHaveCSS('width','260px');
   await page.getByRole('button',{name:'Menüyü daralt',exact:true}).click();

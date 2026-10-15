@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "Odaklanma",
+  title: "Attention Is All You Need",
   description:
     "Niyetini berraklaştır, sakin bir çalışma ritmi kur ve gayretini görünür kıl.",
 };

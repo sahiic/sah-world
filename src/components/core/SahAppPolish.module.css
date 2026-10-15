@@ -1,0 +1,57 @@
+.brandWordmark {
+  color: #fff;
+  font-size: 22px !important;
+  font-weight: 800;
+  letter-spacing: .08em !important;
+}
+
+.mobileWordmark {
+  font-size: 18px !important;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.navButton {
+  padding-block: 9px !important;
+}
+
+.navLabel {
+  font-size: 13px;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.longNavButton {
+  min-height: 54px !important;
+  align-items: center !important;
+}
+
+.longNavButton :global(.app-icon) {
+  margin-top: 1px;
+  flex: 0 0 22px;
+}
+
+.routeBrand {
+  font-size: 10px !important;
+  letter-spacing: .16em !important;
+}
+
+.routeTitle {
+  max-width: 210px;
+  font-size: 15px !important;
+  line-height: 1.25;
+}
+
+.quickAddLabel {
+  font-size: 11px;
+  letter-spacing: .01em;
+}
+
+@media (max-width: 1180px) {
+  .navLabel { font-size: 12px; }
+  .routeTitle { max-width: 160px; }
+}
+
+@media (max-width: 900px) {
+  .quickAddLabel { display: none; }
+}
