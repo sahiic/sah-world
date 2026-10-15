@@ -5,22 +5,23 @@ import { RotateCcw } from 'lucide-react'
 import styles from './LoginExperience.module.css'
 
 const POINT_COUNT = 200
+const OUTER_DOT_COUNT = 114
 const CENTER = 260
 const RADIUS = 222
 const FORMATION_DURATION_MS = (POINT_COUNT - 1) * 14 + 950
 const WORD_LOOP_PAUSE_MS = 1000
 const LOOP_DURATION_MS = FORMATION_DURATION_MS + WORD_LOOP_PAUSE_MS
-const TYPEWRITER_START_MS = 120
-const TYPEWRITER_GLYPH_MS = 60
+const WORD_REVEAL_MS = 240
+const WORD_REVEAL_START_MS = 120
 const quoteLines = [
   ['İnsan', 'yaratılış', 'bilgeliğini'],
   ['kavradıkça', 'sorumluluğunun'],
   ['çemberini', 'de', 'genişletir.'],
 ]
 
-function pointAt(index: number) {
-  const angle = (index / POINT_COUNT) * Math.PI * 2
-  return { x: CENTER + Math.cos(angle) * RADIUS, y: CENTER + Math.sin(angle) * RADIUS }
+function pointAt(index: number, count = POINT_COUNT, radius = RADIUS) {
+  const angle = (index / count) * Math.PI * 2
+  return { x: CENTER + Math.cos(angle) * radius, y: CENTER + Math.sin(angle) * radius }
 }
 
 // Pure geometry: no per-frame React updates or persistent animation loop.
@@ -33,8 +34,8 @@ const threads = Array.from({ length: POINT_COUNT }, (_, index) => ({
 export default function CardioidMotif() {
   const uid = useId().replace(/:/g, '')
   const [replay, setReplay] = useState(0)
-  let characterIndex = 0
-  const characterCount = quoteLines.reduce((total, line) => total + line.join('').length, 0)
+  let wordIndex = 0
+  const wordCount = quoteLines.reduce((total, line) => total + line.length, 0)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -69,12 +70,11 @@ export default function CardioidMotif() {
               style={{ '--star-opacity': opacity, '--twinkle-delay': `${-((index * 37) % 7000)}ms`, '--twinkle-duration': `${4200 + (index % 8) * 700}ms` } as CSSProperties} />
           })}
         </svg>
-        <figure className={styles.motif} aria-label="Kardiyoid: bir çemberden doğan bütün">
+        <figure className={styles.motif} aria-label="Güneydoğuya yönelmiş kardiyoid: çemberden doğan bütün">
           <svg viewBox="0 0 520 520" role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
-            <title id={`${uid}-title`}>İki ile çarpım tablosunun oluşturduğu kardiyoid</title>
+            <title id={`${uid}-title`}>Güneydoğuya yönelen kardiyoid</title>
             <desc id={`${uid}-desc`}>
-              Çemberdeki 200 nokta, sıra numarasının iki katına karşılık gelen noktaya bağlanır.
-              Tek tek çizgiler bir bütüne dönüşür.
+              Dış çemberde 114 ışıklı nokta vardır. İkiyle çarpım çizgilerinin sivri ucu güneyden 29 derece doğuya bakar.
             </desc>
             <defs>
               <linearGradient id={`${uid}-thread`} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -88,27 +88,29 @@ export default function CardioidMotif() {
                 <stop offset="1" stopColor="#6366f1" stopOpacity="0" />
               </radialGradient>
             </defs>
-            <circle cx={CENTER} cy={CENTER} r="256" fill={`url(#${uid}-atmosphere)`} />
-            <circle className={styles.outerRing} cx={CENTER} cy={CENTER} r="249" />
-            <circle className={styles.boundary} cx={CENTER} cy={CENTER} r={RADIUS} />
-            <g aria-hidden="true">
-              {threads.map((thread, index) => (
-                <line
-                  key={index}
-                  className={styles.thread}
-                  x1={thread.start.x} y1={thread.start.y}
-                  x2={thread.end.x} y2={thread.end.y}
-                  pathLength={1}
-                  stroke={`url(#${uid}-thread)`}
-                  style={{ '--thread-opacity': thread.opacity, '--draw-delay': `${index * 14}ms` } as CSSProperties}
-                />
-              ))}
-            </g>
-            <g className={styles.points} aria-hidden="true">
-              {Array.from({ length: POINT_COUNT / 4 }, (_, index) => {
-                const point = pointAt(index * 4)
-                return <circle key={index} cx={point.x} cy={point.y} r="1.5" />
-              })}
+            <g data-testid="cardioid-orientation" data-bearing="151°" transform={`rotate(241 ${CENTER} ${CENTER})`}>
+              <circle cx={CENTER} cy={CENTER} r="256" fill={`url(#${uid}-atmosphere)`} />
+              <circle className={styles.outerRing} cx={CENTER} cy={CENTER} r="249" />
+              <circle className={styles.boundary} cx={CENTER} cy={CENTER} r={RADIUS} />
+              <g aria-hidden="true">
+                {threads.map((thread, index) => (
+                  <line
+                    key={index}
+                    className={styles.thread}
+                    x1={thread.start.x} y1={thread.start.y}
+                    x2={thread.end.x} y2={thread.end.y}
+                    pathLength={1}
+                    stroke={`url(#${uid}-thread)`}
+                    style={{ '--thread-opacity': thread.opacity, '--draw-delay': `${index * 14}ms` } as CSSProperties}
+                  />
+                ))}
+              </g>
+              <g className={styles.points} data-testid="cardioid-points" aria-hidden="true">
+                {Array.from({ length: OUTER_DOT_COUNT }, (_, index) => {
+                  const point = pointAt(index, OUTER_DOT_COUNT, 249)
+                  return <circle key={index} cx={point.x} cy={point.y} r="1.6" />
+                })}
+              </g>
             </g>
           </svg>
         </figure>
@@ -116,13 +118,11 @@ export default function CardioidMotif() {
           {quoteLines.map((words, row) => (
             <span key={row} className={`${styles.quoteLine} ${row === 2 ? styles.quoteAccent : ''}`}>
               {words.map((word) => {
+                const index = wordIndex++
+                const delay = WORD_REVEAL_START_MS + (index / Math.max(1, wordCount - 1)) * (FORMATION_DURATION_MS - WORD_REVEAL_START_MS - WORD_REVEAL_MS)
                 return <Fragment key={word}>
-                  <span className={styles.word}>{Array.from(word).map((character) => {
-                    const index = characterIndex++
-                    const delay = TYPEWRITER_START_MS + (index / Math.max(1, characterCount - 1)) * (FORMATION_DURATION_MS - TYPEWRITER_START_MS - TYPEWRITER_GLYPH_MS)
-                    return <span key={`${word}-${index}`} className={styles.glyph} data-glyph={index}
-                      style={{ '--type-delay': `${delay}ms` } as CSSProperties}>{character}</span>
-                  })}</span>{' '}
+                  <span className={styles.word} data-word={index}
+                    style={{ '--word-delay': `${delay}ms` } as CSSProperties}>{word}</span>{' '}
                 </Fragment>
               })}
             </span>
