@@ -170,6 +170,8 @@ export function useSupabaseSync() {
   useEffect(() => {
     if (!userId || !isValidUUID(userId)) return;
     const authenticatedUserId = userId;
+    let cancelled = false;
+    const isCurrentUser = () => !cancelled && useAuthStore.getState().user?.id === authenticatedUserId;
 
     async function loadAllData() {
       setIsProfileLoading(true);
@@ -180,6 +182,7 @@ export function useSupabaseSync() {
           .select('*')
           .eq('id', authenticatedUserId)
           .maybeSingle();
+        if (!isCurrentUser()) return;
         let profileData = profileResult.data;
         const profileError = profileResult.error;
 
@@ -194,6 +197,7 @@ export function useSupabaseSync() {
           profileData = createdProfile;
         }
 
+        if (!isCurrentUser()) return;
         const profile = profileData as Profile;
         setProfile(profile);
 
@@ -218,6 +222,7 @@ export function useSupabaseSync() {
           supabase.from('eisenhower_tasks').select('*').eq('user_id', authenticatedUserId).order('created_at', { ascending: false }),
           supabase.from('focus_sessions').select('*').eq('user_id', authenticatedUserId).order('started_at', { ascending: false }),
         ]);
+        if (!isCurrentUser()) return;
 
         // Verileri dönüştür
         const journal: JournalEntry[] = (journalData || []).map((j) => ({
@@ -341,10 +346,11 @@ export function useSupabaseSync() {
         const name = err instanceof Error ? err.name : 'UnknownError';
         console.warn('[SAH Sync] Veriler geçici olarak yerel kopyadan gösteriliyor', { name });
       } finally {
-        setIsProfileLoading(false);
+        if (isCurrentUser()) setIsProfileLoading(false);
       }
     }
 
     loadAllData();
+    return () => { cancelled = true; };
   }, [importAll, setIsProfileLoading, setProfile, userId]);
 }

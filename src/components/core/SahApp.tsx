@@ -1,5 +1,6 @@
 "use client";
 import LoginScreen from "@/components/auth/LoginScreen";
+import { useSignOut } from "@/hooks/useSignOut";
 import { AppIcon } from "@/components/ui/AppIcon";
 import AvatarImage from "@/components/ui/AvatarImage";
 import SectionSkeleton from "@/components/ui/SectionSkeleton";
@@ -16,7 +17,7 @@ import type { QuranThreadSummary } from "@/types/database";
 import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import AwarenessProfileSummary from "./AwarenessProfileSummary";
 import CommandPalette from "./CommandPalette";
@@ -113,9 +114,9 @@ export default function SahApp({
   initialProfile: Profile | null;
 }) {
   const { session, user, isAuthLoading, profile } = useAuthStore();
+  const { signOut, isSigningOut, signOutError } = useSignOut();
   const store = useJourneyStore();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const view = readAppView(searchParams);
   const mainRef = useRef<HTMLElement>(null);
   const previousView = useRef(view);
@@ -343,8 +344,9 @@ export default function SahApp({
 
   const closeSearch = useCallback(() => setSearchOpen(false), []);
 
-  const activeUser = user || initialUser;
-  const activeProfile = profile || initialProfile;
+  // Server props are a bootstrap snapshot, not evidence of a current session.
+  const activeUser = user ?? (isAuthLoading ? initialUser : null);
+  const activeProfile = profile ?? (isAuthLoading ? initialProfile : null);
   if (isAuthLoading && !initialUser) return <AppLoading />;
   if (!session && !activeUser) return <LoginScreen />;
 
@@ -571,10 +573,12 @@ export default function SahApp({
                 <button
                   className="signout"
                   role="menuitem"
-                  onClick={() => void supabase.auth.signOut()}
+                  disabled={isSigningOut}
+                  onClick={() => void signOut()}
                 >
-                  <AppIcon name="logout" /> Oturumu kapat
+                  <AppIcon name="logout" /> {isSigningOut ? "Çıkış yapılıyor…" : "Oturumu kapat"}
                 </button>
+                {signOutError && <p role="alert">{signOutError}</p>}
               </div>
             )}
           </div>

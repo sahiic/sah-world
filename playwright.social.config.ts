@@ -4,7 +4,7 @@ const backendPort = Number(process.env.SAH_SOCIAL_FIXTURE_PORT ?? 3116),
 const fixtureURL = `http://127.0.0.1:${backendPort}`;
 export default defineConfig({
   testDir: "./tests/e2e",
-  testMatch: "quran-social.spec.ts",
+  testMatch: ["quran-social.spec.ts", "signout.spec.ts"],
   workers: 1,
   fullyParallel: false,
   timeout: 60000,

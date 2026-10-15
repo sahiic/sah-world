@@ -3,6 +3,7 @@
 import Cropper, { type Area } from "react-easy-crop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSignOut } from "@/hooks/useSignOut";
 import { AppIcon } from "@/components/ui/AppIcon";
 import AvatarImage from "@/components/ui/AvatarImage";
 import { BADGES, getLevelForXP } from "@/lib/constants";
@@ -45,6 +46,7 @@ export default function AccountSettingsDialog({
   const patchProfile = useAuthStore((state) => state.patchProfile);
   const journey = useJourneyStore();
   const router = useRouter();
+  const { signOut, isSigningOut, signOutError } = useSignOut();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<SettingsTab>("account");
@@ -197,13 +199,6 @@ export default function AccountSettingsDialog({
     flash("Veri arşivin hazırlandı.");
   };
 
-  const signOut = async () => {
-    setSaving(true);
-    await supabase.auth.signOut();
-    router.replace("/");
-    router.refresh();
-  };
-
   const deleteAccount = async () => {
     if (confirmation !== "HESABIMI SIL") return;
     setSaving(true);
@@ -237,9 +232,10 @@ export default function AccountSettingsDialog({
 
         <nav className="settings-tabs" aria-label="Hesap ayarları sekmeleri">{tabs.map((tab) => <button key={tab.id} className={activeTab === tab.id ? "active" : ""} aria-selected={activeTab === tab.id} role="tab" onClick={() => setActiveTab(tab.id)}><AppIcon name={tab.icon} /><span>{tab.label}</span></button>)}</nav>
         {(message || error) && <p className={`settings-message ${error ? "error" : ""}`} role="status"><AppIcon name={error ? "alert-circle" : "circle-check"} /> {error || message}</p>}
+        {signOutError && <p className="settings-message error" role="alert">{signOutError}</p>}
 
         <div className="settings-panel" role="tabpanel">
-          {activeTab === "account" && <AccountTab onChoose={() => fileInputRef.current?.click()} onDrop={acceptFile} dragging={dragging} setDragging={setDragging} hasCustomAvatar={Boolean(profile?.avatar_url)} onFallback={() => void resetAvatarToFallback()} onSignOut={() => void signOut()} saving={saving} />}
+          {activeTab === "account" && <AccountTab onChoose={() => fileInputRef.current?.click()} onDrop={acceptFile} dragging={dragging} setDragging={setDragging} hasCustomAvatar={Boolean(profile?.avatar_url)} onFallback={() => void resetAvatarToFallback()} onSignOut={() => void signOut()} saving={saving || isSigningOut} />}
           {activeTab === "preferences" && <PreferencesTab theme={themePreference} preferences={preferences} onTheme={(next) => void updateTheme(next)} onNotification={(key) => void toggleNotification(key)} />}
           {activeTab === "growth" && <GrowthTab levelName={level.name} levelIcon={level.icon} levelIndex={index} xp={journey.xp} progress={levelProgress} nextLevel={nextLevel?.name} badges={journey.badges} streak={journey.streak.current} />}
           {activeTab === "privacy" && <PrivacyTab onExport={exportData} deleteOpen={deleteOpen} setDeleteOpen={setDeleteOpen} confirmation={confirmation} setConfirmation={setConfirmation} saving={saving} onDelete={() => void deleteAccount()} />}
