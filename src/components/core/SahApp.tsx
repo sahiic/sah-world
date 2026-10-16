@@ -490,11 +490,11 @@ export default function SahApp({
           <div className="header-actions" ref={profileMenuRef}>
             <button
               className="header-quick-add"
-              aria-label="Gününü Gün Etmek İçin Yaz"
+              aria-label="Gününü Yaz"
               onClick={() => navigate("journal")}
             >
               <AppIcon name="plus" />
-              <span className={polish.quickAddLabel}>Gününü Gün Etmek İçin Yaz</span>
+              <span className={polish.quickAddLabel}>Gününü Yaz</span>
             </button>
             <button
               className="profile-button"

@@ -57,7 +57,7 @@ test('keyboard-style quote finishes with the qibla-aligned cardioid, loops, and 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   await page.getByLabel('E-posta adresi', { exact: true }).fill('presentation@example.com');
-  const replay = page.getByRole('button', { name: 'Kardiyoid ve söz animasyonunu yeniden oynat' });
+  const replay = page.getByRole('button', { name: /Kardiyoid ve söz animasyonunu yeniden oynat/ });
   await replay.click();
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '1');
   const finalThread = page.getByRole('figure').locator('line').last();
@@ -81,6 +81,33 @@ test('keyboard-style quote finishes with the qibla-aligned cardioid, loops, and 
   await replay.press('Enter');
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '3');
   await expect(replay).toBeFocused();
+});
+
+test('cardioid combines live location and absolute screen heading to face qibla', async ({ context, page }) => {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: 41.0082, longitude: 28.9784 });
+  await page.goto('/');
+
+  const orientation = page.getByTestId('cardioid-orientation');
+  await expect(orientation).toHaveAttribute('data-bearing', '152°');
+  await page.evaluate(() => {
+    const event = new Event('deviceorientationabsolute');
+    Object.defineProperties(event, {
+      absolute: { value: true },
+      alpha: { value: 270 },
+    });
+    window.dispatchEvent(event);
+  });
+
+  await expect(orientation).toHaveAttribute('data-screen-heading', '90°');
+  await expect(orientation).toHaveAttribute('data-relative-bearing', '62°');
+  await expect(orientation).toHaveAttribute('data-direction-source', 'location-compass');
+  await expect.poll(async () => orientation.evaluate((element) => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    const angle = (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
+    const normalized = ((angle % 360) + 360) % 360;
+    return Math.abs(normalized - 151.62);
+  }), { timeout: 2500 }).toBeLessThan(1);
 });
 
 test('reduced motion immediately renders the complete illustration and keyboard jump reaches login', async ({ page }) => {
