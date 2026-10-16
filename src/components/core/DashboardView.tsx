@@ -1,5 +1,4 @@
 'use client'
-import EmptyState from "@/components/ui/EmptyState";
 import dynamic from 'next/dynamic';
 import SectionErrorBoundary from './SectionErrorBoundary';
 
@@ -10,7 +9,7 @@ const ProfessionDashboardRecommendation = dynamic(() => import('@/components/pro
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { AppIcon } from '@/components/ui/AppIcon';
 import { useActivityLog } from '@/hooks/useActivityLog';
-import { buildActivityFeed, CATEGORY_META, dayKey, getCategoryCounts, mapIntegratedActivities, relativeTime, type ActivityCategory } from '@/lib/activity';
+import { buildActivityFeed, CATEGORY_META, dayKey, getCategoryCounts, mapIntegratedActivities, type ActivityCategory } from '@/lib/activity';
 import { getLevelForXP } from '@/lib/constants';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useJourneyStore } from '@/store/useJourneyStore';
@@ -165,23 +164,8 @@ export default function DashboardView({ onNavigate }: { onNavigate: (view: strin
         <Metric icon="target-arrow" value={counts.focus} label="Odak mührü" detail="Tamamlanan seans" tone="indigo" />
       </section>
 
-      <div className="dashboard-lower-grid dashboard-reveal">
-        <section className="surface-card activity-card">
-          <div className="card-heading"><div><span className="eyebrow">YOLCULUK KAYITLARI</span><h2>Son Manevi Mühürler</h2></div><button className="text-button" onClick={() => onNavigate('reports')}>Tüm raporlar <AppIcon name="arrow-right" /></button></div>
-          {events.length === 0 ? <EmptyState icon="notes" title="Yolculuğun ilk izi seni bekliyor" description="Bugünden tek bir cümle bırak; zaman akışın sakin sakin şekillenmeye başlasın." compact /> : (
-            <motion.ol className="activity-list" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: .045 } } }}>
-              {events.slice(0, 7).map((event) => { const meta = CATEGORY_META[event.category]; return <motion.li key={`${event.category}-${event.id}`} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
-                <button className="activity-row" onClick={() => onNavigate(event.category === 'profession' ? 'profession-school' : event.category)} aria-label={`${event.label} kaydını ${meta.label} bölümünde aç`}>
-                  <span className="activity-icon" style={{ color: meta.color, background: `${meta.color}12` }}><AppIcon name={meta.icon} /></span>
-                  <span className="activity-content"><small className="activity-category" style={{ color: meta.color }}>{meta.label}</small><strong>{event.label}</strong><small>{event.detail}</small></span>
-                  <span className="activity-meta"><b>+{event.xp} XH</b><time dateTime={event.createdAt}>{relativeTime(event.createdAt)}</time></span><AppIcon name="chevron-right" />
-                </button>
-              </motion.li> })}
-            </motion.ol>
-          )}
-        </section>
-
-        <section className="surface-card insight-card">
+      <div className="dashboard-lower-grid dashboard-support-grid dashboard-reveal">
+        <section className="surface-card insight-card dashboard-weekly-insight">
           <div className="insight-visual" aria-hidden><span><AppIcon name="leaf" /></span><i /><i /><i /></div>
           <span className="eyebrow">HAFTALIK İÇGÖRÜ</span>
           <h2>{activeDays > 0 ? (weekChange !== null && weekChange > 0 ? `Bu hafta geçen haftadan %${weekChange} daha aktifsin.` : weekChange !== null && weekChange < 0 ? `Geçen haftaya kıyasla biraz daha sakinsin — ama her geri dönüş yeni bir başlangıç.` : `Bu hafta en çok ${CATEGORY_META[weeklyCategory].label} alanına döndün.`) : 'Bu haftanın ilk adımı seni bekliyor.'}</h2>
