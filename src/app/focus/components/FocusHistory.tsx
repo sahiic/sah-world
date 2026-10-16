@@ -1,5 +1,5 @@
 "use client";
-import { BookCheck, CalendarDays, Clock3, Search } from "lucide-react";
+import { BookCheck, CalendarDays, Search } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { useFocusStore } from "@/stores/focusStore";
 import { formatMinutes, localDateKey } from "@/utils/timerUtils";
@@ -24,6 +24,7 @@ export default function FocusHistory() {
     cutoff.setHours(0, 0, 0, 0);
     if (period === "week") cutoff.setDate(cutoff.getDate() - 6);
     return sessions
+      .filter((session) => session.completed)
       .filter(
         (session) =>
           new Date(session.startTime).getTime() >=
@@ -109,28 +110,14 @@ export default function FocusHistory() {
                   </h3>
                 )}
                 <article>
-                  <span
-                    className={
-                      session.completed
-                        ? styles.historySuccess
-                        : styles.historyCancelled
-                    }
-                  >
-                    {session.completed ? (
-                      <BookCheck aria-hidden />
-                    ) : (
-                      <Clock3 aria-hidden />
-                    )}
+                  <span className={styles.historySuccess}>
+                    <BookCheck aria-hidden />
                   </span>
                   <div>
                     <strong>{session.niyet || "Mola"}</strong>
                     <small>
                       {timeFormatter.format(date)} ·{" "}
-                      {session.mode !== "focus"
-                        ? "Mola"
-                        : session.completed
-                          ? "Tamamlandı"
-                          : "Kısmi oturum"}
+                      {session.mode !== "focus" ? "Mola" : "Tamamlandı"}
                       {session.tags.length > 0
                         ? ` · ${session.tags.join(", ")}`
                         : ""}

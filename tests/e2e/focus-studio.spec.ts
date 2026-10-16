@@ -39,7 +39,7 @@ async function openFocus(page: Page, route = "/focus") {
   if (route !== "/focus")
     await page.getByRole("button", { name: "DEV: Misafir görünümü" }).click();
   await expect(
-    page.getByRole("heading", { name: "Bir işe alan aç." }),
+    page.getByRole("heading", { name: "Öyleyse, bir işi bitirince diğerine koyul." }),
   ).toBeVisible();
 }
 
@@ -101,14 +101,14 @@ for (const route of ["/?view=focus", "/focus"]) {
     await page.locator(".focus-controls > button").nth(1).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole("slider")).toHaveCount(16);
+    await expect(dialog.getByRole("slider")).toHaveCount(1);
     await dialog
       .getByRole("button", { name: "Yağmur sesini aç", exact: true })
       .click();
     await expect(
       dialog.getByRole("button", { name: "Yağmur sesini kapat", exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
-    await dialog.getByRole("button", { name: "Tüm sesleri kapat" }).click();
+    await dialog.getByRole("button", { name: "Sesi kapat", exact: true }).click();
     await expect(
       dialog.getByRole("button", { name: "Yağmur sesini aç", exact: true }),
     ).toHaveAttribute("aria-pressed", "false");
@@ -123,7 +123,7 @@ for (const route of ["/?view=focus", "/focus"]) {
   });
 }
 
-test("one clock survives exit, reload, pause, cross-tab and partial completion", async ({
+test("one clock survives exit, reload and pause; an incomplete Pomodoro is discarded", async ({
   page,
   context,
 }) => {
@@ -136,7 +136,7 @@ test("one clock survives exit, reload, pause, cross-tab and partial completion",
     .getByRole("button", { name: "Zamanlayıcıyı başlat", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Şimdi, yalnızca bu an." }),
+    page.getByRole("heading", { name: "Öyleyse, bir işi bitirince diğerine koyul." }),
   ).toBeVisible();
   await expect(page.locator(".focus-controls > button").first()).toBeEnabled();
   await expect(page.getByRole("timer")).not.toContainText("25:00");
@@ -160,15 +160,11 @@ test("one clock survives exit, reload, pause, cross-tab and partial completion",
     second.locator(".focus-controls > button").first(),
   ).toBeEnabled();
   second.once("dialog", (dialog) => dialog.accept());
-  await second.getByRole("button", { name: "Oturumu bitir ve kaydet" }).click();
+  await second.getByRole("button", { name: "Oturumu bitir ve süreyi sil" }).click();
   await expect(mini).toHaveCount(0);
   await second.getByRole("button", { name: "Geçmişim", exact: true }).click();
-  await expect(
-    second.getByText("Kısmi oturum", { exact: false }),
-  ).toBeVisible();
-  await expect(
-    second.getByText("Örnek odak testi", { exact: true }),
-  ).toBeVisible();
+  await expect(second.getByText("Kısmi oturum", { exact: false })).toHaveCount(0);
+  await expect(second.getByText("Örnek odak testi", { exact: true })).toHaveCount(0);
 });
 
 test("large chart stays in its card; completion survives navigation and is saved once", async ({
@@ -231,61 +227,27 @@ test("large chart stays in its card; completion survives navigation and is saved
   );
 });
 
-test("every sound generates an actual signal; mute releases audio channels", async ({
+test("the seven sound choices use real local recordings and stay single-select", async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    const Native = window.AudioContext;
-    class Probe extends Native {
-      createGain() {
-        const gain = super.createGain(),
-          analyser = super.createAnalyser();
-        gain.connect(analyser);
-        const probe = window as unknown as { focusAudioProbe?: AnalyserNode };
-        if (!probe.focusAudioProbe) probe.focusAudioProbe = analyser;
-        return gain;
-      }
-    }
-    window.AudioContext = Probe;
-  });
   await openFocus(page);
   await page.locator(".focus-controls > button").nth(1).click();
   const dialog = page.getByRole("dialog");
-  const names = [
-    "Yağmur",
-    "Hafif yağmur",
-    "Kuş sesleri",
-    "Rüzgâr",
-    "Okyanus",
-    "Şömine",
-    "Orman",
-    "Dere",
-    "Şelale",
-    "Gece bahçesi",
-    "Beyaz gürültü",
-    "Kahverengi gürültü",
-    "Pembe gürültü",
-    "Vantilatör",
-    "Tren ritmi",
+  const recordings = [
+    ["Yağmur", "/audio/focus/rain.ogg"],
+    ["Okyanus", "/audio/focus/ocean.ogg"],
+    ["Orman Kuşları", "/audio/focus/forest-birds.ogg"],
+    ["Dere", "/audio/focus/brook.ogg"],
+    ["Kamp Ateşi", "/audio/focus/campfire.ogg"],
+    ["Ağaçlarda Rüzgâr", "/audio/focus/wind.oga"],
+    ["Gece Bahçesi", "/audio/focus/night-pond.ogg"],
   ];
-  const rms = () =>
-    page.evaluate(() => {
-      const node = (window as unknown as { focusAudioProbe: AnalyserNode })
-        .focusAudioProbe;
-      const data = new Float32Array(node.fftSize);
-      node.getFloatTimeDomainData(data);
-      return Math.sqrt(data.reduce((sum, x) => sum + x * x, 0) / data.length);
-    });
-  for (const name of names) {
-    await dialog
-      .getByRole("button", { name: `${name} sesini aç`, exact: true })
-      .click();
-    await expect
-      .poll(rms, { message: `${name} generates nonzero audio` })
-      .toBeGreaterThan(0.00001);
-    await dialog
-      .getByRole("button", { name: `${name} sesini kapat`, exact: true })
-      .click();
-    await expect.poll(rms).toBeLessThan(0.000001);
+  for (const [name, source] of recordings) {
+    const response = await page.request.get(source);
+    expect(response.ok(), `${source} is served`).toBe(true);
+    expect((await response.body()).byteLength).toBeGreaterThan(50_000);
+    await dialog.getByRole("button", { name: `${name} sesini aç`, exact: true }).click();
+    await expect(dialog.getByRole("button", { name: `${name} sesini kapat`, exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(dialog.getByRole("button", { name: /sesini kapat$/ })).toHaveCount(1);
   }
 });

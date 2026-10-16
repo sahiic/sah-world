@@ -219,7 +219,7 @@ function FocusTimerWidgetCard({ now }: { now: number }) {
   }
 
   const endSession = () => {
-    if (!window.confirm('Odak oturumunu şimdi bitirip süreyi kaydetmek istiyor musun?')) return
+    if (!window.confirm('Pomodoro tamamlanmadı. Oturumu bitirirsen bu süre geçmişe kaydedilmeyecek. Bitirmek istiyor musun?')) return
     const session = finalizeFocusSession(false)
     if (session) window.dispatchEvent(new CustomEvent('sah:focus-completed', { detail: session }))
   }

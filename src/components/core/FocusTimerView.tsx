@@ -718,14 +718,13 @@ export default function FocusTimerView({
                 <strong>
                   {formatFocusDuration(elapsedSeconds)} boyunca odaktaydın.
                 </strong>{" "}
-                Bu süre kısmi oturum olarak kaydedilecek; tamamlanan oturuma
-                göre daha az XH verebilir.
+                Pomodoro tamamlanmadı. Bu süre geçmişe kaydedilmeyecek.
               </p>
             </div>
             <ModalActions
               onCancel={() => setModal(null)}
               cancelLabel="Devam et"
-              confirmLabel="Bitir ve kaydet"
+              confirmLabel="Bitir ve sil"
               onConfirm={() => {
                 setModal(null);
                 finalizeFocusSession(false);

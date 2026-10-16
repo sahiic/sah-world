@@ -331,6 +331,10 @@ export const useFocusStore = create<FocusState>()(
       completeSession: (options = {}) => {
         const state = get();
         if (!state.sessionStartTime) return null;
+        if (options.completed === false) {
+          get().resetTimer();
+          return null;
+        }
         const measuredMinutes =
           state.timerKind === "stopwatch"
             ? Math.round(state.timeLeft / 60 * 100) / 100
@@ -342,7 +346,7 @@ export const useFocusStore = create<FocusState>()(
           endTime: new Date().toISOString(),
           duration,
           mode: state.mode,
-          completed: options.completed ?? true,
+          completed: true,
           niyet: state.currentNiyet,
           tags: state.currentTags,
         };
@@ -370,14 +374,11 @@ export const useFocusStore = create<FocusState>()(
           lastTickAt: null,
           sessionStartTime: null,
           pendingCompletedSession:
-            session.completed && session.mode === "focus" ? session : null,
-          ...(!session.completed ? {timeLeft:state.timerKind === "stopwatch" ? 0 : state.totalTime} : {}),
+            session.mode === "focus" ? session : null,
         });
         return session;
       },
       cancelSession: () => {
-        const state = get();
-        if (state.sessionStartTime) get().completeSession({ completed: false });
         get().resetTimer();
       },
       dismissCompletion: () => {
@@ -474,7 +475,20 @@ export const useFocusStore = create<FocusState>()(
       }),
       merge: (persisted, current) => {
         const merged = { ...current, ...(persisted as Partial<FocusState>) };
-        return { ...merged, ...calculateStats(merged.sessions ?? []) };
+        const sessions = (merged.sessions ?? []).filter((session) => session.completed);
+        const selectedSound = Object.entries(merged.soundVolumes ?? {}).find(
+          ([id, volume]) => AMBIENT_PROFILES.includes(id) && volume > 0,
+        );
+        const soundVolumes = selectedSound
+          ? { [selectedSound[0]]: Math.min(1, selectedSound[1]) }
+          : {};
+        return {
+          ...merged,
+          sessions,
+          soundVolumes,
+          activeSound: selectedSound?.[0] ?? null,
+          ...calculateStats(sessions),
+        };
       },
     },
   ),

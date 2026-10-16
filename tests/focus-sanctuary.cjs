@@ -58,7 +58,7 @@ test("sound mixes replace atomically, sanitize inputs and mute without losing le
   assert.deepEqual(store.getState().soundVolumes, {});
   assert.equal(store.getState().activeSound, null);
 });
-test("switching from a break to stopwatch creates a focus session, not an endless break", () => {
+test("stopping a stopwatch discards the incomplete focus session", () => {
   reset();
   store.getState().skipToNext();
   assert.equal(store.getState().mode, "shortBreak");
@@ -68,8 +68,9 @@ test("switching from a break to stopwatch creates a focus session, not an endles
   store.getState().tick(store.getState().lastTickAt + 60000);
   assert.equal(store.getState().timeLeft, 60);
   const saved = store.getState().completeSession({ completed: false });
-  assert.equal(saved.mode, "focus");
-  assert.equal(saved.duration, 1);
+  assert.equal(saved, null);
+  assert.equal(store.getState().sessions.length, 0);
+  assert.equal(store.getState().sessionStartTime, null);
 });
 test("quota failure retains latest snapshot for runtime reads and retries honestly", () => {
   const setItem = global.localStorage.setItem;
@@ -114,17 +115,34 @@ test("paused preferences never reset duration; resume excludes paused time", () 
   store.getState().tick(store.getState().lastTickAt + 1000);
   assert.equal(store.getState().timeLeft, remaining - 1);
 });
-test("partial session records exact short duration, no fake minute/reward, completion idempotent", () => {
+test("partial session is discarded without history, reward or pending completion", () => {
   reset();
   store.getState().startTimer();
   store.getState().tick(store.getState().lastTickAt + 6000);
   const session = store.getState().completeSession({ completed: false });
-  assert.equal(session.duration, 0.1);
-  assert.equal(session.completed, false);
+  assert.equal(session, null);
   assert.equal(store.getState().coins, 0);
   assert.equal(store.getState().completeSession(), null);
-  assert.equal(store.getState().sessions.length, 1);
+  assert.equal(store.getState().sessions.length, 0);
+  assert.equal(store.getState().pendingCompletedSession, null);
   assert.equal(store.getState().timeLeft,1500);
+});
+
+test("rehydration permanently removes legacy incomplete sessions", async () => {
+  reset();
+  const now = new Date().toISOString();
+  storage.set("sah-focus-sanctuary-v1", JSON.stringify({
+    version: 1,
+    state: {
+      sessions: [
+        { id: "partial", startTime: now, endTime: now, duration: 3, mode: "focus", completed: false, niyet: "Yarım", tags: [] },
+        { id: "complete", startTime: now, endTime: now, duration: 25, mode: "focus", completed: true, niyet: "Tam", tags: [] },
+      ],
+    },
+  }));
+  await store.persist.rehydrate();
+  assert.deepEqual(store.getState().sessions.map((session) => session.id), ["complete"]);
+  assert.equal(store.getState().totalSessions, 1);
 });
 test("elapsed timer completes once and progresses to short/long breaks", () => {
   reset();

@@ -23,6 +23,11 @@ export function finalizeFocusSession(naturalCompletion: boolean): FocusSession |
     Math.max(1, Math.floor(naturalCompletion && timer.timerType === 'countdown' ? timer.plannedDurationSeconds : elapsed)),
   )
   const completed = timer.timerType === 'countdown' ? naturalCompletion : actualDurationSeconds >= 5 * 60
+  if (!completed) {
+    timer.reset()
+    finishing = false
+    return null
+  }
   const xpAwarded = calculateFocusXP(actualDurationSeconds, completed, timer.timerType, timer.interruptionCount, timer.totalAwaySeconds)
   const session: FocusSession = {
     id: ensureUUID(),
