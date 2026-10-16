@@ -18,7 +18,8 @@ test("session and sound library remain readable on compact screens", async ({ pa
   expect(action!.y + action!.height).toBeLessThan(page.viewportSize()!.height);
   await page.screenshot({ path: testInfo.outputPath("focus-session.png"), fullPage: true });
   await page.locator(".focus-controls > button").nth(1).click();
-  await expect(page.getByRole("group", { name: "Hazır ses karışımları" })).toBeVisible();
+  await expect(page.getByRole("radiogroup", { name: "Doğal arka plan kayıtları" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /sesini (aç|kapat)$/ })).toHaveCount(7);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await page.screenshot({ path: testInfo.outputPath("focus-sounds.png"), fullPage: true });
 });
@@ -54,25 +55,24 @@ test("draft survives history and starts directly; pause preserves settings and d
   await expect(page.getByRole("timer")).toContainText("Duraklatıldı");
 });
 
-test("curated mixes replace channels and mute persists without erasing the mix", async ({ page }) => {
+test("natural recordings stay single-select and mute persists without erasing the choice", async ({ page }) => {
   await page.goto("/focus");
   await page.getByRole("button", { name: "Arka Plan Sesi Sessiz", exact: true }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByRole("button", { name: /Yağmurlu okuma/ }).click();
-  await expect(dialog.getByRole("slider", { name: "Hafif yağmur ses düzeyi", exact: true })).toHaveValue("50");
-  await dialog.getByRole("button", { name: /Derin odak/ }).click();
-  await expect(dialog.getByRole("slider", { name: "Hafif yağmur ses düzeyi", exact: true })).toHaveValue("0");
-  await expect(dialog.getByRole("slider", { name: "Kahverengi gürültü ses düzeyi", exact: true })).toHaveValue("45");
+  await dialog.getByRole("button", { name: "Yağmur sesini aç", exact: true }).click();
+  await expect(dialog.getByRole("button", { name: "Yağmur sesini kapat", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await dialog.getByRole("button", { name: "Okyanus sesini aç", exact: true }).click();
+  await expect(dialog.getByRole("button", { name: "Yağmur sesini aç", exact: true })).toHaveAttribute("aria-pressed", "false");
+  await expect(dialog.getByRole("button", { name: "Okyanus sesini kapat", exact: true })).toHaveAttribute("aria-pressed", "true");
   await dialog.getByRole("button", { name: "Sessize al", exact: true }).click();
   await page.keyboard.press("Escape");
   await page.reload();
   await page.getByRole("button", { name: "Arka Plan Sesi Sessize alındı", exact: true }).click();
-  await expect(dialog.getByRole("slider", { name: "Kahverengi gürültü ses düzeyi", exact: true })).toHaveValue("45");
+  await expect(dialog.getByRole("button", { name: "Okyanus sesini kapat", exact: true })).toHaveAttribute("aria-pressed", "true");
   await dialog.getByRole("button", { name: "Sesi geri aç", exact: true }).click();
-  await dialog.getByRole("button", { name: "Tüm sesleri kapat", exact: true }).click();
-  for (const slider of await dialog.getByRole("slider").all()) {
-    if (await slider.getAttribute("id") !== "master-volume") await expect(slider).toHaveValue("0");
-  }
+  await dialog.getByRole("button", { name: "Sesi kapat", exact: true }).click();
+  await expect(dialog.getByRole("button", { name: /sesini kapat$/ })).toHaveCount(0);
+  await expect(dialog.getByRole("button", { name: /sesini aç$/ })).toHaveCount(7);
   await expect(dialog.getByRole("button", { name: "Dinlemeyi aç" })).toHaveCount(0);
 });
 

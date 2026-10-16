@@ -852,6 +852,20 @@
 .mixPresets button[aria-pressed=true] { border-color:#c0f3df; background:#245344; }
 .mixPresets strong { font-size:13px; font-weight:600; }
 .mixPresets small { color:#bdd2cc; font-size:11px; line-height:1.5; }
+.recordingGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.recordingCard { position:relative; min-width:0; min-height:92px; display:grid; grid-template-columns:36px 1fr; grid-template-rows:auto auto; column-gap:11px; align-content:center; padding:14px; border:1px solid #ffffff1d; border-radius:14px; background:linear-gradient(145deg,#ffffff08,#06131f42); color:#edf7f2; text-align:left; cursor:pointer; transition:border-color 180ms ease,background 180ms ease,transform 180ms ease; }
+.recordingCard:hover { transform:translateY(-1px); border-color:#a7eaca66; }
+.recordingCard[aria-pressed=true] { border-color:#a7eaca; background:linear-gradient(145deg,#245344cc,#102d38d9); box-shadow:0 10px 28px #001a1428; }
+.recordingCard > span { grid-row:1 / 3; width:36px; height:36px; display:grid; place-items:center; align-self:center; border-radius:11px; color:#a7eaca; background:#a7eaca12; }
+.recordingCard svg { width:18px; height:18px; }
+.recordingCard strong { align-self:end; font-size:12px; font-weight:700; }
+.recordingCard small { overflow:hidden; color:#9eb1bb; font-size:10px; line-height:1.45; white-space:nowrap; text-overflow:ellipsis; }
+.recordingCard > i { position:absolute; top:13px; right:13px; width:7px; height:7px; border:1px solid #ffffff55; border-radius:50%; }
+.recordingCard[aria-pressed=true] > i { border-color:#a7eaca; background:#a7eaca; box-shadow:0 0 11px #a7eaca99; }
+.recordingCredits { margin-top:14px; padding-top:12px; border-top:1px solid #ffffff15; color:#9eb1bb; font-size:9px; line-height:1.6; }
+.recordingCredits summary { width:max-content; color:#bdd2cc; cursor:pointer; }
+.recordingCredits p { margin:6px 0 0; }
+.recordingCredits a { color:#c0f3df; }
 .configNote { color:#bcd2cd; font-size:12px; line-height:1.7; }
 .notificationOption { margin-top:18px; padding-top:18px; border-top:1px solid #ffffff18; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
 .notificationOption strong { font-size:13px; }
@@ -916,6 +930,7 @@
  .focusPage .panelCard { padding:20px; }
  .focusPage .todayStats strong { font-size:18px; }
  .focusPage .soundCategories { grid-template-columns:1fr; }
+ .recordingGrid { grid-template-columns:1fr; }
  .miniTimer { right:12px; bottom:calc(84px + env(safe-area-inset-bottom)); width:240px; padding:12px; }
  .miniBody strong { font-size:30px; }
 }

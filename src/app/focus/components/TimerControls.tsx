@@ -49,9 +49,9 @@ export default function TimerControls({
       {sessionStartTime ? (
         <button
           className={`focus-secondary-btn ${styles.roundControl} ${styles.dangerControl}`}
-          onClick={() => { if (window.confirm("Geçen süreyi kısmi oturum olarak kaydet ve bitir?")) { useFocusStore.getState().tick(); completeSession({ completed: false }); ambientEngine.stop(); } }}
-          aria-label="Oturumu bitir ve kaydet"
-          title="Bitir ve kaydet"
+          onClick={() => { if (window.confirm("Pomodoro tamamlanmadı. Oturumu bitirirsen bu süre geçmişe kaydedilmeyecek. Bitirmek istiyor musun?")) { useFocusStore.getState().tick(); completeSession({ completed: false }); ambientEngine.stop(); } }}
+          aria-label="Oturumu bitir ve süreyi sil"
+          title="Bitir ve süreyi sil"
         >
           <Square aria-hidden />
         </button>

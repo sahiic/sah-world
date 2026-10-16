@@ -174,7 +174,7 @@ export default function FocusSessionRuntime() {
           )}
           {confirmStop && (
             <div className={styles.miniConfirm}>
-              <p>Geçen süreyi kaydedip oturumu bitir?</p>
+              <p>Pomodoro tamamlanmadı. Bitirirsen bu süre geçmişe kaydedilmeyecek.</p>
               <button onClick={() => setConfirmStop(false)}>Devam et</button>
               <button
                 onClick={() => {
@@ -186,7 +186,7 @@ export default function FocusSessionRuntime() {
                   setConfirmStop(false);
                 }}
               >
-                Bitir ve kaydet
+                Bitir ve sil
               </button>
             </div>
           )}
