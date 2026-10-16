@@ -32,7 +32,8 @@ test('dashboard copy and spiritual development stages are coherent', () => {
 
   assert.match(dashboard, /Ameller ancak niyetlere göredir/);
   assert.match(dashboard, /Manevi Gelişim Sahnesi/);
-  assert.match(appCopy(), /Gününü Gün Etmek İçin Yaz/);
+  assert.match(appCopy(), /Gününü Yaz/);
+  assert.doesNotMatch(appCopy(), /Gününü Gün Etmek İçin Yaz/);
   assert.match(scene, /Sıradaki manevi gelişim sahnesi/);
   assert.match(scene, /10 AŞAMALI MANEVİ GELİŞİM/);
   for (const stage of ['Niyet', 'Gayret', 'Sebat', 'İstikamet', 'Muhasebe', 'Tefekkür', 'Hikmet', 'Basiret', 'Marifet', 'Âlem']) {

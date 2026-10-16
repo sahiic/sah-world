@@ -1,7 +1,14 @@
 'use client'
 
-import { useEffect, useId, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useId, useState, type CSSProperties } from 'react'
 import { RotateCcw } from 'lucide-react'
+import {
+  ISTANBUL_QIBLA_BEARING,
+  calculateQiblaBearing,
+  cardioidRotation,
+  normalizeDegrees,
+  relativeQiblaBearing,
+} from '@/lib/qibla'
 import styles from './LoginExperience.module.css'
 
 const POINT_COUNT = 200
@@ -23,6 +30,15 @@ const quote = quoteLines.join(' ')
 const LOOP_PAUSE_MS = 1000
 const LOOP_DURATION_MS = FORMATION_DURATION_MS + LOOP_PAUSE_MS
 
+type PermissionedOrientationConstructor = typeof DeviceOrientationEvent & {
+  requestPermission?: (absolute?: boolean) => Promise<'granted' | 'denied'>
+}
+
+type CompassOrientationEvent = DeviceOrientationEvent & {
+  webkitCompassHeading?: number
+  webkitCompassAccuracy?: number
+}
+
 function pointAt(index: number, count = POINT_COUNT, radius = RADIUS) {
   const angle = (index / count) * Math.PI * 2
   return { x: CENTER + Math.cos(angle) * radius, y: CENTER + Math.sin(angle) * radius }
@@ -38,12 +54,82 @@ const threads = Array.from({ length: POINT_COUNT }, (_, index) => ({
 export default function CardioidMotif() {
   const uid = useId().replace(/:/g, '')
   const [replay, setReplay] = useState(0)
+  const [qiblaBearing, setQiblaBearing] = useState(ISTANBUL_QIBLA_BEARING)
+  const [screenHeading, setScreenHeading] = useState(0)
+  const [hasLocation, setHasLocation] = useState(false)
+  const [hasCompass, setHasCompass] = useState(false)
+  const relativeBearing = relativeQiblaBearing(qiblaBearing, screenHeading)
+  const visualRotation = cardioidRotation(relativeBearing)
+
+  const locateQibla = useCallback(() => {
+    if (!('geolocation' in navigator)) return
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setQiblaBearing(calculateQiblaBearing(coords.latitude, coords.longitude))
+        setHasLocation(true)
+      },
+      () => setHasLocation(false),
+      { enableHighAccuracy: false, maximumAge: 60 * 60 * 1000, timeout: 8000 },
+    )
+  }, [])
+
+  const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
+    const compassEvent = event as CompassOrientationEvent
+    let heading: number | null = null
+
+    if (Number.isFinite(compassEvent.webkitCompassHeading)) {
+      heading = compassEvent.webkitCompassHeading as number
+    } else if (event.absolute && Number.isFinite(event.alpha)) {
+      heading = 360 - (event.alpha as number)
+    }
+
+    if (heading === null) return
+    const viewportAngle = window.screen.orientation?.angle ?? 0
+    const nextHeading = normalizeDegrees(heading + viewportAngle)
+    setScreenHeading((current) => {
+      const distance = Math.abs(normalizeDegrees(nextHeading - current + 180) - 180)
+      return distance < 0.5 ? current : nextHeading
+    })
+    setHasCompass(true)
+  }, [])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const timer = window.setTimeout(() => setReplay((value) => value + 1), LOOP_DURATION_MS)
     return () => window.clearTimeout(timer)
   }, [replay])
+
+  useEffect(() => {
+    window.addEventListener('deviceorientationabsolute', handleOrientation, true)
+    window.addEventListener('deviceorientation', handleOrientation, true)
+
+    let active = true
+    if ('permissions' in navigator) {
+      void navigator.permissions.query({ name: 'geolocation' }).then((permission) => {
+        if (active && permission.state === 'granted') locateQibla()
+      }).catch(() => undefined)
+    }
+
+    return () => {
+      active = false
+      window.removeEventListener('deviceorientationabsolute', handleOrientation, true)
+      window.removeEventListener('deviceorientation', handleOrientation, true)
+    }
+  }, [handleOrientation, locateQibla])
+
+  const replayAndEnableQibla = () => {
+    setReplay((value) => value + 1)
+    const orientation = window.DeviceOrientationEvent as PermissionedOrientationConstructor | undefined
+    if (typeof orientation?.requestPermission === 'function') {
+      void orientation.requestPermission(true).catch(() => 'denied')
+    }
+    locateQibla()
+  }
+
+  const bearingLabel = `${Math.round(qiblaBearing)}°`
+  const headingLabel = `${Math.round(screenHeading)}°`
+  const relativeLabel = `${Math.round(relativeBearing)}°`
+  const directionSource = hasCompass ? (hasLocation ? 'location-compass' : 'fallback-compass') : (hasLocation ? 'location' : 'fallback')
 
   return (
     <div className={styles.experience}>
@@ -76,7 +162,7 @@ export default function CardioidMotif() {
           <svg viewBox="0 0 520 520" role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
             <title id={`${uid}-title`}>Kıble yönüne dönük kardiyoid</title>
             <desc id={`${uid}-desc`}>
-              Çemberin üzerinde, çizgi örgüsüyle aynı hizada duran 114 ışıklı nokta. Sivri uç Türkiye’den kıble yönüne bakar.
+              Çemberin üzerinde, çizgi örgüsüyle aynı hizada duran 114 ışıklı nokta. Sivri uç, konum ve cihaz pusulası desteklendiğinde ekranda kıble yönünü izler.
             </desc>
             <defs>
               <linearGradient id={`${uid}-thread`} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -90,7 +176,15 @@ export default function CardioidMotif() {
                 <stop offset="1" stopColor="#6366f1" stopOpacity="0" />
               </radialGradient>
             </defs>
-            <g data-testid="cardioid-orientation" data-bearing="151°" transform={`rotate(241 ${CENTER} ${CENTER})`}>
+            <g
+              className={styles.orientation}
+              data-testid="cardioid-orientation"
+              data-bearing={bearingLabel}
+              data-screen-heading={headingLabel}
+              data-relative-bearing={relativeLabel}
+              data-direction-source={directionSource}
+              style={{ '--qibla-rotation': `${visualRotation}deg` } as CSSProperties}
+            >
               <circle cx={CENTER} cy={CENTER} r="256" fill={`url(#${uid}-atmosphere)`} />
               <circle className={styles.boundary} cx={CENTER} cy={CENTER} r={RADIUS} />
               <g aria-hidden="true">
@@ -117,7 +211,7 @@ export default function CardioidMotif() {
         </figure>
         <AnimatedQuote />
       </div>
-      <button type="button" className={styles.replay} aria-label="Kardiyoid ve söz animasyonunu yeniden oynat" onClick={() => setReplay((value) => value + 1)}>
+      <button type="button" className={styles.replay} aria-label="Kardiyoid ve söz animasyonunu yeniden oynat, kıble yönünü güncelle" onClick={replayAndEnableQibla}>
         <RotateCcw size={16} aria-hidden="true" />
       </button>
     </div>

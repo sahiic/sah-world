@@ -28,6 +28,7 @@
 .brightStar { opacity: var(--star-opacity); filter: drop-shadow(0 0 5px #d9ceff88); animation: starTwinkle var(--twinkle-duration) ease-in-out var(--twinkle-delay) infinite alternate; transform-box: fill-box; transform-origin: center; }
 .motif { position: relative; width: min(100%, 54svh, 540px); margin: 0 auto; aspect-ratio: 1; animation: qiblaDrift 12s ease-in-out infinite; }
 .motif svg { display: block; width: 100%; height: 100%; }
+.orientation { transform: rotate(var(--qibla-rotation)); transform-box: view-box; transform-origin: center; transition: transform 700ms cubic-bezier(.22, .68, .3, 1); will-change: transform; }
 .boundary { fill: none; stroke: #bcb6e14d; stroke-width: .7; }
 .thread {
   stroke-width: .85; vector-effect: non-scaling-stroke; opacity: var(--thread-opacity);
@@ -88,6 +89,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .thread, .star, .brightStar, .motif, .caret { animation: none !important; }
+  .orientation { transition: none; }
   .thread { stroke-dashoffset: 0 !important; }
   .replay { transition: none; }
 }
