@@ -9,7 +9,7 @@ test('seven main sections render at 375px with reduced motion and usable navigat
   await page.goto('/');
   await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
   await expect(page.locator('[data-growth-scene]')).toBeVisible();
-  for (const [view, selector] of [['journal', '.journal-notebook'], ['quran-companion', '.quran-companion'], ['mescidim', '.mescidim-single-flow'], ['awareness', '.awareness-experience'], ['reports', '.report-next-step'], ['profession-school', '.profession-school'], ['focus', '[data-focus-studio]']]) {
+  for (const [view, selector] of [['journal', '.journal-notebook'], ['quran-companion', '.quran-companion'], ['mescidim', '.mescidim-single-flow'], ['awareness', '.awareness-experience'], ['reports', '.reports-hero'], ['profession-school', '.profession-school'], ['focus', '[data-focus-studio]']]) {
     await page.evaluate(view => window.history.pushState(null, '', `/?view=${view}`), view);
     await expect(page.locator(selector)).toBeVisible();
     await expect(page.locator('.view-motion-shell')).toHaveCSS('opacity', '1');

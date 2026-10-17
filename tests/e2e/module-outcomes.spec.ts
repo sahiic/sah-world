@@ -7,11 +7,13 @@ async function guest(page:Page,url:string){await page.goto(url);await page.getBy
 
 test('reports invite one concrete next action before stats and navigate to journal',async({page})=>{
   await guest(page,'/?view=reports');
-  const card=page.locator('.report-next-step');
-  await expect(card).toBeVisible();
-  await expect(card.getByRole('heading',{name:'Bugünden tek bir cümle sakla.'})).toBeVisible();
-  await expect(card.getByRole('button')).toHaveCount(1);
-  await card.getByRole('button',{name:'Günlüğümü aç'}).click();
+  const hero=page.locator('.reports-hero');
+  await expect(hero).toBeVisible();
+  const step=hero.locator('.reports-next-step');
+  await expect(step).toBeVisible();
+  await expect(step.locator('strong',{hasText:'Bugünden tek bir cümle sakla.'})).toBeVisible();
+  await expect(step.getByRole('button')).toHaveCount(1);
+  await step.getByRole('button',{name:'Günlüğümü aç'}).click();
   await expect(page).toHaveURL(/view=journal/);
   await expect(page.locator('.journal-notebook')).toBeVisible();
 });

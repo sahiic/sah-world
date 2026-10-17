@@ -13,6 +13,8 @@ const ids = {
   match: "88888888-8888-4888-8888-888888888888",
   request: "99999999-9999-4999-8999-999999999999",
   otherHelper: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  queueUser: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  queuePartner: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
 };
 const created_at = new Date().toISOString();
 function user(id) {
@@ -102,8 +104,10 @@ function appointment(id, date, status = "confirmed") {
     student_avatar: null,
   };
 }
-let appointments, matches, messages, notes, rooms, members;
+let appointments, matches, messages, notes, rooms, members, peerQueue, peerProfiles;
 function reset() {
+  peerQueue = new Map();
+  peerProfiles = new Map([[ids.queuePartner, {user_id:ids.queuePartner,level:'helper',current_surah:1,learning_goal:'practice',availability:{mon:['19:00-21:00']},study_preference:'written',bio_short:'Birlikte düzenli okumak istiyorum.',timezone:'Europe/Istanbul',discoverable:true}]]);
   appointments = [
     appointment(ids.appointment, start),
     appointment(ids.otherAppointment, new Date(start.getTime() + 86400000)),
@@ -260,6 +264,84 @@ const server = http.createServer(async (req, res) => {
   }
   if (route === "rpc/get_my_quran_peer_matches") {
     reply(matchView());
+    return;
+  }
+  if (route === "rpc/get_my_quran_peer_queue") {
+    const queued_at = peerQueue.get(viewer);
+    reply(queued_at ? [{ queued_at }] : []);
+    return;
+  }
+  if (route === "rpc/save_quran_peer_profile") {
+    peerProfiles.set(viewer,{...body.payload,user_id:viewer});
+    reply(peerProfiles.get(viewer));return;
+  }
+  if (route === "rpc/discover_quran_peers") {
+    reply(peerProfiles.has(viewer)?[...peerProfiles.values()].filter(p=>p.user_id!==viewer&&p.discoverable).map(p=>({...p,display_name:'Uyumlu Kardeş',avatar_url:null,score:100,common_time:true,new_partner:true})):[]);return;
+  }
+  if (route === "rpc/smart_match_quran_peer") {
+    const candidate=[...peerQueue.keys()].find(id=>id!==viewer);
+    if(candidate){
+      const match={id:crypto.randomUUID(),requester_id:viewer,helper_id:candidate,status:'accepted',message:'Uyumlu kardeşlik',created_at};
+      matches.push(match);peerQueue.delete(viewer);peerQueue.delete(candidate);reply({state:'matched',match_id:match.id});
+    }else{peerQueue.set(viewer,new Date().toISOString());reply({state:'waiting'});}
+    return;
+  }
+  if (route === "rpc/get_peer_workspace") {
+    reply({weekly_goal:10,total_pages:0,weekly_pages:0,surahs:0,last_study:null,streak:0,partner_today_pages:0,session:null});return;
+  }
+  if (route === "rpc/join_quran_peer_queue") {
+    const currentMatch = matches.find(
+      (m) => ["pending", "accepted"].includes(m.status) &&
+        [m.requester_id, m.helper_id].includes(viewer),
+    );
+    if (currentMatch) {
+      reply([{
+        state: currentMatch.status === "accepted" ? "matched" : "request_pending",
+        match_id: currentMatch.id,
+      }]);
+      return;
+    }
+    const candidate = [...peerQueue.keys()].find((id) => id !== viewer &&
+      !matches.some((m) => ["pending", "accepted"].includes(m.status) &&
+        [m.requester_id, m.helper_id].includes(id)),
+    );
+    if (candidate) {
+      const match = {
+        id: crypto.randomUUID(),
+        requester_id: viewer,
+        helper_id: candidate,
+        status: "accepted",
+        message: "Otomatik Kur’an kardeşliği eşleşmesi",
+        created_at,
+      };
+      matches.push(match);
+      peerQueue.delete(viewer);
+      peerQueue.delete(candidate);
+      reply([{
+        state: "matched",
+        match_id: match.id,
+        partner_id: candidate,
+        partner_name: "Yeni Kur’an Kardeşi",
+        partner_avatar: null,
+        queued_at: null,
+      }]);
+    } else {
+      const queued_at = peerQueue.get(viewer) ?? new Date().toISOString();
+      peerQueue.set(viewer, queued_at);
+      reply([{ state: "waiting", match_id: null, partner_id: null, partner_name: null, partner_avatar: null, queued_at }]);
+    }
+    return;
+  }
+  if (route === "rpc/leave_quran_peer_queue") {
+    reply(peerQueue.delete(viewer));
+    return;
+  }
+  if (route === "rpc/leave_quran_peer_match") {
+    const match = matches.find((m) => m.id === body.target_match_id &&
+      [m.requester_id, m.helper_id].includes(viewer) && m.status === "accepted",
+    );
+    if (match) match.status = "cancelled";
+    reply(Boolean(match));
     return;
   }
   if (route === "rpc/get_quran_thread_summaries") {
@@ -422,6 +504,7 @@ const server = http.createServer(async (req, res) => {
   }
   let data = [];
   if (route === "profiles") data = [profile(viewer)];
+  else if (route === "quran_peer_profiles") data = peerProfiles.has(viewer)?[peerProfiles.get(viewer)]:[];
   else if (route === "hoca_profiles") data = [teacher];
   else if (route === "chat_messages")
     data = messages

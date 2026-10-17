@@ -15,7 +15,10 @@ async function run() {
   const student = crypto.randomUUID(),
     teacher = crypto.randomUUID(),
     outsider = crypto.randomUUID(),
-    helper = crypto.randomUUID();
+    helper = crypto.randomUUID(),
+    peerOne = crypto.randomUUID(),
+    peerTwo = crypto.randomUUID(),
+    peerThree = crypto.randomUUID();
   await db.exec(`CREATE ROLE authenticated;CREATE ROLE anon;CREATE SCHEMA auth;CREATE SCHEMA realtime;
  CREATE TABLE auth.users(id UUID PRIMARY KEY,email TEXT);
  CREATE FUNCTION auth.uid() RETURNS UUID LANGUAGE sql STABLE AS 'SELECT nullif(current_setting(''request.jwt.claim.sub'',true),'''')::uuid';
@@ -366,6 +369,50 @@ async function run() {
   assert.ok(!pool.some(p => p.id === student));
   assert.equal((await db.query("SELECT (send_quran_peer_request($1,'Fluent peer')).status s", [teacher])).rows[0].s, 'pending');
   await assert.rejects(() => db.query("SELECT send_quran_peer_request($1,'Wrong level')", [outsider]));
+  // --- Opt-in one-to-one queue and active-partner guard (migration 039) ---
+  await db.exec("RESET ROLE");
+  const pairingSql = fs.readFileSync("supabase/migrations/2026101700_quran_peer_pairing_queue.sql", "utf8");
+  await db.exec(pairingSql);
+  await db.exec(pairingSql); // idempotent re-apply must preserve queued/match data.
+  await db.query(
+    "INSERT INTO profiles(id,display_name) VALUES($1,'Peer One'),($2,'Peer Two'),($3,'Peer Three')",
+    [peerOne, peerTwo, peerThree],
+  );
+  await as(peerOne);
+  const firstQueue = (await db.query("SELECT * FROM join_quran_peer_queue()")).rows[0];
+  assert.equal(firstQueue.state, "waiting");
+  assert.ok(firstQueue.queued_at);
+  assert.equal((await db.query("SELECT * FROM get_my_quran_peer_queue()")).rows.length, 1);
+  assert.equal((await db.query("SELECT * FROM join_quran_peer_queue()")).rows[0].state, "waiting", "repeated join is idempotent");
+  await assert.rejects(() => db.query("INSERT INTO quran_peer_queue(user_id) VALUES($1)", [peerThree]), "queue writes are RPC-only");
+  await as(peerTwo);
+  const paired = (await db.query("SELECT * FROM join_quran_peer_queue()")).rows[0];
+  assert.equal(paired.state, "matched");
+  assert.equal(paired.partner_id, peerOne);
+  assert.ok(paired.match_id);
+  const relation = (await db.query("SELECT * FROM quran_peer_matches WHERE id=$1", [paired.match_id])).rows[0];
+  assert.equal(relation.status, "accepted", "both queue opt-ins establish the private chat relationship");
+  assert.equal((await db.query("SELECT * FROM get_my_quran_peer_queue()")).rows.length, 0);
+  await assert.rejects(() => db.query("SELECT send_quran_peer_request($1,'Another partner')", [helper]), /PEER_ALREADY_MATCHED/);
+  await as(peerOne);
+  assert.equal((await db.query("SELECT * FROM join_quran_peer_queue()")).rows[0].state, "matched", "joined participant cannot be paired twice");
+  assert.equal((await db.query("SELECT * FROM get_my_quran_peer_queue()")).rows.length, 0);
+  assert.equal((await db.query("SELECT leave_quran_peer_match($1) left", [paired.match_id])).rows[0].left, true);
+  assert.equal((await db.query("SELECT status FROM quran_peer_matches WHERE id=$1", [paired.match_id])).rows[0].status, "cancelled");
+  assert.equal((await db.query("SELECT leave_quran_peer_match($1)", [paired.match_id])).rows[0].leave_quran_peer_match, false, "only an active participant match can be ended");
+  const requeue = (await db.query("SELECT * FROM join_quran_peer_queue()")).rows[0];
+  assert.equal(requeue.state, "waiting", "ending a pair permits a later opt-in");
+  await as(peerThree);
+  const nextPair = (await db.query("SELECT * FROM join_quran_peer_queue()")).rows[0];
+  assert.equal(nextPair.state, "matched");
+  assert.equal(nextPair.partner_id, peerOne);
+  assert.equal((await db.query("SELECT count(*)::int n FROM quran_peer_matches WHERE status IN ('pending','accepted') AND (requester_id IN ($1,$2) OR helper_id IN ($1,$2))", [peerOne, peerThree])).rows[0].n, 1, "at most one active relation exists for either participant");
+  await as(outsider);
+  assert.equal((await db.query("SELECT * FROM get_my_quran_peer_queue()")).rows.length, 0);
+  await db.exec("RESET ROLE;SET ROLE anon;RESET request.jwt.claim.sub");
+  await assert.rejects(() => db.query("SELECT * FROM get_my_quran_peer_queue()"), "anonymous RPC access is denied");
+  await as(peerOne);
+  assert.equal((await db.query("SELECT leave_quran_peer_queue() left")).rows[0].left, false, "a matched user has no queue entry to leave");
   await as(student);
   const editMsg = (await send(appt2, "Typo here")).rows[0];
   await assert.rejects(() => db.query("SELECT update_quran_message($1,NULL)", [editMsg.id]));
@@ -409,6 +456,48 @@ async function run() {
   console.log(
     "PASS: thread isolation, bounded receipts, immutable routing/content, outsider/anon denial, private presence authorization, reschedule rollback, peer idempotency, room consent and code-bypass protection, message edit/delete ownership. Realtime delivery and concurrent production load NOT verified.",
   );
+  await db.exec('RESET ROLE');
+  for (const file of ['2026101701_quran_peer_profiles.sql','2026101702_smart_peer_matching.sql','2026101703_peer_study_sessions.sql','2026101704_peer_progress_tracking.sql']) {
+    await db.exec(fs.readFileSync('supabase/migrations/'+file,'utf8'));
+  }
+  const a=crypto.randomUUID(), b=crypto.randomUUID(), c=crypto.randomUUID();
+  await db.query("INSERT INTO profiles(id,display_name) VALUES($1,'V2 learner'),($2,'V2 helper'),($3,'V2 outsider')",[a,b,c]);
+  const pp={level:'beginner',current_surah:1,learning_goal:'practice',availability:{mon:['19:00-21:00']},study_preference:'written',bio_short:'Birlikte düzenli okumak istiyorum.',timezone:'Europe/Istanbul',discoverable:true};
+  await as(a);
+  await db.query('SELECT save_quran_peer_profile($1)',[pp]);
+  await assert.rejects(()=>db.query('SELECT save_quran_peer_profile($1)',[{...pp,bio_short:'Beni test@example.com adresinden bul'}]));
+  await assert.rejects(()=>db.query('SELECT save_quran_peer_profile($1)',[{...pp,availability:{mon:['21:00-19:00']}}]));
+  await as(b);await db.query('SELECT save_quran_peer_profile($1)',[{...pp,level:'helper'}]);
+  await as(a);
+  let candidates=(await db.query('SELECT discover_quran_peers() result')).rows[0].result;
+  assert.equal(candidates.find(x=>x.user_id===b).score,100,'matching score uses all five factors');
+  assert.equal((await db.query('SELECT smart_match_quran_peer() result')).rows[0].result.state,'waiting');
+  await as(b);
+  const pairedV2=(await db.query('SELECT smart_match_quran_peer() result')).rows[0].result;
+  assert.equal(pairedV2.state,'matched');
+  await assert.rejects(()=>db.query('SELECT smart_match_quran_peer()'),'only one active partner');
+  const mid=pairedV2.match_id;
+  const session=(await db.query("SELECT peer_study_action($1,'create',$2) result",[mid,{duration_minutes:5,surah:1}])).rows[0].result;
+  await db.query("SELECT peer_study_action($1,'ready',$2)",[mid,{session_id:session.id}]);
+  assert.equal((await db.query('SELECT get_peer_workspace($1) result',[mid])).rows[0].result.session.started_at,null,'one participant cannot start the shared timer');
+  await as(a);await db.query("SELECT peer_study_action($1,'ready',$2)",[mid,{session_id:session.id}]);
+  await assert.rejects(()=>db.query("SELECT peer_study_action($1,'complete',$2)",[mid,{session_id:session.id,pages:2}]),'cannot complete early');
+  await as(c);
+  assert.equal((await db.query('SELECT * FROM quran_peer_profiles')).rows.length,0,'other private profile rows are not readable');
+  assert.equal((await db.query('SELECT * FROM quran_peer_study_sessions')).rows.length,0,'session RLS denies outsiders');
+  await assert.rejects(()=>db.query('SELECT get_peer_workspace($1)',[mid]));
+  await assert.rejects(()=>db.query("SELECT peer_study_action($1,'cancel',$2)",[mid,{session_id:session.id}]));
+  await assert.rejects(()=>db.query('SELECT set_peer_weekly_goal($1,10)',[mid]));
+  await db.exec('RESET ROLE');
+  await db.query("UPDATE quran_peer_study_sessions SET started_at=now()-interval '6 minutes' WHERE id=$1",[session.id]);
+  await as(a);await db.query("SELECT peer_study_action($1,'complete',$2)",[mid,{session_id:session.id,pages:2}]);
+  assert.equal((await db.query('SELECT get_peer_workspace($1) result',[mid])).rows[0].result.total_pages,0,'requires both completions');
+  await as(b);await db.query("SELECT peer_study_action($1,'complete',$2)",[mid,{session_id:session.id,pages:3}]);
+  const progress=(await db.query('SELECT get_peer_workspace($1) result',[mid])).rows[0].result;
+  assert.equal(progress.total_pages,5);assert.equal(progress.streak,1);assert.equal(progress.surahs,1);assert.equal(progress.session,null);
+  await db.exec('RESET ROLE;SET ROLE anon;RESET request.jwt.claim.sub');
+  for(const q of ['SELECT discover_quran_peers()','SELECT smart_match_quran_peer()',"SELECT save_quran_peer_profile('{}')"]){await assert.rejects(()=>db.query(q));}
+  console.log('PASS: V2 profile validation, opt-in matching score, one-partner invariant, two-party timer, completion gate, progress and outsider/anon RLS.');
   await db.close();
 }
 run().catch((e) => {

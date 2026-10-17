@@ -1,7 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 const student = "11111111-1111-4111-8111-111111111111",
-  teacher = "22222222-2222-4222-8222-222222222222";
+  teacher = "22222222-2222-4222-8222-222222222222",
+  queueUser = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  queuePartner = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 const fixtureURL = `http://127.0.0.1:${process.env.SAH_SOCIAL_FIXTURE_PORT ?? 3116}`;
 async function login(page: Page, id = student, tab = "peers") {
   const exp = Math.floor(Date.now() / 1000) + 3600;
@@ -44,6 +46,39 @@ async function login(page: Page, id = student, tab = "peers") {
 }
 test.beforeEach(async ({ request }) => {
   await request.get(fixtureURL + "/reset");
+});
+
+test('V2 onboarding, discovery, queue consent and responsive layout', async ({page},testInfo)=>{
+  await page.setViewportSize({width:testInfo.project.name==='mobile'?375:1440,height:900});
+  await login(page,queueUser);
+  const area=page.locator('.peer-v2').first();
+  await area.getByRole('button',{name:'Profilimi oluştur',exact:true}).click();
+  const form=page.getByRole('region',{name:'Eşleşme profili'});
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByRole('checkbox',{name:'Pazartesi',exact:true}).check();
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByLabel('Kısa tanıtım').fill('Her hafta birlikte okumak istiyorum.');
+  await form.getByRole('checkbox',{name:/profilimi diğer/}).check();
+  await form.getByRole('button',{name:'Profilimi kaydet',exact:true}).click();
+  await expect(area.getByText('Uyumlu Kardeş',{exact:true})).toBeVisible();
+  await area.getByRole('button',{name:'Uyumlu kardeş bul',exact:true}).click();
+  await expect(area.getByRole('button',{name:'Sıradan çık',exact:true})).toBeVisible();
+  await area.getByRole('button',{name:'Sıradan çık',exact:true}).click();
+  await expect(area.getByRole('button',{name:'Uyumlu kardeş bul',exact:true})).toBeEnabled();
+  await area.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.screenshot({path:testInfo.outputPath('peer-light.png'),fullPage:true});
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.screenshot({path:testInfo.outputPath('peer-dark.png'),fullPage:true});
+});
+
+test('V2 preserves existing peer chat and shared workspace',async({page})=>{
+  await login(page);
+  await page.locator('.peer-tabs').getByRole('button',{name:/Kardeşliğim/}).click();
+  await expect(page.locator('.peer-session').first()).toBeVisible();
+  await page.locator('.peer-active').first().getByRole('button',{name:/Mesajlaş/}).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
 });
 
 test("private Presence shows typing only after opt-in and stops on opt-out", async ({
@@ -181,18 +216,19 @@ test("peer request uses a bounded modal, updates timeline and badges without pro
   page.on("dialog", () => {
     prompt = true;
   });
-  await login(page);
+  await login(page, queueUser);
   await expect(
     page
       .locator(".qc-community-shortcuts")
       .getByRole("link", { name: /Kur’an Kardeşi/ })
       .locator(".qc-nav-badge"),
-  ).toHaveText("2");
+  ).toHaveCount(0);
+  await page.locator('.peer-legacy summary').click();
   const helper = page
-    .locator(".helper-grid article")
+    .locator(".peer-legacy article")
     .filter({ hasText: "Yeni Destekçi" });
   await helper.getByRole("button", { name: "İstek gönder" }).click();
-  const modal = page.getByRole("dialog", { name: "Kur'an kardeşliği isteği" });
+  const modal = page.getByRole("dialog", { name: "Kur’an kardeşliği isteği" });
   await expect(modal).toBeVisible();
   await modal
     .getByRole("textbox", { name: /Tanışma notun/ })
@@ -201,10 +237,46 @@ test("peer request uses a bounded modal, updates timeline and badges without pro
   await expect(modal).not.toBeVisible();
   await expect(
     page
-      .locator(".peer-match-list")
+      .locator(".peer-matches")
       .getByText("İhlâs suresini birlikte çalışalım."),
   ).toBeVisible();
   expect(prompt).toBe(false);
+});
+
+test("opt-in Quran queue pairs two waiting people once and lets a participant leave", async ({
+  browser,
+}) => {
+  const first = await browser.newPage();
+  const second = await browser.newPage();
+  await login(first, queueUser);
+  await first.getByRole('button',{name:'Profilimi oluştur',exact:true}).click();
+  const form=first.getByRole('region',{name:'Eşleşme profili'});
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByRole('checkbox',{name:'Pazartesi',exact:true}).check();
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByLabel('Kısa tanıtım').fill('Her hafta birlikte okumak istiyorum.');
+  await form.getByRole('checkbox',{name:/profilimi diğer/}).check();
+  await form.getByRole('button',{name:'Profilimi kaydet',exact:true}).click();
+  await first.getByRole("button", { name: "Uyumlu kardeş bul",exact:true }).click();
+  await expect(first.getByText('Uyumlu kardeşin aranıyor',{exact:true})).toBeVisible();
+  await expect(first.getByRole("button", { name: "Sıradan çık" })).toBeVisible();
+
+  await login(second, queuePartner);
+  await second.getByRole("button", { name: "Uyumlu kardeş bul",exact:true }).click();
+  await second.locator('.peer-tabs').getByRole('button',{name:/Kardeşliğim/}).click();
+  await expect(second.locator('.peer-active').getByRole("button", { name: /Mesajlaş/ })).toBeVisible();
+
+  await first.reload();
+  await first.locator('.peer-tabs').getByRole('button',{name:/Kardeşliğim/}).click();
+  await expect(first.locator(".peer-active")).toHaveCount(1);
+  first.once("dialog", (dialog) => void dialog.accept());
+  await first.locator(".peer-active").getByRole("button", { name: "Kardeşliği sonlandır" }).click();
+  await expect(first.getByText("Eşleşme sonlandırıldı.",{exact:true})).toBeVisible();
+  await first.locator('.peer-tabs').getByRole('button',{name:'Keşfet',exact:true}).click();
+  await expect(first.getByRole("button", { name: "Uyumlu kardeş bul",exact:true })).toBeVisible();
+  await first.close();
+  await second.close();
 });
 test("lesson threads are isolated, read receipts update badges, archive is explicit and failures preserve text", async ({
   page,
