@@ -160,6 +160,9 @@ async function getAuthenticatedUserId(): Promise<string | null> {
 function notifySyncError(err: unknown, ctx: string) {
   const code = typeof err === 'object' && err && 'code' in err ? String(err.code) : 'unknown';
   console.error('[SAH Sync] Yazma işlemi tamamlanamadı', { context: ctx, code });
+  import('@/store/useSyncToastStore').then(({ useSyncToastStore }) => {
+    useSyncToastStore.getState().push(ctx, code);
+  });
 }
 
 // ============================================================

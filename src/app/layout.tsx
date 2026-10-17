@@ -5,6 +5,7 @@ import "./quality.css";
 import FocusTimerFloatingWidget from "@/components/core/FocusTimerRoot";
 import FocusSessionRuntime from "@/components/core/FocusSessionRuntime";
 import MotionPreferences from "@/components/ui/MotionPreferences";
+import SyncToast from "@/components/ui/SyncToast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -116,6 +117,7 @@ export default function RootLayout({
           {children}
           <FocusTimerFloatingWidget />
           <FocusSessionRuntime />
+          <SyncToast />
         </MotionPreferences>
       </body>
     </html>
