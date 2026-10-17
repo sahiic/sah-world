@@ -1,5 +1,7 @@
 'use client';
 
+import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useJourneyStore } from '@/store/useJourneyStore';
@@ -57,7 +59,54 @@ export default function HomePage() {
 
 // ── Köy Dünyası (ayrı bileşen — auth geçildikten sonra mount edilir) ──
 function VillageWorld() {
-  const store = useJourneyStore();
+  const storeState = useJourneyStore(useShallow(s => ({
+    vehicle: s.vehicle,
+    xp: s.xp,
+    eisenhower: s.eisenhower,
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    currentTespih: s.currentTespih,
+    vehicleChosen: s.vehicleChosen,
+    streak: s.streak,
+    badges: s.badges,
+  })));
+  const storeUpdateStreak = useJourneyStore(s => s.updateStreak);
+  const storeAddXP = useJourneyStore(s => s.addXP);
+  const storeCheckBadges = useJourneyStore(s => s.checkBadges);
+  const storeAddJournal = useJourneyStore(s => s.addJournal);
+  const storeAddQuranNote = useJourneyStore(s => s.addQuranNote);
+  const storeAddHadisNote = useJourneyStore(s => s.addHadisNote);
+  const storeAddTask = useJourneyStore(s => s.addTask);
+  const storeToggleTask = useJourneyStore(s => s.toggleTask);
+  const storeAddLesson = useJourneyStore(s => s.addLesson);
+  const storeAddSukur = useJourneyStore(s => s.addSukur);
+  const storeIncrementTespih = useJourneyStore(s => s.incrementTespih);
+  const storeResetTespih = useJourneyStore(s => s.resetTespih);
+  const storeExportAll = useJourneyStore(s => s.exportAll);
+  const storeImportAll = useJourneyStore(s => s.importAll);
+  const storeSetVehicle = useJourneyStore(s => s.setVehicle);
+  const store = useMemo(() => ({
+    ...storeState,
+    updateStreak: storeUpdateStreak,
+    addXP: storeAddXP,
+    checkBadges: storeCheckBadges,
+    addJournal: storeAddJournal,
+    addQuranNote: storeAddQuranNote,
+    addHadisNote: storeAddHadisNote,
+    addTask: storeAddTask,
+    toggleTask: storeToggleTask,
+    addLesson: storeAddLesson,
+    addSukur: storeAddSukur,
+    incrementTespih: storeIncrementTespih,
+    resetTespih: storeResetTespih,
+    exportAll: storeExportAll,
+    importAll: storeImportAll,
+    setVehicle: storeSetVehicle,
+  }), [storeState, storeUpdateStreak, storeAddXP, storeCheckBadges, storeAddJournal, storeAddQuranNote, storeAddHadisNote, storeAddTask, storeToggleTask, storeAddLesson, storeAddSukur, storeIncrementTespih, storeResetTespih, storeExportAll, storeImportAll, storeSetVehicle]);
 
   // Navigation & World state
   const [playerState, setPlayerState] = useState({ x: 0, y: 0.1, z: 0, heading: 0, speed: 0 });

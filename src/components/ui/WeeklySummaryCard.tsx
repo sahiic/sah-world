@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { useCallback, useMemo, useState } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { useJourneyStore } from '@/store/useJourneyStore'
@@ -8,7 +9,16 @@ import { computeGlobalStreaks } from '@/lib/streaks'
 import { buildWeeklySummary, summaryToText } from '@/lib/weeklySummary'
 
 export default function WeeklySummaryCard() {
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    focusSessions: s.focusSessions,
+  })));
   const [copied, setCopied] = useState(false)
   const [copyStatus, setCopyStatus] = useState('')
 

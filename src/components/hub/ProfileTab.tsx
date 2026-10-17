@@ -1,13 +1,19 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
 
+import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useJourneyStore } from '@/store/useJourneyStore';
 import { getLevelForXP } from '@/lib/constants';
 
 export default function ProfileTab() {
   const { profile } = useAuthStore();
-  const store = useJourneyStore();
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    sukurList: s.sukurList,
+  })));
 
   if (!profile) return null;
 

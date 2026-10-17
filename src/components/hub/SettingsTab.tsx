@@ -1,6 +1,7 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
 
+import { useMemo } from 'react';
 import { useState } from 'react';
 import { useSignOut } from '@/hooks/useSignOut';
 import { supabase } from '@/lib/supabase';
@@ -9,7 +10,12 @@ import { useJourneyStore } from '@/store/useJourneyStore';
 
 export default function SettingsTab() {
   const { profile, patchProfile } = useAuthStore();
-  const store = useJourneyStore();
+  const storeVehicle = useJourneyStore(s => s.vehicle);
+  const storeSetVehicle = useJourneyStore(s => s.setVehicle);
+  const store = useMemo(() => ({
+    vehicle: storeVehicle,
+    setVehicle: storeSetVehicle,
+  }), [storeVehicle, storeSetVehicle]);
   const { signOut, isSigningOut, signOutError } = useSignOut();
 
   const [name, setName] = useState(profile?.display_name || '');

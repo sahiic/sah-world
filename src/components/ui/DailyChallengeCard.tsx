@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { useMemo } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { useJourneyStore } from '@/store/useJourneyStore'
@@ -7,7 +8,16 @@ import { buildActivityFeed, type ActivitySource } from '@/lib/activity'
 import { getDailyChallenges, getChallengeMessage } from '@/lib/dailyChallenge'
 
 export default function DailyChallengeCard() {
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    focusSessions: s.focusSessions,
+  })));
 
   const summary = useMemo(() => {
     const source: ActivitySource = {

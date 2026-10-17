@@ -1,5 +1,6 @@
 "use client";
 
+import { useShallow } from 'zustand/react/shallow';
 import { useEffect, useMemo, useState } from "react";
 import { useActivityLog } from "@/hooks/useActivityLog";
 import {
@@ -24,7 +25,17 @@ import SectionTagline from "./SectionTagline";
 import WeeklySummarySection from "./WeeklySummarySection";
 
 export default function ReportsView() {
-  const store = useJourneyStore();
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    focusSessions: s.focusSessions,
+    totalZikir: s.totalZikir,
+    streak: s.streak,
+  })));
   const remoteActivity = useActivityLog();
   const [weeklyInsights, setWeeklyInsights] = useState<string[]>([]);
   const events = useMemo(

@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { useMemo } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import AvatarImage from '@/components/ui/AvatarImage'
@@ -17,7 +18,17 @@ const ActivityCalendar = dynamic(() => import('./ActivityCalendar'))
 
 export default function ProfileView() {
   const profile = useAuthStore(s => s.profile)
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    focusSessions: s.focusSessions,
+    xp: s.xp,
+  })));
 
   const { events, level, nextLevel, xpProgress, categoryStats } = useMemo(() => {
     const source: ActivitySource = {
@@ -83,7 +94,7 @@ export default function ProfileView() {
         <div className="profile-stat-card">
           <AppIcon name="book-2" />
           <strong>{store.quranNotes.length}</strong>
-          <small>Kur'an notu</small>
+          <small>Kur&apos;an notu</small>
         </div>
         <div className="profile-stat-card">
           <AppIcon name="circle-dotted" />

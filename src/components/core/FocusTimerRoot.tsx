@@ -11,7 +11,13 @@ import { getFocusDisplaySeconds, getFocusElapsedSeconds, useFocusTimerStore, typ
 
 export default function FocusTimerFloatingWidget() {
   const timer = useFocusTimerStore()
-  const journey = useJourneyStore()
+  const journeyLogFocusToJournal = useJourneyStore(s => s.logFocusToJournal);
+  const journeyUpdateFocusSessionReflection = useJourneyStore(s => s.updateFocusSessionReflection);
+  // Keep the existing journey API stable without subscribing to journey data.
+  const journey = useMemo(() => ({
+    logFocusToJournal: journeyLogFocusToJournal,
+    updateFocusSessionReflection: journeyUpdateFocusSessionReflection,
+  }), [journeyLogFocusToJournal, journeyUpdateFocusSessionReflection]);
   const [now, setNow] = useState(0)
   const [completionStep, setCompletionStep] = useState<'reflection' | 'journal'>('reflection')
   const [qualityRating, setQualityRating] = useState(0)

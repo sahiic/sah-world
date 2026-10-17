@@ -23,7 +23,12 @@ export default function ProfessionSchoolView(props: ProfessionSchoolProps) {
 
 function ProfessionSchoolContent({onNavigate,onModalChange}: ProfessionSchoolProps) {
   const user = useAuthStore(state=>state.user)
-  const journey = useJourneyStore()
+  const journeyAddXP = useJourneyStore(s => s.addXP);
+  const journeyUpdateStreak = useJourneyStore(s => s.updateStreak);
+  const journey = useMemo(() => ({
+    addXP: journeyAddXP,
+    updateStreak: journeyUpdateStreak,
+  }), [journeyAddXP, journeyUpdateStreak]);
   const [tracks, setTracks] = useState<ProfessionTrack[]>(PROFESSION_TRACKS)
   const [lessons, setLessons] = useState<ProfessionLesson[]>(PROFESSION_LESSONS)
   const [followed, setFollowed] = useState<Set<string>>(new Set())

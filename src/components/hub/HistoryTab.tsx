@@ -1,5 +1,6 @@
 'use client';
 
+import { useShallow } from 'zustand/react/shallow';
 import { useState, useMemo } from 'react';
 import { useJourneyStore } from '@/store/useJourneyStore';
 import type { JournalEntry, QuranNote, HadisNote, LessonEntry, SukurEntry } from '@/types';
@@ -17,7 +18,13 @@ interface HistoryItem {
 }
 
 export default function HistoryTab() {
-  const store = useJourneyStore();
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+  })));
   const [filter, setFilter] = useState<HistoryItemType | 'all'>('all');
 
   const allItems = useMemo(() => {

@@ -1,4 +1,6 @@
 "use client";
+import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 import EmptyState from "@/components/ui/EmptyState";
 
 import { useState } from "react";
@@ -81,7 +83,24 @@ export default function SectionView({
   onNavigate: (view: string) => void;
   embedded?: boolean;
 }) {
-  const store = useJourneyStore();
+  const storeAddXP = useJourneyStore(s => s.addXP);
+  const storeUpdateStreak = useJourneyStore(s => s.updateStreak);
+  const storeCheckBadges = useJourneyStore(s => s.checkBadges);
+  const storeAddJournal = useJourneyStore(s => s.addJournal);
+  const storeAddQuranNote = useJourneyStore(s => s.addQuranNote);
+  const storeAddHadisNote = useJourneyStore(s => s.addHadisNote);
+  const storeAddLesson = useJourneyStore(s => s.addLesson);
+  const storeAddSukur = useJourneyStore(s => s.addSukur);
+  const store = useMemo(() => ({
+    addXP: storeAddXP,
+    updateStreak: storeUpdateStreak,
+    checkBadges: storeCheckBadges,
+    addJournal: storeAddJournal,
+    addQuranNote: storeAddQuranNote,
+    addHadisNote: storeAddHadisNote,
+    addLesson: storeAddLesson,
+    addSukur: storeAddSukur,
+  }), [storeAddXP, storeUpdateStreak, storeCheckBadges, storeAddJournal, storeAddQuranNote, storeAddHadisNote, storeAddLesson, storeAddSukur]);
   const [notice, setNotice] = useState("");
   const info = meta[section];
 
@@ -282,7 +301,13 @@ function EntrySection({
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onNavigate: (view: string) => void;
 }) {
-  const store = useJourneyStore();
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+  })));
   const lists = {
     journal: store.journal,
     quran: store.quranNotes,
@@ -596,7 +621,14 @@ function Matrix({
   reward: (a: number, l: string, s: string, id: string) => void;
   onNavigate: (view: string) => void;
 }) {
-  const store = useJourneyStore();
+  const storeEisenhower = useJourneyStore(s => s.eisenhower);
+  const storeAddTask = useJourneyStore(s => s.addTask);
+  const storeToggleTask = useJourneyStore(s => s.toggleTask);
+  const store = useMemo(() => ({
+    eisenhower: storeEisenhower,
+    addTask: storeAddTask,
+    toggleTask: storeToggleTask,
+  }), [storeEisenhower, storeAddTask, storeToggleTask]);
   const quadrants: Array<[keyof EisenhowerState, string, string]> = [
     ["q1", "Acil + Önemli", "Şimdi yap"],
     ["q2", "Önemli + Acil değil", "Planla"],

@@ -1,4 +1,5 @@
 'use client'
+import { useShallow } from 'zustand/react/shallow';
 import dynamic from 'next/dynamic';
 import SectionErrorBoundary from './SectionErrorBoundary';
 
@@ -32,7 +33,20 @@ const quickActions = suggestedActions.filter(action => ['focus', 'journal', 'mes
 export default function DashboardView({ onNavigate }: { onNavigate: (view: string, cue?: GrowthNavigationCue) => void }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [introVisible, setIntroVisible] = useState(true)
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    focusSessions: s.focusSessions,
+    totalZikir: s.totalZikir,
+    xp: s.xp,
+    streak: s.streak,
+    xpOrbTrigger: s.xpOrbTrigger,
+    lastXPAmount: s.lastXPAmount,
+  })));
   const profile = useAuthStore((state) => state.profile)
   const remoteActivity = useActivityLog()
   const localEvents = useMemo(() => buildActivityFeed(store), [store.journal, store.quranNotes, store.hadisNotes, store.eisenhower, store.lessons, store.sukurList, store.focusSessions])

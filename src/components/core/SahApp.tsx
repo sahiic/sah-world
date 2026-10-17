@@ -1,4 +1,5 @@
 "use client";
+import { useShallow } from 'zustand/react/shallow';
 import LoginScreen from "@/components/auth/LoginScreen";
 import { useSignOut } from "@/hooks/useSignOut";
 import { AppIcon } from "@/components/ui/AppIcon";
@@ -116,7 +117,11 @@ export default function SahApp({
 }) {
   const { session, user, isAuthLoading, profile } = useAuthStore();
   const { signOut, isSigningOut, signOutError } = useSignOut();
-  const store = useJourneyStore();
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    streak: s.streak,
+    xp: s.xp,
+  })));
   const searchParams = useSearchParams();
   const view = readAppView(searchParams);
   const mainRef = useRef<HTMLElement>(null);

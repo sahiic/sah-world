@@ -4,6 +4,8 @@ import QuranStudyWorkspace from "@/components/quran/QuranStudyWorkspace";
 import { supabase } from "@/lib/supabase";
 
 import type { QuranController } from "./useQuranCompanion";
+import { useMemo } from "react";
+import { useJourneyStore } from "@/store/useJourneyStore";
 
 interface QuranReaderPanelProps {
   controller: QuranController;
@@ -13,11 +15,12 @@ export default function QuranReaderPanel({
   controller,
   onNavigate,
 }: QuranReaderPanelProps) {
+  const journeyQuranNotes = useJourneyStore(s => s.quranNotes);
+  const journey = useMemo(() => ({ quranNotes: journeyQuranNotes }), [journeyQuranNotes]);
   const {
     mainTab,
     tab,
     goal,
-    journey,
     appointments,
     userId,
     isRealUser,
