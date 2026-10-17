@@ -7,6 +7,10 @@ export type ProfessionTrack = {
 }
 
 export type LessonSource = { label: string; url: string }
+// Normalize legacy catalog wording at display time, without rewriting lesson IDs or progress.
+export function professionLessonTitle(title: string): string {
+  return title.replace(/^Amanah:/, 'Emanet:')
+}
 export type ProfessionLessonContent = {
   openingType: 'ayet' | 'hadis'
   openingArabic?: string
