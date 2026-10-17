@@ -1,7 +1,7 @@
 // Isolated PostgreSQL only. Never connects to a real Supabase project.
 const path=require('node:path'), fs=require('node:fs'), assert=require('node:assert/strict');
 const {PGlite}=require(path.join(process.env.QURAN_PGLITE_ROOT || path.join(require('node:os').tmpdir(),'sah-quran-pglite'),'node_modules/@electric-sql/pglite'));
-const {PROFESSION_LESSONS,PROFESSION_TRACKS}=require('../tests/helpers/load-typescript.cjs')('src/lib/professionSchool.ts');
+const {PROFESSION_LESSONS,PROFESSION_TRACKS,professionLessonTitle}=require('../tests/helpers/load-typescript.cjs')('src/lib/professionSchool.ts');
 async function run(){
   const db=new PGlite();
   try {
@@ -22,7 +22,8 @@ async function run(){
     for(const lesson of PROFESSION_LESSONS.filter(l=>ids.includes(l.trackId))){
       const row=(await db.query('SELECT * FROM profession_lessons WHERE id=$1',[lesson.id])).rows[0];
       assert.deepEqual(row.content_body,lesson.content);assert.deepEqual(row.source_references,lesson.sourceReferences);
-      assert.equal(row.title,lesson.title);assert.equal(row.xp_reward,30);
+      // Historic seeds retain their spelling; use the same display-only adapter as production.
+      assert.equal(professionLessonTitle(row.title),lesson.title);assert.equal(row.xp_reward,30);
     }
     for(const track of PROFESSION_TRACKS.filter(t=>ids.includes(t.id)))assert.equal((await db.query('SELECT profession_name FROM profession_tracks WHERE id=$1',[track.id])).rows[0].profession_name,track.professionName);
     console.log('PASS: 10 tracks / 80 lessons, repeatable seed, client parity and existing user progress preserved. Isolated fixture only.');

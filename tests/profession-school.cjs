@@ -3,6 +3,12 @@ const assert = require('node:assert/strict');
 const load = require('./helpers/load-typescript.cjs');
 const {PROFESSION_TRACKS: tracks, PROFESSION_LESSONS: lessons, professionProgress} = load('src/lib/professionSchool.ts');
 const {getDailyLesson}=load('src/lib/professionSchool.ts');
+const {professionLessonTitle}=load('src/lib/professionSchool.ts');
+test('legacy catalog copy is normalized without altering unrelated titles',()=>{
+  assert.equal(professionLessonTitle('Amanah: yetki, bilgi ve zaman birer emanettir'),'Emanet: yetki, bilgi ve zaman birer emanettir');
+  assert.equal(professionLessonTitle('Emanet: yetki'),'Emanet: yetki');
+  assert.equal(professionLessonTitle('Niyet: işi ibadet bilinciyle başlatmak'),'Niyet: işi ibadet bilinciyle başlatmak');
+});
 test('no followed or unknown track has no recommendation',()=>{assert.equal(getDailyLesson([],new Set()),null);assert.equal(getDailyLesson(['unknown'],new Set()),null)});
 test('fully completed tracks have no recommendation',()=>assert.equal(getDailyLesson(tracks.map(t=>t.id),new Set(lessons.map(l=>l.id))),null));
 test('recommendation is the first unfinished lesson',()=>assert.equal(getDailyLesson(['muhendis'],new Set(['muhendis-1','muhendis-2'])).id,'muhendis-3'));

@@ -32,7 +32,7 @@ export type PeerMatchingProps = {
 export default function PeerMatchingView(props: PeerMatchingProps) {
   const model = usePeerMatching(props);
   const [editing, setEditing] = useState(false),
-    [tab, setTab] = useState<"discover" | "matches">("discover"),
+    [selectedTab, setTab] = useState<"discover" | "matches" | null>(null),
     [chat, setChat] = useState<PeerView | null>(null),
     [target, setTarget] = useState<{
       id: string;
@@ -44,6 +44,7 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
   const active = props.matches.find((m) =>
     ["accepted", "pending"].includes(m.status),
   );
+  const tab = selectedTab ?? (active ? "matches" : "discover");
   async function request() {
     if (!target || requestBusy) return;
     if (hasContact(note)) {
@@ -94,7 +95,7 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
           </p>
           <div className="peer-hero-tags">
             <span>Karşılıklı rıza</span>
-            <span>Bir kişilik kardeşlik</span>
+            <span>Bire bir eşleşme</span>
             <span>Uygulama içi iletişim</span>
           </div>
         </div>
@@ -178,7 +179,7 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
                 <div>
                   <h3>
                     {active
-                      ? "Devam eden bir kardeşliğin var"
+                      ? active.status === "pending" ? "Yanıt bekleyen bir isteğin var" : "Devam eden bir kardeşliğin var"
                       : model.queueAt
                         ? "Uyumlu kardeşin aranıyor"
                         : "Bırak, ortak yönleriniz sizi buluştursun."}
@@ -187,8 +188,8 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
                     {active
                       ? "Sohbetini ve çalışma alanını Kardeşliğim bölümünden açabilirsin."
                       : model.queueAt
-                        ? "Havuza katılan uygun adaylar uyum puanına göre değerlendirilir. İstediğin zaman ayrılabilirsin."
-                        : "İkiniz de havuza katılmayı seçtiğinizde eşleşme kurulur. Otomatik eşleşme için profil görünürlüğün açık olmalı."}
+                        ? "Otomatik eşleşme için diğer kişinin de aramaya katılması gerekir. Beklerken aşağıdaki bir adaya tanışma isteği gönderebilirsin."
+                        : "Otomatik aramaya katıl veya aşağıdaki bir adaya tanışma isteği gönder. Kardeşlik, iki tarafın da onayıyla başlar."}
                   </p>
                 </div>
                 {active ? (
@@ -200,13 +201,13 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
                     disabled={model.busy}
                     onClick={() => void model.leaveQueue()}
                   >
-                    Sıradan çık
+                    Aramayı durdur
                   </button>
                 ) : (
                   <button
                     className="peer-primary"
                     disabled={model.busy || !model.profile.discoverable}
-                    onClick={() => void model.join()}
+                    onClick={async () => { if (await model.join()) setTab(null); }}
                   >
                     {model.busy ? "Aranıyor…" : "Uyumlu kardeş bul"}
                   </button>
@@ -224,7 +225,6 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
                 disabled={
                   model.busy ||
                   !!active ||
-                  !!model.queueAt ||
                   !model.profile.discoverable
                 }
                 onRequest={openRequest}
@@ -328,6 +328,9 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
                     </button>
                   </footer>
                 )}
+                {m.direction === "sent" && m.status === "pending" && (
+                  <footer><button disabled={model.busy} onClick={() => void model.end(m)}>İsteği geri çek</button></footer>
+                )}
               </article>
             ),
           )}
@@ -359,6 +362,7 @@ export default function PeerMatchingView(props: PeerMatchingProps) {
         >
           <h2>{target.name} ile tanış</h2>
           <p>Hedefini ve birlikte çalışmak istediğin konuyu kısaca paylaş.</p>
+          {model.queueAt && <p className="peer-notice">İstek gönderildiğinde otomatik arama durur. Karşı taraf kabul edince kardeşliğiniz başlar.</p>}
           <form
             onSubmit={(e) => {
               e.preventDefault();

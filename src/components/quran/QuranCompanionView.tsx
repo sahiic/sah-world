@@ -7,12 +7,10 @@ import { QURAN_TABS } from "@/lib/appLocation";
 import { AnimatePresence, motion } from "framer-motion";
 
 import SectionSkeleton from "@/components/ui/SectionSkeleton";
-import { getMosqueProfile } from '@/lib/mosqueProfile';
 import dynamic from "next/dynamic";
 import CompanionSkeleton from "./CompanionSkeleton";
 import LevelOnboarding from "./LevelOnboarding";
 import { useQuranCompanion } from "./useQuranCompanion";
-type MescidimTab = 'vakitler' | 'asma' | 'dua' | 'etkinlikler'
 
 const QuranReadTab = dynamic(() => import("./QuranReadTab"), { loading: () => <SectionSkeleton /> });
 const QuranStudyTab = dynamic(() => import("./QuranStudyTab"), { loading: () => <SectionSkeleton /> });
@@ -23,8 +21,6 @@ export default function QuranCompanionView({onNavigate}: QuranCompanionViewProps
  const {profile, tab, mainTab, setTab, reducedMotion, teachers, loading, notice, error, isRealUser, surahProgress, streak, totalHasanat, recentExercises, newBadges, setNewBadges, weeklySummary, tabsRef, socialError, sharePresence, setSharePresence, pilotDemo, upcoming, saveLevel, todaysReviews, navItems, load} = controller;
     
  
-  const mosque = getMosqueProfile()
-  const localCommunity = false
   return (
     <div
       className="quran-companion qc-v2 qc-ready"
@@ -47,13 +43,6 @@ export default function QuranCompanionView({onNavigate}: QuranCompanionViewProps
         </div>
       </header>
 
-<header className="page-heading">
-      <div>
-        <span className="eyebrow">MESCİDİM</span>
-        <h1>{localCommunity ? `${mosque.campus} cami topluluğu` : 'Kişisel manevi alanım'}</h1>
-        <p>{localCommunity ? `${mosque.campus} camisine ait etkinlik arşivi. Katılım isteğe bağlıdır.` : 'Hangi şehirde olursan ol, vakitler, zikir ve kaynaklı kütüphanen burada.'}</p>
-      </div>
-    </header>
     
 
 
