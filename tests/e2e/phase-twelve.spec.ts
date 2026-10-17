@@ -29,10 +29,11 @@ test('profile menu opens badges, milestones and a working calendar', async ({pag
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('reports include category progress and calendar', async ({page}) => {
+test('reports include weekly summary and detail triggers', async ({page}) => {
   await guest(page, 'reports');
-  await expect(page.locator('.reports-view .cp-card')).toBeVisible();
-  await expect(page.locator('.reports-view .ac-card')).toBeVisible();
+  await expect(page.locator('.reports-hero')).toBeVisible();
+  await expect(page.locator('.reports-weekly')).toBeVisible();
+  await expect(page.locator('.reports-details')).toBeVisible();
 });
 
 test('focus analytics stay in history, not in the timer', async ({page}) => {

@@ -85,7 +85,7 @@ test('Quran has three areas, legacy destinations and responsive dark/light layou
 
 test('reports present an honest comparison without fabricated activity', async ({ page }) => {
   await guest(page,'/?view=reports');
-  await expect(page.locator('.report-comparative-insight')).toContainText('henüz bir adım bırakmadın');
+  await expect(page.locator('.reports-story-card')).toContainText('henüz bir adım');
 });
 
 for(const path of ['/focus','/?view=focus']) test('fresh focus starts in one click and preserves preferences: '+path,async({page},info)=>{
