@@ -1,5 +1,6 @@
 'use client';
 
+import { useShallow } from 'zustand/react/shallow';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AppIcon } from '@/components/ui/AppIcon';
 import { useActivityLog } from '@/hooks/useActivityLog';
@@ -33,7 +34,15 @@ function validDraft(value: unknown): value is Draft {
 export default function JournalNotebook({ onNavigate, entries, requestedDate, requestedRitual, onToday, loading = false, recordsReady = true }: {
   onNavigate: (view: string) => void; entries?: JournalEntry[]; requestedDate?: string; requestedRitual?: JournalRitual; onToday?: () => void; loading?: boolean; recordsReady?: boolean;
 }) {
-  const store = useJourneyStore();
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    focusSessions: s.focusSessions,
+  })));
   const today = dayKey(new Date());
   const journal = entries ?? store.journal;
   const [selectedDate, setSelectedDate] = useState(requestedDate ?? today);

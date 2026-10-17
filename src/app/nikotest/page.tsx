@@ -30,7 +30,10 @@ export default function FocusTimerView({
   onExit: () => void;
   onNavigate: (view: string) => void;
 }) {
-  const journey = useJourneyStore();
+  const journeyFocusSessions = useJourneyStore(s => s.focusSessions);
+  const journey = useMemo(() => ({
+    focusSessions: journeyFocusSessions,
+  }), [journeyFocusSessions]);
   const timer = useFocusTimerStore();
   const [taskDraft, setTaskDraft] = useState("");
   const [now, setNow] = useState(0);

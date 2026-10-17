@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { useMemo } from 'react'
 import { useJourneyStore } from '@/store/useJourneyStore'
 import { buildActivityFeed, type ActivitySource } from '@/lib/activity'
@@ -14,7 +15,16 @@ export interface AchievementSummary {
 }
 
 export function useAchievements(): AchievementSummary {
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    focusSessions: s.focusSessions,
+  })));
 
   return useMemo(() => {
     const source: ActivitySource = {

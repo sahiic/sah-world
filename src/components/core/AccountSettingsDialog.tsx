@@ -1,5 +1,6 @@
 "use client";
 
+import { useShallow } from 'zustand/react/shallow';
 import Cropper, { type Area } from "react-easy-crop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -44,7 +45,16 @@ export default function AccountSettingsDialog({
   const profile = useAuthStore((state) => state.profile);
   const user = useAuthStore((state) => state.user);
   const patchProfile = useAuthStore((state) => state.patchProfile);
-  const journey = useJourneyStore();
+  const journeyState = useJourneyStore(useShallow(s => ({
+    xp: s.xp,
+    badges: s.badges,
+    streak: s.streak,
+  })));
+  const journeyExportAll = useJourneyStore(s => s.exportAll);
+  const journey = useMemo(() => ({
+    ...journeyState,
+    exportAll: journeyExportAll,
+  }), [journeyState, journeyExportAll]);
   const router = useRouter();
   const { signOut, isSigningOut, signOutError } = useSignOut();
   const closeButtonRef = useRef<HTMLButtonElement>(null);

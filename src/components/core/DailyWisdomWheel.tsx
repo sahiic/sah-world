@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { AnimatePresence, motion } from 'framer-motion'
 import { type CSSProperties, type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
@@ -103,7 +104,25 @@ function nextSpinLabel(kind: ReflectionKind, step: RevealStep) {
 }
 
 export default function DailyWisdomWheel({ entry }: { entry?: WisdomEntry }) {
-  const store = useJourneyStore()
+  const storeState = useJourneyStore(useShallow(s => ({
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+  })));
+  const storeAddQuranNote = useJourneyStore(s => s.addQuranNote);
+  const storeAddHadisNote = useJourneyStore(s => s.addHadisNote);
+  const storeAddXP = useJourneyStore(s => s.addXP);
+  const storeCheckBadges = useJourneyStore(s => s.checkBadges);
+  const storeDeleteQuranNote = useJourneyStore(s => s.deleteQuranNote);
+  const storeDeleteHadisNote = useJourneyStore(s => s.deleteHadisNote);
+  const store = useMemo(() => ({
+    ...storeState,
+    addQuranNote: storeAddQuranNote,
+    addHadisNote: storeAddHadisNote,
+    addXP: storeAddXP,
+    checkBadges: storeCheckBadges,
+    deleteQuranNote: storeDeleteQuranNote,
+    deleteHadisNote: storeDeleteHadisNote,
+  }), [storeState, storeAddQuranNote, storeAddHadisNote, storeAddXP, storeCheckBadges, storeDeleteQuranNote, storeDeleteHadisNote]);
   const user = useAuthStore((state) => state.session?.access_token === 'mock-token' ? undefined : state.user || state.session?.user)
   const identity = user?.id || 'guest'
   const params = useSearchParams()

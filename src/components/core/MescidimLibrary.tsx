@@ -58,7 +58,14 @@ function DailyAsmaHero({ dailyName, onExplore }: { dailyName: AsmaName; onExplor
 
 function useSpiritualState() {
   const { user } = useAuthStore()
-  const journey = useJourneyStore()
+  const journeyJournal = useJourneyStore(s => s.journal);
+  const journeyUpsertJournalLocal = useJourneyStore(s => s.upsertJournalLocal);
+  const journeyAddXP = useJourneyStore(s => s.addXP);
+  const journey = useMemo(() => ({
+    journal: journeyJournal,
+    upsertJournalLocal: journeyUpsertJournalLocal,
+    addXP: journeyAddXP,
+  }), [journeyJournal, journeyUpsertJournalLocal, journeyAddXP]);
   const [favoriteAsma, setFavoriteAsma] = useState<number[]>([])
   const [favoriteDuas, setFavoriteDuas] = useState<string[]>([])
   const [reflections, setReflections] = useState<Record<number, string>>({})

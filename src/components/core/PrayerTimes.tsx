@@ -1,5 +1,7 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 import { useEffect, useState } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { supabase } from '@/lib/supabase'
@@ -33,7 +35,17 @@ const MOSQUE_DEFAULT_LOCATION: PrayerLocation = {
 
 export default function PrayerTimes({ reward }: { reward: (amount: number, label: string, sourceType: string, sourceId: string) => void }) {
   const { user, profile, patchProfile } = useAuthStore()
-  const journey = useJourneyStore()
+  const journeyState = useJourneyStore(useShallow(s => ({
+    currentTespih: s.currentTespih,
+    totalZikir: s.totalZikir,
+  })));
+  const journeyIncrementTespih = useJourneyStore(s => s.incrementTespih);
+  const journeyResetTespih = useJourneyStore(s => s.resetTespih);
+  const journey = useMemo(() => ({
+    ...journeyState,
+    incrementTespih: journeyIncrementTespih,
+    resetTespih: journeyResetTespih,
+  }), [journeyState, journeyIncrementTespih, journeyResetTespih]);
   const [location, setLocation] = useState<PrayerLocation | null>(null)
   const [selectingLocation, setSelectingLocation] = useState(false)
   const [day, setDay] = useState<PrayerDay | null>(null)

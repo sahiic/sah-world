@@ -1,5 +1,6 @@
 'use client';
 
+import { useShallow } from 'zustand/react/shallow';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -15,7 +16,18 @@ import { isValidUUID } from '@/store/useJourneyStore';
 const GrowthTree = dynamic(() => import('./GrowthTree'), { loading: () => <p role="status">Gelişim sahnen yükleniyor…</p> });
 
 export default function DailyHomeView({ onNavigate }: { onNavigate: (view: string) => void }) {
-  const journey = useJourneyStore();
+  const journey = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    focusSessions: s.focusSessions,
+    xp: s.xp,
+    xpOrbTrigger: s.xpOrbTrigger,
+    lastXPAmount: s.lastXPAmount,
+  })));
   const owner = useAuthStore(state => state.user?.id ?? 'local');
   const timerActive = useFocusTimerStore(state => state.isActive);
   const activity = useActivityLog();

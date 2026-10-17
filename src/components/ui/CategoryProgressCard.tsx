@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { useMemo } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { useJourneyStore } from '@/store/useJourneyStore'
@@ -14,7 +15,16 @@ const TREND_ICON: Record<CategoryDelta['trend'], string> = {
 }
 
 export default function CategoryProgressCard() {
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    focusSessions: s.focusSessions,
+  })));
 
   const summary = useMemo(() => {
     const source: ActivitySource = {

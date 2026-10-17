@@ -23,7 +23,7 @@ const localDateKey = (date = new Date()) => date.toLocaleDateString('en-CA');
 // ============================================================
 // STORE STATE SHAPE
 // ============================================================
-interface JourneyState {
+export interface JourneyState {
   // Vehicle
   vehicle: VehicleDef;
   vehicleChosen: boolean;

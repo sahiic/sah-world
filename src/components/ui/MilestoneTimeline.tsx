@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow';
 import { useMemo } from 'react'
 import { AppIcon } from '@/components/ui/AppIcon'
 import { useJourneyStore } from '@/store/useJourneyStore'
@@ -8,7 +9,17 @@ import { computeGlobalStreaks } from '@/lib/streaks'
 import { detectMilestones, getMilestoneRuleCount } from '@/lib/milestoneTimeline'
 
 export default function MilestoneTimeline() {
-  const store = useJourneyStore()
+  const store = useJourneyStore(useShallow(s => ({
+    journal: s.journal,
+    quranNotes: s.quranNotes,
+    hadisNotes: s.hadisNotes,
+    eisenhower: s.eisenhower,
+    lessons: s.lessons,
+    sukurList: s.sukurList,
+    totalZikir: s.totalZikir,
+    focusSessions: s.focusSessions,
+    xp: s.xp,
+  })));
 
   const milestones = useMemo(() => {
     const source: ActivitySource = {

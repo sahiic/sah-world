@@ -1,4 +1,5 @@
-import type { EisenhowerState, FocusSession, HadisNote, IntegratedActivity, JournalEntry, LessonEntry, QuranNote, SukurEntry } from '@/types';
+import type { IntegratedActivity } from '@/types';
+import type { JourneyState } from '@/store/useJourneyStore';
 
 export type ActivityCategory = IntegratedActivity['category'];
 
@@ -11,16 +12,16 @@ export type ActivityEvent = {
   createdAt: string;
 };
 
-export type ActivitySource = {
-  journal: JournalEntry[];
-  quranNotes: QuranNote[];
-  hadisNotes: HadisNote[];
-  eisenhower: EisenhowerState;
-  lessons: LessonEntry[];
-  sukurList: SukurEntry[];
-  totalZikir: number;
-  focusSessions: FocusSession[];
-};
+export type ActivitySource = Pick<JourneyState,
+  'journal' | 'quranNotes' | 'hadisNotes' | 'eisenhower' | 'lessons' |
+  'sukurList' | 'totalZikir' | 'focusSessions'
+>;
+
+// Feeds and search do not read the live zikir counter or any store actions.
+export type ActivityFeedSource = Pick<ActivitySource,
+  'journal' | 'quranNotes' | 'hadisNotes' | 'eisenhower' | 'lessons' |
+  'sukurList' | 'focusSessions'
+>;
 
 export const CATEGORY_META: Record<ActivityCategory, { label: string; icon: string; color: string }> = {
   journal: { label: 'Günlük', icon: 'notebook', color: '#4f46e5' },
@@ -50,7 +51,7 @@ export function mapIntegratedActivities(items: IntegratedActivity[]): ActivityEv
 
 export type SearchResult = { id: string; category: ActivityCategory; view: string; title: string; preview: string; searchable: string; icon: string; color: string };
 
-export function buildSearchIndex(source: ActivitySource): SearchResult[] {
+export function buildSearchIndex(source: ActivityFeedSource): SearchResult[] {
   const make = (category: ActivityCategory, id: string, title: string, preview: string) => ({
     id, category, view: category, title, preview, searchable: `${title} ${preview}`.toLocaleLowerCase('tr-TR'),
     icon: CATEGORY_META[category].icon, color: CATEGORY_META[category].color,
@@ -66,7 +67,7 @@ export function buildSearchIndex(source: ActivitySource): SearchResult[] {
   ].sort((a, b) => a.title.localeCompare(b.title, 'tr'));
 }
 
-export function buildActivityFeed(source: ActivitySource): ActivityEvent[] {
+export function buildActivityFeed(source: ActivityFeedSource): ActivityEvent[] {
   const tasks = Object.values(source.eisenhower).flat();
   return [
     ...source.journal.map((item) => ({ id: item.id, category: 'journal' as const,
