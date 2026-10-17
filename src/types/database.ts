@@ -516,6 +516,7 @@ export type QuranHasanatRow = {
 export interface Database {
   public: {
     Tables: {
+      quran_peer_profiles: RowTable<{user_id:string;level:QuranLevel;current_surah:number;learning_goal:'tajweed'|'khatm'|'memorize'|'practice';availability:Record<string,string[]>;study_preference:'reading'|'written'|'listening';bio_short:string;timezone:string;discoverable:boolean;last_active_at:string;updated_at:string}>;
       profiles: RowTable<ProfileRow>;
       journal_entries: RowTable<JournalEntryRow>;
       weekly_insights: RowTable<WeeklyInsightRow>;
@@ -660,6 +661,13 @@ export interface Database {
       };
     };
     Functions: {
+      save_quran_peer_profile: { Args: { payload: Json }; Returns: Json };
+      discover_quran_peers: { Args: Record<string, never>; Returns: Json };
+      smart_match_quran_peer: { Args: Record<string, never>; Returns: Json };
+      request_quran_peer_v2: { Args: { target_user_id: string; note: string }; Returns: string };
+      get_peer_workspace: { Args: { target_match_id: string }; Returns: Json };
+      peer_study_action: { Args: { target_match_id: string; action: string; payload: Json }; Returns: Json };
+      set_peer_weekly_goal: { Args: { target_match_id: string; page_goal: number }; Returns: undefined };
       send_quran_message: {
         Args: { target_context: string; message_content: string };
         Returns: ChatMessageRow;
@@ -945,6 +953,29 @@ export interface Database {
           message: string;
           created_at: string;
         }>;
+      };
+      join_quran_peer_queue: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          state: "waiting" | "matched" | "request_pending";
+          match_id: string | null;
+          partner_id: string | null;
+          partner_name: string | null;
+          partner_avatar: string | null;
+          queued_at: string | null;
+        }>;
+      };
+      get_my_quran_peer_queue: {
+        Args: Record<string, never>;
+        Returns: Array<{ queued_at: string }>;
+      };
+      leave_quran_peer_queue: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      leave_quran_peer_match: {
+        Args: { target_match_id: string };
+        Returns: boolean;
       };
       delete_my_account: {
         Args: { confirmation_text: string };
