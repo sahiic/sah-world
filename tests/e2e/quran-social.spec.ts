@@ -63,8 +63,9 @@ test('V2 onboarding, discovery, queue consent and responsive layout', async ({pa
   await form.getByRole('button',{name:'Profilimi kaydet',exact:true}).click();
   await expect(area.getByText('Uyumlu Kardeş',{exact:true})).toBeVisible();
   await area.getByRole('button',{name:'Uyumlu kardeş bul',exact:true}).click();
-  await expect(area.getByRole('button',{name:'Sıradan çık',exact:true})).toBeVisible();
-  await area.getByRole('button',{name:'Sıradan çık',exact:true}).click();
+  await expect(area.getByRole('button',{name:'Aramayı durdur',exact:true})).toBeVisible();
+  await expect(area.getByRole('button',{name:'Tanışma isteği gönder',exact:true})).toBeEnabled();
+  await area.getByRole('button',{name:'Aramayı durdur',exact:true}).click();
   await expect(area.getByRole('button',{name:'Uyumlu kardeş bul',exact:true})).toBeEnabled();
   await area.scrollIntoViewIfNeeded();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
@@ -79,6 +80,51 @@ test('V2 preserves existing peer chat and shared workspace',async({page})=>{
   await expect(page.locator('.peer-session').first()).toBeVisible();
   await page.locator('.peer-active').first().getByRole('button',{name:/Mesajlaş/}).click();
   await expect(page.getByRole('dialog')).toBeVisible();
+});
+
+async function requestWhileQueued(page: Page) {
+  await login(page, queueUser);
+  await page.getByRole('button', {name:'Profilimi oluştur',exact:true}).click();
+  const form=page.getByRole('region',{name:'Eşleşme profili'});
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByRole('checkbox',{name:'Pazartesi',exact:true}).check();
+  await form.getByRole('button',{name:'Devam et',exact:true}).click();
+  await form.getByLabel('Kısa tanıtım').fill('Birlikte düzenli okumak istiyorum.');
+  await form.getByRole('checkbox',{name:/profilimi diğer/}).check();
+  await form.getByRole('button',{name:'Profilimi kaydet',exact:true}).click();
+  await page.getByRole('button',{name:'Uyumlu kardeş bul',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Aramayı durdur',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Tanışma isteği gönder',exact:true}).click();
+  const dialog=page.getByRole('dialog',{name:'Kur’an kardeşliği isteği'});
+  await expect(dialog).toContainText('İstek gönderildiğinde otomatik arama durur');
+  await dialog.getByRole('textbox',{name:/Tanışma notun/}).fill('Haftada iki gün birlikte okuyalım.');
+  await dialog.getByRole('button',{name:'İstek gönder',exact:true}).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(page.locator('.peer-request')).toContainText('Yanıt bekleniyor');
+}
+
+test('queued discovery request becomes a shared workspace only after recipient accepts',async({page,browser})=>{
+  await requestWhileQueued(page);
+  await expect(page.locator('.peer-active')).toHaveCount(0);
+  const recipient=await browser.newPage();
+  await login(recipient,queuePartner);
+  await expect(recipient.locator('.peer-request')).toContainText('Haftada iki gün birlikte okuyalım.');
+  await recipient.getByRole('button',{name:'Kabul et',exact:true}).click();
+  await expect(recipient.locator('.peer-active')).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator('.peer-active')).toHaveCount(1);
+  await expect(page.locator('.peer-session').first()).toBeVisible();
+  await recipient.close();
+});
+
+test('sender can withdraw a pending request and resume automatic search',async({page})=>{
+  await requestWhileQueued(page);
+  await page.getByRole('button',{name:'İsteği geri çek',exact:true}).click();
+  await expect(page.getByText('İsteğin geri çekildi. Yeni bir kardeş arayabilirsin.',{exact:true})).toBeVisible();
+  await page.locator('.peer-tabs').getByRole('button',{name:'Keşfet',exact:true}).click();
+  await page.getByRole('button',{name:'Uyumlu kardeş bul',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Aramayı durdur',exact:true})).toBeVisible();
 });
 
 test("private Presence shows typing only after opt-in and stops on opt-out", async ({
@@ -260,7 +306,7 @@ test("opt-in Quran queue pairs two waiting people once and lets a participant le
   await form.getByRole('button',{name:'Profilimi kaydet',exact:true}).click();
   await first.getByRole("button", { name: "Uyumlu kardeş bul",exact:true }).click();
   await expect(first.getByText('Uyumlu kardeşin aranıyor',{exact:true})).toBeVisible();
-  await expect(first.getByRole("button", { name: "Sıradan çık" })).toBeVisible();
+  await expect(first.getByRole("button", { name: "Aramayı durdur" })).toBeVisible();
 
   await login(second, queuePartner);
   await second.getByRole("button", { name: "Uyumlu kardeş bul",exact:true }).click();

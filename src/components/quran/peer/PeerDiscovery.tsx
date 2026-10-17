@@ -77,7 +77,7 @@ export default function PeerDiscovery({
       </div>
       <p className="peer-score-note">
         Uyum puanı; seviye, hedef, sure, ortak saatler ve son etkinliğe dayanır.
-        Başarı garantisi değildir. Saatler adayın zaman dilimindedir.
+        Saatler adayın zaman dilimine göre gösterilir.
       </p>
       {filtered.length ? (
         <div className="peer-candidate-grid">

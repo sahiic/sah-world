@@ -16,7 +16,7 @@ export async function loadProfessionSchool(userId:string|null) {
   const mapped = (lessonResult.data ?? []).flatMap(item => {
     const content = item.content_body as Json
     if (!isLessonContent(content) || !Array.isArray(item.source_references)) return []
-    return [{id:item.id, trackId:item.track_id, title:item.title, orderIndex:item.order_index, durationEstimateMinutes:item.duration_estimate_minutes, content, sourceReferences:item.source_references as unknown as ProfessionLesson['sourceReferences'], xpReward:item.xp_reward}]
+    return [{id:item.id, trackId:item.track_id, title:item.title.replace(/^Amanah:/, 'Emanet:'), orderIndex:item.order_index, durationEstimateMinutes:item.duration_estimate_minutes, content, sourceReferences:item.source_references as unknown as ProfessionLesson['sourceReferences'], xpReward:item.xp_reward}]
   })
   return {
     tracks: trackResult.data?.length === PROFESSION_TRACKS.length ? trackResult.data.map(item=>({id:item.id,professionName:item.profession_name,icon:item.icon,description:item.description,colorAccent:item.color_accent})) : PROFESSION_TRACKS,
