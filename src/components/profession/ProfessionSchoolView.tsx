@@ -14,7 +14,14 @@ import ProfessionEmptyState from './ProfessionEmptyState'
 import ProfessionReflections from './ProfessionReflections'
 import ProfessionCertificate, { type Certificate } from './ProfessionCertificate'
 
-export default function ProfessionSchoolView({onNavigate,onModalChange}: {onNavigate:(view:string)=>void;onModalChange?:(open:boolean)=>void}) {
+type ProfessionSchoolProps = {onNavigate:(view:string)=>void;onModalChange?:(open:boolean)=>void}
+
+export default function ProfessionSchoolView(props: ProfessionSchoolProps) {
+  const accountId = useAuthStore(state=>state.user?.id)
+  return <ProfessionSchoolContent key={accountId || 'guest'} {...props}/>
+}
+
+function ProfessionSchoolContent({onNavigate,onModalChange}: ProfessionSchoolProps) {
   const user = useAuthStore(state=>state.user)
   const journey = useJourneyStore()
   const [tracks, setTracks] = useState<ProfessionTrack[]>(PROFESSION_TRACKS)
@@ -34,13 +41,12 @@ export default function ProfessionSchoolView({onNavigate,onModalChange}: {onNavi
   useEffect(()=>{onModalChange?.(Boolean(activeLesson || certificate));return ()=>onModalChange?.(false)},[activeLesson,certificate,onModalChange])
   useEffect(()=>{
     let active = true
-    setLoading(true);setFollowed(new Set());setProgress(new Map());setActiveTrackId('');setActiveLesson(null);setCertificate(null)
     void loadProfessionSchool(userId).then(data=>{
       if (!active) return
       setTracks(data.tracks); setLessons(data.lessons); setFollowed(data.followed); setProgress(data.progress)
       setActiveTrackId(data.followed.values().next().value || '')
       setLoading(false)
-    }).catch(()=>{if(active)setNotice('İlerlemen yüklenemedi. Verilerin korunuyor; sayfayı yenileyerek tekrar dene.')})
+    }).catch(()=>{if(active){setLoading(false);setNotice('İlerlemen yüklenemedi. Verilerin korunuyor; sayfayı yenileyerek tekrar dene.')}})
     return ()=>{active=false}
   },[userId])
   const completedIds = useMemo(()=>new Set(progress.keys()),[progress])

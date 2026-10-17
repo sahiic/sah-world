@@ -338,7 +338,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (route === "rpc/leave_quran_peer_match") {
     const match = matches.find((m) => m.id === body.target_match_id &&
-      [m.requester_id, m.helper_id].includes(viewer) && m.status === "accepted",
+      (([m.requester_id, m.helper_id].includes(viewer) && m.status === "accepted") || (m.requester_id === viewer && m.status === "pending")),
     );
     if (match) match.status = "cancelled";
     reply(Boolean(match));
@@ -418,6 +418,13 @@ const server = http.createServer(async (req, res) => {
     });
     reply(matches.at(-1));
     return;
+  }
+  if (route === "rpc/request_quran_peer_v2") {
+    if(matches.some(m=>['pending','accepted'].includes(m.status) && [m.requester_id,m.helper_id].some(id=>[viewer,body.target_user_id].includes(id)))){
+      reply({message:'PEER_ALREADY_MATCHED'},409);return;
+    }
+    const match={id:crypto.randomUUID(),requester_id:viewer,helper_id:body.target_user_id,status:'pending',message:body.note,created_at};
+    matches.push(match);peerQueue.delete(viewer);peerQueue.delete(body.target_user_id);reply(match.id);return;
   }
   if (route === "rpc/respond_quran_peer_match") {
     matches = matches.map((m) =>

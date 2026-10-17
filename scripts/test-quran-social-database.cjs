@@ -495,6 +495,29 @@ async function run() {
   await as(b);await db.query("SELECT peer_study_action($1,'complete',$2)",[mid,{session_id:session.id,pages:3}]);
   const progress=(await db.query('SELECT get_peer_workspace($1) result',[mid])).rows[0].result;
   assert.equal(progress.total_pages,5);assert.equal(progress.streak,1);assert.equal(progress.surahs,1);assert.equal(progress.session,null);
+  await db.exec('RESET ROLE');
+  const handoffSql=fs.readFileSync('supabase/migrations/2026101705_peer_request_queue_handoff.sql','utf8');
+  await db.exec(handoffSql);
+  await db.exec(handoffSql);
+  const d=crypto.randomUUID(),e=crypto.randomUUID(),f=crypto.randomUUID();
+  await db.query("INSERT INTO profiles(id,display_name) VALUES($1,'Waiting learner'),($2,'Available helper'),($3,'Another learner')",[d,e,f]);
+  for(const id of [d,e,f]){await as(id);await db.query('SELECT save_quran_peer_profile($1)',[pp]);}
+  await as(d);await db.query('SELECT smart_match_quran_peer()');
+  await assert.rejects(()=>db.query('SELECT request_quran_peer_v2($1,$2)',[e,'test@example.com']));
+  assert.equal((await db.query('SELECT * FROM get_my_quran_peer_queue()')).rows.length,1,'failed request preserves queue');
+  const manual=(await db.query("SELECT request_quran_peer_v2($1,'Birlikte okuyalım.') id",[e])).rows[0].id;
+  assert.equal((await db.query('SELECT * FROM get_my_quran_peer_queue()')).rows.length,0,'manual request stops sender search atomically');
+  await as(f);
+  await assert.rejects(()=>db.query("SELECT request_quran_peer_v2($1,'Merhaba')",[e]),'pending request reserves one partner');
+  assert.equal((await db.query('SELECT leave_quran_peer_match($1) result',[manual])).rows[0].result,false,'outsider cannot cancel');
+  await as(e);assert.equal((await db.query('SELECT leave_quran_peer_match($1) result',[manual])).rows[0].result,false,'recipient uses accept or decline');
+  await db.query('SELECT respond_quran_peer_match($1,true)',[manual]);
+  await as(d);assert.equal((await db.query('SELECT leave_quran_peer_match($1) result',[manual])).rows[0].result,true);
+  await as(e);await db.query('SELECT smart_match_quran_peer()');
+  await as(f);const pending=(await db.query("SELECT request_quran_peer_v2($1,'Birlikte çalışalım') id",[e])).rows[0].id;
+  await as(e);assert.equal((await db.query('SELECT * FROM get_my_quran_peer_queue()')).rows.length,0,'queued recipient can receive a request');
+  await as(f);assert.equal((await db.query('SELECT leave_quran_peer_match($1) result',[pending])).rows[0].result,true,'sender may withdraw pending request');
+  console.log('PASS: queued manual request, atomic rollback, recipient acceptance, sender withdrawal and one-partner guard.');
   await db.exec('RESET ROLE;SET ROLE anon;RESET request.jwt.claim.sub');
   for(const q of ['SELECT discover_quran_peers()','SELECT smart_match_quran_peer()',"SELECT save_quran_peer_profile('{}')"]){await assert.rejects(()=>db.query(q));}
   console.log('PASS: V2 profile validation, opt-in matching score, one-partner invariant, two-party timer, completion gate, progress and outsider/anon RLS.');

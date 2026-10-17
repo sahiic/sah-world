@@ -1,6 +1,6 @@
 .peer-v2 {
   --peer-ink: #16392e;
-  --peer-muted: #64766d;
+  --peer-muted: #52695e;
   --peer-surface: #fff;
   --peer-soft: #f2f7f3;
   --peer-line: #dce8df;
@@ -8,7 +8,7 @@
   display: grid;
   gap: 24px;
   color: var(--peer-ink);
-  font-family: var(--font-sans, Arial, sans-serif);
+  font-family: var(--font-inter), Arial, sans-serif;
   min-width: 0;
 }
 .peer-v2 * {
@@ -22,7 +22,7 @@
 }
 .peer-v2 p {
   color: var(--peer-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
 }
 .peer-v2 h3 {
@@ -39,7 +39,7 @@
   border-radius: 12px;
   background: var(--peer-surface);
   color: var(--peer-ink);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   cursor: pointer;
   transition:
@@ -69,7 +69,7 @@
 }
 .peer-eyebrow {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.15em;
   color: var(--peer-accent);
@@ -347,7 +347,7 @@
   overflow-wrap: anywhere;
 }
 .peer-candidate header span {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--peer-muted);
 }
 .peer-score {
@@ -388,19 +388,19 @@
   margin: 0;
 }
 .peer-candidate dt {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--peer-muted);
   margin-bottom: 5px;
 }
 .peer-candidate dd {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
 }
 .peer-times {
   padding: 12px;
   border-radius: 12px;
   background: var(--peer-soft);
-  font-size: 12px !important;
+  font-size: 13px !important;
 }
 .peer-times small {
   display: block;
@@ -413,7 +413,7 @@
 .peer-reasons span {
   padding: 5px 8px;
   border-radius: 6px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--peer-accent);
   background: var(--peer-soft);
 }

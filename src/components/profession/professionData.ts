@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { PROFESSION_LESSONS, PROFESSION_TRACKS, type ProfessionLesson, type ProfessionLessonContent } from '@/lib/professionSchool'
+import { PROFESSION_LESSONS, PROFESSION_TRACKS, professionLessonTitle, type ProfessionLesson, type ProfessionLessonContent } from '@/lib/professionSchool'
 import type { Json } from '@/types/database'
 export type Progress = { lessonId: string; reflectionNote: string | null; completedAt: string }
 const isLessonContent = (value: Json): value is ProfessionLessonContent => Boolean(value && typeof value === 'object' && !Array.isArray(value) && typeof value.openingType === 'string' && typeof value.openingText === 'string' && typeof value.explanation === 'string' && typeof value.action === 'string')
@@ -16,7 +16,7 @@ export async function loadProfessionSchool(userId:string|null) {
   const mapped = (lessonResult.data ?? []).flatMap(item => {
     const content = item.content_body as Json
     if (!isLessonContent(content) || !Array.isArray(item.source_references)) return []
-    return [{id:item.id, trackId:item.track_id, title:item.title, orderIndex:item.order_index, durationEstimateMinutes:item.duration_estimate_minutes, content, sourceReferences:item.source_references as unknown as ProfessionLesson['sourceReferences'], xpReward:item.xp_reward}]
+    return [{id:item.id, trackId:item.track_id, title:professionLessonTitle(item.title), orderIndex:item.order_index, durationEstimateMinutes:item.duration_estimate_minutes, content, sourceReferences:item.source_references as unknown as ProfessionLesson['sourceReferences'], xpReward:item.xp_reward}]
   })
   return {
     tracks: trackResult.data?.length === PROFESSION_TRACKS.length ? trackResult.data.map(item=>({id:item.id,professionName:item.profession_name,icon:item.icon,description:item.description,colorAccent:item.color_accent})) : PROFESSION_TRACKS,

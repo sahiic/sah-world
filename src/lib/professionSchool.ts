@@ -7,6 +7,10 @@ export type ProfessionTrack = {
 }
 
 export type LessonSource = { label: string; url: string }
+// Normalize legacy catalog wording at display time, without rewriting lesson IDs or progress.
+export function professionLessonTitle(title: string): string {
+  return title.replace(/^Amanah:/, 'Emanet:')
+}
 export type ProfessionLessonContent = {
   openingType: 'ayet' | 'hadis'
   openingArabic?: string
@@ -64,7 +68,7 @@ const common = [
     source: SOURCES.intention,
   },
   {
-    title: 'Amanah: yetki, bilgi ve zaman birer emanettir', duration: 7,
+    title: 'Emanet: yetki, bilgi ve zaman birer emanettir', duration: 7,
     content: { openingType: 'ayet' as const, openingArabic: 'إِنَّ اللَّهَ يَأْمُرُكُمْ أَنْ تُؤَدُّوا الْأَمَانَاتِ إِلَى أَهْلِهَا', openingText: 'Allah size, emanetleri mutlaka ehline vermenizi emrediyor.', explanation: 'Bir projeye erişim, müşteri bilgisi, kurum bütçesi, ekip zamanı ve verilen yetki emanet kapsamındadır. Emanet bilinci; gizliliği korumayı, çıkar çatışmasını bildirmeyi ve yetkin olmadığın konuda destek istemeyi profesyonel karakterin parçası yapar.', action: 'Bugün taşıdığın üç emaneti yaz: bilgi, zaman ve karar. Her biri için tek bir koruma davranışı belirle.' },
     source: SOURCES.trust,
   },

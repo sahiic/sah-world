@@ -109,7 +109,11 @@ export function peerError(error: unknown) {
       ? error.message
       : String((error as { message?: string })?.message || "");
   if (message.includes("ALREADY_MATCHED"))
-    return "Bir eşleşmen veya bekleyen isteğin var. Eşleşmelerim alanını kontrol et.";
+    return "Sende veya seçtiğin kişide bir eşleşme ya da bekleyen istek var. Kardeşliğim alanını kontrol edip adayları yenile.";
+  if (message.includes("PROFILE_REQUIRED"))
+    return "İki kişinin de eşleşme profili görünür olmalı. Profil ayarını kontrol edip adayları yenile.";
+  if (message.includes("RATE_LIMIT"))
+    return "Bir saat içinde en fazla 5 istek gönderebilirsin. Biraz sonra yeniden dene.";
   if (message.includes("AUTO_QUEUE"))
     return "Bu kişi ya da sen otomatik eşleşme sırasındasınız. Önce sıradan çıkmalısın.";
   if (message.includes("COOLDOWN"))

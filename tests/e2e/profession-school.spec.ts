@@ -24,7 +24,7 @@ test('profession path preserves locking, reading, completion and reflection', as
   await expect(dialog).toHaveCount(0);
   await expect(steps.nth(0)).toHaveAttribute('aria-label',/tamamlandı/);
   await expect(steps.nth(1)).toHaveAttribute('aria-label',/açık/);
-  await expect(page.locator('.daily-lesson-card')).toContainText('Amanah: yetki, bilgi ve zaman');
+  await expect(page.locator('.daily-lesson-card')).toContainText('Emanet: yetki, bilgi ve zaman');
   await steps.nth(0).click();
   await expect(dialog.getByRole('textbox')).toHaveValue('Bugün işimin kontrol listesini gözden geçireceğim.');
   await expect(dialog.getByRole('button',{name:'Tamamlandı',exact:true})).toBeDisabled();
@@ -36,6 +36,32 @@ test('profession path preserves locking, reading, completion and reflection', as
   await expect(dialog.getByRole('textbox')).toHaveValue('Bugün işimin kontrol listesini gözden geçireceğim.');
   await dialog.getByRole('button',{name:'Dersi kapat'}).click();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('school catalog search and followed filter remain usable across widths and themes', async ({page},testInfo) => {
+  await openSchool(page);
+  await page.getByRole('searchbox',{name:'Meslek ara'}).fill('mühendis');
+  await expect(page.locator('.profession-track-grid>button')).toHaveCount(1);
+  await page.locator('.profession-track-grid>button').click();
+  await page.getByRole('searchbox',{name:'Meslek ara'}).fill('');
+  await page.getByRole('button',{name:/^Yollarım/}).click();
+  await expect(page.locator('.profession-track-grid>button')).toHaveCount(1);
+  await page.getByRole('button',{name:'Tüm alanlar',exact:true}).click();
+  await expect(page.locator('.profession-track-grid>button')).toHaveCount(10);
+  for(const width of [375,768,1024,1440]){
+    await page.setViewportSize({width,height:900});
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+    await expect(page.locator('.profession-hero h1')).toBeVisible();
+  }
+  await page.setViewportSize({width:testInfo.project.name==='mobile'?375:1440,height:900});
+  await expect(page.locator('.profession-notice')).toHaveCount(0);
+  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.screenshot({path:testInfo.outputPath('school-light.png'),fullPage:true});
+  await page.screenshot({path:testInfo.outputPath('school-light-viewport.png')});
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));
+  await page.screenshot({path:testInfo.outputPath('school-dark.png'),fullPage:true});
+  await page.screenshot({path:testInfo.outputPath('school-dark-viewport.png')});
 });
 
 test('eight completed lessons show an accessible reduced-motion certificate', async ({page},testInfo) => {

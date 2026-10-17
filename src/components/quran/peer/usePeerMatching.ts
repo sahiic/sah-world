@@ -84,8 +84,8 @@ export function usePeerMatching({
     };
   }, [reload]);
   const run = async (
-    action: () => PromiseLike<{ error: unknown }>,
-    success: string,
+    action: () => PromiseLike<{ error: unknown; data?: unknown }>,
+    success: string | ((data: unknown) => string),
   ) => {
     if (lock.current || !realUser) return false;
     lock.current = true;
@@ -94,7 +94,7 @@ export function usePeerMatching({
     try {
       const response = await action();
       if (response.error) throw response.error;
-      setNotice(success);
+      setNotice(typeof success === "function" ? success(response.data) : success);
       await Promise.all([reload(), onReload()]);
       return true;
     } catch (e) {
@@ -127,7 +127,9 @@ export function usePeerMatching({
     join: () =>
       run(
         () => supabase.rpc("smart_match_quran_peer"),
-        "Tercihlerin alındı. Eşleşmen varsa Kardeşliğim alanında, yoksa havuzda bekliyorsun.",
+        (data) => (data as {state?: string} | null)?.state === "matched"
+          ? "Kardeşin bulundu. Birlikte çalışma alanınız hazır."
+          : "Aramaya katıldın. Uygun bir kişi de aramaya katıldığında eşleşeceksiniz. Beklerken adaylara istek gönderebilirsin.",
       ),
     leaveQueue: () =>
       run(() => supabase.rpc("leave_quran_peer_queue"), "Havuzdan çıktın."),
@@ -152,7 +154,7 @@ export function usePeerMatching({
     end: (m: PeerView) =>
       run(
         () => supabase.rpc("leave_quran_peer_match", { target_match_id: m.id }),
-        "Eşleşme sonlandırıldı.",
+        m.status === "pending" ? "İsteğin geri çekildi. Yeni bir kardeş arayabilirsin." : "Eşleşme sonlandırıldı.",
       ),
   };
 }

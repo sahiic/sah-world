@@ -1,4 +1,5 @@
 import AvatarImage from "@/components/ui/AvatarImage";
+import { SURAHS } from "@/lib/quranSurahs";
 import { avatar, LEVELS } from "../companionShared";
 import {
   GOALS,
@@ -52,7 +53,7 @@ export default function PeerMatchCard({
       <dl>
         <div>
           <dt>Çalıştığı sure</dt>
-          <dd>{c.current_surah}. sure</dd>
+          <dd>{SURAHS.find(surah=>surah.id===c.current_surah)?.name || `${c.current_surah}. sure`}</dd>
         </div>
         <div>
           <dt>Hedef</dt>
