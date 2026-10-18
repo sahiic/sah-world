@@ -1,0 +1,183 @@
+.admin-role-card {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #f8f9fb;
+}
+
+.admin-role-card header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-role-card header>span {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #4338ca;
+  background: #ececff;
+}
+
+.admin-role-card h3 {
+  margin: 2px 0;
+}
+
+.admin-role-card form {
+  margin: 14px 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 7px;
+}
+
+.admin-role-card input {
+  min-height: 40px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 11px;
+  background: #fff;
+  font-size: 8px;
+}
+
+.admin-role-card form button {
+  padding: 0 13px;
+  border: 0;
+  border-radius: 11px;
+  color: #fff;
+  background: #4f46e5;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.admin-user-row {
+  padding: 9px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #fff;
+}
+
+.admin-user-row+.admin-user-row {
+  margin-top: 6px;
+}
+
+.admin-user-row img {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+}
+
+.admin-user-row>span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-user-row button {
+  min-height: 32px;
+  border: 0;
+  border-radius: 9px;
+  color: #4338ca;
+  background: #eeefff;
+  font-size: 7px;
+}
+
+[data-theme="dark"] .admin-role-card header>span {
+  color: #818cf8;
+  background: #1e1b4b;
+}
+
+[data-theme="dark"] .admin-role-card input {
+  background: #1a2138;
+  color: #d8deea;
+  border: 1px solid #2d3654;
+}
+
+[data-theme="dark"] .admin-user-row {
+  background: #1a2138;
+}
+
+[data-theme="dark"] .admin-user-row button {
+  color: #a5b4fc;
+  background: #1e1b4b;
+}
+
+/* Admin Role Management Pro */
+
+.role-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-style: normal;
+}
+
+.role-tag.role-admin {
+  color: #7c3aed;
+  background: rgba(124,58,237,.1);
+}
+
+.role-tag.role-hoca {
+  color: #009B77;
+  background: rgba(0,155,119,.1);
+}
+
+.role-tag.role-user {
+  color: #6b7280;
+  background: rgba(107,114,128,.1);
+}
+
+.admin-role-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.role-btn {
+  padding: 5px 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.role-btn.hoca {
+  color: #009B77;
+  border-color: rgba(0,155,119,.2);
+  background: rgba(0,155,119,.05);
+}
+
+.role-btn.hoca:hover {
+  background: rgba(0,155,119,.15);
+}
+
+.role-btn.admin {
+  color: #7c3aed;
+  border-color: rgba(124,58,237,.2);
+  background: rgba(124,58,237,.05);
+}
+
+.role-btn.admin:hover {
+  background: rgba(124,58,237,.15);
+}
+
+[data-theme="dark"] .role-tag.role-admin {
+  color: #a78bfa;
+  background: rgba(124,58,237,.2);
+}
+
+[data-theme="dark"] .role-tag.role-hoca {
+  color: #5ec99e;
+  background: rgba(0,155,119,.2);
+}
+
+[data-theme="dark"] .role-tag.role-user {
+  color: #9ca3af;
+  background: rgba(156,163,175,.15);
+}
