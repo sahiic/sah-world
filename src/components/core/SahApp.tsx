@@ -407,7 +407,7 @@ export default function SahApp({
 
   return (
     <div className={`core-app phase-two-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${view === "focus" ? "focus-mode" : ""}`}>
-      <a href="#main-content" className="skip-link">İçeriğe atla</a>
+      <a href="#main-content" className="skip-to-content">İçeriğe geç</a>
       <div aria-live="polite" aria-atomic="true" className="sr-only">{milestone?.title ?? `Toplam ${store.xp} XH`}</div>
       <aside className={`app-sidebar core-sidebar ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Ana navigasyon">
         <button

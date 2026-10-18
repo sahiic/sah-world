@@ -14,7 +14,7 @@ async function guest(page: Page, view = 'dashboard', theme = 'light') {
 test('skip link, arrow navigation and route focus work without a mouse', async ({ page }) => {
   await page.setViewportSize({width:1280,height:900});
   await guest(page);
-  const skip = page.getByRole('link', {name:'İçeriğe atla'});
+  const skip = page.getByRole('link', {name:'İçeriğe geç'});
   await skip.focus(); await expect(skip).toBeInViewport();
   await page.keyboard.press('Enter'); await expect(page.locator('#main-content')).toBeFocused();
   const buttons=page.locator('.sidebar-nav section button');

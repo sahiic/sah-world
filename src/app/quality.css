@@ -1,6 +1,6 @@
 /* Keyboard-only affordances do not move the visual layout. */
-.skip-link{position:fixed;top:-100%;left:16px;z-index:999;padding:12px 20px;border-radius:12px;color:#fff;background:#006950;font:700 14px var(--font-inter);text-decoration:none}
-.skip-link:focus{top:16px;outline:3px solid #8ff2d2;outline-offset:3px}
+.skip-to-content{position:fixed;top:-100px;left:16px;z-index:10000;padding:8px 16px;border-radius:8px;color:#fff;background:var(--core-brand);font:600 13px var(--font-inter);text-decoration:none;transition:top .2s}
+.skip-to-content:focus{top:8px;outline:3px solid #8ff2d2;outline-offset:3px}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;white-space:nowrap}
 .app-main:focus{outline:none}
 .core-app :is(button,a,input,textarea,select,summary):focus-visible{outline:3px solid var(--core-brand);outline-offset:4px}
