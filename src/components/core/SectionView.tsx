@@ -632,8 +632,8 @@ function Matrix({
               <span className="quiet-chip">{store.eisenhower[q].length}</span>
             </div>
             <form onSubmit={(e) => add(e, q)} className="inline-form">
-              <input name="task" placeholder="Yeni görev..." />
-              <button type="submit">+</button>
+              <input name="task" aria-label={`${title} için yeni görev`} placeholder="Yeni görev…" />
+              <button type="submit" aria-label={`${title} alanına görev ekle`}>+</button>
             </form>
             <div className="task-list">
               {store.eisenhower[q].map((task) => (
