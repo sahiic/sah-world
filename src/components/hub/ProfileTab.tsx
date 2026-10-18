@@ -56,7 +56,7 @@ export default function ProfileTab() {
             <div className="w-28 h-28 md:w-36 md:h-36 rounded-full ring-4 ring-indigo-400/30 bg-slate-950 overflow-hidden relative z-10 shadow-2xl">
             <img 
               src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${profile.display_name}`} 
-              alt="Avatar" 
+              alt={profile.display_name ? `${profile.display_name} avatarı` : 'Kullanıcı avatarı'}
               className="w-full h-full object-cover"
             />
           </div>

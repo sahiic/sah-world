@@ -191,7 +191,7 @@ export default function ChatTab() {
               >
                 <img 
                   src={f.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${f.display_name}`} 
-                  alt="Avatar" 
+                  alt={f.display_name ? `${f.display_name} avatarı` : 'Kullanıcı avatarı'}
                   className="w-12 h-12 rounded-full bg-black/30 ring-1 ring-white/10 flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0 overflow-hidden pt-1">
@@ -214,7 +214,7 @@ export default function ChatTab() {
             <div className="h-16 px-6 bg-black/20 shadow-[0_8px_20px_rgba(0,0,0,0.12)] flex items-center gap-3">
               <img 
                 src={activeFriend.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${activeFriend.display_name}`} 
-                alt="Avatar" 
+                alt={activeFriend.display_name ? `${activeFriend.display_name} avatarı` : 'Kullanıcı avatarı'}
                 className="w-9 h-9 rounded-full bg-black/30"
               />
               <span className="font-bold text-white">{activeFriend.display_name}</span>
