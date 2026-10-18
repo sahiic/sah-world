@@ -54,16 +54,18 @@ export default function ProfileView() {
           /> : <AppIcon name="user-circle" />}
         </div>
         <div className="profile-identity">
-          <h2>{profile?.display_name || 'Yolcu'}</h2>
+          <h1>{profile?.display_name || 'Yolcu'}</h1>
           <div className="profile-level">
             <span className="profile-level-icon">{level.icon}</span>
             <span className="profile-level-name">{level.name}</span>
-            <span className="profile-xp">{store.xp.toLocaleString('tr-TR')} XP</span>
+            <span className="profile-xp">{store.xp.toLocaleString('tr-TR')} XH</span>
           </div>
           {nextLevel && (
-            <div className="profile-xp-bar">
-              <div className="profile-xp-fill" style={{ width: `${xpProgress}%` }} />
-              <small>{nextLevel.name} seviyesine {(nextLevel.xp - store.xp).toLocaleString('tr-TR')} XP</small>
+            <div className="profile-progress-summary">
+              <div className="profile-xp-bar" role="progressbar" aria-label={`${nextLevel.name} seviyesine ilerleme`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={xpProgress}>
+                <div className="profile-xp-fill" style={{ width: `${xpProgress}%` }} />
+              </div>
+              <p>{nextLevel.name} seviyesine {(nextLevel.xp - store.xp).toLocaleString('tr-TR')} XH</p>
             </div>
           )}
         </div>
