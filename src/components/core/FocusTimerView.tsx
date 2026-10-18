@@ -1,9 +1,10 @@
 "use client";
+import FocusSettingsDialogs from "./FocusSettingsDialogs";
 
 import FocusHistoryDashboard from "@/components/core/FocusHistoryDashboard";
 import FocusTimeline from "@/components/core/FocusTimeline";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { formatFocusDuration, formatTimer } from "@/lib/focus";
+import { formatTimer } from "@/lib/focus";
 import {
   FOCUS_SOUNDS,
   FocusAudioEngine,
@@ -21,7 +22,12 @@ import { useJourneyStore } from "@/store/useJourneyStore";
 import type { FocusTimerType } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FocusBackdrop, FocusPresets, FocusScenePicker, FocusStudioIntro } from "./FocusAmbience";
+import {
+  FocusBackdrop,
+  FocusPresets,
+  FocusScenePicker,
+  FocusStudioIntro,
+} from "./FocusAmbience";
 import studioStyles from "./focusStudio.module.css";
 type Modal = "timer-type" | "sound" | "background" | "stop" | null;
 
@@ -69,8 +75,16 @@ export default function FocusTimerView({
   const circleRadius = 154;
   const circumference = 2 * Math.PI * circleRadius;
   const activeBackground = getFocusBackground(timer.backgroundId);
-  const showSetup = Boolean(timer.isActive || timer.completedSession || timer.taskLabel || journey.focusSessions.length
-    || timer.plannedDurationSeconds !== 25 * 60 || timer.timerType !== 'countdown' || timer.sound !== 'none' || timer.backgroundId !== 'kaaba-night');
+  const showSetup = Boolean(
+    timer.isActive ||
+      timer.completedSession ||
+      timer.taskLabel ||
+      journey.focusSessions.length ||
+      timer.plannedDurationSeconds !== 25 * 60 ||
+      timer.timerType !== "countdown" ||
+      timer.sound !== "none" ||
+      timer.backgroundId !== "kaaba-night",
+  );
 
   useEffect(() => {
     timer.setFullscreen(true);
@@ -126,7 +140,8 @@ export default function FocusTimerView({
   };
 
   const start = async () => {
-    if (!timer.taskLabel.trim()) timer.setTaskLabel(taskDraft.trim() || 'Odak oturumu');
+    if (!timer.taskLabel.trim())
+      timer.setTaskLabel(taskDraft.trim() || "Odak oturumu");
     lastBeepSecondRef.current = null;
     timer.start();
     await requestNotifications();
@@ -223,8 +238,13 @@ export default function FocusTimerView({
       <main className="focus-stage">
         <header className="focus-topbar">
           <div className="focus-window-actions">
-            <button className="focus-back-button" onClick={minimise} aria-label="Odak ekranını küçült">
-              <AppIcon name="arrow-left" /><span>Geri</span>
+            <button
+              className="focus-back-button"
+              onClick={minimise}
+              aria-label="Odak ekranını küçült"
+            >
+              <AppIcon name="arrow-left" />
+              <span>Geri</span>
             </button>
           </div>
           <div className="focus-top-center">
@@ -322,45 +342,49 @@ export default function FocusTimerView({
                     </button>
                   </aside>
                 )}
-              {showSetup && <div className="focus-task-slot">
-                {timer.taskLabel ? (
-                  <span className="focus-task-chip">
-                    <i />
-                    <strong>{timer.taskLabel}</strong>
-                    {timer.isActive && <b aria-label="Oturum etkin" />}
-                    {!timer.isActive && (
-                      <button
-                        onClick={() => timer.setTaskLabel("")}
-                        aria-label="Görevi ayır"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </span>
-                ) : (
-                  <form
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      attachTask();
-                    }}
-                  >
-                    <span>
-                      <AppIcon name="target-arrow" />
+              {showSetup && (
+                <div className="focus-task-slot">
+                  {timer.taskLabel ? (
+                    <span className="focus-task-chip">
+                      <i />
+                      <strong>{timer.taskLabel}</strong>
+                      {timer.isActive && <b aria-label="Oturum etkin" />}
+                      {!timer.isActive && (
+                        <button
+                          onClick={() => timer.setTaskLabel("")}
+                          aria-label="Görevi ayır"
+                        >
+                          ×
+                        </button>
+                      )}
                     </span>
-                    <input
-                      value={taskDraft}
-                      onChange={(event) => setTaskDraft(event.target.value)}
-                      maxLength={120}
-                      placeholder="Şu an neye odaklanacaksın?"
-                      aria-label="Odak görevi"
-                    />
-                    <button type="submit">Ekle</button>
-                  </form>
-                )}
-              </div>}
+                  ) : (
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        attachTask();
+                      }}
+                    >
+                      <span>
+                        <AppIcon name="target-arrow" />
+                      </span>
+                      <input
+                        value={taskDraft}
+                        onChange={(event) => setTaskDraft(event.target.value)}
+                        maxLength={120}
+                        placeholder="Şu an neye odaklanacaksın?"
+                        aria-label="Odak görevi"
+                      />
+                      <button type="submit">Ekle</button>
+                    </form>
+                  )}
+                </div>
+              )}
               {timer.taskLabel && !timer.isActive && (
                 <details className="focus-intention">
-                  <summary><AppIcon name="flag" /> Oturum niyeti · isteğe bağlı</summary>
+                  <summary>
+                    <AppIcon name="flag" /> Oturum niyeti · isteğe bağlı
+                  </summary>
                   <textarea
                     aria-label="Oturum niyeti"
                     value={timer.intentionText}
@@ -373,11 +397,22 @@ export default function FocusTimerView({
                   />
                 </details>
               )}
-              {showSetup && <FocusPresets
-                minutes={timer.timerType === "countdown" ? timer.plannedDurationSeconds / 60 : null}
-                disabled={timer.isActive}
-                onSelect={(minutes) => timer.configure({ timerType: "countdown", plannedDurationSeconds: minutes * 60 })}
-              />}
+              {showSetup && (
+                <FocusPresets
+                  minutes={
+                    timer.timerType === "countdown"
+                      ? timer.plannedDurationSeconds / 60
+                      : null
+                  }
+                  disabled={timer.isActive}
+                  onSelect={(minutes) =>
+                    timer.configure({
+                      timerType: "countdown",
+                      plannedDurationSeconds: minutes * 60,
+                    })
+                  }
+                />
+              )}
               <div
                 className="focus-dial"
                 aria-label={
@@ -458,37 +493,46 @@ export default function FocusTimerView({
                 )}
               </div>
 
-              {showSetup && <nav className="focus-controls" aria-label="Zamanlayıcı ayarları">
-                <button onClick={openTimerModal} disabled={timer.isActive}>
-                  <span>
-                    <AppIcon name="hourglass" />
-                  </span>
-                  <strong>Zamanlayıcı</strong>
-                  <small>{durationLabel}</small>
-                </button>
-                <button onClick={openSoundModal}>
-                  <span>
-                    <AppIcon name="headphones" />
-                  </span>
-                  <strong>Arka Plan Sesi</strong>
-                  <small>{soundLabel}</small>
-                </button>
-                <button onClick={() => setModal("background")}>
-                  <span>
-                    <AppIcon name="video" />
-                  </span>
-                  <strong>Arka Plan</strong>
-                  <small>{activeBackground.label}</small>
-                </button>
-                <button onClick={() => void toggleFullscreen()}>
-                  <span>
-                    <AppIcon name="maximize" />
-                  </span>
-                  <strong>Tam Ekran</strong>
-                  <small>Dikkat dağıtanları gizle</small>
-                </button>
-              </nav>}
-              <FocusScenePicker compact backgroundId={timer.backgroundId} onSelect={timer.setBackgroundId} />
+              {showSetup && (
+                <nav
+                  className="focus-controls"
+                  aria-label="Zamanlayıcı ayarları"
+                >
+                  <button onClick={openTimerModal} disabled={timer.isActive}>
+                    <span>
+                      <AppIcon name="hourglass" />
+                    </span>
+                    <strong>Zamanlayıcı</strong>
+                    <small>{durationLabel}</small>
+                  </button>
+                  <button onClick={openSoundModal}>
+                    <span>
+                      <AppIcon name="headphones" />
+                    </span>
+                    <strong>Arka Plan Sesi</strong>
+                    <small>{soundLabel}</small>
+                  </button>
+                  <button onClick={() => setModal("background")}>
+                    <span>
+                      <AppIcon name="video" />
+                    </span>
+                    <strong>Arka Plan</strong>
+                    <small>{activeBackground.label}</small>
+                  </button>
+                  <button onClick={() => void toggleFullscreen()}>
+                    <span>
+                      <AppIcon name="maximize" />
+                    </span>
+                    <strong>Tam Ekran</strong>
+                    <small>Dikkat dağıtanları gizle</small>
+                  </button>
+                </nav>
+              )}
+              <FocusScenePicker
+                compact
+                backgroundId={timer.backgroundId}
+                onSelect={timer.setBackgroundId}
+              />
             </section>
             <p className="focus-privacy">
               <AppIcon name="shield-lock" /> Oturumun güvende. Sayfa değiştirsen
@@ -525,278 +569,23 @@ export default function FocusTimerView({
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {modal === "timer-type" && (
-          <FocusModal title="Zamanlayıcı Türü" onClose={() => setModal(null)}>
-            {adaptiveSuggestion && (
-              <div className="focus-modal-suggestion">
-                <AppIcon name="bulb" />
-                <span>
-                  <strong>
-                    Kişisel öneri: {adaptiveSuggestion.minutes} dakika
-                  </strong>
-                  <small>{adaptiveSuggestion.message}</small>
-                </span>
-                <button
-                  onClick={() => {
-                    setDraftTimerType("countdown");
-                    setDraftDurationSeconds(adaptiveSuggestion.minutes * 60);
-                  }}
-                >
-                  Uygula
-                </button>
-              </div>
-            )}
-            <div className="timer-type-options">
-              <button
-                className={draftTimerType === "countdown" ? "selected" : ""}
-                onClick={() => setDraftTimerType("countdown")}
-              >
-                <span>
-                  <strong>{formatTimer(draftDurationSeconds)} → 00:00</strong>
-                  <small>
-                    Seçtiğin süreden zamanın sonuna kadar geri sayım.
-                  </small>
-                </span>
-                <AppIcon
-                  name={
-                    draftTimerType === "countdown"
-                      ? "circle-check-filled"
-                      : "circle"
-                  }
-                />
-              </button>
-              {draftTimerType === "countdown" && (
-                <div className="duration-picker">
-                  <span>Tercih edilen süre</span>
-                  <div>
-                    {[25, 50].map((minutes) => (
-                      <button
-                        key={minutes}
-                        className={
-                          draftDurationSeconds === minutes * 60 ? "active" : ""
-                        }
-                        onClick={() => setDraftDurationSeconds(minutes * 60)}
-                      >
-                        {minutes} dk
-                      </button>
-                    ))}
-                    <label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="180"
-                        value={Math.max(
-                          1,
-                          Math.round(draftDurationSeconds / 60),
-                        )}
-                        onChange={(event) =>
-                          setDraftDurationSeconds(
-                            Math.min(
-                              180,
-                              Math.max(1, Number(event.target.value) || 1),
-                            ) * 60,
-                          )
-                        }
-                      />
-                      <span>dk</span>
-                    </label>
-                    {process.env.NODE_ENV === "development" && (
-                      <button
-                        className={draftDurationSeconds === 15 ? "active" : ""}
-                        onClick={() => setDraftDurationSeconds(15)}
-                      >
-                        15 sn test
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-              <button
-                className={draftTimerType === "stopwatch" ? "selected" : ""}
-                onClick={() => setDraftTimerType("stopwatch")}
-              >
-                <span>
-                  <strong>00:00 → ∞</strong>
-                  <small>00:00&apos;dan başla durdurana kadar devam et.</small>
-                </span>
-                <AppIcon
-                  name={
-                    draftTimerType === "stopwatch"
-                      ? "circle-check-filled"
-                      : "circle"
-                  }
-                />
-              </button>
-            </div>
-            <ModalActions
-              onCancel={() => setModal(null)}
-              onConfirm={() => {
-                timer.configure({
-                  timerType: draftTimerType,
-                  plannedDurationSeconds: draftDurationSeconds,
-                });
-                setModal(null);
-              }}
-            />
-          </FocusModal>
-        )}
-
-        {modal === "sound" && (
-          <FocusModal title="Arka Plan Sesi" onClose={() => setModal(null)}>
-            <label className="focus-volume">
-              <span>
-                <strong>Ses Seviyesi</strong>
-                <small>{Math.round(draftVolume * 100)}%</small>
-              </span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={draftVolume}
-                onChange={(event) => {
-                  const next = Number(event.target.value);
-                  setDraftVolume(next);
-                  audioRef.current?.setVolume(next);
-                }}
-              />
-            </label>
-            <div className="focus-sound-list">
-              {FOCUS_SOUNDS.map((item) => (
-                <button
-                  key={item.id}
-                  className={draftSound === item.id ? "selected" : ""}
-                  onClick={() => setDraftSound(item.id)}
-                >
-                  <span>
-                    <AppIcon name={item.icon} />
-                  </span>
-                  <div>
-                    <strong>{item.label}</strong>
-                    <small>{item.note}</small>
-                  </div>
-                  <AppIcon
-                    name={
-                      draftSound === item.id ? "circle-check-filled" : "circle"
-                    }
-                  />
-                </button>
-              ))}
-            </div>
-            <p className="focus-audio-note">
-              <AppIcon name="sparkles" /> Ortam sesleri cihazında Web Audio ile
-              üretilir; harici ses kaynağına veri gönderilmez.
-            </p>
-            <ModalActions
-              onCancel={() => setModal(null)}
-              onConfirm={() => void confirmSound()}
-            />
-          </FocusModal>
-        )}
-
-        {modal === "background" && (
-          <FocusModal title="Arka Plan Seç" onClose={() => setModal(null)}>
-            <FocusScenePicker backgroundId={timer.backgroundId} onSelect={(id) => {
-              timer.setBackgroundId(id);
-              setModal(null);
-            }} />
-          </FocusModal>
-        )}
-
-        {modal === "stop" && (
-          <FocusModal
-            title="Oturumu şimdi bitir?"
-            onClose={() => setModal(null)}
-            compact
-          >
-            <div className="focus-confirm-message">
-              <span>
-                <AppIcon name="clock-pause" />
-              </span>
-              <p>
-                <strong>
-                  {formatFocusDuration(elapsedSeconds)} boyunca odaktaydın.
-                </strong>{" "}
-                Pomodoro tamamlanmadı. Bu süre geçmişe kaydedilmeyecek.
-              </p>
-            </div>
-            <ModalActions
-              onCancel={() => setModal(null)}
-              cancelLabel="Devam et"
-              confirmLabel="Bitir ve sil"
-              onConfirm={() => {
-                setModal(null);
-                finalizeFocusSession(false);
-              }}
-              danger
-            />
-          </FocusModal>
-        )}
-      </AnimatePresence>
+      <FocusSettingsDialogs
+        modal={modal}
+        setModal={setModal}
+        adaptiveSuggestion={adaptiveSuggestion}
+        draftTimerType={draftTimerType}
+        setDraftTimerType={setDraftTimerType}
+        draftDurationSeconds={draftDurationSeconds}
+        setDraftDurationSeconds={setDraftDurationSeconds}
+        timer={timer}
+        draftVolume={draftVolume}
+        setDraftVolume={setDraftVolume}
+        audioRef={audioRef}
+        draftSound={draftSound}
+        setDraftSound={setDraftSound}
+        confirmSound={confirmSound}
+        elapsedSeconds={elapsedSeconds}
+      />
     </div>
-  );
-}
-
-function FocusModal({
-  title,
-  onClose,
-  compact = false,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  compact?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <motion.div
-      className="focus-modal-backdrop"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
-    >
-      <motion.section
-        className={`focus-modal ${compact ? "compact" : ""}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="focus-modal-title"
-        initial={{ opacity: 0, y: 18, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.99 }}
-      >
-        <header>
-          <h2 id="focus-modal-title">{title}</h2>
-          <button onClick={onClose} aria-label="Pencereyi kapat">
-            <AppIcon name="x" />
-          </button>
-        </header>
-        {children}
-      </motion.section>
-    </motion.div>
-  );
-}
-
-function ModalActions({
-  onCancel,
-  onConfirm,
-  cancelLabel = "İptal",
-  confirmLabel = "Onayla",
-  danger = false,
-}: {
-  onCancel: () => void;
-  onConfirm: () => void;
-  cancelLabel?: string;
-  confirmLabel?: string;
-  danger?: boolean;
-}) {
-  return (
-    <footer className="focus-modal-actions">
-      <button onClick={onCancel}>{cancelLabel}</button>
-      <button className={danger ? "danger" : "primary"} onClick={onConfirm}>
-        {confirmLabel}
-      </button>
-    </footer>
   );
 }
