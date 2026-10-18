@@ -18,3 +18,45 @@
 /* The compact header hides copy, not the icon rendered as a span. */
 .core-app .header-quick-add > .app-icon { display:inline-flex; font-size:20px; }
 .core-app .header-quick-add { min-height:44px; min-width:44px; }
+
+/* Semantic aliases keep legacy domain styles on the same readable surfaces. */
+:root {
+  --sah-emerald: #009b77;
+  --sah-emerald-light: #00c896;
+  --sah-emerald-dark: #007a5e;
+  --sah-cream: #fbf9f6;
+  --sah-cream-dark: #f5f0ea;
+  --sah-gold-light: #dbb872;
+  --sah-forest-deep: #0d2b1d;
+  --sah-forest-mid: #1a3d2a;
+  --sah-success: #22c55e;
+  --sah-warning: #f59e0b;
+  --sah-error: #ef4444;
+  --sah-info: #3b82f6;
+  --space-5: 20px;
+  --space-10: 40px;
+  --space-16: 64px;
+}
+.core-app {
+  --core-heading: var(--core-ink);
+  --ui-accent-text: var(--sah-primary);
+  color: var(--core-ink);
+}
+.core-app .profile-button {
+  color: var(--core-ink);
+  background: var(--core-surface);
+  border-color: var(--core-line);
+}
+.core-app .profile-button strong { color: var(--core-ink); }
+[data-theme="dark"] .core-app { --ui-accent-text: #8ff2d2; }
+[data-theme="dark"] .core-app :is(.eyebrow, .section-tagline a) { color:var(--ui-accent-text); }
+[data-theme="dark"] .core-app .quiet-chip {
+  color:var(--ui-accent-text);
+  background:var(--core-elevated);
+}
+.core-app .reports-view-clean { color:var(--reports-ink); --reports-muted:var(--core-muted); }
+.core-app .reports-view-clean :is(.reports-story-card small,.reports-week-heatmap small,.reports-category-card small,.reports-detail-trigger small,.reports-week-heatmap>header strong) { color:var(--ui-accent-text); }
+[data-theme="dark"] .core-app .reports-view-clean { --reports-card:var(--core-surface); --reports-soft:var(--core-elevated); --reports-track:#264438; }
+[data-theme="dark"] .core-app :is(.reports-hero,.reports-next-step,.reports-detail-trigger.is-open) { background:var(--core-surface); }
+[data-theme="dark"] .core-app .reports-story-card footer span { color:var(--core-muted); }
+[data-theme="dark"] .core-app .reports-week-days>div>span { color:var(--core-ink); }
