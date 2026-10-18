@@ -128,6 +128,15 @@
 
 /* SAH WORLD — centralized interface design tokens */
 :root {
+  /* Breakpoint sistemi:
+     --bp-xs: 480px   (küçük telefon)
+     --bp-sm: 640px   (büyük telefon)
+     --bp-md: 768px   (tablet)
+     --bp-lg: 1024px  (küçük masaüstü)
+     --bp-xl: 1280px  (masaüstü)
+     CSS custom properties media query'lerde kullanılamaz,
+     bu yüzden değerler doğrudan yazılır.
+  */
   --text-display: clamp(28px, 4vw, 48px);
   --text-h2: clamp(20px, 2.5vw, 28px);
   --text-body: 15px;
