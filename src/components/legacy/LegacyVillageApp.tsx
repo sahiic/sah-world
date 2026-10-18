@@ -16,6 +16,8 @@ import LoginScreen from '@/components/auth/LoginScreen';
 import EvimHub from '@/components/hub/EvimHub';
 import type { JournalEntry, QuranNote, HadisNote, EisenhowerTask, LessonEntry, SukurEntry } from '@/types';
 
+import SectionErrorBoundary from '@/components/core/SectionErrorBoundary';
+
 // Dynamic import 3D Village Canvas (client-only, SSR disabled)
 const VillageCanvas = dynamic(() => import('@/components/village/VillageCanvas'), {
   ssr: false,
@@ -447,6 +449,7 @@ function VillageWorld() {
       {/* ============ 3D VILLAGE CANVAS ============ */}
       {!classicMode && (
         <div className="fixed inset-0 z-[1]">
+          <SectionErrorBoundary sectionName="Köy sahnesi">
           <VillageCanvas
             vehicleType={store.vehicle.type}
             activeBuildingId={activeNearbyLocation?.id ?? null}
@@ -458,6 +461,7 @@ function VillageWorld() {
             touchInput={touchInput}
             onPlayerUpdate={handlePlayerUpdate}
           />
+          </SectionErrorBoundary>
         </div>
       )}
 

@@ -250,6 +250,12 @@ export type JournalEntryRow = {
   updated_at: string;
 };
 
+// Derive note rows from the table definitions below; do not maintain a second schema.
+export type QuranNoteRow = Database['public']['Tables']['quran_notes']['Row'];
+export type HadisNoteRow = Database['public']['Tables']['hadis_notes']['Row'];
+export type LessonEntryRow = Database['public']['Tables']['lesson_entries']['Row'];
+export type SukurEntryRow = Database['public']['Tables']['sukur_entries']['Row'];
+
 export type WeeklyInsightRow = {
   id: string;
   user_id: string;

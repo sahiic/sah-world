@@ -14,3 +14,5 @@
 [data-theme="dark"] .core-app .mosque-identity-copy{color:#effaf4}
 [data-theme="dark"] .core-app .mosque-identity-copy :is(p,.eyebrow){color:#b1c4b6}
 [data-theme="dark"] .core-app .mescidim-today-hero{color:#effaf4;background:#10261d}
+[data-theme="dark"] .skip-link{color:#0d1a14;background:#8ff2d2}
+[data-theme="dark"] .skip-link:focus{outline-color:#e2ede6}

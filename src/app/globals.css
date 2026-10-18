@@ -14,11 +14,8 @@
 @import "./data-export.css";
 @import "./profession-school.css";
 
-/* [data-theme="dark"] .mescidim-experience .page-heading h1 {
-  color: var(--ink-primary, #f8fafc);
-} */
 /* Targeted dark-mode override for Mescidim section */
-/* [data-theme="dark"] .mescidim-experience .page-heading h1,
+[data-theme="dark"] .mescidim-experience .page-heading h1,
 [data-theme="dark"] [data-section="mescidim"] .page-heading h1 {
   color: var(--ink-primary, #f8fafc);
 }
@@ -31,7 +28,7 @@
 [data-theme="dark"] .mescidim-experience .page-heading p,
 [data-theme="dark"] [data-section="mescidim"] .page-heading p {
   color: var(--ink-muted, #94a3b8);
-} */
+}
 .page-heading h1 {
   color: var(--ink-primary, #131d1a);
 }

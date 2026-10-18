@@ -8,6 +8,7 @@ import { growthInputForCategory, type GrowthInputKey } from '@/lib/growthDiagram
 import type { ActivityEvent } from '@/lib/activity'
 import type { GrowthNavigationCue } from './GrowthTree'
 import { BotanicalScene } from './growth/BotanicalScene'
+import SectionErrorBoundary from './SectionErrorBoundary'
 import styles from './growth/GrowthScene.module.css'
 
 type Pulse = { source: GrowthInputKey; amount: number; key: string }
@@ -129,7 +130,9 @@ export default function GrowthScene({ data, events = [], loading = false, now, o
       <header className={styles.period}><span><i />SON 7 GÜN · CANLI ETKİNLİK</span><button type="button" onClick={() => onNavigate('reports')}>Etkinlik akışını aç <AppIcon name="arrow-right" /></button></header>
       <div className={styles.orbit}>
         <div className={styles.art}>
-          <BotanicalScene uid={uid} stage={data.stage} fedAreas={data.fedAreas} vitality={vitality} playing={playing} pulse={pulse !== null} label={`${level.name}, seviye ${data.level}/10, son 7 günde ${data.weeklyActions} hareket, ${data.fedAreas} alan besleniyor`} time={time} streakDays={data.activeDays} season={season} />
+          <SectionErrorBoundary sectionName="Gelişim haritası">
+            <BotanicalScene uid={uid} stage={data.stage} fedAreas={data.fedAreas} vitality={vitality} playing={playing} pulse={pulse !== null} label={`${level.name}, seviye ${data.level}/10, son 7 günde ${data.weeklyActions} hareket, ${data.fedAreas} alan besleniyor`} time={time} streakDays={data.activeDays} season={season} />
+          </SectionErrorBoundary>
           <span className={styles.output}><AppIcon name="arrow-up" /><span><strong>{pulse ? `+${pulse.amount} XH` : 'XH'}</strong><small>Gelişim çıktısı</small></span></span>
         </div>
         <svg className={styles.connections} viewBox="0 0 880 624" preserveAspectRatio="none" aria-hidden="true">
