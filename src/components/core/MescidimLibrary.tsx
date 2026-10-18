@@ -8,6 +8,7 @@ import { ASMA_NAMES, ASMA_SOURCE, DUA_LIBRARY, getDailyAsma, type AsmaName, type
 import { supabase } from '@/lib/supabase'
 import { isValidUUID, useJourneyStore } from '@/store/useJourneyStore'
 import { useAuthStore } from '@/store/useAuthStore'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 type LibraryTab = 'asma' | 'dua'
 type LogResult = { journal_entry_id: string; journal_content: string; xp_awarded: number; daily_xp_count: number }
@@ -21,7 +22,7 @@ export default function MescidimLibrary({ initialTab = 'asma', initialOccasion, 
   const [selected, setSelected] = useState<AsmaName | null>(null)
   const dailyName = getDailyAsma()
   const selectTab = (next: LibraryTab) => { setTab(next); onTabChange?.(next) }
-  const drawer = selected && <AsmaDrawer name={selected} reflection={state.reflections[selected.order] || ''} favorite={state.favoriteAsma.includes(selected.order)} logged={state.loggedToday.includes(`asma:${selected.order}`)} onClose={() => setSelected(null)} onFavorite={() => void state.toggleAsma(selected.order)} onSave={(value) => void state.saveReflection(selected.order, value)} onLog={(value) => void state.logToJournal('asma', String(selected.order), value, `${selected.transliteration} tefekkürü`)} />
+  const drawer = selected && <AsmaDrawer notice={state.notice} name={selected} reflection={state.reflections[selected.order] || ''} favorite={state.favoriteAsma.includes(selected.order)} logged={state.loggedToday.includes(`asma:${selected.order}`)} onClose={() => setSelected(null)} onFavorite={() => void state.toggleAsma(selected.order)} onSave={(value) => void state.saveReflection(selected.order, value)} onLog={(value) => void state.logToJournal('asma', String(selected.order), value, `${selected.transliteration} tefekkürü`)} />
 
   if (stacked) return <div className="spiritual-library spiritual-library-stacked">
     <section id="mescidim-asma" className="mescidim-flow-section">
@@ -105,8 +106,14 @@ function useSpiritualState() {
 
   const saveReflection = async (order: number, value: string) => {
     const next = { ...reflections, [order]: value }
-    setReflections(next); saveLocal({ reflections: next }); setNotice('Tefekkür notun kaydedildi.')
-    if (user && isValidUUID(user.id)) await supabase.from('user_asma_reflections').upsert({ user_id: user.id, asma_order_number: order, is_favorite: favoriteAsma.includes(order), reflection_note: value }, { onConflict: 'user_id,asma_order_number' })
+    setReflections(next); saveLocal({ reflections: next }); setNotice('Tefekkür notun bu cihaza kaydedildi.')
+    if (user && isValidUUID(user.id)) {
+      try {
+        const { error } = await supabase.from('user_asma_reflections').upsert({ user_id: user.id, asma_order_number: order, is_favorite: favoriteAsma.includes(order), reflection_note: value }, { onConflict: 'user_id,asma_order_number' })
+        if (error) throw error
+        setNotice('Tefekkür notun hesabına kaydedildi.')
+      } catch { setNotice('Notun bu cihazda korundu. Hesabına eşitlenemedi; bağlantını kontrol edip yeniden kaydet.') }
+    }
   }
 
   const toggleDua = async (id: string) => {
@@ -171,9 +178,10 @@ function AsmaLibrary({ dailyName, state, onSelect, compact = false }: { dailyNam
   </section>
 }
 
-function AsmaDrawer({ name, reflection, favorite, logged, onClose, onFavorite, onSave, onLog }: { name: AsmaName; reflection: string; favorite: boolean; logged: boolean; onClose: () => void; onFavorite: () => void; onSave: (value: string) => void; onLog: (value: string) => void }) {
+function AsmaDrawer({ name, reflection, favorite, logged, onClose, onFavorite, onSave, onLog, notice }: { notice: string; name: AsmaName; reflection: string; favorite: boolean; logged: boolean; onClose: () => void; onFavorite: () => void; onSave: (value: string) => void; onLog: (value: string) => void }) {
   const [value, setValue] = useState(reflection)
-  return createPortal(<div className="spiritual-drawer-backdrop" onMouseDown={onClose}><aside className="spiritual-drawer" role="dialog" aria-modal="true" aria-label={name.transliteration} onMouseDown={(event) => event.stopPropagation()}><header><span>{name.order}/99</span><div><button aria-label="Favoriye ekle" className={favorite ? 'active' : ''} onClick={onFavorite}><AppIcon name="heart" /></button><button aria-label="Kapat" onClick={onClose}><AppIcon name="x" /></button></div></header><div className="asma-detail-mark" lang="ar" dir="rtl">{name.arabic}</div><span className="eyebrow">ESMÂÜ’L HÜSNÂ</span><h2>{name.transliteration}</h2><h3>{name.meaning}</h3><p>{name.reflection}</p><div className="source-assurance"><AppIcon name="shield-check"/><span><strong>Kaynak yaklaşımı</strong>{ASMA_SOURCE.note}</span></div><label><span>Kendi tefekkür notun</span><textarea rows={5} value={value} onChange={(event) => setValue(event.target.value)} placeholder="Bu ismin bugün sende uyandırdığı düşünce…"/></label><div className="spiritual-drawer-actions"><button onClick={() => onSave(value)} className="ghost-button">Notu kaydet</button><button onClick={() => onLog(value)} disabled={logged} className="primary-button"><AppIcon name="notebook" /> {logged ? 'Bugün günlüğünde' : 'Günlüğe ekle'}</button></div></aside></div>, document.body)
+  const dialogRef = useModalFocus<HTMLElement>(true, onClose)
+  return createPortal(<div className="spiritual-drawer-backdrop" onMouseDown={onClose}><aside ref={dialogRef} tabIndex={-1} className="spiritual-drawer" role="dialog" aria-modal="true" aria-label={name.transliteration} onMouseDown={(event) => event.stopPropagation()}><header><span>{name.order}/99</span><div><button aria-label="Favoriye ekle" className={favorite ? 'active' : ''} onClick={onFavorite}><AppIcon name="heart" /></button><button aria-label="Kapat" onClick={onClose}><AppIcon name="x" /></button></div></header><div className="asma-detail-mark" lang="ar" dir="rtl">{name.arabic}</div><span className="eyebrow">ESMÂÜ’L HÜSNÂ</span><h2>{name.transliteration}</h2><h3>{name.meaning}</h3><p>{name.reflection}</p><div className="source-assurance"><AppIcon name="shield-check"/><span><strong>Kaynak yaklaşımı</strong>{ASMA_SOURCE.note}</span></div><label><span>Kendi tefekkür notun</span><textarea rows={5} value={value} onChange={(event) => setValue(event.target.value)} placeholder="Bu ismin bugün sende uyandırdığı düşünce…"/></label>{notice && <p role="status">{notice}</p>}<div className="spiritual-drawer-actions"><button onClick={() => onSave(value)} className="ghost-button">Notu kaydet</button><button onClick={() => onLog(value)} disabled={logged} className="primary-button"><AppIcon name="notebook" /> {logged ? 'Bugün günlüğünde' : 'Günlüğe ekle'}</button></div></aside></div>, document.body)
 }
 
 function DuaLibrary({ initialOccasion, state, compact = false }: { initialOccasion?: string; state: ReturnType<typeof useSpiritualState>; compact?: boolean }) {
