@@ -12,6 +12,8 @@ import { getLevelForXP } from '@/lib/constants';
 import { openAppView } from '@/lib/appLocation';
 import { supabase } from '@/lib/supabase';
 import { isValidUUID } from '@/store/useJourneyStore';
+import SectionErrorBoundary from './SectionErrorBoundary';
+
 const GrowthTree = dynamic(() => import('./GrowthTree'), { loading: () => <p role="status">Gelişim sahnen yükleniyor…</p> });
 
 export default function DailyHomeView({ onNavigate }: { onNavigate: (view: string) => void }) {
@@ -75,7 +77,7 @@ export default function DailyHomeView({ onNavigate }: { onNavigate: (view: strin
       <div className="daily-level"><strong>{level.name}</strong><span>{progress}%{nextLevel ? ` · Sıradaki ${nextLevel.name}` : ' · Yolculuğun devam ediyor'}</span></div>
       <progress max={100} value={progress} aria-label={`${level.name} seviye ilerlemesi`} />
       <button className="text-button" aria-expanded={expanded} aria-controls="daily-growth-detail" onClick={() => setExpanded(value => !value)}>{expanded ? 'Detayları gizle' : 'Detayları Gör'} <AppIcon name={expanded ? 'chevron-up' : 'chevron-down'} /></button>
-      {expanded && <div id="daily-growth-detail"><GrowthTree xp={journey.xp} trigger={journey.xpOrbTrigger} lastAmount={journey.lastXPAmount} events={events} loading={activity.loading} onNavigate={onNavigate} /><button className="ghost-button" onClick={() => onNavigate('growth')}>Gelişim detaylarım <AppIcon name="arrow-right" /></button></div>}
+      {expanded && <div id="daily-growth-detail"><SectionErrorBoundary sectionName="Gelişim sahnesi"><GrowthTree xp={journey.xp} trigger={journey.xpOrbTrigger} lastAmount={journey.lastXPAmount} events={events} loading={activity.loading} onNavigate={onNavigate} /></SectionErrorBoundary><button className="ghost-button" onClick={() => onNavigate('growth')}>Gelişim detaylarım <AppIcon name="arrow-right" /></button></div>}
     </section>
   </div>;
 }
