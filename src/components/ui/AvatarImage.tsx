@@ -1,6 +1,7 @@
 import Image from "next/image";
+import { memo } from "react";
 
-export default function AvatarImage({
+export default memo(function AvatarImage({
   src,
   alt = "",
   className,
@@ -29,4 +30,4 @@ export default function AvatarImage({
       unoptimized={unoptimized}
     />
   );
-}
+});

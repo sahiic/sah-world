@@ -1,9 +1,10 @@
+import { memo } from "react";
 import styles from "./SectionSkeleton.module.css";
 
 type Shape = "cards" | "editor" | "timer" | "scene" | "report";
 
 /** Stable, route-shaped placeholders. No dependency on auth or remote data. */
-export default function SectionSkeleton({ shape = "cards" }: { shape?: Shape }) {
+export default memo(function SectionSkeleton({ shape = "cards" }: { shape?: Shape }) {
   return (
     <div className={styles.root} role="status" aria-busy="true" aria-label="İçerik hazırlanıyor">
       <div aria-hidden="true">
@@ -19,4 +20,4 @@ export default function SectionSkeleton({ shape = "cards" }: { shape?: Shape }) 
       <span className={styles.label}>İçerik hazırlanıyor…</span>
     </div>
   );
-}
+});

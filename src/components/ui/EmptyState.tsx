@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { AppIcon } from "./AppIcon";
 
 export interface EmptyStateProps {
@@ -10,7 +11,7 @@ export interface EmptyStateProps {
   action?: { label: string; onClick: () => void };
 }
 
-export default function EmptyState({
+export default memo(function EmptyState({
   icon,
   title,
   description,
@@ -38,4 +39,4 @@ export default function EmptyState({
       )}
     </div>
   );
-}
+});
