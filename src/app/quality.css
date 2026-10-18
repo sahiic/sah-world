@@ -109,6 +109,30 @@
 [data-theme="dark"] .core-app .mescidim-experience :is(.asma-card,.dua-library-card,.spiritual-toolbar label,.spiritual-toolbar>button) { background:var(--core-surface); color:var(--core-ink); }
 [data-theme="dark"] .core-app .dua-library-card :is(p,aside) { color:var(--core-muted); background:transparent; }
 [data-theme="dark"] .core-app .mescidim-experience :is(.spiritual-panel-header>a,.dua-library-card footer>a) { color:var(--ui-accent-text); }
+
+/* Quran: clear reading hierarchy, one action row per teacher. */
+.core-app .quran-panel-heading p,
+.core-app .quran-empty-state p,
+.core-app .hoca-card>p,
+.core-app .qc-caption,
+.core-app .qc-mode-card p { font-size:14px; line-height:1.65; }
+.core-app .hoca-card { align-content:start; grid-template-columns:72px minmax(0,1fr); gap:16px; min-height:0; padding:24px; background:var(--core-elevated); }
+.core-app .hoca-avatar { width:72px; height:88px; }
+.core-app .hoca-card>div:nth-child(2)>small { font-size:12px; color:var(--ui-accent-text); }
+.core-app .hoca-card h3 { font-size:20px; line-height:1.4; }
+.core-app .hoca-card>p { grid-column:1/-1; color:var(--core-muted); }
+.core-app .hoca-tags { grid-column:1/-1; margin:0; gap:8px; }
+.core-app .hoca-tags span { font-size:12px; padding:6px 10px; }
+.core-app .hoca-avatar em { font-size:10px; }
+.core-app .hoca-actions { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:12px; padding-top:16px; border-top:1px solid var(--core-line); }
+.core-app .hoca-actions button { min-height:44px; flex:1 1 auto; padding:10px 12px; border:1px solid var(--core-line); border-radius:12px; font:600 14px var(--font-inter); display:flex; gap:8px; align-items:center; justify-content:center; color:var(--ui-accent-text); background:var(--core-surface); cursor:pointer; }
+.core-app .hoca-actions button:disabled { color:var(--core-muted); cursor:default; }
+.core-app .quran-panel .segment button { min-height:44px; min-width:44px; font-size:14px; }
+.core-app .qc-ready .qc-surah-cell { min-height:80px; }
+.core-app .qc-ready .qc-surah-cell strong { font-size:14px; }
+.core-app .qc-ready .qc-surah-cell small { font-size:12px; }
+.core-app .qc-ready input[type="range"] { min-height:44px; }
+.core-app .qc-ready label:has(input[type="checkbox"]) { min-height:44px; align-content:center; }
 .core-app .account-settings { overscroll-behavior:contain; }
 @media(max-width:640px) {
   .core-app .settings-backdrop { padding:12px; }
