@@ -87,6 +87,28 @@
 .core-app .profile-section h3 { font-size:18px; }
 .core-app .streak-numbers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; width:100%; }
 .core-app .streak-stat small { font-size:12px; }
+
+/* Prayer and source libraries: comfortable reading, full-size controls. */
+.core-app .mescidim-experience p { font-size:14px; line-height:1.65; }
+.core-app .mescidim-experience :is(.eyebrow, small) { font-size:12px; }
+.core-app .mescidim-scope-tabs { max-width:640px; }
+.core-app .mescidim-scope-tabs button { min-height:48px; font-size:13px; line-height:1.5; padding:12px; }
+.core-app :is(.prayer-header-actions,.prayer-view-toggle,.dua-filter-row) button,
+.core-app .spiritual-toolbar>button { min-height:44px; min-width:44px; font-size:13px; }
+.core-app .spiritual-toolbar input { min-height:44px; font-size:16px; }
+.core-app .asma-card-favorite,
+.core-app .dua-library-card>header>button { width:44px; height:44px; }
+.core-app .asma-card-main { padding-top:24px; }
+.core-app .asma-card-main h3 { font-size:16px; margin-block:8px; }
+.core-app .asma-card-main em { font-size:12px; margin-top:12px; }
+.core-app .dua-library-card>aside { font-size:14px; line-height:1.6; }
+.core-app .dua-library-card>header :is(span,em) { font-size:12px; }
+.core-app .dua-library-card>footer { flex-wrap:wrap; }
+.core-app .dua-library-card>footer :is(a,button),
+.core-app .spiritual-panel-header>a { display:inline-flex; align-items:center; min-height:44px; font-size:13px; }
+[data-theme="dark"] .core-app .mescidim-experience :is(.asma-card,.dua-library-card,.spiritual-toolbar label,.spiritual-toolbar>button) { background:var(--core-surface); color:var(--core-ink); }
+[data-theme="dark"] .core-app .dua-library-card :is(p,aside) { color:var(--core-muted); background:transparent; }
+[data-theme="dark"] .core-app .mescidim-experience :is(.spiritual-panel-header>a,.dua-library-card footer>a) { color:var(--ui-accent-text); }
 .core-app .account-settings { overscroll-behavior:contain; }
 @media(max-width:640px) {
   .core-app .settings-backdrop { padding:12px; }
