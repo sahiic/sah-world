@@ -8,7 +8,7 @@
   min-width: 0;
 }
 
-:is([data-theme="dark"],[data-theme="sah"][data-mode="dark"],[data-theme="sah"].dark) :is(.ws-card,.dc-card,.mt-card,.cp-card,.ac-card) {
+[data-theme="dark"] :is(.ws-card,.dc-card,.mt-card,.cp-card,.ac-card) {
   --card-bg: #141b2f;
   --card-border: rgba(255,255,255,.08);
   --text-primary: #eef2ff;

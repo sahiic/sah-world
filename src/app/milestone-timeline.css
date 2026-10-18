@@ -150,8 +150,7 @@
   --mt-accent-bg: rgba(0, 155, 119, 0.08);
 }
 
-[data-theme="sah"][data-mode="dark"] .mt-card,
-[data-theme="sah"].dark .mt-card {
+[data-theme="dark"] .mt-card {
   --mt-accent: #34d399;
   --mt-accent-bg: rgba(52, 211, 153, 0.12);
   --dot-bg: rgba(255, 255, 255, 0.06);

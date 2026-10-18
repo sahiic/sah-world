@@ -2470,5 +2470,5 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 .sync-toast-close{flex:0 0 28px;width:28px;height:28px;border:none;background:transparent;color:inherit;opacity:.5;cursor:pointer;display:grid;place-items:center;border-radius:6px;font-size:15px;padding:0}.sync-toast-close:hover{opacity:1;background:rgba(255,255,255,.1)}
 [data-theme="light"] .sync-toast,[data-theme="sah"] .sync-toast{--sync-toast-bg:#fff;--sync-toast-fg:#1a1a1a;box-shadow:0 8px 32px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.06)}
 [data-theme="light"] .sync-toast-close:hover,[data-theme="sah"] .sync-toast-close:hover{background:rgba(0,0,0,.06)}
-@media(prefers-color-scheme:light){:root:not([data-theme="dark"]):not([data-theme="sah"][data-mode="dark"]) .sync-toast{--sync-toast-bg:#fff;--sync-toast-fg:#1a1a1a;box-shadow:0 8px 32px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.06)}:root:not([data-theme="dark"]):not([data-theme="sah"][data-mode="dark"]) .sync-toast-close:hover{background:rgba(0,0,0,.06)}}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .sync-toast{--sync-toast-bg:#fff;--sync-toast-fg:#1a1a1a;box-shadow:0 8px 32px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.06)}:root:not([data-theme="dark"]) .sync-toast-close:hover{background:rgba(0,0,0,.06)}}
 

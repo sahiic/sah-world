@@ -216,8 +216,7 @@
   --bar-current: #009b77;
 }
 
-[data-theme="sah"][data-mode="dark"] .cp-card,
-[data-theme="sah"].dark .cp-card {
+[data-theme="dark"] .cp-card {
   --bar-current: #34d399;
   --bar-last: rgba(255, 255, 255, 0.08);
 }
