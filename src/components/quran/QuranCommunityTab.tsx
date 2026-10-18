@@ -1,11 +1,15 @@
 "use client";
 
 import AppointmentsView from "./AppointmentsView";
-import HocaManagement from "./HocaManagement";
-import PeerMatching from "./PeerMatching";
+import SectionSkeleton from "@/components/ui/SectionSkeleton";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import TabSkeleton from "./TabSkeleton";
-import TeacherDiscovery from "./TeacherDiscovery";
 import type { QuranController } from "./useQuranCompanion";
+
+const TeacherDiscovery = dynamic(() => import("./TeacherDiscovery"), { loading: () => <SectionSkeleton /> });
+const PeerMatching = dynamic(() => import("./PeerMatching"), { loading: () => <SectionSkeleton /> });
+const HocaManagement = dynamic(() => import("./HocaManagement"), { loading: () => <SectionSkeleton /> });
 
 interface QuranCommunityTabProps {
   controller: QuranController;
@@ -38,6 +42,7 @@ export default function QuranCommunityTab({
     tab,
     ownedHoca,
   } = controller;
+  const [managementLoaded, setManagementLoaded] = useState(tab === "manage");
   return (
     <>
       {" "}
@@ -118,15 +123,17 @@ export default function QuranCommunityTab({
             )}
           </section>
           {(isHoca || isAdmin) && (
-            <details className="qc-module-details" open={tab === "manage"}>
+            <details className="qc-module-details" open={tab === "manage"} onToggle={event => {
+              if (event.currentTarget.open) setManagementLoaded(true);
+            }}>
               <summary>Hoca yönetimi</summary>
-              <HocaManagement
+              {(managementLoaded || tab === "manage") && <HocaManagement
                 teachers={teachers}
                 ownedHoca={ownedHoca}
                 appointments={appointments}
                 isAdmin={isAdmin}
                 onReload={load}
-              />
+              />}
             </details>
           )}
         </>
