@@ -47,62 +47,14 @@ export const supabase = createBrowserClient()
 // Database tip tanımları (Supabase codegen yerine elle — basit kalması için)
 export type Profile = ProfileRow
 
-export type JournalEntryRow = {
-  id: string
-  user_id: string
-  date: string
-  mood: number
-  energy: number
-  stress: number
-  sleep: number | null
-  content: string
-  tags: string[]
-  created_at: string
-}
-
-export type QuranNoteRow = {
-  id: string
-  user_id: string
-  date: string
-  sure: string
-  ayet: string
-  tefsir: string
-  ders: string
-  created_at: string
-}
-
-export type HadisNoteRow = {
-  id: string
-  user_id: string
-  date: string
-  metin: string
-  kaynak: string
-  konu: string
-  uygulama: string
-  created_at: string
-}
-
-export type LessonEntryRow = {
-  id: string
-  user_id: string
-  date: string
-  title: string
-  wrong: string
-  learned: string
-  severity: number
-  created_at: string
-}
-
-export type SukurEntryRow = {
-  id: string
-  user_id: string
-  date: string
-  text: string
-  nimet1: string
-  nimet2: string
-  nimet3: string
-  created_at: string
-}
+// Preserve existing import paths while keeping the database schema authoritative.
+export type {
+  JournalEntryRow,
+  QuranNoteRow,
+  HadisNoteRow,
+  LessonEntryRow,
+  SukurEntryRow,
+} from '@/types/database'
 
 export type EisenhowerTaskRow = {
   id: string
