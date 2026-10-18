@@ -25,7 +25,7 @@
   --focus-danger: #d94040;
   position: relative;
   min-height: 100svh;
-  overflow-x: hidden;
+  overflow-x: clip;
   color: var(--focus-text);
   background:
     radial-gradient(circle at 50% -10%, rgba(22, 199, 154, 0.12), transparent 38%),
@@ -65,7 +65,8 @@
 }
 
 .topbar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 10;
   min-height: 72px;
   padding: 12px 16px;
@@ -914,6 +915,8 @@
 @media(max-width:700px) {
  .focusPage .focusLayout { padding:10px 16px 28px; }
  .focusPage .topbar { padding:12px; gap:6px; min-height:72px; }
+ .focusPage .backLink { width:auto; min-width:70px; min-height:44px; padding:0 10px; gap:6px; font-size:13px; }
+ .focusPage .backLink span { display:inline; }
  .focusPage .topActions { gap:4px; }
  .focusPage .topActions button { width:44px; min-height:44px; }
  .focusPage :global(.focus-view-nav button) { padding:0 10px; min-height:44px; font-size:11px; }
@@ -936,6 +939,8 @@
 }
 @media(max-width:360px) {
  .focusPage .topbar { padding-inline:8px; gap:6px; }
+ .focusPage .backLink { min-width:44px; width:44px; padding:0; }
+ .focusPage .backLink span { display:none; }
  .focusPage :global(.focus-view-nav button) { padding:0 6px; font-size:10px; }
  .focusPage .topActions button { width:44px; }
  .focusPage :global(.focus-main-btn) { min-width:155px; padding:0 18px !important; }
