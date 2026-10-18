@@ -50,7 +50,7 @@ export default function WeeklySummarySection({
     <section className="reports-weekly" aria-labelledby="reports-weekly-title">
       <header className="reports-section-heading">
         <div>
-          <span className="eyebrow">KATMAN 02 · BU HAFTA</span>
+          <span className="eyebrow">BU HAFTA</span>
           <h2 id="reports-weekly-title">Yedi günün sade resmi.</h2>
         </div>
         <span><AppIcon name="calendar-week" /> Son 7 gün</span>
@@ -83,11 +83,11 @@ export default function WeeklySummarySection({
             </div>
             <strong>{weekDays.reduce((sum, day) => sum + day.count, 0)} kayıt</strong>
           </header>
-          <div className="reports-week-days" role="img" aria-label="Son yedi günün aktivite yoğunluğu">
+          <div className="reports-week-days" role="list" aria-label="Son yedi günün kayıtları">
             {weekDays.map(({ date, count }) => {
               const intensity = count ? Math.max(0.2, count / maxDay) : 0;
               return (
-                <div key={dayKey(date)} className={dayKey(date) === dayKey(now) ? "is-today" : ""}>
+                <div role="listitem" aria-label={`${date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" })}: ${count} kayıt`} key={dayKey(date)} className={dayKey(date) === dayKey(now) ? "is-today" : ""}>
                   <span style={{ opacity: count ? 0.35 + intensity * 0.65 : 1 }} className={count ? "has-activity" : ""}>
                     <b>{count}</b>
                   </span>
@@ -101,7 +101,7 @@ export default function WeeklySummarySection({
 
         <article className="reports-category-card">
           <header>
-            <small>KATEGORİ DENGESİ</small>
+            <small>KATEGORİ DENGESİ · TÜM ZAMANLAR</small>
             <h3>Neye alan açtın?</h3>
           </header>
           <div className="reports-mini-donut" style={{ background: total ? `conic-gradient(${stops})` : "var(--reports-track)" }}>

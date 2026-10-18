@@ -60,3 +60,18 @@
 [data-theme="dark"] .core-app :is(.reports-hero,.reports-next-step,.reports-detail-trigger.is-open) { background:var(--core-surface); }
 [data-theme="dark"] .core-app .reports-story-card footer span { color:var(--core-muted); }
 [data-theme="dark"] .core-app .reports-week-days>div>span { color:var(--core-ink); }
+
+/* Reports: readable copy and a compact seven-day overview. */
+.core-app .reports-view-clean :is(p,li) { font-size:14px; line-height:1.6; }
+.core-app .reports-view-clean :is(.reports-story-card li,.reports-next-step p) { color:var(--reports-muted); }
+.core-app .reports-view-clean :is(.reports-next-step small,.reports-story-card small,.reports-week-heatmap small,.reports-category-card small,.reports-detail-trigger small) { font-size:12px; letter-spacing:.06em; }
+.core-app .reports-next-step p { white-space:normal; }
+.core-app .reports-next-step button { min-height:44px; font-size:14px; }
+.core-app .reports-week-days :is(strong,small),
+.core-app .reports-category-legend :is(b,small),
+.core-app .reports-story-card footer span { font-size:12px; letter-spacing:0; }
+.core-app .reports-category-legend b { white-space:normal; }
+.core-app .reports-week-days>div>span { color:var(--reports-ink); }
+.core-app .reports-weekly-grid { gap:24px; }
+.core-app .reports-detail-trigger>b { font-size:13px; }
+.core-app .reports-view-clean .segment button { min-height:44px; min-width:44px; }
