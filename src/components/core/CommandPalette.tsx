@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { buildSearchIndex } from "@/lib/activity";
 import { useJourneyStore } from "@/store/useJourneyStore";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 const destinations = [
   ["dashboard", "Âlem", "home"],
@@ -30,6 +31,7 @@ export default function CommandPalette({
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useModalFocus<HTMLElement>(open, onClose);
   const index = useMemo(() => buildSearchIndex(store), [store]);
   const normalized = query.trim().toLocaleLowerCase("tr-TR");
   const records = normalized
@@ -49,13 +51,8 @@ export default function CommandPalette({
       setActiveIndex(0);
       inputRef.current?.focus();
     }, 60);
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", close);
     return () => {
       window.clearTimeout(timer);
-      document.removeEventListener("keydown", close);
     };
   }, [open, onClose]);
 
@@ -98,6 +95,8 @@ export default function CommandPalette({
           }
         >
           <motion.section
+            ref={dialogRef}
+            tabIndex={-1}
             className="command-dialog"
             role="dialog"
             aria-modal="true"
@@ -123,7 +122,7 @@ export default function CommandPalette({
                   resultCount ? `command-result-${activeIndex}` : undefined
                 }
               />
-              <kbd>ESC</kbd>
+              <button type="button" className="command-close" onClick={onClose} aria-label="Aramayı kapat"><AppIcon name="x" /></button>
             </div>
             <div className="command-results">
               {visibleSections.length > 0 && (

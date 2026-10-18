@@ -75,3 +75,11 @@
 .core-app .reports-weekly-grid { gap:24px; }
 .core-app .reports-detail-trigger>b { font-size:13px; }
 .core-app .reports-view-clean .segment button { min-height:44px; min-width:44px; }
+
+.core-app .command-close { flex:0 0 44px; width:44px; height:44px; display:grid; place-items:center; border:1px solid var(--core-line); border-radius:12px; background:var(--core-elevated); color:var(--core-ink); cursor:pointer; }
+.core-app .settings-tabs button { min-height:44px; }
+.core-app .account-settings { overscroll-behavior:contain; }
+@media(max-width:640px) {
+  .core-app .settings-backdrop { padding:12px; }
+  .core-app .account-settings { max-height:calc(100dvh - 24px); width:100%; padding-bottom:max(24px, env(safe-area-inset-bottom)); }
+}
