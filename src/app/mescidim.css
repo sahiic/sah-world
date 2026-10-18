@@ -1,0 +1,3321 @@
+/* [data-theme="dark"] .mescidim-experience .page-heading h1 {
+  color: var(--ink-primary, #f8fafc);
+} */
+
+/* [data-theme="dark"] .mescidim-experience .page-heading h1,
+[data-theme="dark"] [data-section="mescidim"] .page-heading h1 {
+  color: var(--ink-primary, #f8fafc);
+}
+
+[data-theme="dark"] .mescidim-experience .page-heading .eyebrow,
+[data-theme="dark"] [data-section="mescidim"] .page-heading .eyebrow {
+  color: var(--brand-soft, #818cf8);
+}
+
+[data-theme="dark"] .mescidim-experience .page-heading p,
+[data-theme="dark"] [data-section="mescidim"] .page-heading p {
+  color: var(--ink-muted, #94a3b8);
+} */
+
+.tespih-card,.reflection-card {
+  padding: 32px;
+  min-height: 440px;
+}
+
+.tespih-card {
+  text-align: center;
+}
+
+.tespih-ring {
+  width: 220px;
+  height: 220px;
+  margin: 24px auto;
+  border-radius: 50%;
+  padding: 12px;
+  background: conic-gradient(var(--core-brand) 0 72%,#ebeef8 72%);
+  box-shadow: 0 16px 48px rgba(79,70,229,.13);
+}
+
+.tespih-ring button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: var(--core-ink);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: inset 0 0 0 1px var(--core-line);
+}
+
+.tespih-ring strong {
+  font-size: 62px;
+  letter-spacing: -.06em;
+}
+
+.tespih-ring span {
+  color: var(--core-muted);
+}
+
+.tespih-card p {
+  color: var(--core-muted);
+  font-size: 12px;
+}
+
+.reflection-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(145deg,#26234d,#40326d);
+  color: white;
+}
+
+.reflection-card .eyebrow {
+  color: #c4b5fd;
+}
+
+.reflection-card h2 {
+  font-size: 30px;
+  margin: 12px 0 24px;
+}
+
+.reflection-card blockquote {
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0 0 16px;
+  color: #ede9fe;
+}
+
+.reflection-card>p {
+  font-size: 10px;
+  color: #c4b5d8;
+}
+
+@media (max-width:520px) {
+
+  .tespih-ring {
+    width: 190px;
+    height: 190px;
+  }
+}
+
+/* Mescidim prayer times — calm editorial hierarchy with accessible live status. */
+
+.mescid-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.prayer-location-setup {
+  min-height: 500px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(300px,.82fr) minmax(420px,1.18fr);
+  overflow: hidden;
+}
+
+.prayer-location-art {
+  position: relative;
+  min-height: 500px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: radial-gradient(circle at 50% 35%,rgba(167,243,208,.3),transparent 30%),linear-gradient(155deg,#13332f 0%,#185147 55%,#282860 100%);
+  overflow: hidden;
+}
+
+.prayer-location-art::before {
+  content: "";
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -25%;
+  height: 55%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg,#1d6b59,#11362f);
+  box-shadow: 0 -24px 70px rgba(167,243,208,.1);
+}
+
+.prayer-location-art>span {
+  position: relative;
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  border-radius: 36px;
+  display: grid;
+  place-items: center;
+  color: #d1fae5;
+  background: rgba(255,255,255,.09);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12),0 24px 70px rgba(0,0,0,.22);
+  backdrop-filter: blur(14px);
+  font-size: 52px;
+}
+
+.prayer-location-art>i {
+  position: absolute;
+  border: 1px solid rgba(209,250,229,.13);
+  border-radius: 50%;
+  animation: ringTurn 24s linear infinite;
+}
+
+.prayer-location-art>i:nth-of-type(1) {
+  width: 220px;
+  height: 220px;
+}
+
+.prayer-location-art>i:nth-of-type(2) {
+  width: 330px;
+  height: 330px;
+  animation-direction: reverse;
+}
+
+.prayer-location-art>i:nth-of-type(3) {
+  width: 460px;
+  height: 460px;
+}
+
+.prayer-location-content {
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.prayer-location-content h2 {
+  max-width: 580px;
+  margin: 10px 0 16px;
+  font-size: clamp(28px,3vw,42px);
+  line-height: 1.08;
+  letter-spacing: -.05em;
+}
+
+.prayer-location-content>p {
+  max-width: 570px;
+  margin: 0 0 28px;
+  color: var(--core-muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.prayer-location-primary {
+  width: max-content;
+  min-height: 52px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+  background: linear-gradient(135deg,#059669,#4f46e5);
+  box-shadow: 0 12px 28px rgba(5,150,105,.2);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.prayer-location-primary:disabled,.prayer-location-content form button:disabled {
+  opacity: .55;
+}
+
+.location-divider {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #929caf;
+  font-size: 9px;
+}
+
+.location-divider::before,.location-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--core-line);
+}
+
+.prayer-location-content form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.prayer-location-content form label {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #929caf;
+  background: #f4f6f9;
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.08);
+}
+
+.prayer-location-content form label:focus-within {
+  color: #4f46e5;
+  box-shadow: inset 0 0 0 2px #6366f1,0 0 0 4px rgba(99,102,241,.07);
+}
+
+.prayer-location-content input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--core-ink);
+  font-size: 11px;
+}
+
+.prayer-location-content form>button {
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: #263147;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.prayer-setup-error {
+  margin: 14px 0 0!important;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9f1239!important;
+  background: #fff1f2;
+  font-size: 10px!important;
+}
+
+.prayer-location-cancel {
+  align-self: flex-start;
+  margin-top: 14px;
+  border: 0;
+  background: transparent;
+  color: #4f46e5;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.prayer-hero {
+  position: relative;
+  padding: 32px;
+  overflow: hidden;
+  background: radial-gradient(circle at 92% 4%,rgba(124,58,237,.1),transparent 26%),linear-gradient(155deg,#fff,#fbfbff);
+}
+
+.prayer-hero::before {
+  content: "";
+  position: absolute;
+  right: -100px;
+  top: -170px;
+  width: 360px;
+  height: 360px;
+  border: 1px solid rgba(79,70,229,.08);
+  border-radius: 50%;
+  box-shadow: 0 0 0 45px rgba(79,70,229,.025),0 0 0 90px rgba(79,70,229,.018);
+  pointer-events: none;
+}
+
+.prayer-location-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.prayer-location-header h2 {
+  margin: 7px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 25px;
+  letter-spacing: -.04em;
+}
+
+.prayer-location-header p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--core-muted);
+  font-size: 10px;
+}
+
+.prayer-location-header p i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #c5cad5;
+}
+
+.prayer-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.prayer-header-actions button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #68758b;
+  background: #f2f4f8;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.prayer-header-actions button.active {
+  color: #047857;
+  background: #e9faf4;
+}
+
+.prayer-error {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #9f1239;
+  background: #fff1f2;
+  font-size: 10px;
+}
+
+.prayer-error span {
+  flex: 1;
+}
+
+.prayer-error button {
+  border: 0;
+  background: transparent;
+  color: #9f1239;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.prayer-next-banner {
+  position: relative;
+  z-index: 2;
+  margin-top: 28px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+  background: linear-gradient(120deg,#164e44,#0f766e 48%,#4f46e5 125%);
+  box-shadow: 0 18px 44px rgba(15,118,110,.19);
+}
+
+.prayer-next-banner>span {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #a7f3d0;
+  background: rgba(255,255,255,.1);
+  font-size: 23px;
+}
+
+.prayer-next-banner>div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+}
+
+.prayer-next-banner small {
+  color: #b9eadd;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .17em;
+}
+
+.prayer-next-banner strong {
+  margin: 2px 0;
+  font-size: 24px;
+  letter-spacing: -.035em;
+}
+
+.prayer-next-banner p {
+  margin: 0;
+  color: #d2f5ec;
+  font-size: 10px;
+}
+
+.prayer-countdown {
+  font-size: clamp(28px,4vw,48px);
+  line-height: 1;
+  letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.prayer-countdown i {
+  margin: 0 3px;
+  color: #7dd3c7;
+  font-style: normal;
+}
+
+.prayer-progress-copy {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #6d798e;
+  font-size: 9px;
+}
+
+.prayer-progress-copy b {
+  color: #344055;
+}
+
+.prayer-progress {
+  position: relative;
+  z-index: 2;
+  height: 7px;
+  margin: 9px 0 24px;
+  border-radius: 999px;
+  background: #e9ecf2;
+  overflow: hidden;
+}
+
+.prayer-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#0d9488,#4f46e5,#7c3aed);
+  box-shadow: 0 0 14px rgba(79,70,229,.2);
+  transition: width 1s linear;
+}
+
+.prayer-cards {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  gap: 10px;
+}
+
+.prayer-cards article {
+  min-width: 0;
+  min-height: 142px;
+  padding: 16px 10px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #f6f7fa;
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.06);
+  transition: transform .2s,box-shadow .2s;
+}
+
+.prayer-cards article>span {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #5b659c;
+  background: #fff;
+  box-shadow: 0 5px 15px rgba(30,41,70,.07);
+  font-size: 17px;
+}
+
+.prayer-cards small {
+  color: #7c8799;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.prayer-cards strong {
+  margin-top: 3px;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.prayer-cards em {
+  margin-top: 7px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #4f46e5;
+  background: #e8e8ff;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.prayer-cards article.active {
+  background: #f0fdfa;
+  box-shadow: inset 0 0 0 1px rgba(13,148,136,.13);
+}
+
+.prayer-cards article.active>span {
+  color: #047857;
+  background: #dff8f0;
+}
+
+.prayer-cards article.next {
+  transform: translateY(-4px);
+  background: linear-gradient(160deg,#eeefff,#f8f5ff);
+  box-shadow: 0 12px 28px rgba(79,70,229,.12),inset 0 0 0 1.5px rgba(79,70,229,.2);
+}
+
+.prayer-cards article.next>span {
+  color: #4f46e5;
+  background: #fff;
+}
+
+.prayer-source-note {
+  position: relative;
+  z-index: 2;
+  margin: 18px 0 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: #8a95a7;
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.prayer-calendar-card {
+  padding: 28px;
+}
+
+.prayer-calendar-card .card-heading {
+  align-items: flex-end;
+}
+
+.prayer-view-toggle {
+  display: flex;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f0f2f7;
+}
+
+.prayer-view-toggle button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 9px;
+  color: #788499;
+  background: transparent;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.prayer-view-toggle button.active {
+  color: #4f46e5;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(27,37,67,.08);
+}
+
+.prayer-today-detail {
+  min-height: 104px;
+  padding: 18px;
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg,#f4fdfb,#f5f4ff);
+}
+
+.prayer-today-detail>.app-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  color: #0d9488;
+  background: #fff;
+  box-shadow: 0 7px 18px rgba(27,37,67,.07);
+  font-size: 20px;
+}
+
+.prayer-today-detail>div {
+  display: flex;
+  flex-direction: column;
+}
+
+.prayer-today-detail strong {
+  font-size: 13px;
+}
+
+.prayer-today-detail span,.prayer-today-detail small {
+  color: #7f8a9c;
+  font-size: 9px;
+}
+
+.prayer-table-scroll {
+  overflow-x: auto;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.07);
+}
+
+.prayer-calendar-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.prayer-calendar-table th,.prayer-calendar-table td {
+  padding: 13px 15px;
+  text-align: center;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px #edf0f4;
+}
+
+.prayer-calendar-table thead th {
+  color: #7d8899;
+  background: #f7f8fb;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.prayer-calendar-table th:first-child {
+  text-align: left;
+}
+
+.prayer-calendar-table tbody th {
+  min-width: 170px;
+}
+
+.prayer-calendar-table tbody th strong,.prayer-calendar-table tbody th span {
+  display: block;
+}
+
+.prayer-calendar-table tbody th span {
+  margin-top: 3px;
+  color: #8a95a7;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.prayer-calendar-table tr.today {
+  color: #4338ca;
+  background: #f3f3ff;
+}
+
+.prayer-calendar-table tr.today th {
+  box-shadow: inset 3px 0 #4f46e5,0 1px #e4e6f0;
+}
+
+.prayer-skeleton {
+  margin-top: 28px;
+}
+
+.prayer-skeleton>span {
+  height: 100px;
+  display: block;
+  border-radius: 20px;
+  background: #eef1f5;
+  animation: prayerSkeleton 1.3s ease-in-out infinite;
+}
+
+.prayer-skeleton>div {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  gap: 10px;
+}
+
+.prayer-skeleton i {
+  height: 140px;
+  border-radius: 16px;
+  background: #f1f3f7;
+  animation: prayerSkeleton 1.3s ease-in-out infinite;
+}
+
+@keyframes prayerSkeleton {
+
+  50% {
+    opacity: .48;
+  }
+}
+
+.mescid-tools {
+  align-items: stretch;
+}
+
+.mescid-tools>* {
+  min-height: 430px;
+}
+
+[data-theme="dark"] .prayer-hero {
+  background: radial-gradient(circle at 92% 4%,rgba(124,58,237,.15),transparent 26%),#141b2f;
+}
+
+[data-theme="dark"] :is(.prayer-cards article,.prayer-location-content form label,.prayer-view-toggle,.prayer-today-detail) {
+  background: #171e34;
+}
+
+[data-theme="dark"] .prayer-cards article>span,[data-theme="dark"] .prayer-view-toggle button.active,[data-theme="dark"] .prayer-today-detail>.app-icon {
+  background: #222a42;
+}
+
+[data-theme="dark"] .prayer-calendar-table thead th {
+  background: #171e34;
+}
+
+[data-theme="dark"] .prayer-calendar-table th,[data-theme="dark"] .prayer-calendar-table td {
+  box-shadow: 0 1px rgba(255,255,255,.06);
+}
+
+[data-theme="dark"] .prayer-calendar-table tr.today {
+  color: #c4b5fd;
+  background: #25213e;
+}
+
+@media(max-width:980px) {
+
+  .prayer-location-setup {
+    grid-template-columns: 1fr;
+  }
+
+  .prayer-location-art {
+    min-height: 270px;
+  }
+
+  .prayer-location-content {
+    padding: 32px;
+  }
+
+  .prayer-cards {
+    grid-template-columns: repeat(3,1fr);
+  }
+}
+
+@media(max-width:620px) {
+
+  .prayer-hero,.prayer-calendar-card {
+    padding: 18px;
+  }
+
+  .prayer-location-header {
+    flex-direction: column;
+  }
+
+  .prayer-header-actions {
+    width: 100%;
+  }
+
+  .prayer-header-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .prayer-next-banner {
+    padding: 18px;
+    grid-template-columns: 44px 1fr;
+  }
+
+  .prayer-next-banner>span {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .prayer-countdown {
+    grid-column: 1/3;
+    margin-top: 5px;
+    text-align: center;
+    font-size: 36px;
+  }
+
+  .prayer-progress-copy {
+    font-size: 8px;
+  }
+
+  .prayer-cards {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .prayer-cards article {
+    min-height: 124px;
+  }
+
+  .prayer-location-content {
+    padding: 24px;
+  }
+
+  .prayer-location-content form {
+    grid-template-columns: 1fr;
+  }
+
+  .prayer-location-content form>button {
+    min-height: 46px;
+  }
+
+  .prayer-today-detail {
+    grid-template-columns: 44px 1fr;
+  }
+
+  .prayer-today-detail>small {
+    grid-column: 1/3;
+  }
+
+  .prayer-calendar-card .card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .prayer-view-toggle {
+    width: 100%;
+  }
+
+  .prayer-view-toggle button {
+    flex: 1;
+  }
+
+  .mescid-tools>* {
+    min-height: auto;
+  }
+}
+
+/* Mescidim · Esmâü'l Hüsnâ and source-audited dua library */
+
+.mescidim-experience,.spiritual-library {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mescidim-main-tabs {
+  padding: 7px;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 7px;
+  background: #eef0f7;
+  box-shadow: inset 0 0 0 1px var(--core-line);
+}
+
+.mescidim-main-tabs button {
+  min-height: 68px;
+  padding: 12px 15px;
+  border: 0;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6d788c;
+  background: transparent;
+  text-align: left;
+}
+
+.mescidim-main-tabs button>.app-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  font-size: 18px;
+}
+
+.mescidim-main-tabs button span {
+  display: flex;
+  flex-direction: column;
+}
+
+.mescidim-main-tabs button strong {
+  font-size: 10px;
+}
+
+.mescidim-main-tabs button small {
+  color: #8d96a8;
+  font-size: 8px;
+}
+
+.mescidim-main-tabs button.active {
+  color: #4338ca;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(47,54,89,.08);
+}
+
+.mescidim-main-tabs button.active>.app-icon {
+  color: #fff;
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  box-shadow: 0 8px 20px rgba(79,70,229,.24);
+}
+
+.spiritual-daily-hero {
+  min-height: 300px;
+  padding: 38px;
+  border-radius: 28px;
+  display: grid;
+  grid-template-columns: 210px minmax(0,1fr) 190px;
+  align-items: center;
+  gap: 36px;
+  color: #f8fafc;
+  background: radial-gradient(circle at 17% 22%,rgba(216,180,254,.24),transparent 24%),radial-gradient(circle at 86% 8%,rgba(167,243,208,.18),transparent 28%),linear-gradient(135deg,#141a3b,#29336d 52%,#3a2365);
+  box-shadow: 0 24px 64px rgba(27,28,77,.19);
+  overflow: hidden;
+}
+
+.spiritual-orbit {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle,rgba(255,255,255,.16),rgba(255,255,255,.025) 57%,transparent 58%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.13),0 0 60px rgba(167,139,250,.18);
+}
+
+.spiritual-orbit i {
+  position: absolute;
+  inset: 17px;
+  border: 1px solid rgba(196,181,253,.34);
+  border-radius: 50%;
+  animation: spiritualOrbit 18s linear infinite;
+}
+
+.spiritual-orbit i:nth-child(2) {
+  inset: 34px;
+  border-style: dashed;
+  animation-duration: 25s;
+  animation-direction: reverse;
+}
+
+.spiritual-orbit i:nth-child(3) {
+  inset: -9px;
+  border-color: rgba(167,243,208,.18);
+  animation-duration: 34s;
+}
+
+.spiritual-orbit span {
+  z-index: 1;
+  font-family: "Noto Naskh Arabic","Traditional Arabic",serif;
+  font-size: 43px;
+}
+
+@keyframes spiritualOrbit {
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spiritual-daily-hero .eyebrow {
+  color: #c4b5fd;
+}
+
+.spiritual-daily-hero h2 {
+  margin: 5px 0 2px;
+  font-size: 36px;
+}
+
+.spiritual-daily-hero>div:nth-child(2)>p {
+  margin: 0;
+  color: #d5d9e9;
+  font-size: 12px;
+}
+
+.spiritual-daily-hero blockquote {
+  margin: 16px 0;
+  color: #dfe3f0;
+  font-family: Georgia,serif;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.spiritual-hero-button {
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #332665;
+  background: #f5f3ff;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.spiritual-daily-hero aside {
+  padding: 20px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,255,255,.075);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+}
+
+.spiritual-daily-hero aside strong {
+  font-size: 39px;
+}
+
+.spiritual-daily-hero aside span {
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.spiritual-daily-hero aside small {
+  margin-top: 13px;
+  color: #bdc4d8;
+  font-size: 7px;
+  line-height: 1.65;
+}
+
+.spiritual-tabs {
+  padding: 6px;
+  border-radius: 18px;
+  align-self: center;
+  display: flex;
+  gap: 6px;
+  background: #eef0f7;
+}
+
+.spiritual-tabs button {
+  min-width: 190px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #758096;
+  background: transparent;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.spiritual-tabs button span {
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: rgba(100,116,139,.1);
+  font-size: 7px;
+}
+
+.spiritual-tabs button.active {
+  color: #4338ca;
+  background: #fff;
+  box-shadow: 0 7px 18px rgba(45,51,83,.08);
+}
+
+.spiritual-panel {
+  padding: 30px;
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: 0 10px 38px rgba(31,42,71,.06),inset 0 0 0 1px var(--core-line);
+}
+
+.spiritual-panel-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.spiritual-panel-header h2 {
+  margin: 5px 0 4px;
+  font-size: 27px;
+}
+
+.spiritual-panel-header p {
+  margin: 0;
+  color: var(--core-muted);
+  font-size: 10px;
+}
+
+.spiritual-panel-header>a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4f46e5;
+  font-size: 8px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.spiritual-toolbar {
+  margin: 23px 0 15px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 10px;
+}
+
+.spiritual-toolbar label {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #8b94a5;
+  background: #f5f6fa;
+  box-shadow: inset 0 0 0 1px var(--core-line);
+}
+
+.spiritual-toolbar input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--core-ink);
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+}
+
+.spiritual-toolbar>button {
+  padding: 0 15px;
+  border: 0;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #667287;
+  background: #f5f6fa;
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.spiritual-toolbar>button.active {
+  color: #be185d;
+  background: #fdf2f8;
+}
+
+.spiritual-notice {
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #047857;
+  background: #ecfdf5;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.asma-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 11px;
+}
+
+.asma-card {
+  position: relative;
+  min-height: 190px;
+  border-radius: 19px;
+  background: linear-gradient(165deg,#faf9ff,#f7f8fc);
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.07);
+  overflow: hidden;
+  transition: .2s;
+}
+
+.asma-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 34px rgba(64,54,128,.1);
+}
+
+.asma-card.daily {
+  background: radial-gradient(circle at 80% 0,rgba(167,243,208,.35),transparent 40%),linear-gradient(145deg,#f5f3ff,#eef2ff);
+}
+
+.asma-card-main {
+  width: 100%;
+  min-height: 190px;
+  padding: 20px 17px;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: var(--core-ink);
+  background: transparent;
+  text-align: left;
+}
+
+.asma-card-main>span {
+  color: #8b5cf6;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.asma-card-main>strong {
+  width: 100%;
+  margin: 13px 0 5px;
+  color: #37276c;
+  font-family: "Noto Naskh Arabic","Traditional Arabic",serif;
+  font-size: 30px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.asma-card-main h3 {
+  width: 100%;
+  margin: 3px 0 2px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.asma-card-main p {
+  width: 100%;
+  margin: 0;
+  color: var(--core-muted);
+  font-size: 8px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.asma-card-main em {
+  margin: auto auto 0;
+  padding: 4px 7px;
+  border-radius: 99px;
+  color: #047857;
+  background: #d1fae5;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.asma-card-favorite {
+  position: absolute;
+  z-index: 2;
+  right: 11px;
+  top: 10px;
+  width: 31px;
+  height: 31px;
+  border: 0;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #9aa2b1;
+  background: #fff;
+}
+
+.asma-card-favorite.active {
+  color: #db2777;
+  background: #fdf2f8;
+}
+
+.spiritual-drawer-backdrop {
+  position: fixed;
+  z-index: 330;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(11,15,30,.55);
+  backdrop-filter: blur(10px);
+}
+
+.spiritual-drawer {
+  width: min(520px,100%);
+  height: 100%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  color: var(--core-ink);
+  background: #fff;
+  box-shadow: -30px 0 80px rgba(5,9,28,.22);
+  overflow: auto;
+}
+
+.spiritual-drawer>header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.spiritual-drawer>header div {
+  display: flex;
+  gap: 7px;
+}
+
+.spiritual-drawer>header button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 12px;
+  color: #737e92;
+  background: #f4f5f8;
+}
+
+.spiritual-drawer>header button.active {
+  color: #db2777;
+}
+
+.asma-detail-mark {
+  width: 150px;
+  height: 150px;
+  margin: 36px auto 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #3b2c73;
+  background: #f3f0ff;
+  box-shadow: 0 16px 45px rgba(79,70,229,.13);
+  font-family: "Traditional Arabic",serif;
+  font-size: 39px;
+}
+
+.spiritual-drawer>h2 {
+  margin: 5px 0 0;
+  font-size: 32px;
+}
+
+.spiritual-drawer>h3 {
+  margin: 4px 0 12px;
+  color: #4f46e5;
+  font-size: 13px;
+}
+
+.spiritual-drawer>p {
+  margin: 0;
+  color: #566276;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.source-assurance {
+  margin: 20px 0;
+  padding: 14px;
+  border-radius: 15px;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 11px;
+  background: #f7f8fb;
+  font-size: 7px;
+}
+
+.source-assurance>.app-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #047857;
+  background: #ecfdf5;
+}
+
+.source-assurance span {
+  display: flex;
+  flex-direction: column;
+}
+
+.spiritual-drawer>label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.spiritual-drawer textarea {
+  padding: 14px;
+  border: 1px solid var(--core-line);
+  border-radius: 14px;
+  resize: vertical;
+  background: #fafbfc;
+  font: inherit;
+  font-size: 9px;
+}
+
+.spiritual-drawer-actions {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 9px;
+}
+
+.spiritual-drawer-actions button {
+  justify-content: center;
+}
+
+.dua-filter-row {
+  margin-bottom: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.dua-filter-row button {
+  padding: 8px 11px;
+  border: 0;
+  border-radius: 99px;
+  color: #68758a;
+  background: #f3f4f8;
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.dua-filter-row button.active {
+  color: #fff;
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+}
+
+.dua-filter-row.occasions {
+  margin-bottom: 18px;
+}
+
+.dua-library-list {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 13px;
+}
+
+.dua-library-card {
+  padding: 22px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(165deg,#fff,#fafaff);
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.08);
+}
+
+.dua-library-card>header,.dua-library-card>footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dua-library-card>header>div,.dua-library-card>footer>div {
+  display: flex;
+  gap: 7px;
+}
+
+.dua-library-card>header span {
+  color: #4f46e5;
+  font-size: 7px;
+  font-weight: 850;
+}
+
+.dua-library-card>header em {
+  padding: 3px 6px;
+  border-radius: 7px;
+  background: #f1f3f7;
+  font-size: 7px;
+  font-style: normal;
+}
+
+.dua-library-card>header>button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  color: #9aa2b1;
+  background: #f4f5f8;
+}
+
+.dua-library-card>header>button.active {
+  color: #db2777;
+}
+
+.dua-library-card h3 {
+  margin: 12px 0 7px;
+  font-size: 15px;
+}
+
+.dua-library-card blockquote {
+  margin: 0;
+  padding: 18px;
+  border: 0;
+  border-radius: 15px;
+  color: #332665;
+  background: #f7f5ff;
+  font-family: "Traditional Arabic",serif;
+  font-size: 23px;
+  line-height: 1.9;
+}
+
+.dua-library-card>p {
+  margin: 13px 0;
+  color: #4f5b70;
+  font-family: Georgia,serif;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.dua-library-card>aside {
+  margin: auto 0 15px;
+  padding: 12px;
+  border-radius: 13px;
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 9px;
+  background: #f7f8fa;
+  font-size: 8px;
+}
+
+.dua-library-card>footer {
+  padding-top: 14px;
+  border-top: 1px solid var(--core-line);
+}
+
+.dua-library-card>footer>a {
+  color: #4f46e5;
+  font-size: 7px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.dua-library-card>footer button {
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 10px;
+  color: #58657a;
+  background: #f2f4f8;
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.dua-library-card>footer button:last-child {
+  color: #fff;
+  background: #4f46e5;
+}
+
+.dua-library-card>footer button:disabled {
+  color: #667085;
+  background: #e9ecf2;
+}
+
+.spiritual-cap-note {
+  margin: 19px 0 0;
+  color: #7b8597;
+  font-size: 8px;
+}
+
+[data-theme="dark"] :is(.mescidim-main-tabs,.spiritual-tabs) {
+  background: #141b2f;
+}
+
+[data-theme="dark"] :is(.spiritual-panel,.spiritual-drawer) {
+  color: var(--core-ink);
+  background: #141b2f;
+}
+
+[data-theme="dark"] :is(.spiritual-toolbar label,.asma-card,.dua-library-card,.spiritual-drawer textarea) {
+  color: #e6e9f4;
+  background: #181f35;
+}
+
+[data-theme="dark"] :is(.asma-card-main,.spiritual-toolbar input) {
+  color: #e6e9f4;
+}
+
+[data-theme="dark"] .asma-card-main>strong {
+  color: #d9d6fe;
+}
+
+@media(max-width:1050px) {
+
+  .spiritual-daily-hero {
+    grid-template-columns: 170px 1fr;
+  }
+
+  .spiritual-daily-hero aside {
+    grid-column: 1/3;
+  }
+
+  .asma-grid {
+    grid-template-columns: repeat(3,1fr);
+  }
+}
+
+@media(max-width:760px) {
+
+  .mescidim-main-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .spiritual-daily-hero {
+    padding: 28px;
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .spiritual-orbit {
+    margin: auto;
+  }
+
+  .spiritual-daily-hero aside {
+    grid-column: auto;
+    text-align: left;
+  }
+
+  .spiritual-tabs {
+    width: 100%;
+  }
+
+  .spiritual-tabs button {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .spiritual-panel {
+    padding: 20px;
+  }
+
+  .asma-grid {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .dua-library-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width:480px) {
+
+  .spiritual-daily-hero {
+    padding: 23px;
+  }
+
+  .spiritual-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .spiritual-toolbar>button {
+    min-height: 40px;
+    justify-content: center;
+  }
+
+  .asma-grid {
+    gap: 8px;
+  }
+
+  .asma-card-main {
+    padding: 17px 10px;
+  }
+
+  .spiritual-drawer {
+    padding: 22px;
+  }
+
+  .spiritual-drawer-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .dua-library-card {
+    padding: 17px;
+  }
+
+  .dua-filter-row {
+    flex-wrap: nowrap;
+    overflow: auto;
+  }
+
+  .dua-filter-row button {
+    white-space: nowrap;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+
+  .spiritual-orbit i {
+    animation: none;
+  }
+}
+
+/* Bursa Technical University mosque identity and secure event archive. */
+
+.mosque-identity-hero {
+  min-height: 320px;
+  padding: 32px 48px;
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: minmax(300px,.85fr) minmax(0,1.15fr);
+  align-items: center;
+  gap: 48px;
+  color: #fff;
+  background: radial-gradient(circle at 15% 20%,rgba(246,217,143,.2),transparent 28%),radial-gradient(circle at 92% 8%,rgba(167,243,208,.2),transparent 32%),linear-gradient(135deg,#102f2d,#164e46 54%,#343173);
+  box-shadow: 0 24px 64px rgba(17,47,45,.18);
+  overflow: hidden;
+}
+
+.mosque-identity-art {
+  position: relative;
+  min-height: 240px;
+  display: grid;
+  place-items: end center;
+}
+
+.mosque-identity-art::before {
+  content: "";
+  position: absolute;
+  inset: 32px 0 0;
+  border-radius: 50%;
+  background: radial-gradient(circle,rgba(246,217,143,.15),transparent 62%);
+  filter: blur(4px);
+}
+
+.mosque-identity-art svg {
+  position: relative;
+  z-index: 2;
+  width: min(100%,420px);
+  height: auto;
+  filter: drop-shadow(0 24px 24px rgba(0,0,0,.2));
+}
+
+.mosque-moon {
+  position: absolute;
+  left: 12%;
+  top: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f5d479;
+  box-shadow: 0 0 32px rgba(245,212,121,.4);
+}
+
+.mosque-moon::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: -4px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #123a36;
+}
+
+.mosque-identity-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.mosque-identity-copy .eyebrow {
+  color: #a7f3d0;
+}
+
+.mosque-identity-copy h2 {
+  max-width: 720px;
+  margin: 12px 0 16px;
+  font-size: clamp(32px,4vw,52px);
+  line-height: 1.03;
+  letter-spacing: -.05em;
+}
+
+.mosque-identity-copy>p {
+  max-width: 680px;
+  margin: 0;
+  color: #d8e8e3;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.mosque-identity-copy>div {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mosque-identity-copy>div span {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e7f8f1;
+  background: rgba(255,255,255,.09);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.mescidim-main-tabs {
+  grid-template-columns: repeat(4,1fr);
+}
+
+.mosque-archive {
+  padding: 32px;
+}
+
+.mosque-archive-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.mosque-archive-heading h2 {
+  margin: 8px 0;
+  font-size: 28px;
+  letter-spacing: -.04em;
+}
+
+.mosque-archive-heading p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--core-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.mosque-archive-heading .primary-button {
+  flex: 0 0 auto;
+}
+
+.mosque-filterbar {
+  margin-top: 24px;
+  padding: 8px;
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: minmax(220px,1fr) auto auto;
+  gap: 8px;
+  background: #f5f6fa;
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.06);
+}
+
+.mosque-search {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8b95a7;
+  background: #fff;
+}
+
+.mosque-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--core-ink);
+  background: transparent;
+  font: inherit;
+  font-size: 10px;
+}
+
+.mosque-filterbar select {
+  min-height: 44px;
+  padding: 0 32px 0 12px;
+  border: 0;
+  border-radius: 12px;
+  outline: 0;
+  color: #59667b;
+  background: #fff;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.mosque-message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.mosque-message.error {
+  color: #9f1239;
+  background: #fff1f2;
+}
+
+.mosque-message.success {
+  color: #047857;
+  background: #ecfdf5;
+}
+
+.mosque-message button {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: inherit;
+  background: rgba(255,255,255,.6);
+}
+
+.mosque-event-skeleton {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.mosque-event-skeleton i {
+  height: 180px;
+  border-radius: 16px;
+  background: linear-gradient(90deg,#f1f3f7,#fafbfc,#f1f3f7);
+  background-size: 200% 100%;
+  animation: skeletonMove 1.3s linear infinite;
+}
+
+.mosque-empty-state {
+  min-height: 360px;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.mosque-empty-state>span {
+  width: 72px;
+  height: 72px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  color: #4f46e5;
+  background: #eef0ff;
+  box-shadow: 0 16px 40px rgba(79,70,229,.12);
+  font-size: 28px;
+}
+
+.mosque-empty-state strong {
+  margin-top: 24px;
+  font-size: 22px;
+  letter-spacing: -.03em;
+}
+
+.mosque-empty-state p {
+  max-width: 480px;
+  margin: 8px auto 24px;
+  color: var(--core-muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.mosque-timeline {
+  margin-top: 32px;
+}
+
+.mosque-year-group {
+  display: grid;
+  grid-template-columns: 84px minmax(0,1fr);
+  gap: 24px;
+}
+
+.mosque-year-group+.mosque-year-group {
+  margin-top: 32px;
+}
+
+.mosque-year {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mosque-year span {
+  position: sticky;
+  top: 96px;
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #4338ca;
+  background: #eef0ff;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.mosque-year i {
+  position: absolute;
+  right: -13px;
+  top: 0;
+  bottom: -32px;
+  width: 1px;
+  background: linear-gradient(#c7d2fe,#e7e9f1);
+}
+
+.mosque-year-events {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 16px;
+}
+
+.mosque-event-card {
+  min-width: 0;
+  padding: 8px;
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: 180px minmax(0,1fr);
+  gap: 16px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(28,39,68,.08),inset 0 0 0 1px rgba(72,86,119,.06);
+  transition: transform .2s,box-shadow .2s;
+}
+
+.mosque-event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 48px rgba(28,39,68,.12),inset 0 0 0 1px rgba(72,86,119,.06);
+}
+
+.mosque-event-cover {
+  position: relative;
+  min-height: 180px;
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  color: #7c3aed;
+  background: radial-gradient(circle at 50% 30%,rgba(167,243,208,.45),transparent 32%),linear-gradient(145deg,#e8f5f0,#eeebff);
+}
+
+.mosque-event-cover img,.mosque-detail-cover img,.mosque-gallery img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.mosque-event-cover>span {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+}
+
+.mosque-event-cover em {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(12,28,30,.72);
+  backdrop-filter: blur(8px);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.mosque-event-copy {
+  min-width: 0;
+  padding: 8px 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.mosque-category {
+  width: max-content;
+  padding: 6px 8px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4338ca;
+  background: #eef0ff;
+  font-size: 7px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.mosque-category.yardim {
+  color: #047857;
+  background: #ecfdf5;
+}
+
+.mosque-category.genclik {
+  color: #0369a1;
+  background: #eaf7ff;
+}
+
+.mosque-category.ozel {
+  color: #b45309;
+  background: #fff7df;
+}
+
+.mosque-category.egitim {
+  color: #7c3aed;
+  background: #f5efff;
+}
+
+.mosque-event-copy h3 {
+  margin: 12px 0 8px;
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+
+.mosque-event-copy>p {
+  display: -webkit-box;
+  margin: 0;
+  color: #6e7a8e;
+  font-size: 9px;
+  line-height: 1.65;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mosque-event-copy>div {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mosque-event-copy>div>button {
+  padding: 0;
+  border: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #4f46e5;
+  background: transparent;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.mosque-admin-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.mosque-admin-actions button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #6d788d;
+  background: #f2f4f8;
+}
+
+.mosque-admin-actions button:last-child {
+  color: #be123c;
+  background: #fff1f2;
+}
+
+.mosque-modal-backdrop {
+  position: fixed;
+  z-index: 1550;
+  inset: 0;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  background: rgba(8,15,27,.6);
+  backdrop-filter: blur(14px);
+}
+
+.mosque-detail-modal,.mosque-editor-modal {
+  position: relative;
+  width: min(100%,880px);
+  max-height: calc(100dvh - 48px);
+  border-radius: 24px;
+  color: var(--core-ink);
+  background: #fff;
+  box-shadow: 0 32px 100px rgba(8,15,27,.34);
+  overflow: auto;
+}
+
+.mosque-detail-modal {
+  display: grid;
+  grid-template-columns: minmax(280px,.8fr) minmax(0,1.2fr);
+}
+
+.modal-close {
+  position: absolute;
+  z-index: 4;
+  right: 16px;
+  top: 16px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #657187;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 6px 18px rgba(27,37,67,.1);
+}
+
+.mosque-detail-cover {
+  position: relative;
+  min-height: 560px;
+  padding: 0;
+  border: 0;
+  background: #eef0f6;
+  overflow: hidden;
+}
+
+.mosque-detail-cover.placeholder {
+  display: grid;
+  place-items: center;
+  color: #4f46e5;
+  background: radial-gradient(circle,rgba(167,243,208,.35),transparent 32%),linear-gradient(145deg,#e8f5f0,#eeebff);
+  font-size: 72px;
+}
+
+.mosque-detail-content {
+  padding: 48px 32px;
+}
+
+.mosque-detail-content h2 {
+  margin: 16px 0 8px;
+  font-size: 32px;
+  line-height: 1.08;
+  letter-spacing: -.045em;
+}
+
+.mosque-detail-content time {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #657187;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.mosque-detail-content>p {
+  margin: 24px 0;
+  color: #4f5c70;
+  font-size: 11px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.mosque-gallery {
+  padding-top: 24px;
+  border-top: 1px solid var(--core-line);
+}
+
+.mosque-gallery h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+.mosque-gallery>div {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+}
+
+.mosque-gallery button {
+  position: relative;
+  height: 96px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mosque-detail-admin {
+  margin-top: 24px;
+  display: flex;
+  gap: 8px;
+}
+
+.mosque-detail-admin button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #4f46e5;
+  background: #eef0ff;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.mosque-detail-admin button:last-child {
+  color: #be123c;
+  background: #fff1f2;
+}
+
+.mosque-editor-modal {
+  padding: 32px;
+}
+
+.mosque-editor-modal>header {
+  position: relative;
+  padding-right: 48px;
+}
+
+.mosque-editor-modal>header h2 {
+  margin: 8px 0 24px;
+  font-size: 28px;
+  letter-spacing: -.04em;
+}
+
+.mosque-editor-modal>header .modal-close {
+  right: 0;
+  top: 0;
+  background: #f2f4f8;
+  box-shadow: none;
+}
+
+.mosque-editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.mosque-editor-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #566278;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.mosque-editor-grid label.full {
+  grid-column: 1/3;
+}
+
+.mosque-editor-grid input,.mosque-editor-grid select,.mosque-editor-grid textarea {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 12px;
+  outline: 0;
+  color: var(--core-ink);
+  background: #f5f6f9;
+  box-shadow: inset 0 0 0 1px rgba(72,86,119,.08);
+  font: inherit;
+  font-size: 10px;
+}
+
+.mosque-editor-grid input,.mosque-editor-grid select {
+  min-height: 44px;
+}
+
+.mosque-editor-grid textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.mosque-editor-grid :focus {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px rgba(79,70,229,.55),0 0 0 4px rgba(79,70,229,.06);
+}
+
+.mosque-editor-grid small {
+  color: #919aab;
+  font-size: 7px;
+  font-weight: 500;
+}
+
+.mosque-existing-media {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  color: #5d6980;
+  background: #f6f7fa;
+  font-size: 8px;
+}
+
+.mosque-editor-modal>footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.mosque-editor-modal>footer button {
+  justify-content: center;
+}
+
+.mosque-editor-modal button:disabled {
+  opacity: .55;
+}
+
+.mosque-lightbox {
+  position: fixed;
+  z-index: 1700;
+  inset: 0;
+  padding: 48px;
+  display: grid;
+  place-items: center;
+  background: rgba(4,8,18,.92);
+}
+
+.mosque-lightbox>button {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  font-size: 20px;
+}
+
+.mosque-lightbox>img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.5);
+}
+
+[data-theme="dark"] :is(.mosque-archive,.mosque-detail-modal,.mosque-editor-modal) {
+  background: #141b2f;
+}
+
+[data-theme="dark"] :is(.mosque-filterbar,.mosque-event-card,.mosque-editor-grid input,.mosque-editor-grid select,.mosque-editor-grid textarea) {
+  background: #181f35;
+}
+
+[data-theme="dark"] .mosque-search {
+  background: #222a42;
+}
+
+[data-theme="dark"] .mosque-filterbar select {
+  color: #dce2ef;
+  background: #222a42;
+}
+
+@media(max-width:1100px) {
+
+  .mosque-identity-hero {
+    grid-template-columns: 280px minmax(0,1fr);
+    padding: 32px;
+    gap: 32px;
+  }
+
+  .mosque-year-events {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width:760px) {
+
+  .mosque-identity-hero {
+    padding: 24px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .mosque-identity-art {
+    min-height: 180px;
+  }
+
+  .mosque-identity-art svg {
+    max-height: 200px;
+  }
+
+  .mosque-identity-copy h2 {
+    font-size: 34px;
+  }
+
+  .mescidim-main-tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mosque-archive {
+    padding: 24px;
+  }
+
+  .mosque-archive-heading {
+    flex-direction: column;
+  }
+
+  .mosque-filterbar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mosque-search {
+    grid-column: 1/3;
+  }
+
+  .mosque-year-group {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .mosque-year {
+    justify-content: flex-start;
+  }
+
+  .mosque-year span {
+    position: static;
+  }
+
+  .mosque-year i {
+    display: none;
+  }
+
+  .mosque-event-card {
+    grid-template-columns: 144px minmax(0,1fr);
+  }
+
+  .mosque-detail-modal {
+    grid-template-columns: 1fr;
+  }
+
+  .mosque-detail-cover {
+    min-height: 280px;
+    max-height: 360px;
+  }
+
+  .mosque-detail-content {
+    padding: 32px 24px;
+  }
+
+  .mosque-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mosque-editor-grid label.full {
+    grid-column: auto;
+  }
+}
+
+@media(max-width:520px) {
+
+  .mosque-identity-hero {
+    padding: 24px 16px;
+  }
+
+  .mosque-identity-copy h2 {
+    font-size: 30px;
+  }
+
+  .mescidim-main-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .mosque-archive {
+    padding: 16px;
+  }
+
+  .mosque-filterbar {
+    grid-template-columns: 1fr;
+  }
+
+  .mosque-search {
+    grid-column: auto;
+  }
+
+  .mosque-archive-heading .primary-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mosque-event-card {
+    grid-template-columns: 1fr;
+    padding: 8px;
+  }
+
+  .mosque-event-cover {
+    min-height: 200px;
+  }
+
+  .mosque-event-copy {
+    padding: 8px;
+  }
+
+  .mosque-modal-backdrop {
+    align-items: end;
+    padding: 0;
+  }
+
+  .mosque-detail-modal,.mosque-editor-modal {
+    max-height: 92dvh;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .mosque-detail-content h2 {
+    font-size: 28px;
+  }
+
+  .mosque-editor-modal {
+    padding: 24px;
+  }
+
+  .mosque-editor-modal>footer {
+    flex-direction: column-reverse;
+  }
+
+  .mosque-editor-modal>footer button {
+    width: 100%;
+  }
+
+  .mosque-lightbox {
+    padding: 16px;
+  }
+
+  .mosque-gallery>div {
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+/* === QURAN COMPANION PILOT END === */
+
+/* === MESCIDIM SINGLE-FLOW EXPERIENCE === */
+
+.mescidim-experience {
+  --mescidim-forest: #0b3d31;
+  --mescidim-green: #08785d;
+  --mescidim-mint: #8de2c4;
+  --mescidim-gold: #d5ad5b;
+  gap: 18px;
+}
+
+.mescidim-experience>.page-heading {
+  margin-bottom: 0;
+}
+
+.mescidim-experience .mescidim-scope-tabs {
+  align-self: flex-start;
+  width: min(100%,440px);
+  padding: 5px;
+  border: 1px solid rgba(0,105,80,.1);
+  border-radius: 999px;
+  background: #eceeea;
+  box-shadow: none;
+}
+
+.mescidim-experience .mescidim-scope-tabs button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: #5d6c66;
+  font-size: 9px;
+}
+
+.mescidim-experience .mescidim-scope-tabs button[aria-selected=true] {
+  color: #fff;
+  background: var(--mescidim-forest);
+  box-shadow: 0 8px 20px rgba(11,61,49,.17);
+}
+
+.mescidim-today-hero {
+  position: relative;
+  min-height: 330px;
+  padding: clamp(30px,4.5vw,58px);
+  border-radius: 30px;
+  display: grid;
+  grid-template-columns: minmax(0,1.25fr) minmax(250px,.75fr);
+  align-items: center;
+  gap: 28px;
+  color: #f4fbf8;
+  background: radial-gradient(circle at 78% 32%,rgba(141,226,196,.2),transparent 25%),radial-gradient(circle at 8% 100%,rgba(213,173,91,.14),transparent 32%),linear-gradient(130deg,#082c23,#0c4a3b 58%,#0b3d31);
+  box-shadow: 0 26px 64px rgba(10,54,43,.2);
+  overflow: hidden;
+}
+
+.mescidim-today-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .15;
+  background-image: linear-gradient(30deg,rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(150deg,rgba(255,255,255,.1) 1px,transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(90deg,#000,transparent 70%);
+  pointer-events: none;
+}
+
+.mescidim-today-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.mescidim-today-copy .eyebrow {
+  color: #9fe6cd;
+}
+
+.mescidim-today-copy h2 {
+  max-width: 680px;
+  margin: 12px 0 18px;
+  color: #fff;
+  font-size: clamp(34px,4.4vw,58px);
+  line-height: 1.03;
+  letter-spacing: -.055em;
+}
+
+.mescidim-today-copy p {
+  max-width: 620px;
+  margin: 0;
+  color: #c5dcd4;
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.mescidim-today-mark {
+  position: relative;
+  z-index: 1;
+  min-height: 230px;
+  display: grid;
+  place-items: center;
+}
+
+.mescidim-today-mark>span {
+  position: relative;
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #103e32;
+  background: linear-gradient(145deg,#f8e6bd,#cfa24c);
+  box-shadow: 0 24px 54px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.65);
+  font-size: 47px;
+}
+
+.mescidim-today-mark i {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border: 1px solid rgba(180,239,219,.22);
+  border-radius: 50%;
+}
+
+.mescidim-today-mark i:nth-of-type(2) {
+  width: 230px;
+  height: 230px;
+  border-style: dashed;
+}
+
+.mescidim-today-mark i:nth-of-type(3) {
+  width: 300px;
+  height: 300px;
+  opacity: .55;
+}
+
+.mescidim-today-promise {
+  position: relative;
+  z-index: 2;
+  grid-column: 1/-1;
+  width: min(100%,560px);
+  margin-top: -8px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #eafff7;
+  background: rgba(255,255,255,.07);
+  backdrop-filter: blur(12px);
+}
+
+.mescidim-today-promise>.app-icon {
+  font-size: 21px;
+  color: #93e3c7;
+}
+
+.mescidim-today-promise span {
+  display: grid;
+  gap: 2px;
+}
+
+.mescidim-today-promise strong {
+  font-size: 9px;
+}
+
+.mescidim-today-promise small {
+  color: #bcd3ca;
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+.mescidim-section-nav {
+  position: sticky;
+  z-index: 18;
+  top: 72px;
+  padding: 7px;
+  border: 1px solid rgba(0,105,80,.1);
+  border-radius: 21px;
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 7px;
+  background: rgba(250,249,246,.9);
+  box-shadow: 0 14px 38px rgba(16,57,45,.08);
+  backdrop-filter: blur(18px);
+}
+
+.mescidim-section-nav button {
+  min-width: 0;
+  min-height: 64px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 15px;
+  display: grid;
+  grid-template-columns: 38px minmax(0,1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  color: #344840;
+  background: transparent;
+  text-align: left;
+  transition: background .2s,transform .2s;
+}
+
+.mescidim-section-nav button:hover {
+  transform: translateY(-1px);
+  background: #eef7f2;
+}
+
+.mescidim-section-nav button[aria-current=page] {
+  color: #fff;
+  background: var(--mescidim-forest);
+  box-shadow: 0 8px 20px rgba(11,61,49,.14);
+}
+
+.mescidim-section-nav button[aria-current=page]>span {
+  color: #0b493a;
+  background: #d8f3e8;
+}
+
+.mescidim-section-nav button[aria-current=page] small {
+  color: #bfd8cf;
+}
+
+.mescidim-section-nav button>span {
+  grid-row: 1/3;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #08785d;
+  background: #e4f5ed;
+  font-size: 17px;
+}
+
+.mescidim-section-nav button strong {
+  align-self: end;
+  overflow: hidden;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mescidim-section-nav button small {
+  align-self: start;
+  overflow: hidden;
+  color: #718078;
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mescidim-single-flow,.spiritual-library-stacked {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  gap: 34px;
+}
+
+.spiritual-library-stacked {
+  gap: 40px;
+}
+
+.mescidim-flow-section {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  gap: 18px;
+  scroll-margin-top: 164px;
+}
+
+.mescidim-flow-heading {
+  min-width: 0;
+  padding: 24px 4px 2px;
+  display: grid;
+  grid-template-columns: 54px minmax(0,1fr);
+  align-items: start;
+  gap: 15px;
+}
+
+.mescidim-flow-heading>span {
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgba(0,105,80,.13);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #08785d;
+  background: #e9f5f0;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.mescidim-flow-heading small {
+  color: #08785d;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .15em;
+}
+
+.mescidim-flow-heading h2 {
+  margin: 4px 0 5px;
+  font-size: clamp(25px,3vw,36px);
+  line-height: 1.1;
+  letter-spacing: -.045em;
+}
+
+.mescidim-flow-heading p {
+  max-width: 650px;
+  margin: 0;
+  color: #68766f;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.mescidim-zikir-anchor {
+  scroll-margin-top: 164px;
+}
+
+.mescidim-zikir-anchor>.mescid-tools {
+  margin: 0;
+}
+
+.mescidim-experience .prayer-hero {
+  border: 1px solid rgba(0,105,80,.1);
+  border-radius: 26px;
+  background: radial-gradient(circle at 92% 4%,rgba(64,224,208,.1),transparent 28%),linear-gradient(155deg,#fff,#f7fbf8);
+  box-shadow: 0 14px 44px rgba(12,67,52,.07);
+}
+
+.mescidim-experience .prayer-next-banner {
+  background: radial-gradient(circle at 88% 10%,rgba(255,255,255,.13),transparent 27%),linear-gradient(120deg,#0b3d31,#08785d 72%,#8f6a27);
+  box-shadow: 0 18px 44px rgba(8,120,93,.2);
+}
+
+.mescidim-experience .prayer-progress i {
+  background: linear-gradient(90deg,#08785d,#40b995,#d5ad5b);
+}
+
+.mescidim-experience .prayer-cards article.next {
+  background: linear-gradient(160deg,#e8f7f1,#f9f5e9);
+  box-shadow: 0 12px 28px rgba(8,120,93,.12),inset 0 0 0 1.5px rgba(8,120,93,.2);
+}
+
+.mescidim-experience .prayer-cards article.next>span,.mescidim-experience .prayer-cards em {
+  color: #08785d;
+}
+
+.mescidim-experience .prayer-cards em {
+  background: #ddf4eb;
+}
+
+.mescidim-experience .spiritual-daily-hero {
+  border: 1px solid rgba(255,255,255,.08);
+  background: radial-gradient(circle at 17% 22%,rgba(213,173,91,.22),transparent 24%),radial-gradient(circle at 86% 8%,rgba(141,226,196,.2),transparent 28%),linear-gradient(135deg,#0a3127,#0d5342 58%,#173f34);
+  box-shadow: 0 24px 64px rgba(10,55,44,.17);
+}
+
+.mescidim-experience .spiritual-daily-hero .eyebrow {
+  color: #9fe6cd;
+}
+
+.mescidim-experience .spiritual-hero-button {
+  color: #0b493a;
+  background: #effbf6;
+}
+
+.mescidim-experience .spiritual-orbit {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.13),0 0 60px rgba(141,226,196,.18);
+}
+
+.mescidim-experience .spiritual-orbit i {
+  border-color: rgba(213,173,91,.34);
+}
+
+.spiritual-library-stacked .spiritual-panel {
+  min-width: 0;
+  border: 1px solid rgba(0,105,80,.09);
+  box-shadow: 0 14px 44px rgba(12,67,52,.065);
+}
+
+.spiritual-library-stacked .spiritual-panel-header>a,.spiritual-library-stacked .dua-library-card footer>a {
+  color: #08785d;
+}
+
+.spiritual-library-stacked .spiritual-toolbar>button.active,.spiritual-library-stacked .dua-filter-row button.active {
+  color: #fff;
+  background: #08785d;
+}
+
+.spiritual-library-stacked .asma-card.daily {
+  box-shadow: inset 0 0 0 1.5px rgba(8,120,93,.32),0 10px 24px rgba(8,120,93,.09);
+}
+
+[data-theme="dark"] .mescidim-section-nav {
+  border-color: rgba(141,226,196,.1);
+  background: rgba(12,25,23,.9);
+}
+
+[data-theme="dark"] .mescidim-section-nav button {
+  color: #e8f3ee;
+}
+
+[data-theme="dark"] .mescidim-section-nav button:hover {
+  background: #17362e;
+}
+
+[data-theme="dark"] .mescidim-section-nav button small {
+  color: #9eaaa5;
+}
+
+[data-theme="dark"] .mescidim-flow-heading p {
+  color: #9faea8;
+}
+
+@media(max-width:860px) {
+
+  .mescidim-today-hero {
+    grid-template-columns: 1fr minmax(190px,.55fr);
+  }
+
+  .mescidim-section-nav {
+    top: 64px;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .mescidim-flow-section,.mescidim-zikir-anchor {
+    scroll-margin-top: 226px;
+  }
+}
+
+@media(max-width:620px) {
+
+  .mescidim-experience .mescidim-scope-tabs {
+    width: 100%;
+    border-radius: 17px;
+    flex-direction: row;
+  }
+
+  .mescidim-experience .mescidim-scope-tabs button {
+    padding: 0 10px;
+    border-radius: 13px;
+  }
+
+  .mescidim-today-hero {
+    min-height: 0;
+    padding: 28px 20px;
+    grid-template-columns: 1fr;
+  }
+
+  .mescidim-today-copy h2 {
+    font-size: 36px;
+  }
+
+  .mescidim-today-copy p {
+    font-size: 11px;
+  }
+
+  .mescidim-today-mark {
+    min-height: 170px;
+  }
+
+  .mescidim-today-mark>span {
+    width: 86px;
+    height: 86px;
+    font-size: 36px;
+  }
+
+  .mescidim-today-mark i {
+    width: 132px;
+    height: 132px;
+  }
+
+  .mescidim-today-mark i:nth-of-type(2) {
+    width: 182px;
+    height: 182px;
+  }
+
+  .mescidim-today-mark i:nth-of-type(3) {
+    width: 228px;
+    height: 228px;
+  }
+
+  .mescidim-today-promise {
+    margin-top: 0;
+  }
+
+  .mescidim-section-nav {
+    position: static;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    border-radius: 18px;
+  }
+
+  .mescidim-section-nav button {
+    min-height: 62px;
+    padding: 8px;
+  }
+
+  .mescidim-flow-section,.mescidim-zikir-anchor {
+    scroll-margin-top: 82px;
+  }
+
+  .mescidim-flow-heading {
+    padding-top: 14px;
+    grid-template-columns: 44px minmax(0,1fr);
+    gap: 11px;
+  }
+
+  .mescidim-flow-heading>span {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .mescidim-flow-heading h2 {
+    font-size: 27px;
+  }
+
+  .spiritual-library-stacked {
+    gap: 30px;
+  }
+
+  .spiritual-library-stacked .spiritual-panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .spiritual-library-stacked .quiet-chip {
+    align-self: flex-start;
+  }
+}
+
+/* === MESCIDIM SINGLE-FLOW EXPERIENCE END === */
+
+.mescidim-today-hero {
+  min-height: 210px;
+  padding: 28px 36px;
+  grid-template-columns: minmax(0,1fr) 180px;
+  gap: 12px 24px;
+}
+
+.mescidim-today-copy h2 {
+  font-size: clamp(30px,3.8vw,44px);
+  margin: 10px 0 12px;
+}
+
+.mescidim-today-mark {
+  grid-column: 2;
+  grid-row: 1/3;
+  min-height: 164px;
+}
+
+.mescidim-today-mark>span {
+  width: 80px;
+  height: 80px;
+  font-size: 34px;
+}
+
+.mescidim-today-mark i {
+  width: 124px;
+  height: 124px;
+}
+
+.mescidim-today-mark i:nth-of-type(2) {
+  width: 164px;
+  height: 164px;
+}
+
+.mescidim-today-mark i:nth-of-type(3) {
+  width: 204px;
+  height: 204px;
+}
+
+.mescidim-today-promise {
+  grid-column: 1;
+  margin-top: 0;
+  width: 100%;
+  padding: 10px 12px;
+}
+
+.mescidim-show-more {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 18px;
+  padding: 12px 16px;
+  border: 1px solid rgba(0,105,80,.13);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #08785d;
+  background: #f0f8f4;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mescidim-show-more:hover {
+  background: #e3f2eb;
+}
+
+.spiritual-library-stacked .asma-grid {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+
+@media(max-width:620px) {
+
+  .mescidim-today-hero {
+    padding: 24px 20px;
+    grid-template-columns: minmax(0,1fr) 64px;
+    gap: 16px;
+  }
+
+  .mescidim-today-copy h2 {
+    font-size: 30px;
+  }
+
+  .mescidim-today-mark {
+    grid-row: 1;
+    min-height: 70px;
+  }
+
+  .mescidim-today-mark>span {
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+  }
+
+  .mescidim-today-mark i {
+    width: 85px;
+    height: 85px;
+  }
+
+  .mescidim-today-mark i:nth-of-type(2) {
+    width: 110px;
+    height: 110px;
+  }
+
+  .mescidim-today-mark i:nth-of-type(3) {
+    display: none;
+  }
+
+  .mescidim-today-promise {
+    grid-column: 1/-1;
+  }
+
+  .spiritual-library-stacked .asma-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
