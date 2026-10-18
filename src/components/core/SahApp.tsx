@@ -1,8 +1,15 @@
 "use client";
+import SahSidebar, {
+  SahShell,
+  navigationItems,
+  type ViewKey,
+} from "./SahSidebar";
+import SahMobileNav from "./SahMobileNav";
+import SahHeader from "./SahHeader";
+import SahProfileMenu from "./SahProfileMenu";
 import LoginScreen from "@/components/auth/LoginScreen";
 import { useSignOut } from "@/hooks/useSignOut";
 import { AppIcon } from "@/components/ui/AppIcon";
-import AvatarImage from "@/components/ui/AvatarImage";
 import SectionSkeleton from "@/components/ui/SectionSkeleton";
 import { openAppView, readAppView } from "@/lib/appLocation";
 import { getLevelForXP } from "@/lib/constants";
@@ -18,16 +25,19 @@ import type { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import AwarenessProfileSummary from "./AwarenessProfileSummary";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import CommandPalette from "./CommandPalette";
 import type { GrowthNavigationCue } from "./GrowthTree";
 import MilestoneCelebration, { type Milestone } from "./MilestoneCelebration";
-import ProfessionProfileSummary from "./ProfessionProfileSummary";
 import SectionErrorBoundary from "./SectionErrorBoundary";
-import type { SectionKey } from "./SectionView";
 import WelcomeGuide from "./WelcomeGuide";
-import polish from "./SahAppPolish.module.css";
 
 const DashboardView = dynamic(() => import("./DashboardView"), {
   loading: () => <SectionSkeleton shape="scene" />,
@@ -44,60 +54,28 @@ const SectionView = dynamic(() => import("./SectionView"), {
 const JournalHubView = dynamic(() => import("./JournalHubView"), {
   loading: () => <SectionSkeleton shape="editor" />,
 });
-const FocusTimerView = dynamic(() => import("@/app/focus/components/FocusExperience"), {
-  loading: () => <SectionSkeleton shape="timer" />,
-});
+const FocusTimerView = dynamic(
+  () => import("@/app/focus/components/FocusExperience"),
+  {
+    loading: () => <SectionSkeleton shape="timer" />,
+  },
+);
 const AwarenessView = dynamic(() => import("./AwarenessView"), {
   loading: () => <SectionSkeleton shape="scene" />,
 });
-const ProfessionSchoolView = dynamic(() => import("../profession/ProfessionSchoolView"), {
-  loading: () => <SectionSkeleton />,
-});
+const ProfessionSchoolView = dynamic(
+  () => import("../profession/ProfessionSchoolView"),
+  {
+    loading: () => <SectionSkeleton />,
+  },
+);
 const QuranCompanionView = dynamic(() => import("./QuranCompanionView"), {
   loading: () => <SectionSkeleton />,
 });
 const AccountSettingsDialog = dynamic(() => import("./AccountSettingsDialog"));
-const ProfileView = dynamic(() => import('@/components/ui/ProfileView'), {
+const ProfileView = dynamic(() => import("@/components/ui/ProfileView"), {
   loading: () => <SectionSkeleton shape="report" />,
 });
-
-type ViewKey =
-  | "dashboard"
-  | "growth"
-  | "community"
-  | "reports"
-  | "profile"
-  | "focus"
-  | "awareness"
-  | "profession-school"
-  | "quran-companion"
-  | SectionKey;
-type NavigationItem = { id: ViewKey; label: string; mobileLabel?: string; icon: string };
-
-const navigationItems: NavigationItem[] = [
-  { id: "dashboard", label: "Âlem", icon: "home" },
-  { id: "focus", label: "Attention Is All You Need", mobileLabel: "Attention", icon: "target-arrow" },
-  { id: "quran-companion", label: "Kur’an’ı Kerim Kardeşim", icon: "book-2" },
-  { id: "mescidim", label: "Allah’a en sevimli olan mekânlar", mobileLabel: "Mekânlar", icon: "building-mosque" },
-  { id: "journal", label: "Günlük", icon: "notebook" },
-  { id: "awareness", label: "Mazlum Coğrafyalar", icon: "world-heart" },
-  { id: "reports", label: "Gelişim Raporlarım", icon: "chart-histogram" },
-  {
-    id: "profession-school",
-    label: "Meslek ve Ahlak Okulu",
-    icon: "certificate",
-  },
-];
-
-const mobileNavigationIds: ViewKey[] = [
-  "dashboard",
-  "focus",
-  "mescidim",
-  "journal",
-];
-const mobileNavigationItems = mobileNavigationIds
-  .map((id) => navigationItems.find((item) => item.id === id))
-  .filter((item): item is NavigationItem => Boolean(item));
 
 const viewLabels: Partial<Record<ViewKey, string>> = Object.fromEntries(
   navigationItems.map((item) => [item.id, item.label]),
@@ -124,32 +102,15 @@ export default function SahApp({
   useEffect(() => {
     if (previousView.current === view) return;
     previousView.current = view;
-    const frame = requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }));
+    const frame = requestAnimationFrame(() =>
+      mainRef.current?.focus({ preventScroll: true }),
+    );
     return () => cancelAnimationFrame(frame);
   }, [view]);
-  const handleSidebarKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
-    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
-    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
-    const current = buttons.indexOf(event.target as HTMLButtonElement);
-    if (current < 0) return;
-    event.preventDefault();
-    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 :
-      (current + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length;
-    buttons[next]?.focus();
-  };
   const setView = useCallback((next: string) => {
     openAppView(readAppView(new URLSearchParams({ view: next })));
   }, []);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  useEffect(() => {
-    try { const collapsed = ['true', '1'].includes(localStorage.getItem('sah:sidebar-collapsed') ?? ''); queueMicrotask(() => setSidebarCollapsed(collapsed)); } catch { /* optional device preference */ }
-  }, []);
-  const toggleSidebar = () => {
-    const next = !sidebarCollapsed;
-    setSidebarCollapsed(next);
-    try { localStorage.setItem('sah:sidebar-collapsed', String(next)); } catch { /* still works this visit */ }
-  };
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -157,7 +118,9 @@ export default function SahApp({
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [milestone, setMilestone] = useState<Milestone>(null);
   const [professionModalOpen, setProfessionModalOpen] = useState(false);
-  const [transitionCue, setTransitionCue] = useState<(GrowthNavigationCue & { nonce: number }) | null>(null);
+  const [transitionCue, setTransitionCue] = useState<
+    (GrowthNavigationCue & { nonce: number }) | null
+  >(null);
   const reducedMotion = useReducedMotion();
   const transitionCueTimer = useRef<number | null>(null);
   const milestoneArmed = useRef(false);
@@ -181,7 +144,10 @@ export default function SahApp({
   }, [quranThreads]);
   useEffect(() => {
     const uid = user?.id;
-    if (!uid) { queueMicrotask(() => setQuranThreads([])); return; }
+    if (!uid) {
+      queueMicrotask(() => setQuranThreads([]));
+      return;
+    }
     let active = true;
     const fetch = () =>
       void supabase.rpc("get_quran_thread_summaries").then(({ data }) => {
@@ -189,10 +155,31 @@ export default function SahApp({
       });
     fetch();
     const channel = ownedRealtimeChannel(supabase, `sidebar-quran-${uid}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `receiver_id=eq.${uid}` }, fetch)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chat_messages", filter: `sender_id=eq.${uid}` }, fetch)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
+          filter: `receiver_id=eq.${uid}`,
+        },
+        fetch,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_messages",
+          filter: `sender_id=eq.${uid}`,
+        },
+        fetch,
+      )
       .subscribe();
-    return () => { active = false; void supabase.removeChannel(channel); };
+    return () => {
+      active = false;
+      void supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   useEffect(() => {
@@ -227,7 +214,11 @@ export default function SahApp({
     };
     const initialSync = window.setTimeout(() => {
       // A restored fullscreen preference must not replace an explicit shared URL.
-      if (useFocusTimerStore.getState().isFullscreen && !new URLSearchParams(window.location.search).has('view')) showFocus();
+      if (
+        useFocusTimerStore.getState().isFullscreen &&
+        !new URLSearchParams(window.location.search).has("view")
+      )
+        showFocus();
     }, 0);
     const unsubscribe = useFocusTimerStore.subscribe((state, previous) => {
       if (state.isFullscreen && !previous.isFullscreen) showFocus();
@@ -262,7 +253,11 @@ export default function SahApp({
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const apply = () => {
       const nextTheme =
-        preference === "system" ? (media.matches ? "dark" : "light") : preference;
+        preference === "system"
+          ? media.matches
+            ? "dark"
+            : "light"
+          : preference;
       document.documentElement.dataset.theme = nextTheme;
       setTheme(nextTheme);
     };
@@ -339,9 +334,13 @@ export default function SahApp({
     milestoneSnapshot.current = current;
   }, [currentLevelName, journalCount, milestone, streakCurrent]);
 
-  useEffect(() => () => {
-    if (transitionCueTimer.current) window.clearTimeout(transitionCueTimer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (transitionCueTimer.current)
+        window.clearTimeout(transitionCueTimer.current);
+    },
+    [],
+  );
 
   const closeSearch = useCallback(() => setSearchOpen(false), []);
 
@@ -353,15 +352,22 @@ export default function SahApp({
 
   const navigate = (next: string, cue?: GrowthNavigationCue) => {
     if (cue && !reducedMotion) {
-      if (transitionCueTimer.current) window.clearTimeout(transitionCueTimer.current);
+      if (transitionCueTimer.current)
+        window.clearTimeout(transitionCueTimer.current);
       setTransitionCue({ ...cue, nonce: Date.now() });
-      transitionCueTimer.current = window.setTimeout(() => setTransitionCue(null), 520);
+      transitionCueTimer.current = window.setTimeout(
+        () => setTransitionCue(null),
+        520,
+      );
     }
     if (next === "focus") {
       openAppView("focus", next);
       return;
     } else if (next === "quran" || next === "hadis") {
-      openAppView("quran-companion", "wheel", { wisdom: "archive", archive: next === "quran" ? "verse" : "hadith" });
+      openAppView("quran-companion", "wheel", {
+        wisdom: "archive",
+        archive: next === "quran" ? "verse" : "hadith",
+      });
     } else if (next === "daily-wheel") {
       openAppView("quran-companion", "wheel", { wisdom: "verse" });
     } else if (next === "matrix" || next === "sukur" || next === "lessons") {
@@ -393,7 +399,10 @@ export default function SahApp({
     changeTheme(next);
     if (activeProfile) {
       useAuthStore.getState().patchProfile({ theme_preference: next });
-      void supabase.from("profiles").update({ theme_preference: next }).eq("id", activeProfile.id);
+      void supabase
+        .from("profiles")
+        .update({ theme_preference: next })
+        .eq("id", activeProfile.id);
     }
   };
   const openPage = (path: string) => {
@@ -406,205 +415,104 @@ export default function SahApp({
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(activeProfile?.display_name || "Yolcu")}`;
 
   return (
-    <div className={`core-app phase-two-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${view === "focus" ? "focus-mode" : ""}`}>
-      <a href="#main-content" className="skip-link">İçeriğe atla</a>
-      <div aria-live="polite" aria-atomic="true" className="sr-only">{milestone?.title ?? `Toplam ${store.xp} XH`}</div>
-      <aside className={`app-sidebar core-sidebar ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Ana navigasyon">
-        <button
-          className="brand sidebar-brand"
-          onClick={() => navigate("dashboard")}
-          aria-label="SAHİ ana sayfa"
-        >
-          <span className="brand-mark"><AppIcon name="leaf" /></span>
-          <span><strong className={polish.brandWordmark}>SAHİ</strong></span>
-        </button>
-
-        <nav className="sidebar-nav">
-          <section aria-label="Ana bölümler" onKeyDown={handleSidebarKeyDown}>
-            <p>ANA BÖLÜMLER</p>
-            {navigationItems.map((item) => (
-              <button
-                key={item.id}
-                className={`${view === item.id ? "active" : ""} ${polish.navButton} ${item.mobileLabel ? polish.longNavButton : ""}`}
-                onClick={() => navigate(item.id)}
-                aria-current={view === item.id ? "page" : undefined}
-                aria-label={item.label}
-                data-tooltip={item.label}
-              >
-                <AppIcon name={item.icon} />
-                <span className={`nav-label ${polish.navLabel}`}>{item.label}</span>
-                {item.id === "quran-companion" && quranUnread > 0 && (
-                  <em className="sidebar-badge" aria-label={`${quranUnread} okunmamış mesaj`}>
-                    {quranUnread > 99 ? "99+" : quranUnread}
-                  </em>
-                )}
-              </button>
-            ))}
-          </section>
-        </nav>
-
-        <div className="sidebar-support">
-          <button onClick={() => openPage("/feedback")} aria-label="Görüş ve Öneri" data-tooltip="Görüş ve Öneri">
-            <AppIcon name="message-heart" />
-            <span className="nav-label">Görüş ve Öneri</span>
-          </button>
-          <p>
-            <AppIcon name="lock" /> Özel kayıtların yalnızca sana görünür.
-          </p>
-          <div className="sidebar-legal">
-            <a href="/gizlilik">Gizlilik</a>
-            <span>·</span>
-            <a href="/kullanim-kosullari">Koşullar</a>
-          </div>
-          <button className="sidebar-collapse-toggle" onClick={toggleSidebar} aria-expanded={!sidebarCollapsed} aria-label={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} data-tooltip={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}>
-            <AppIcon name={sidebarCollapsed ? "layout-sidebar-right" : "layout-sidebar-left-collapse"} /><span className="nav-label">Menüyü daralt</span>
-          </button>
-        </div>
-      </aside>
+    <SahShell focusMode={view === "focus"}>
+      <a href="#main-content" className="skip-link">
+        İçeriğe atla
+      </a>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {milestone?.title ?? `Toplam ${store.xp} XH`}
+      </div>
+      <SahSidebar
+        view={view}
+        navigate={navigate}
+        openPage={openPage}
+        quranUnread={quranUnread}
+      />
 
       <div className="app-workspace">
-        <header className="app-header">
-          <button
-            className="mobile-brand"
-            onClick={() => navigate("dashboard")}
-            aria-label="SAHİ ana sayfa"
-          >
-            <span className="brand-mark"><AppIcon name="leaf" /></span>
-            <strong className={polish.mobileWordmark}>SAHİ</strong>
-          </button>
-          <div className="header-search-area">
-            <div className="route-context">
-              <span className={polish.routeBrand}>SAHİ</span>
-              <strong className={polish.routeTitle}>{viewLabels[view] ?? "Kişisel alan"}</strong>
-            </div>
-            <button
-              className="global-search-button"
-              onClick={() => setSearchOpen(true)}
-              aria-label="Her yerde ara"
-            >
-              <AppIcon name="search" />
-              <span>Ayet, niyet, ders veya kavram ara…</span>
-              <kbd>Ctrl K</kbd>
-            </button>
-          </div>
-          <div className="header-actions" ref={profileMenuRef}>
-            <button
-              className="header-quick-add"
-              aria-label="Gününü Yaz"
-              onClick={() => navigate("journal")}
-            >
-              <AppIcon name="plus" />
-              <span className={polish.quickAddLabel}>Gününü Yaz</span>
-            </button>
-            <button
-              className="profile-button"
-              aria-label="Hesap menüsü"
-              onClick={() => setProfileOpen((value) => !value)}
-              aria-expanded={profileOpen}
-              aria-haspopup="menu"
-            >
-              <AvatarImage src={avatarUrl} size={48} priority />
-              <span>
-                <strong>{activeProfile?.display_name || "Yolcu"}</strong>
-                <small>
-                  {level.name} · {store.xp} XH
-                </small>
-              </span>
-              <AppIcon name="chevron-down" />
-            </button>
-            {profileOpen && (
-              <div className="profile-popover" role="menu">
-                <div className="profile-summary">
-                  <AvatarImage src={avatarUrl} size={48} />
-                  <span>
-                    <strong>{activeProfile?.display_name || "Yolcu"}</strong>
-                    <small>
-                      {store.streak.current} günlük seri · {level.name}
-                    </small>
-                  </span>
-                </div>
-                <AwarenessProfileSummary onOpen={() => navigate("awareness")} />
-                <ProfessionProfileSummary
-                  onOpen={() => navigate("profession-school")}
-                />
-                <button role="menuitem" onClick={() => navigate("profile")}>
-                  <AppIcon name="user-circle" /> Profilim ve rozetlerim
-                </button>
-                <button role="menuitem" onClick={() => navigate("community")}>
-                  <AppIcon name="users-group" /> Topluluklarım
-                </button>
-                <button
-                  role="menuitem"
-                  onClick={() => {
-                    setProfileOpen(false);
-                    setSettingsOpen(true);
-                  }}
-                >
-                  <AppIcon name="settings" /> Hesap ve gizlilik
-                </button>
-                <button role="menuitem" onClick={toggleTheme}>
-                  <AppIcon name={theme === "light" ? "moon" : "sun"} />{" "}
-                  {theme === "light" ? "Gece görünümü" : "Aydınlık görünüm"}
-                </button>
-                {activeUser?.app_metadata?.role === "admin" && (
-                  <button
-                    role="menuitem"
-                    onClick={() => openPage("/admin/feedback")}
-                  >
-                    <AppIcon name="shield-check" /> Geri bildirim yönetimi
-                  </button>
-                )}
-                <button
-                  className="signout"
-                  role="menuitem"
-                  disabled={isSigningOut}
-                  onClick={() => void signOut()}
-                >
-                  <AppIcon name="logout" /> {isSigningOut ? "Çıkış yapılıyor…" : "Oturumu kapat"}
-                </button>
-                {signOutError && <p role="alert">{signOutError}</p>}
-              </div>
-            )}
-          </div>
-        </header>
+        <SahHeader
+          navigate={navigate}
+          viewLabel={viewLabels[view] ?? "Kişisel alan"}
+          setSearchOpen={setSearchOpen}
+          profileMenuRef={profileMenuRef}
+          setProfileOpen={setProfileOpen}
+          profileOpen={profileOpen}
+          avatarUrl={avatarUrl}
+          activeProfile={activeProfile}
+          level={level}
+          store={store}
+        >
+          <SahProfileMenu
+            avatarUrl={avatarUrl}
+            activeProfile={activeProfile}
+            store={store}
+            level={level}
+            navigate={navigate}
+            setProfileOpen={setProfileOpen}
+            setSettingsOpen={setSettingsOpen}
+            toggleTheme={toggleTheme}
+            theme={theme}
+            activeUser={activeUser}
+            openPage={openPage}
+            isSigningOut={isSigningOut}
+            signOut={signOut}
+            signOutError={signOutError}
+          />
+        </SahHeader>
 
         <AnimatePresence>
           {transitionCue && (
             <motion.div
               key={transitionCue.nonce}
               className="context-navigation-cue"
-              style={{ '--navigation-accent': transitionCue.accent } as CSSProperties}
+              style={
+                { "--navigation-accent": transitionCue.accent } as CSSProperties
+              }
               initial={{ opacity: 0, scaleX: 0.04 }}
               animate={{ opacity: [0, 0.62, 0], scaleX: [0.04, 1, 1] }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.46, ease: [0.22, 1, 0.36, 1] }}
               aria-hidden="true"
             >
-              <span><AppIcon name={transitionCue.icon} />{transitionCue.label}</span>
+              <span>
+                <AppIcon name={transitionCue.icon} />
+                {transitionCue.label}
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <main className="app-main" id="main-content" ref={mainRef} tabIndex={-1}>
-      {activeProfile?.created_at && (
-        <WelcomeGuide
-          key={`${activeProfile.id}-${onboardingPreview}`}
-          name={activeProfile.display_name || 'Yolcu'}
-          currentView={view}
-          hasActivity={store.xp > 0 || store.journal.length > 0 || (activeProfile.xp ?? 0) > 0}
-          profileId={activeProfile.id}
-          createdAt={activeProfile.created_at}
-          completed={
-            onboardingPreview ? false : activeProfile.onboarding_completed
-          }
-          preview={onboardingPreview}
-          onComplete={() =>
-            useAuthStore.getState().patchProfile({ onboarding_completed: true })
-          }
-          onStart={() => navigate("journal")}
-          onReturn={() => navigate("dashboard")}
-        />
-      )}
+        <main
+          className="app-main"
+          id="main-content"
+          ref={mainRef}
+          tabIndex={-1}
+        >
+          {activeProfile?.created_at && (
+            <WelcomeGuide
+              key={`${activeProfile.id}-${onboardingPreview}`}
+              name={activeProfile.display_name || "Yolcu"}
+              currentView={view}
+              hasActivity={
+                store.xp > 0 ||
+                store.journal.length > 0 ||
+                (activeProfile.xp ?? 0) > 0
+              }
+              profileId={activeProfile.id}
+              createdAt={activeProfile.created_at}
+              completed={
+                onboardingPreview ? false : activeProfile.onboarding_completed
+              }
+              preview={onboardingPreview}
+              onComplete={() =>
+                useAuthStore
+                  .getState()
+                  .patchProfile({ onboarding_completed: true })
+              }
+              onStart={() => navigate("journal")}
+              onReturn={() => navigate("dashboard")}
+            />
+          )}
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={view}
@@ -612,88 +520,55 @@ export default function SahApp({
               initial={reducedMotion ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
-              transition={{ duration: reducedMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: reducedMotion ? 0 : 0.22,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             >
-              <SectionErrorBoundary key={view} sectionName={viewLabels[view] ?? "Kişisel alan"}>
-              {view === "dashboard" ? (
-                <DashboardView onNavigate={navigate} />
-              ) : view === "growth" ? (
-                <DashboardView onNavigate={navigate} />
-              ) : view === "reports" ? (
-                <ReportsView />
-              ) : view === "profile" ? (
-                <ProfileView />
-              ) : view === "community" ? (
-                <CommunityView />
-              ) : view === "quran-companion" ? (
-                <QuranCompanionView
-                  onNavigate={navigate}
-                />
-              ) : view === "journal" ? (
-                <JournalHubView
-                  onNavigate={navigate}
-                />
-              ) : view === "focus" ? (
-                <FocusTimerView
-                  onExit={() => navigate("dashboard")}
-                />
-              ) : view === "awareness" ? (
-                <AwarenessView onNavigate={navigate} />
-              ) : view === "profession-school" ? (
-                <ProfessionSchoolView onNavigate={navigate} onModalChange={setProfessionModalOpen}/>
-              ) : (
-                <SectionView section={view} onNavigate={navigate} />
-              )}
+              <SectionErrorBoundary
+                key={view}
+                sectionName={viewLabels[view] ?? "Kişisel alan"}
+              >
+                {view === "dashboard" ? (
+                  <DashboardView onNavigate={navigate} />
+                ) : view === "growth" ? (
+                  <DashboardView onNavigate={navigate} />
+                ) : view === "reports" ? (
+                  <ReportsView />
+                ) : view === "profile" ? (
+                  <ProfileView />
+                ) : view === "community" ? (
+                  <CommunityView />
+                ) : view === "quran-companion" ? (
+                  <QuranCompanionView onNavigate={navigate} />
+                ) : view === "journal" ? (
+                  <JournalHubView onNavigate={navigate} />
+                ) : view === "focus" ? (
+                  <FocusTimerView onExit={() => navigate("dashboard")} />
+                ) : view === "awareness" ? (
+                  <AwarenessView onNavigate={navigate} />
+                ) : view === "profession-school" ? (
+                  <ProfessionSchoolView
+                    onNavigate={navigate}
+                    onModalChange={setProfessionModalOpen}
+                  />
+                ) : (
+                  <SectionView section={view} onNavigate={navigate} />
+                )}
               </SectionErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </main>
       </div>
 
-      <nav className="mobile-nav" aria-label="Mobil navigasyon">
-        {mobileNavigationItems.map((item) => (
-          <button
-            key={item.id}
-            className={view === item.id ? "active" : ""}
-            onClick={() => navigate(item.id)}
-            aria-current={view === item.id ? "page" : undefined}
-          >
-            <AppIcon name={item.icon} />
-            <span>
-              {item.mobileLabel ?? (item.label === "Kur’an’ı Kerim Kardeşim" ? "Kur’an" : item.label)}
-            </span>
-          </button>
-        ))}
-        <button
-          className={moreOpen ? "active" : ""}
-          onClick={() => setMoreOpen((value) => !value)}
-          aria-expanded={moreOpen}
-        >
-          <AppIcon name="dots" />
-          <span>Daha</span>
-        </button>
-      </nav>
-
-      {moreOpen && (
-        <div className="mobile-more" role="dialog" aria-label="Diğer bölümler">
-          {navigationItems.filter((item) => !mobileNavigationIds.includes(item.id)).map((item) => (
-            <button key={item.id} onClick={() => navigate(item.id)}>
-              <AppIcon name={item.icon} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-          <button onClick={() => openPage("/feedback")}>
-            <AppIcon name="message-heart" />
-            <span>Görüş</span>
-          </button>
-          {activeUser?.app_metadata?.role === "admin" && (
-            <button onClick={() => openPage("/admin/feedback")}>
-              <AppIcon name="shield-check" />
-              <span>Yönetim</span>
-            </button>
-          )}
-        </div>
-      )}
+      <SahMobileNav
+        view={view}
+        navigate={navigate}
+        moreOpen={moreOpen}
+        setMoreOpen={setMoreOpen}
+        openPage={openPage}
+        activeUser={activeUser}
+      />
       <CommandPalette
         open={searchOpen}
         onClose={closeSearch}
@@ -709,7 +584,7 @@ export default function SahApp({
         milestone={professionModalOpen ? null : milestone}
         onClose={() => setMilestone(null)}
       />
-    </div>
+    </SahShell>
   );
 }
 
