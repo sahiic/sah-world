@@ -126,7 +126,7 @@
   border: none;
   border-radius: 10px;
   background: var(--de-accent, #4f46e5);
-  color: #fff;
+  color: var(--color-white);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;

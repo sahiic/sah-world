@@ -58,7 +58,7 @@
   outline-offset: 3px;
 }
 .peer-v2 .peer-primary {
-  color: #fff;
+  color: var(--color-white);
   background: var(--peer-accent);
   border-color: var(--peer-accent);
 }
@@ -553,7 +553,7 @@
 }
 .peer-timeline .done span {
   background: var(--peer-accent);
-  color: #fff;
+  color: var(--color-white);
 }
 .peer-legacy summary {
   cursor: pointer;
@@ -592,7 +592,7 @@
 [data-theme="dark"] .peer-v2 .peer-primary {
   background: #0b7657;
   border-color: #0b7657;
-  color: #fff;
+  color: var(--color-white);
 }
 [data-theme="dark"] .peer-hero-tags span {
   background: #ffffff0b;

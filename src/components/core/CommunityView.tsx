@@ -1,7 +1,9 @@
 "use client";
-import EmptyState from "@/components/ui/EmptyState";
+import CommunityEmpty from "./CommunityEmpty";
+import { CreateGroupForm, JoinGroupForm } from "./CommunityGroupForms";
+import Roster from "./CommunityRoster";
+import GroupChat from "./CommunityGroupChat";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { getLevelForXP } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import { ownedRealtimeChannel } from "@/lib/ownedRealtimeChannel";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -10,7 +12,7 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import AvatarImage from "@/components/ui/AvatarImage";
 import { useModalFocus } from "@/hooks/useModalFocus";
 
-type RosterMember = {
+export type RosterMember = {
   user_id: string;
   display_name: string;
   avatar_url: string | null;
@@ -21,7 +23,7 @@ type RosterMember = {
   joined_at: string;
 };
 
-type GroupPreview = Pick<
+export type GroupPreview = Pick<
   GroupRow,
   "id" | "name" | "description" | "group_code" | "member_count"
 >;
@@ -558,267 +560,6 @@ export default function CommunityView() {
           </section>
         </div>
       )}
-    </div>
-  );
-}
-
-function CommunityEmpty({
-  onCreate,
-  onJoin,
-}: {
-  onCreate: () => void;
-  onJoin: () => void;
-}) {
-  return (
-    <section className="surface-card community-empty">
-      <div className="community-orbits">
-        <i />
-        <i />
-        <i />
-        <span>◎</span>
-      </div>
-      <span className="eyebrow">GRUBUM YOK</span>
-      <h2>İyi alışkanlıklar, iyi bir çevreyle güçlenir.</h2>
-      <p>
-        Yakınların için özel bir topluluk oluştur veya sana gönderilen altı
-        karakterli kodla katıl. Günlük, hata ve tefekkür içerikleri paylaşılmaz.
-      </p>
-      <div>
-        <button className="primary-button" onClick={onCreate}>
-          Grup oluştur
-        </button>
-        <button className="ghost-button" onClick={onJoin}>
-          Gruba katıl
-        </button>
-      </div>
-    </section>
-  );
-}
-
-function CreateGroupForm({
-  busy,
-  onSubmit,
-}: {
-  busy: boolean;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-}) {
-  return (
-    <form onSubmit={onSubmit}>
-      <label className="field">
-        <span>Grup adı</span>
-        <input
-          name="name"
-          minLength={2}
-          maxLength={60}
-          required
-          placeholder="Örn. Sabah Halkası"
-        />
-      </label>
-      <label className="field">
-        <span>
-          Kısa açıklama <small>İsteğe bağlı</small>
-        </span>
-        <textarea
-          name="description"
-          maxLength={240}
-          rows={3}
-          placeholder="Bu grupta neyi birlikte sürdüreceksiniz?"
-        />
-      </label>
-      <div className="dialog-security">
-        <AppIcon name="lock" />
-        <span>
-          <strong>Kişisel kayıtların paylaşılmaz.</strong> Üyeler yalnızca
-          adını, seviyeni, serini ve toplam XH’ını görür.
-        </span>
-      </div>
-      <button className="primary-button" type="submit" disabled={busy}>
-        {busy ? "Oluşturuluyor…" : "Topluluğu oluştur"}
-      </button>
-    </form>
-  );
-}
-
-function JoinGroupForm({
-  busy,
-  preview,
-  onCodeChange,
-  onSubmit,
-}: {
-  busy: boolean;
-  preview: GroupPreview | null;
-  onCodeChange: () => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-}) {
-  return (
-    <form onSubmit={onSubmit}>
-      <label className="field code-field">
-        <span>6 karakterli grup kodu</span>
-        <input
-          name="code"
-          minLength={6}
-          maxLength={6}
-          pattern="[A-Za-z0-9]{6}"
-          required
-          defaultValue={preview?.group_code ?? ""}
-          onChange={onCodeChange}
-          placeholder="A1B2C3"
-          autoCapitalize="characters"
-          autoComplete="off"
-        />
-      </label>
-      {preview && (
-        <article className="group-preview">
-          <span>{preview.name.slice(0, 2).toLocaleUpperCase("tr-TR")}</span>
-          <div>
-            <small>DAVET DOĞRULANDI</small>
-            <strong>{preview.name}</strong>
-            <p>
-              {preview.description || "Birlikte istikrar için özel topluluk."}
-            </p>
-          </div>
-          <b>{preview.member_count}/100 üye</b>
-        </article>
-      )}
-      <div className="dialog-security">
-        <AppIcon name="shield-check" />
-        <span>
-          <strong>Katılma işlemi kontrollüdür.</strong> Kod doğrulanmadan üyelik
-          oluşturulmaz.
-        </span>
-      </div>
-      <button className="primary-button" type="submit" disabled={busy}>
-        {busy
-          ? "Kontrol ediliyor…"
-          : preview
-            ? "Topluluğa güvenle katıl"
-            : "Kodu doğrula"}
-      </button>
-    </form>
-  );
-}
-
-function Roster({ members }: { members: RosterMember[] }) {
-  if (!members.length)
-    return (
-      <EmptyState icon="◎" title="Henüz başka üye yok" description="Davet kodunu güvendiğin kişilerle paylaşarak topluluğunu büyütebilirsin." />
-    );
-  return (
-    <div className="roster">
-      <div className="roster-head">
-        <span>Sıra & üye</span>
-        <span>Seviye</span>
-        <span>Seri</span>
-        <span>Toplam XH</span>
-      </div>
-      {members.map((member, index) => {
-        const { level } = getLevelForXP(member.xp);
-        return (
-          <article key={member.user_id}>
-            <b className={`rank rank-${index + 1}`}>
-              {index < 3 ? ["Ⅰ", "Ⅱ", "Ⅲ"][index] : index + 1}
-            </b>
-            <AvatarImage
-              src={
-                member.avatar_url ||
-                `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(member.display_name)}`
-              }
-              size={42}
-            />
-            <div className="member-name">
-              <strong>{member.display_name}</strong>
-              <small>{member.role === "owner" ? "Kurucu" : "Üye"}</small>
-            </div>
-            <span className="level-badge">
-              {level.icon} {level.name}
-            </span>
-            <span className="streak-cell">↗ {member.streak_current}</span>
-            <strong className="xp-cell">
-              {member.xp.toLocaleString("tr-TR")} XH
-            </strong>
-          </article>
-        );
-      })}
-    </div>
-  );
-}
-
-function GroupChat({
-  messages,
-  roster,
-  userId,
-  onSend,
-  onLoadOlder,
-  hasOlder,
-  sending,
-  endRef,
-}: {
-  messages: ChatMessageRow[];
-  roster: RosterMember[];
-  userId: string;
-  onSend: (event: React.FormEvent<HTMLFormElement>) => void;
-  onLoadOlder: () => void;
-  hasOlder: boolean;
-  sending: boolean;
-  endRef: React.RefObject<HTMLDivElement | null>;
-}) {
-  const byId = new Map(roster.map((member) => [member.user_id, member]));
-  return (
-    <div className="chat-shell">
-      <div className="message-list" aria-live="polite">
-        {hasOlder && (
-          <button className="older-messages" onClick={onLoadOlder}>
-            Daha eski mesajları yükle
-          </button>
-        )}
-        {!messages.length ? (
-          <EmptyState icon="◌" title="Sohbet henüz sessiz" description="İlk destek mesajını göndererek alanı başlat." />
-        ) : (
-          messages.map((message) => {
-            const own = message.sender_id === userId;
-            const member = byId.get(message.sender_id);
-            return (
-              <article className={own ? "own" : ""} key={message.id}>
-                {!own && (
-                  <AvatarImage
-                    src={
-                      member?.avatar_url ||
-                      `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(member?.display_name || "SAHİ")}`
-                    }
-                    size={32}
-                  />
-                )}
-                <div>
-                  <small>
-                    {own ? "Sen" : member?.display_name || "Üye"} ·{" "}
-                    {new Intl.DateTimeFormat("tr-TR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(new Date(message.created_at))}
-                  </small>
-                  <p>{message.content}</p>
-                </div>
-              </article>
-            );
-          })
-        )}
-        <div ref={endRef} />
-      </div>
-      <form className="message-form" onSubmit={onSend}>
-        <label className="sr-only" htmlFor="group-message">
-          Topluluk mesajı
-        </label>
-        <input
-          id="group-message"
-          name="message"
-          maxLength={2000}
-          autoComplete="off"
-          placeholder="Topluluğa destekleyici bir mesaj yaz…"
-        />
-        <button type="submit" disabled={sending}>
-          {sending ? "Gönderiliyor…" : "Gönder"}
-        </button>
-      </form>
     </div>
   );
 }

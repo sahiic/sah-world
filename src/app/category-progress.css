@@ -56,8 +56,8 @@
   flex-shrink: 0;
 }
 
-.cp-overall-badge.up { color: #059669; background: rgba(5, 150, 105, 0.08) }
-.cp-overall-badge.down { color: #dc2626; background: rgba(220, 38, 38, 0.08) }
+.cp-overall-badge.up { color: var(--palette-emerald-600); background: rgba(5, 150, 105, 0.08) }
+.cp-overall-badge.down { color: var(--palette-red-600); background: rgba(220, 38, 38, 0.08) }
 .cp-overall-badge.same { color: var(--text-muted, #6b7280); background: rgba(0, 0, 0, 0.04) }
 
 .cp-list {
@@ -129,7 +129,7 @@
 
 .cp-bar.current {
   background: var(--bar-current, #4f46e5);
-  color: #fff;
+  color: var(--color-white);
 }
 
 .cp-trend {
@@ -139,8 +139,8 @@
   justify-content: center;
 }
 
-.cp-trend.up, .cp-trend.new { color: #059669 }
-.cp-trend.down { color: #dc2626 }
+.cp-trend.up, .cp-trend.new { color: var(--palette-emerald-600) }
+.cp-trend.down { color: var(--palette-red-600) }
 .cp-trend.same { color: var(--text-muted, #9ca3af) }
 
 .cp-insights {
@@ -160,12 +160,12 @@
 
 .cp-insight.up {
   background: rgba(5, 150, 105, 0.06);
-  color: #059669;
+  color: var(--palette-emerald-600);
 }
 
 .cp-insight.down {
   background: rgba(220, 38, 38, 0.05);
-  color: #dc2626;
+  color: var(--palette-red-600);
 }
 
 .cp-insight strong {
@@ -202,14 +202,14 @@
   --bar-current: #818cf8;
 }
 
-[data-theme="dark"] .cp-overall-badge.up { color: #34d399; background: rgba(52, 211, 153, 0.1) }
+[data-theme="dark"] .cp-overall-badge.up { color: var(--palette-emerald-400); background: rgba(52, 211, 153, 0.1) }
 [data-theme="dark"] .cp-overall-badge.down { color: #f87171; background: rgba(248, 113, 113, 0.1) }
 [data-theme="dark"] .cp-overall-badge.same { background: rgba(255, 255, 255, 0.05) }
-[data-theme="dark"] .cp-trend.up, [data-theme="dark"] .cp-trend.new { color: #34d399 }
+[data-theme="dark"] .cp-trend.up, [data-theme="dark"] .cp-trend.new { color: var(--palette-emerald-400) }
 [data-theme="dark"] .cp-trend.down { color: #f87171 }
-[data-theme="dark"] .cp-insight.up { background: rgba(52, 211, 153, 0.08); color: #34d399 }
+[data-theme="dark"] .cp-insight.up { background: rgba(52, 211, 153, 0.08); color: var(--palette-emerald-400) }
 [data-theme="dark"] .cp-insight.down { background: rgba(248, 113, 113, 0.08); color: #f87171 }
-[data-theme="dark"] .cp-insight strong { color: #eef2ff }
+[data-theme="dark"] .cp-insight strong { color: var(--palette-indigo-50) }
 
 /* ── SAH World theme ── */
 [data-theme="sah"] .cp-card {

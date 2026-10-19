@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const read = (path) => fs.readFileSync(path, 'utf8');
 
 test('dashboard navigation uses the requested language consistently', () => {
-  const app = read('src/components/core/SahApp.tsx');
+  const app = appCopy();
   const command = read('src/components/core/CommandPalette.tsx');
   const reports = read('src/components/core/ReportsView.tsx');
 
@@ -45,5 +45,6 @@ test('dashboard copy and spiritual development stages are coherent', () => {
 });
 
 function appCopy() {
-  return read('src/components/core/SahApp.tsx');
+  return ['SahApp', 'SahSidebar', 'SahHeader', 'SahMobileNav', 'SahProfileMenu']
+    .map(name => read(`src/components/core/${name}.tsx`)).join('\n');
 }
