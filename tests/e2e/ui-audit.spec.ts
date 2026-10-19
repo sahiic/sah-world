@@ -147,3 +147,20 @@ test('direct discovery entry resolves its auth loader without exposing the villa
   await expect(page.getByRole('button', { name: 'Google ile devam et' })).toBeVisible({ timeout: 30000 });
   await expect(page.locator('canvas')).toHaveCount(0);
 });
+
+test('dark account summaries use readable text on a matching surface', async ({ page }) => {
+  await guest(page);
+  await page.getByRole('button', { name: 'Hesap menüsü' }).click();
+  await page.getByRole('menuitem', { name: 'Gece görünümü' }).click();
+  const summary = page.locator('.awareness-profile-summary');
+  await expect(summary.locator('strong')).toHaveCSS('font-size', '14px');
+  await expect(summary.locator('small').first()).toHaveCSS('font-size', '12px');
+  await expect.poll(() => summary.evaluate(element => {
+    const probe = document.createElement('span');
+    probe.style.backgroundColor = 'var(--core-elevated)';
+    element.append(probe);
+    const matches = getComputedStyle(element).backgroundColor === getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return matches;
+  })).toBe(true);
+});

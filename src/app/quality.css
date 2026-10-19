@@ -48,6 +48,10 @@
   border-color: var(--core-line);
 }
 .core-app .profile-button strong { color: var(--core-ink); }
+.core-app :is(.awareness-profile-summary,.profession-profile-summary) strong { font-size:14px; line-height:1.5; color:var(--core-ink); }
+.core-app :is(.awareness-profile-summary,.profession-profile-summary) small { font-size:12px!important; line-height:1.5; color:var(--core-muted); }
+[data-theme="dark"] .core-app :is(.awareness-profile-summary,.profession-profile-summary) { color:var(--core-ink)!important; background:var(--core-elevated)!important; }
+[data-theme="dark"] .core-app .profile-popover .signout { color:#ffb4b4; }
 [data-theme="dark"] .core-app { --ui-accent-text: #8ff2d2; }
 [data-theme="dark"] .core-app :is(.eyebrow, .section-tagline a) { color:var(--ui-accent-text); }
 [data-theme="dark"] .core-app .quiet-chip {

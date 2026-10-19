@@ -46,6 +46,7 @@ const baseURL = `http://localhost:${Number(process.env.SAH_E2E_PORT || 3011)}`;
    if (await page.locator('html').getAttribute('data-theme') !== theme) {
     await page.getByRole('button', {name:'Hesap menüsü'}).click();
     await page.getByRole('menuitem', {name: theme === 'dark' ? 'Gece görünümü' : 'Aydınlık görünüm'}).click();
+    await page.getByRole('button', {name:'Hesap menüsü'}).click();
    }
    for (const [name, view, tab, selector] of routes) {
     await page.evaluate(({view,tab}) => {history.pushState(null,'',`/?view=${view}${tab?'&tab='+tab:''}`);window.scrollTo(0,0);}, {view,tab});
