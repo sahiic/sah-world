@@ -112,9 +112,14 @@
 
 /* Quran: clear reading hierarchy, one action row per teacher. */
 .core-app .quran-panel-heading p,
-.core-app .quran-empty-state p,
+.core-app .quran-empty p,
+.core-app .empty-state p,
+.core-app .community-empty p,
+.core-app .dashboard-weekly-insight>p,
 .core-app .hoca-card>p,
-.core-app .qc-caption,
+.core-app .qc-ready .qc-caption,
+.core-app .qc-exercise-modes p,
+.core-app .qc-badge-grid p,
 .core-app .qc-mode-card p { font-size:14px; line-height:1.65; }
 .core-app .hoca-card { align-content:start; grid-template-columns:72px minmax(0,1fr); gap:16px; min-height:0; padding:24px; background:var(--core-elevated); }
 .core-app .hoca-avatar { width:72px; height:88px; }
@@ -140,6 +145,7 @@
 .core-app .mosque-search input { min-height:44px; font-size:16px; }
 .core-app .section-tagline a { display:inline-flex; align-items:center; min-height:44px; }
 .focus-root :is(.focus-back-button,.focus-window-actions button) { min-height:44px; min-width:44px; }
+[data-theme="dark"] .core-app .reports-next-step small { color:var(--sah-gold-light); }
 @media(max-width:640px) {
   .core-app .settings-backdrop { padding:12px; }
   .core-app .account-settings { max-height:calc(100dvh - 24px); width:100%; padding-bottom:max(24px, env(safe-area-inset-bottom)); }
