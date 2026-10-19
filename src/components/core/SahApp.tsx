@@ -712,7 +712,10 @@ export default function SahApp({
       />
       {settingsOpen && (
         <AccountSettingsDialog
-          onClose={() => setSettingsOpen(false)}
+          onClose={() => {
+            setSettingsOpen(false);
+            profileMenuRef.current?.querySelector<HTMLButtonElement>('.profile-button')?.focus();
+          }}
           onThemeChange={changeTheme}
         />
       )}

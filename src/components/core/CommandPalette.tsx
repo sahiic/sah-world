@@ -118,19 +118,26 @@ export default function CommandPalette({
                 onKeyDown={handleKeyDown}
                 placeholder="Notlarda, görevlerde ve bölümlerde ara…"
                 aria-label="Arama"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={open}
+                aria-controls="command-results"
                 aria-activedescendant={
                   resultCount ? `command-result-${activeIndex}` : undefined
                 }
               />
               <button type="button" className="command-close" onClick={onClose} aria-label="Aramayı kapat"><AppIcon name="x" /></button>
             </div>
-            <div className="command-results">
+            <div className="command-results" id="command-results" role="listbox" aria-label="Arama sonuçları">
               {visibleSections.length > 0 && (
-                <section>
+                <section role="group" aria-label="Bölümler">
                   <p>BÖLÜMLER</p>
                   {visibleSections.map(([id, label, icon], itemIndex) => (
                     <button
                       id={`command-result-${itemIndex}`}
+                      role="option"
+                      aria-selected={activeIndex === itemIndex}
+                      tabIndex={-1}
                       className={activeIndex === itemIndex ? "active" : ""}
                       key={id}
                       onMouseEnter={() => setActiveIndex(itemIndex)}
@@ -147,13 +154,16 @@ export default function CommandPalette({
                 </section>
               )}
               {records.length > 0 && (
-                <section>
+                <section role="group" aria-label="Kayıtların">
                   <p>KAYITLARIN</p>
                   {records.map((item, recordIndex) => {
                     const itemIndex = visibleSections.length + recordIndex;
                     return (
                       <button
                         id={`command-result-${itemIndex}`}
+                        role="option"
+                        aria-selected={activeIndex === itemIndex}
+                        tabIndex={-1}
                         className={activeIndex === itemIndex ? "active" : ""}
                         key={`${item.category}-${item.id}`}
                         onMouseEnter={() => setActiveIndex(itemIndex)}
