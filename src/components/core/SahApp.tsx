@@ -56,7 +56,11 @@ const ProfessionSchoolView = dynamic(() => import("../profession/ProfessionSchoo
 const QuranCompanionView = dynamic(() => import("./QuranCompanionView"), {
   loading: () => <SectionSkeleton />,
 });
-const AccountSettingsDialog = dynamic(() => import("./AccountSettingsDialog"));
+const AccountSettingsDialog = dynamic(() => import("./AccountSettingsDialog"), {
+  // Keep this lazy import inside its own Suspense boundary. Suspending the
+  // entire page would tear down the auth bridge while settings load.
+  loading: () => <div className="settings-backdrop"><section className="account-settings" aria-label="Hesap ayarları yükleniyor"><SectionSkeleton /></section></div>,
+});
 const ProfileView = dynamic(() => import('@/components/ui/ProfileView'), {
   loading: () => <SectionSkeleton shape="report" />,
 });

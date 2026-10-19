@@ -2,6 +2,7 @@
 
 import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
 import SectionErrorBoundary from '@/components/core/SectionErrorBoundary';
+import SectionSkeleton from '@/components/ui/SectionSkeleton';
 import { useFocusDialog } from "@/hooks/useFocusDialog";
 import { useTimer } from "@/hooks/useTimer";
 import { useFocusStore } from "@/stores/focusStore";
@@ -28,7 +29,9 @@ import NiyetCard from "./NiyetCard";
 import SessionConfig from "./SessionConfig";
 
 type FocusView = "session" | "history";
-const FocusAnalyticsPanel = dynamic(() => import('@/components/focus/FocusAnalyticsPanel'));
+const FocusAnalyticsPanel = dynamic(() => import('@/components/focus/FocusAnalyticsPanel'), {
+  loading: () => <SectionSkeleton shape="report" />,
+});
 
 export default function FocusExperience({ onExit }: { onExit?: () => void } = {}) {
   const router = useRouter();
