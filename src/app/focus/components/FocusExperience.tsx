@@ -103,6 +103,7 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
   };
 
   const exitFocus = async () => {
+    if (useFocusStore.getState().sessionStartTime && !window.confirm("Odak ekranından çıkmak istiyor musun? Oturumun bitirilmeyecek; ana sayfadaki küçük sayaçtan devam edebilirsin.")) return;
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
     } catch {
@@ -112,8 +113,10 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
     else router.push("/?view=dashboard");
   };
 
+  const Container = onExit ? "section" : "main";
+
   return (
-    <main data-focus-studio="sanctuary-v2" data-focus-release="quality-audit-v1" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
+    <Container aria-label="Odak stüdyosu" data-focus-studio="sanctuary-v2" data-focus-release="quality-audit-v1" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
       <FocusBackdrop backgroundId={backgroundId} />
       <header className={`focus-topbar ${styles.topbar}`}>
         <button
@@ -284,6 +287,6 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
       {showNiyet && !isRunning && !pendingCompletedSession && (
         <NiyetCard onClose={() => setShowNiyet(false)} />
       )}
-    </main>
+    </Container>
   );
 }

@@ -21,6 +21,14 @@ test("leaving fullscreen restores the dashboard and keeps the active timer", asy
   await page.getByRole('button', { name: 'Zamanlayıcıyı başlat', exact: true }).click();
   await page.getByRole('button', { name: 'Tam ekranı aç veya kapat' }).click();
   await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(true);
+  page.once('dialog', dialog => dialog.dismiss());
+  await page.getByRole('button', { name: 'Odak modundan çık', exact: true }).click();
+  await expect(page.locator('[data-focus-studio]')).toBeVisible();
+  await expect(page.getByRole('main')).toHaveCount(1);
+  page.once('dialog', async dialog => {
+    expect(dialog.message()).toContain('Oturumun bitirilmeyecek');
+    await dialog.accept();
+  });
   await page.getByRole('button', { name: 'Odak modundan çık', exact: true }).click();
   await expect(page).toHaveURL(/view=dashboard/);
   await expect(page.locator('.dashboard-view')).toBeVisible();
