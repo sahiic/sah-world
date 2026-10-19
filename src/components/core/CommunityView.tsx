@@ -611,7 +611,6 @@ function CreateGroupForm({
           minLength={2}
           maxLength={60}
           required
-          autoFocus
           placeholder="Örn. Sabah Halkası"
         />
       </label>
@@ -661,7 +660,6 @@ function JoinGroupForm({
           maxLength={6}
           pattern="[A-Za-z0-9]{6}"
           required
-          autoFocus
           defaultValue={preview?.group_code ?? ""}
           onChange={onCodeChange}
           placeholder="A1B2C3"
