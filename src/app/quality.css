@@ -142,6 +142,7 @@
 /* Compact secondary controls still need a comfortable hit area on every input device. */
 .core-app :is(.appointment-toggle button,.quran-panel .secondary-button,.qc-btn-ghost,.study-notes-card>header>button,.context-links button,.ws-copy-btn,.prayer-error button) { min-height:44px; min-width:44px; }
 .core-app .ac-nav-btn { width:44px; min-width:44px; min-height:44px; }
+.core-app .profession-catalog-filters button { min-height:44px; }
 .core-app .mosque-search input { min-height:44px; font-size:16px; }
 .core-app .section-tagline a { display:inline-flex; align-items:center; min-height:44px; }
 .focus-root :is(.focus-back-button,.focus-window-actions button) { min-height:44px; min-width:44px; }
