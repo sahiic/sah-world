@@ -415,6 +415,7 @@ export default function SahApp({
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(activeProfile?.display_name || "Yolcu")}`;
 
   return (
+<<<<<<< HEAD
     <SahShell focusMode={view === "focus"}>
       <a href="#main-content" className="skip-link">
         İçeriğe atla
@@ -459,6 +460,187 @@ export default function SahApp({
             signOutError={signOutError}
           />
         </SahHeader>
+=======
+    <div className={`core-app phase-two-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${view === "focus" ? "focus-mode" : ""}`}>
+      <a href="#main-content" className="skip-link">İçeriğe atla</a>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">{milestone?.title ?? `Toplam ${store.xp} XH`}</div>
+      <aside className={`app-sidebar core-sidebar ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Ana navigasyon">
+        <button
+          className="brand sidebar-brand"
+          onClick={() => navigate("dashboard")}
+          aria-label="SAHİ ana sayfa"
+        >
+          <span className="brand-mark"><AppIcon name="leaf" /></span>
+          <span>
+            <strong>SAHİ World</strong>
+            <small>Tefekkür Vahası</small>
+          </span>
+        </button>
+
+        <nav className="sidebar-nav">
+          <section aria-label="Ana bölümler" onKeyDown={handleSidebarKeyDown}>
+            <p>ANA BÖLÜMLER</p>
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                className={view === item.id ? "active" : ""}
+                onClick={() => navigate(item.id)}
+                aria-current={view === item.id ? "page" : undefined}
+                aria-label={item.label}
+                data-tooltip={item.label}
+              >
+                <AppIcon name={item.icon} />
+                <span className="nav-label">{item.label}</span>
+                {item.id === "quran-companion" && quranUnread > 0 && (
+                  <em className="sidebar-badge" aria-label={`${quranUnread} okunmamış mesaj`}>
+                    {quranUnread > 99 ? "99+" : quranUnread}
+                  </em>
+                )}
+              </button>
+            ))}
+          </section>
+        </nav>
+
+        <div className="sidebar-support">
+          {/* <button onClick={() => openPage("/feedback")} aria-label="Görüş ve Öneri" data-tooltip="Görüş ve Öneri">
+            <AppIcon name="message-heart" />
+            <span className="nav-label">Görüş ve Öneri</span>
+          </button> */}
+          <p>
+            <AppIcon name="lock" /> Özel kayıtların yalnızca sana görünür.
+          </p>
+          <div className="sidebar-legal">
+            <a href="/gizlilik">Gizlilik</a>
+            <span>·</span>
+            <a href="/kullanim-kosullari">Koşullar</a>
+          </div>
+          <button className="sidebar-collapse-toggle" onClick={toggleSidebar} aria-expanded={!sidebarCollapsed} aria-label={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} data-tooltip={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}>
+            <AppIcon name={sidebarCollapsed ? "layout-sidebar-right" : "layout-sidebar-left-collapse"} /><span className="nav-label">Menüyü daralt</span>
+          </button>
+        </div>
+      </aside>
+
+      <div className="app-workspace">
+        <header className="app-header">
+          <button
+            className="mobile-brand"
+            onClick={() => navigate("dashboard")}
+            aria-label="SAHİ ana sayfa"
+          >
+            <span className="brand-mark"><AppIcon name="leaf" /></span>
+            <strong>SAHİ World</strong>
+          </button>
+          <div className="header-search-area">
+            <div className="route-context">
+              <span>SAHİ World</span>
+              <strong>{viewLabels[view] ?? "Kişisel alan"}</strong>
+            </div>
+            <button
+              className="global-search-button"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Her yerde ara"
+            >
+              <AppIcon name="search" />
+              <span>Ayet, niyet, ders veya kavram ara…</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+          </div>
+          <div className="header-actions" ref={profileMenuRef}>
+            <button
+              className="header-quick-add"
+              aria-label="Vird ve amel ekle"
+              onClick={() => navigate("journal")}
+            >
+              <AppIcon name="plus" />
+              <span>Vird &amp; Amel Ekle</span>
+            </button>
+            <button
+              className="header-feedback"
+              aria-label="Görüş bırak"
+              onClick={() => openPage("/feedback")}
+              data-tooltip="Görüş ve Öneri"
+            >
+              <AppIcon name="message-heart" />
+              {/* <span>Görüş bırak</span> */}
+            </button>
+
+            
+            <button
+              className="profile-button"
+              aria-label="Hesap menüsü"
+              onClick={() => setProfileOpen((value) => !value)}
+              aria-expanded={profileOpen}
+              aria-haspopup="menu"
+            >
+              <AvatarImage src={avatarUrl} size={50} priority />
+              <span>
+                <strong>{activeProfile?.display_name || "Yolcu"}</strong>
+                <small>
+                  {level.name} · {store.xp} XH
+                </small>
+              </span>
+              <AppIcon name="chevron-down" />
+            </button>
+            {profileOpen && (
+              <div className="profile-popover" role="menu">
+                <div className="profile-summary">
+                  <AvatarImage src={avatarUrl} size={48} />
+                  <span>
+                    <strong>{activeProfile?.display_name || "Yolcu"}</strong>
+                    <small>
+                      {store.streak.current} günlük seri · {level.name}
+                    </small>
+                  </span>
+                </div>
+                <AwarenessProfileSummary onOpen={() => navigate("awareness")} />
+                <ProfessionProfileSummary
+                  onOpen={() => navigate("profession-school")}
+                />
+                <button role="menuitem" onClick={() => navigate("profile")}>
+                  <AppIcon name="user-circle" /> Profilim ve rozetlerim
+                </button>
+                <button role="menuitem" onClick={() => navigate("reports")}>
+                  <AppIcon name="chart-histogram" /> Gelişim raporlarım
+                </button>
+                <button role="menuitem" onClick={() => navigate("community")}>
+                  <AppIcon name="users-group" /> Topluluklarım
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setSettingsOpen(true);
+                  }}
+                >
+                  <AppIcon name="settings" /> Hesap ve gizlilik
+                </button>
+                <button role="menuitem" onClick={toggleTheme}>
+                  <AppIcon name={theme === "light" ? "moon" : "sun"} />{" "}
+                  {theme === "light" ? "Gece görünümü" : "Aydınlık görünüm"}
+                </button>
+                {/* <button role="menuitem" onClick={() => openPage("/feedback")}>
+                  <AppIcon name="message-heart" /> Görüş ve öneri
+                </button> */}
+                {activeUser?.app_metadata?.role === "admin" && (
+                  <button
+                    role="menuitem"
+                    onClick={() => openPage("/admin/feedback")}
+                  >
+                    <AppIcon name="shield-check" /> Geri bildirim yönetimi
+                  </button>
+                )}
+                <button
+                  className="signout"
+                  role="menuitem"
+                  onClick={() => void supabase.auth.signOut()}
+                >
+                  <AppIcon name="logout" /> Oturumu kapat
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+>>>>>>> d738ba1 (responsive texts fixed, dark mode and light mode bugs fixed, profile activity heatmap fixed, abundant report buttons removed)
 
         <AnimatePresence>
           {transitionCue && (

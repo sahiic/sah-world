@@ -1,5 +1,10 @@
 "use client";
 
+import { FocusPresets, FocusStudioIntro } from "@/components/core/FocusAmbience";
+import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
+import { getFocusBackground } from "@/lib/focusBackgrounds";
+import { useFocusStore } from "@/stores/focusStore";
+import { formatTimer } from "@/utils/timerUtils";
 import {
   Headphones,
   Hourglass,
@@ -10,13 +15,8 @@ import {
   X,
 } from "lucide-react";
 import { FormEvent } from "react";
-import { AMBIENT_SOUNDS } from "@/hooks/useAmbientSound";
-import { getFocusBackground } from "@/lib/focusBackgrounds";
-import { FocusPresets, FocusStudioIntro } from "@/components/core/FocusAmbience";
-import { useFocusStore } from "@/stores/focusStore";
-import { formatTimer } from "@/utils/timerUtils";
-import TimerControls from "./TimerControls";
 import styles from "../focus.module.css";
+import TimerControls from "./TimerControls";
 
 const modeLabels = {
   focus: "Odaklanma",

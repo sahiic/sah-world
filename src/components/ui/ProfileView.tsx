@@ -1,15 +1,15 @@
 'use client'
 
-import { useMemo } from 'react'
+import SectionErrorBoundary from '@/components/core/SectionErrorBoundary'
+import ActivityHeatmap from '@/components/ui/ActivityHeatmap'
 import { AppIcon } from '@/components/ui/AppIcon'
 import AvatarImage from '@/components/ui/AvatarImage'
-import ActivityHeatmap from '@/components/ui/ActivityHeatmap'
-import dynamic from 'next/dynamic'
-import SectionErrorBoundary from '@/components/core/SectionErrorBoundary'
-import { useAuthStore } from '@/store/useAuthStore'
-import { useJourneyStore } from '@/store/useJourneyStore'
 import { buildActivityFeed, CATEGORY_META, type ActivitySource } from '@/lib/activity'
 import { getLevelForXP } from '@/lib/constants'
+import { useAuthStore } from '@/store/useAuthStore'
+import { useJourneyStore } from '@/store/useJourneyStore'
+import dynamic from 'next/dynamic'
+import { useMemo } from 'react'
 
 const BadgeGallery = dynamic(() => import('./BadgeGallery'))
 const MilestoneTimeline = dynamic(() => import('./MilestoneTimeline'))
@@ -35,14 +35,13 @@ export default function ProfileView() {
     const progress = next
       ? Math.round(((store.xp - lvl.xp) / (next.xp - lvl.xp)) * 100)
       : 100
-
     const cats = new Map<string, number>()
     for (const e of feed) cats.set(e.category, (cats.get(e.category) ?? 0) + 1)
     const sorted = [...cats.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
 
     return { events: feed, level: lvl, nextLevel: next, xpProgress: progress, categoryStats: sorted }
   }, [store])
-
+  const year = new Date().getFullYear();
   return (
     <div className="profile-view">
       <header className="profile-header">
@@ -94,7 +93,8 @@ export default function ProfileView() {
 
       <section className="profile-section">
         <h3><AppIcon name="chart-dots-2" /> Aktivite Haritası</h3>
-        <ActivityHeatmap events={events} weeks={20} />
+        {/* <ActivityHeatmap events={events} weeks={40} /> */}
+        <ActivityHeatmap events={events} year={year} />
       </section>
       <SectionErrorBoundary sectionName="Aktivite takvimi"><ActivityCalendar /></SectionErrorBoundary>
 
