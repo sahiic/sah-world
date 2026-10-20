@@ -38,7 +38,7 @@ export default function EvimHub({ onClose }: Props) {
             <div className="w-20 h-20 relative rounded-full ring-2 ring-indigo-400/30 overflow-hidden bg-slate-900 shadow-xl">
               <img 
                 src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${profile.display_name}`} 
-                alt="Avatar" 
+                alt={profile.display_name ? `${profile.display_name} avatarı` : 'Kullanıcı avatarı'}
                 className="w-full h-full object-cover"
               />
             </div>

@@ -1,6 +1,6 @@
 /* Keyboard-only affordances do not move the visual layout. */
-.skip-link{position:fixed;top:-100%;left:16px;z-index:999;padding:12px 20px;border-radius:12px;color:#fff;background:#006950;font:700 14px var(--font-inter);text-decoration:none}
-.skip-link:focus{top:16px;outline:3px solid #8ff2d2;outline-offset:3px}
+.skip-to-content{position:fixed;top:-100px;left:16px;z-index:10000;padding:8px 16px;border-radius:8px;color:#fff;background:var(--core-brand);font:600 13px var(--font-inter);text-decoration:none;transition:top .2s}
+.skip-to-content:focus{top:8px;outline:3px solid #8ff2d2;outline-offset:3px}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;white-space:nowrap}
 .app-main:focus{outline:none}
 .core-app :is(button,a,input,textarea,select,summary):focus-visible{outline:3px solid var(--core-brand);outline-offset:4px}
@@ -14,3 +14,144 @@
 [data-theme="dark"] .core-app .mosque-identity-copy{color:#effaf4}
 [data-theme="dark"] .core-app .mosque-identity-copy :is(p,.eyebrow){color:#b1c4b6}
 [data-theme="dark"] .core-app .mescidim-today-hero{color:#effaf4;background:#10261d}
+
+/* The compact header hides copy, not the icon rendered as a span. */
+.core-app .header-quick-add > .app-icon { display:inline-flex; font-size:20px; }
+.core-app .header-quick-add { min-height:44px; min-width:44px; }
+
+/* Semantic aliases keep legacy domain styles on the same readable surfaces. */
+:root {
+  --sah-emerald: #009b77;
+  --sah-emerald-light: #00c896;
+  --sah-emerald-dark: #007a5e;
+  --sah-cream: #fbf9f6;
+  --sah-cream-dark: #f5f0ea;
+  --sah-gold-light: #dbb872;
+  --sah-forest-deep: #0d2b1d;
+  --sah-forest-mid: #1a3d2a;
+  --sah-success: #22c55e;
+  --sah-warning: #f59e0b;
+  --sah-error: #ef4444;
+  --sah-info: #3b82f6;
+  --space-5: 20px;
+  --space-10: 40px;
+  --space-16: 64px;
+}
+.core-app {
+  --core-heading: var(--core-ink);
+  --ui-accent-text: var(--sah-primary);
+  color: var(--core-ink);
+}
+.core-app .profile-button {
+  color: var(--core-ink);
+  background: var(--core-surface);
+  border-color: var(--core-line);
+}
+.core-app .profile-button strong { color: var(--core-ink); }
+.core-app :is(.awareness-profile-summary,.profession-profile-summary) strong { font-size:14px; line-height:1.5; color:var(--core-ink); }
+.core-app :is(.awareness-profile-summary,.profession-profile-summary) small { font-size:12px!important; line-height:1.5; color:var(--core-muted); }
+[data-theme="dark"] .core-app :is(.awareness-profile-summary,.profession-profile-summary) { color:var(--core-ink)!important; background:var(--core-elevated)!important; }
+[data-theme="dark"] .core-app .profile-popover .signout { color:#ffb4b4; }
+[data-theme="dark"] .core-app { --ui-accent-text: #8ff2d2; }
+[data-theme="dark"] .core-app :is(.eyebrow, .section-tagline a) { color:var(--ui-accent-text); }
+[data-theme="dark"] .core-app .quiet-chip {
+  color:var(--ui-accent-text);
+  background:var(--core-elevated);
+}
+.core-app .reports-view-clean { color:var(--reports-ink); --reports-muted:var(--core-muted); }
+.core-app .reports-view-clean :is(.reports-story-card small,.reports-week-heatmap small,.reports-category-card small,.reports-detail-trigger small,.reports-week-heatmap>header strong) { color:var(--ui-accent-text); }
+[data-theme="dark"] .core-app .reports-view-clean { --reports-card:var(--core-surface); --reports-soft:var(--core-elevated); --reports-track:#264438; }
+[data-theme="dark"] .core-app :is(.reports-hero,.reports-next-step,.reports-detail-trigger.is-open) { background:var(--core-surface); }
+[data-theme="dark"] .core-app .reports-story-card footer span { color:var(--core-muted); }
+[data-theme="dark"] .core-app .reports-week-days>div>span { color:var(--core-ink); }
+
+/* Reports: readable copy and a compact seven-day overview. */
+.core-app .reports-view-clean :is(p,li) { font-size:14px; line-height:1.6; }
+.core-app .reports-view-clean :is(.reports-story-card li,.reports-next-step p) { color:var(--reports-muted); }
+.core-app .reports-view-clean :is(.reports-next-step small,.reports-story-card small,.reports-week-heatmap small,.reports-category-card small,.reports-detail-trigger small) { font-size:12px; letter-spacing:.06em; }
+.core-app .reports-next-step p { white-space:normal; }
+.core-app .reports-next-step button { min-height:44px; font-size:14px; }
+.core-app .reports-week-days :is(strong,small),
+.core-app .reports-category-legend :is(b,small),
+.core-app .reports-story-card footer span { font-size:12px; letter-spacing:0; }
+.core-app .reports-category-legend b { white-space:normal; }
+.core-app .reports-week-days>div>span { color:var(--reports-ink); }
+.core-app .reports-weekly-grid { gap:24px; }
+.core-app .reports-detail-trigger>b { font-size:13px; }
+.core-app .reports-view-clean .segment button { min-height:44px; min-width:44px; }
+
+.core-app .command-close { flex:0 0 44px; width:44px; height:44px; display:grid; place-items:center; border:1px solid var(--core-line); border-radius:12px; background:var(--core-elevated); color:var(--core-ink); cursor:pointer; }
+.core-app .settings-tabs button { min-height:44px; }
+.core-app .profile-identity h1 { margin:0; font-size:clamp(24px,3vw,32px); line-height:1.25; letter-spacing:-.02em; color:var(--core-ink); overflow-wrap:anywhere; }
+.core-app .profile-progress-summary p { margin:8px 0 0; color:var(--core-muted); font-size:14px; line-height:1.6; }
+.core-app .profile-avatar { width:72px; height:72px; border-radius:24px; display:grid; place-items:center; font-size:36px; background:var(--core-elevated); color:var(--ui-accent-text); }
+.core-app .profile-level { flex-wrap:wrap; }
+.core-app .profile-stat-card small,.core-app .badge-card p { font-size:14px; line-height:1.6; }
+.core-app .badge-card strong { font-size:15px; }
+.core-app .profile-section h3 { font-size:18px; }
+.core-app .streak-numbers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; width:100%; }
+.core-app .streak-stat small { font-size:12px; }
+
+/* Prayer and source libraries: comfortable reading, full-size controls. */
+.core-app .mescidim-experience p { font-size:14px; line-height:1.65; }
+.core-app .mescidim-experience :is(.eyebrow, small) { font-size:12px; }
+.core-app .mescidim-scope-tabs { max-width:640px; }
+.core-app .mescidim-scope-tabs button { min-height:48px; font-size:13px; line-height:1.5; padding:12px; }
+.core-app :is(.prayer-header-actions,.prayer-view-toggle,.dua-filter-row) button,
+.core-app .spiritual-toolbar>button { min-height:44px; min-width:44px; font-size:13px; }
+.core-app .spiritual-toolbar input { min-height:44px; font-size:16px; }
+.core-app .asma-card-favorite,
+.core-app .dua-library-card>header>button { width:44px; height:44px; }
+.core-app .asma-card-main { padding-top:24px; }
+.core-app .asma-card-main h3 { font-size:16px; margin-block:8px; }
+.core-app .asma-card-main em { font-size:12px; margin-top:12px; }
+.core-app .dua-library-card>aside { font-size:14px; line-height:1.6; }
+.core-app .dua-library-card>header :is(span,em) { font-size:12px; }
+.core-app .dua-library-card>footer { flex-wrap:wrap; }
+.core-app .dua-library-card>footer :is(a,button),
+.core-app .spiritual-panel-header>a { display:inline-flex; align-items:center; min-height:44px; font-size:13px; }
+[data-theme="dark"] .core-app .mescidim-experience :is(.asma-card,.dua-library-card,.spiritual-toolbar label,.spiritual-toolbar>button) { background:var(--core-surface); color:var(--core-ink); }
+[data-theme="dark"] .core-app .dua-library-card :is(p,aside) { color:var(--core-muted); background:transparent; }
+[data-theme="dark"] .core-app .mescidim-experience :is(.spiritual-panel-header>a,.dua-library-card footer>a) { color:var(--ui-accent-text); }
+
+/* Quran: clear reading hierarchy, one action row per teacher. */
+.core-app .quran-panel-heading p,
+.core-app .quran-empty p,
+.core-app .empty-state p,
+.core-app .community-empty p,
+.core-app .dashboard-weekly-insight>p,
+.core-app .hoca-card>p,
+.core-app .qc-ready .qc-caption,
+.core-app .qc-exercise-modes p,
+.core-app .qc-badge-grid p,
+.core-app .qc-mode-card p { font-size:14px; line-height:1.65; }
+.core-app .hoca-card { align-content:start; grid-template-columns:72px minmax(0,1fr); gap:16px; min-height:0; padding:24px; background:var(--core-elevated); }
+.core-app .hoca-avatar { width:72px; height:88px; }
+.core-app .hoca-card>div:nth-child(2)>small { font-size:12px; color:var(--ui-accent-text); }
+.core-app .hoca-card h3 { font-size:20px; line-height:1.4; }
+.core-app .hoca-card>p { grid-column:1/-1; color:var(--core-muted); }
+.core-app .hoca-tags { grid-column:1/-1; margin:0; gap:8px; }
+.core-app .hoca-tags span { font-size:12px; padding:6px 10px; }
+.core-app .hoca-avatar em { font-size:10px; }
+.core-app .hoca-actions { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:12px; padding-top:16px; border-top:1px solid var(--core-line); }
+.core-app .hoca-actions button { min-height:44px; flex:1 1 auto; padding:10px 12px; border:1px solid var(--core-line); border-radius:12px; font:600 14px var(--font-inter); display:flex; gap:8px; align-items:center; justify-content:center; color:var(--ui-accent-text); background:var(--core-surface); cursor:pointer; }
+.core-app .hoca-actions button:disabled { color:var(--core-muted); cursor:default; }
+.core-app .quran-panel .segment button { min-height:44px; min-width:44px; font-size:14px; }
+.core-app .qc-ready .qc-surah-cell { min-height:80px; }
+.core-app .qc-ready .qc-surah-cell strong { font-size:14px; }
+.core-app .qc-ready .qc-surah-cell small { font-size:12px; }
+.core-app .qc-ready input[type="range"] { min-height:44px; }
+.core-app .qc-ready label:has(input[type="checkbox"]) { min-height:44px; align-content:center; }
+.core-app .account-settings { overscroll-behavior:contain; }
+/* Compact secondary controls still need a comfortable hit area on every input device. */
+.core-app :is(.appointment-toggle button,.quran-panel .secondary-button,.qc-btn-ghost,.study-notes-card>header>button,.context-links button,.ws-copy-btn,.prayer-error button) { min-height:44px; min-width:44px; }
+.core-app .ac-nav-btn { width:44px; min-width:44px; min-height:44px; }
+.core-app .profession-catalog-filters button { min-height:44px; }
+.core-app .mosque-search input { min-height:44px; font-size:16px; }
+.core-app .section-tagline a { display:inline-flex; align-items:center; min-height:44px; }
+.focus-root :is(.focus-back-button,.focus-window-actions button) { min-height:44px; min-width:44px; }
+[data-theme="dark"] .core-app .reports-next-step small { color:var(--sah-gold-light); }
+@media(max-width:640px) {
+  .core-app .settings-backdrop { padding:12px; }
+  .core-app .account-settings { max-height:calc(100dvh - 24px); width:100%; padding-bottom:max(24px, env(safe-area-inset-bottom)); }
+}

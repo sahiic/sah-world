@@ -168,8 +168,7 @@
   --de-accent-bg: rgba(0, 155, 119, 0.08);
 }
 
-[data-theme="sah"][data-mode="dark"] .de-card,
-[data-theme="sah"].dark .de-card {
+[data-theme="dark"] .de-card {
   --de-accent: #34d399;
   --de-accent-bg: rgba(52, 211, 153, 0.1);
   --card-bg: rgba(20, 27, 47, 0.96);

@@ -68,17 +68,19 @@ export default function TeacherDiscovery({
                       : "Çevrimiçi bilgisi paylaşılmıyor"}
                   </span>
                 )}
-                <p>{teacher.bio}</p>
+              </div>
+              <p>{teacher.bio}</p>
                 <div className="hoca-tags">
                   {teacher.specialties.map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
-              </div>
-              <button onClick={() => setProfileTeacher(teacher)}>
+              <footer className="hoca-actions">
+              <button type="button" onClick={() => setProfileTeacher(teacher)}>
                 Profili incele <AppIcon name="user" />
               </button>
               <button
+                type="button"
                 onClick={() => setSelected(teacher)}
                 disabled={Boolean(teacher.is_placeholder)}
                 title={
@@ -90,6 +92,7 @@ export default function TeacherDiscovery({
                 {teacher.is_placeholder ? "Örnek profil" : "Randevu al"}{" "}
                 <AppIcon name="arrow-right" />
               </button>
+              </footer>
             </article>
           ))}
         </div>

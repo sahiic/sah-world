@@ -33,7 +33,7 @@ const meta: Record<
     icon: "notebook",
   },
   quran: {
-    title: "Kur’an Notlarım",
+    title: "Kur'an Notlarım",
     eyebrow: "TEFEKKÜR",
     description:
       "Okuduğun ayetlerden sende kalan anlamı ve hayata taşıyacağın dersi kaydet.",
@@ -66,7 +66,7 @@ const meta: Record<
     icon: "sparkles",
   },
   mescidim: {
-    title: "Allah’a en sevimli olan mekânlar",
+    title: "Allah'a en sevimli olan mekânlar",
     eyebrow: "MANEVİ MOLA",
     description: "Kısa bir duruş, zikir sayacı ve günün tefekkür notları.",
     icon: "building-mosque",

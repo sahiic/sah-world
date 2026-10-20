@@ -72,8 +72,10 @@ const ProfessionSchoolView = dynamic(
 const QuranCompanionView = dynamic(() => import("./QuranCompanionView"), {
   loading: () => <SectionSkeleton />,
 });
-const AccountSettingsDialog = dynamic(() => import("./AccountSettingsDialog"));
-const ProfileView = dynamic(() => import("@/components/ui/ProfileView"), {
+const AccountSettingsDialog = dynamic(() => import("./AccountSettingsDialog"), {
+  loading: () => <div className="settings-backdrop"><section className="account-settings" aria-label="Hesap ayarları yükleniyor"><SectionSkeleton /></section></div>,
+});
+const ProfileView = dynamic(() => import('@/components/ui/ProfileView'), {
   loading: () => <SectionSkeleton shape="report" />,
 });
 
@@ -150,8 +152,14 @@ export default function SahApp({
     }
     let active = true;
     const fetch = () =>
-      void supabase.rpc("get_quran_thread_summaries").then(({ data }) => {
+      void Promise.resolve(supabase.rpc("get_quran_thread_summaries")).then(({ data, error }) => {
+        if (error) {
+          console.error("[SAH] Thread summaries fetch failed");
+          return;
+        }
         if (active && data) setQuranThreads(data);
+      }).catch(() => {
+        console.error("[SAH] Thread summaries fetch failed");
       });
     fetch();
     const channel = ownedRealtimeChannel(supabase, `sidebar-quran-${uid}`)
@@ -399,10 +407,12 @@ export default function SahApp({
     changeTheme(next);
     if (activeProfile) {
       useAuthStore.getState().patchProfile({ theme_preference: next });
-      void supabase
-        .from("profiles")
-        .update({ theme_preference: next })
-        .eq("id", activeProfile.id);
+      void Promise.resolve(supabase.from("profiles").update({ theme_preference: next }).eq("id", activeProfile.id))
+        .then(({ error }) => {
+          if (error) console.error("[SAH] Theme preference update failed");
+        }).catch(() => {
+          console.error("[SAH] Theme preference update failed");
+        });
     }
   };
   const openPage = (path: string) => {
@@ -758,7 +768,10 @@ export default function SahApp({
       />
       {settingsOpen && (
         <AccountSettingsDialog
-          onClose={() => setSettingsOpen(false)}
+          onClose={() => {
+            setSettingsOpen(false);
+            profileMenuRef.current?.querySelector<HTMLButtonElement>('.profile-button')?.focus();
+          }}
           onThemeChange={changeTheme}
         />
       )}

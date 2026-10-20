@@ -183,4 +183,28 @@
   .habitats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; padding:8px 0; }
   .habitat,.habitat[data-habitat] { width:100%; min-width:0; }
 }
+@media (max-width:640px) {
+  .root { height:auto; min-height:0; align-content:start; }
+  .info { display:flex; flex-direction:column; justify-content:flex-start; padding:20px; }
+  .heading { margin:12px 0; }
+  .description { margin-bottom:16px; }
+  .stats { padding-block:12px; }
+  .note { margin-bottom:16px; }
+  .journey,.next,.emptyAction { margin-top:16px; }
+  .visual { padding-top:20px; }
+  .period { margin-bottom:12px; }
+  .orbit { height:auto; min-height:0; gap:12px; }
+  .habitat,.habitat[data-habitat] { min-height:76px; padding:12px; grid-template-columns:32px minmax(0,1fr) 16px; }
+  .habitatIcon { width:32px; height:32px; font-size:20px; }
+}
+
+/* Text remains legible at phone and compact desktop widths. */
+.description, .note p, .hint { font-size:14px; line-height:1.6; }
+.stats>div>span, .note strong, .progressCopy>span,
+.journeyCaption, .journeyCaption>span:nth-child(2),
+.next strong, .next p, .period>span, .period button,
+.output small, .habitatCopy small { font-size:12px; }
+.habitatCopy strong { font-size:14px; line-height:1.4; }
+.period button, .emptyAction { min-height:44px; font-size:13px; }
+.habitat { min-height:96px; }
 @media (prefers-reduced-motion:reduce) {.root *,.root *::after{animation:none!important;transition:none!important}.cloud,.treeWind{will-change:auto}.flowLight,.liveFlow,.rootDrop,.burst,.nurParticle,.nurAmbientParticle,.fallingLeaf,.streamFlow,.streamSparkle,.streamDrop,.star,.moon,.flower,.flowerGlow,.extraRoot,.nurBurst,.birds2,.bud{display:none}.root[data-ready="true"] [data-layer]{opacity:1}.flowers{opacity:1}.stream{opacity:1}.buds{opacity:.6}}

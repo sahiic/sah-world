@@ -151,7 +151,7 @@ export default function FriendsTab() {
                 <div className="flex items-center gap-3">
                   <img 
                     src={p.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${p.display_name}`}
-                    alt="Avatar"
+                    alt={p.display_name ? `${p.display_name} avatarı` : 'Kullanıcı avatarı'}
                     className="w-10 h-10 rounded-full bg-black/50 ring-1 ring-white/10"
                   />
                   <div>
@@ -191,7 +191,7 @@ export default function FriendsTab() {
                   <div className="flex items-center gap-3">
                     <img 
                       src={f.profile.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${f.profile.display_name}`}
-                      alt="Avatar"
+                      alt={f.profile.display_name ? `${f.profile.display_name} avatarı` : 'Kullanıcı avatarı'}
                       className="w-10 h-10 rounded-full bg-black/50 ring-1 ring-white/10"
                     />
                     <div>
@@ -226,7 +226,7 @@ export default function FriendsTab() {
                 {received.map(f => (
                   <div key={f.fid} className="sah-card flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-black/20 gap-3">
                     <div className="flex items-center gap-3">
-                      <img src={f.profile.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${f.profile.display_name}`} alt="Avatar" className="w-8 h-8 rounded-full" />
+                      <img src={f.profile.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${f.profile.display_name}`} alt={f.profile.display_name ? `${f.profile.display_name} avatarı` : 'Kullanıcı avatarı'} className="w-8 h-8 rounded-full" />
                       <div className="font-bold text-white text-sm">{f.profile.display_name}</div>
                     </div>
                     <div className="flex gap-2">

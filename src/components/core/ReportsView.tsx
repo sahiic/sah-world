@@ -18,6 +18,7 @@ import {
   getWeeklyNextStep,
 } from "@/lib/weeklyInsights";
 import { useJourneyStore } from "@/store/useJourneyStore";
+import SectionSkeleton from "@/components/ui/SectionSkeleton";
 import ReportsDetailTabs from "./ReportsDetailTabs";
 import ReportsHero from "./ReportsHero";
 import SectionTagline from "./SectionTagline";
@@ -79,6 +80,7 @@ export default function ReportsView() {
       .filter((text) => !text.startsWith("Bu hafta en çok")),
   ].filter((text, index, list) => Boolean(text) && list.indexOf(text) === index).slice(0, 3);
   const nextStep = getWeeklyNextStep(store.journal, events, now);
+  const isLoading = remoteActivity.loading && events.length === 0;
 
   useEffect(() => {
     let active = true;
@@ -93,7 +95,7 @@ export default function ReportsView() {
   }, [store.journal.length, events.length]);
 
   return (
-    <div className="view-stack reports-view reports-view-clean">
+    <div className="view-stack reports-view reports-view-clean" aria-busy={isLoading}>
       <header className="page-heading reports-page-heading">
         <div>
           <span className="eyebrow">GELİŞİM İÇGÖRÜLERİ</span>
@@ -104,6 +106,7 @@ export default function ReportsView() {
         <span className="quiet-chip">Son güncelleme · şimdi</span>
       </header>
 
+      {isLoading ? <SectionSkeleton shape="report" /> : <>
       <ReportsHero
         todayCount={daily.get(dayKey(now)) ?? 0}
         streak={store.streak.current}
@@ -126,6 +129,7 @@ export default function ReportsView() {
         eisenhower={store.eisenhower}
         now={now}
       />
+      </>}
     </div>
   );
 }

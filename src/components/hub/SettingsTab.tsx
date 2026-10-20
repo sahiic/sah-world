@@ -59,7 +59,7 @@ export default function SettingsTab() {
           {/* Avatar Değiştir */}
           <div className="sah-card flex flex-col items-center gap-3 p-4">
             <div className="w-24 h-24 rounded-full ring-2 ring-indigo-500/40 bg-black/40 overflow-hidden">
-              <img src={currentAvatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              <img src={currentAvatarUrl} alt={profile.display_name ? `${profile.display_name} avatarı` : 'Kullanıcı avatarı'} className="w-full h-full object-cover" />
             </div>
             <button 
               onClick={handleNewAvatar}

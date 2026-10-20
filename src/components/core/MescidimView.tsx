@@ -4,12 +4,19 @@ import { AppIcon } from '@/components/ui/AppIcon'
 import { MESCIDIM_TABS, openAppView, selectedValue } from '@/lib/appLocation'
 import { getMosqueProfile } from '@/lib/mosqueProfile'
 import { useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import MescidimLibrary from './MescidimLibrary'
 import MosqueEventArchive from './MosqueEventArchive'
 import PrayerTimes from './PrayerTimes'
 
 type MescidimTab = 'vakitler' | 'asma' | 'dua' | 'etkinlikler'
+
+function scrollToSection(section: string) {
+  document.getElementById(`mescidim-${section}`)?.scrollIntoView({
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    block: 'start',
+  })
+}
 
 export default function MescidimView({ reward }: { reward: (amount: number, label: string, sourceType: string, sourceId: string) => void }) {
   const mosque = getMosqueProfile()
@@ -21,19 +28,22 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
   })
   const tab = selectedValue(params.get('tab'), MESCIDIM_TABS, legacyTab)
   const localCommunity = tab === 'etkinlikler'
+  const previousTab = useRef(tab)
   const [initialOccasion] = useState(() => typeof window === 'undefined' ? undefined : sessionStorage.getItem('sah:mescidim:occasion') ?? undefined)
   const openSection = useCallback((next: Exclude<MescidimTab, 'etkinlikler'>) => {
     openAppView('mescidim', next)
-    window.requestAnimationFrame(() => document.getElementById(`mescidim-${next}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
-  }, [])
+    if (!localCommunity && next === tab) window.requestAnimationFrame(() => scrollToSection(next))
+  }, [localCommunity, tab])
   useEffect(() => {
     sessionStorage.removeItem('sah:mescidim:tab')
     sessionStorage.removeItem('sah:mescidim:occasion')
   }, [])
   useEffect(() => {
-    if (localCommunity || tab === 'vakitler') return
-    const timer = window.setTimeout(() => document.getElementById(`mescidim-${tab}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 160)
-    return () => window.clearTimeout(timer)
+    const previous = previousTab.current
+    previousTab.current = tab
+    if (localCommunity || (tab === 'vakitler' && previous === tab)) return
+    const frame = window.requestAnimationFrame(() => scrollToSection(tab))
+    return () => window.cancelAnimationFrame(frame)
   }, [localCommunity, tab])
   return <div className="mescidim-experience">
     <header className="page-heading">
@@ -78,7 +88,7 @@ export default function MescidimView({ reward }: { reward: (amount: number, labe
 
       <nav className="mescidim-section-nav" aria-label="Mescidim bölümleri">
         <button aria-current={tab === 'vakitler' ? 'page' : undefined} onClick={() => openSection('vakitler')}><span><AppIcon name="clock" /></span><strong>Namaz vakitleri</strong><small>Bugün ve takvim</small></button>
-        <button onClick={() => document.getElementById('mescidim-zikir')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><span><AppIcon name="refresh" /></span><strong>Zikir sayacı</strong><small>Sakin bir ritim</small></button>
+        <button onClick={() => scrollToSection('zikir')}><span><AppIcon name="refresh" /></span><strong>Zikir sayacı</strong><small>Sakin bir ritim</small></button>
         <button aria-current={tab === 'asma' ? 'page' : undefined} onClick={() => openSection('asma')}><span><AppIcon name="sparkles" /></span><strong>Günün Esmâsı</strong><small>Tefekkür alanı</small></button>
         <button aria-current={tab === 'dua' ? 'page' : undefined} onClick={() => openSection('dua')}><span><AppIcon name="book-2" /></span><strong>Dualar</strong><small>Kaynaklı kütüphane</small></button>
       </nav>

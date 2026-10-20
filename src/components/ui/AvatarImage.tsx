@@ -1,6 +1,9 @@
-import Image from "next/image";
+"use client";
 
-export default function AvatarImage({
+import Image from "next/image";
+import { memo, useState } from "react";
+
+export default memo(function AvatarImage({
   src,
   alt = "",
   className,
@@ -13,20 +16,24 @@ export default function AvatarImage({
   size?: number;
   priority?: boolean;
 }) {
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  const fallback = !src || failedSource === src;
+  const imageSource = fallback ? "/avatar-fallback.svg" : src;
   const unoptimized =
-    src.startsWith("https://api.dicebear.com/") ||
-    /\.svg(?:$|[?#])/i.test(src);
+    imageSource.startsWith("https://api.dicebear.com/") ||
+    /\.svg(?:$|[?#])/i.test(imageSource);
 
   return (
     <Image
-      src={src}
+      src={imageSource}
       alt={alt}
       className={className}
       width={size}
       height={size}
       sizes={`${size}px`}
-      priority={priority}
+      preload={priority}
       unoptimized={unoptimized}
+      onError={() => { if (!fallback) setFailedSource(src); }}
     />
   );
-}
+});

@@ -160,8 +160,7 @@
   --item-done-bg: rgba(0, 155, 119, 0.06);
 }
 
-[data-theme="sah"][data-mode="dark"] .dc-card,
-[data-theme="sah"].dark .dc-card {
+[data-theme="dark"] .dc-card {
   --dc-accent: #34d399;
   --dc-done: #34d399;
   --dc-track: rgba(255, 255, 255, 0.06);

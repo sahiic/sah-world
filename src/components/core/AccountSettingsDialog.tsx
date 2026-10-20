@@ -4,6 +4,7 @@ import Cropper, { type Area } from "react-easy-crop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignOut } from "@/hooks/useSignOut";
+import { useModalFocus } from "@/hooks/useModalFocus";
 import { AppIcon } from "@/components/ui/AppIcon";
 import AvatarImage from "@/components/ui/AvatarImage";
 import { BADGES, getLevelForXP } from "@/lib/constants";
@@ -47,7 +48,6 @@ export default function AccountSettingsDialog({
   const journey = useJourneyStore();
   const router = useRouter();
   const { signOut, isSigningOut, signOutError } = useSignOut();
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<SettingsTab>("account");
   const [editingName, setEditingName] = useState(false);
@@ -63,23 +63,14 @@ export default function AccountSettingsDialog({
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const dialogRef = useModalFocus<HTMLElement>(true, onClose);
+  const cropRef = useModalFocus<HTMLElement>(Boolean(cropSource), () => { if (!saving) setCropSource(null); });
 
   const avatarUrl = profile?.avatar_url || dicebear(profile?.display_name || "Yolcu");
   const preferences = profile?.notification_preferences ?? { focus: true, prayer: false, community: true };
   const themePreference = profile?.theme_preference ?? "system";
   const { level, nextLevel, index } = getLevelForXP(journey.xp);
   const levelProgress = nextLevel ? Math.round(((journey.xp - level.xp) / (nextLevel.xp - level.xp)) * 100) : 100;
-
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      if (cropSource) setCropSource(null);
-      else onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [cropSource, onClose]);
 
   useEffect(() => () => {
     if (cropSource) URL.revokeObjectURL(cropSource);
@@ -211,10 +202,10 @@ export default function AccountSettingsDialog({
 
   return (
     <div className="settings-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section className="account-settings account-center" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <section ref={dialogRef} tabIndex={-1} className="account-settings account-center" role="dialog" aria-modal="true" aria-labelledby="settings-title">
         <header className="account-center-header">
           <div><span className="eyebrow">PROFİL VE HESAP MERKEZİ</span><h2 id="settings-title">Sana ait alan</h2><p>Kimliğini, tercihlerini ve verilerini tek bir güvenli merkezden yönet.</p></div>
-          <button ref={closeButtonRef} onClick={onClose} aria-label="Ayarları kapat"><AppIcon name="x" /></button>
+          <button onClick={onClose} aria-label="Ayarları kapat"><AppIcon name="x" /></button>
         </header>
 
         <div className="profile-identity-card">
@@ -230,11 +221,18 @@ export default function AccountSettingsDialog({
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { acceptFile(event.target.files?.[0]); event.currentTarget.value = ""; }} />
         </div>
 
-        <nav className="settings-tabs" aria-label="Hesap ayarları sekmeleri">{tabs.map((tab) => <button key={tab.id} className={activeTab === tab.id ? "active" : ""} aria-selected={activeTab === tab.id} role="tab" onClick={() => setActiveTab(tab.id)}><AppIcon name={tab.icon} /><span>{tab.label}</span></button>)}</nav>
+        <nav className="settings-tabs" role="tablist" aria-label="Hesap ayarları sekmeleri" onKeyDown={event => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+          event.preventDefault();
+          const index = tabs.findIndex(tab => tab.id === activeTab);
+          const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+          setActiveTab(tabs[nextIndex].id);
+          event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]?.focus();
+        }}>{tabs.map(tab => <button type="button" id={`settings-tab-${tab.id}`} key={tab.id} className={activeTab === tab.id ? "active" : ""} aria-selected={activeTab === tab.id} aria-controls="settings-panel" tabIndex={activeTab === tab.id ? 0 : -1} role="tab" onClick={() => setActiveTab(tab.id)}><AppIcon name={tab.icon} /><span>{tab.label}</span></button>)}</nav>
         {(message || error) && <p className={`settings-message ${error ? "error" : ""}`} role="status"><AppIcon name={error ? "alert-circle" : "circle-check"} /> {error || message}</p>}
         {signOutError && <p className="settings-message error" role="alert">{signOutError}</p>}
 
-        <div className="settings-panel" role="tabpanel">
+        <div id="settings-panel" className="settings-panel" role="tabpanel" aria-labelledby={`settings-tab-${activeTab}`} tabIndex={0}>
           {activeTab === "account" && <AccountTab onChoose={() => fileInputRef.current?.click()} onDrop={acceptFile} dragging={dragging} setDragging={setDragging} hasCustomAvatar={Boolean(profile?.avatar_url)} onFallback={() => void resetAvatarToFallback()} onSignOut={() => void signOut()} saving={saving || isSigningOut} />}
           {activeTab === "preferences" && <PreferencesTab theme={themePreference} preferences={preferences} onTheme={(next) => void updateTheme(next)} onNotification={(key) => void toggleNotification(key)} />}
           {activeTab === "growth" && <GrowthTab levelName={level.name} levelIcon={level.icon} levelIndex={index} xp={journey.xp} progress={levelProgress} nextLevel={nextLevel?.name} badges={journey.badges} streak={journey.streak.current} />}
@@ -242,7 +240,7 @@ export default function AccountSettingsDialog({
         </div>
         <footer><a href="/gizlilik">Gizlilik Politikası</a><a href="/kullanim-kosullari">Kullanım Koşulları</a></footer>
 
-        {cropSource && <div className="avatar-crop-backdrop" role="presentation"><section className="avatar-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="crop-title"><header><div><span className="eyebrow">PROFİL FOTOĞRAFI</span><h3 id="crop-title">Kadrajını ayarla</h3></div><button onClick={() => setCropSource(null)} aria-label="Kırpmayı kapat"><AppIcon name="x" /></button></header><div className="avatar-crop-stage"><Cropper image={cropSource} crop={crop} zoom={zoom} aspect={1} cropShape="round" showGrid={false} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={(_, pixels) => setCroppedArea(pixels)} /></div><label className="crop-zoom"><span>Yakınlaştır</span><input type="range" min={1} max={3} step={0.05} value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /></label>{uploadProgress > 0 && <div className="upload-progress" aria-label={`Yükleme yüzde ${uploadProgress}`}><span style={{ width: `${uploadProgress}%` }} /></div>}<div className="crop-actions"><button onClick={() => setCropSource(null)}>Vazgeç</button><button className="primary-button" disabled={saving || !croppedArea} onClick={() => void uploadAvatar()}><AppIcon name="upload" /> {saving ? "Yükleniyor…" : "Fotoğrafı kullan"}</button></div></section></div>}
+        {cropSource && <div className="avatar-crop-backdrop" role="presentation"><section ref={cropRef} tabIndex={-1} className="avatar-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="crop-title"><header><div><span className="eyebrow">PROFİL FOTOĞRAFI</span><h3 id="crop-title">Kadrajını ayarla</h3></div><button onClick={() => setCropSource(null)} aria-label="Kırpmayı kapat"><AppIcon name="x" /></button></header><div className="avatar-crop-stage"><Cropper image={cropSource} crop={crop} zoom={zoom} aspect={1} cropShape="round" showGrid={false} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={(_, pixels) => setCroppedArea(pixels)} /></div><label className="crop-zoom"><span>Yakınlaştır</span><input type="range" min={1} max={3} step={0.05} value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /></label>{uploadProgress > 0 && <div className="upload-progress" aria-label={`Yükleme yüzde ${uploadProgress}`}><span style={{ width: `${uploadProgress}%` }} /></div>}<div className="crop-actions"><button onClick={() => setCropSource(null)}>Vazgeç</button><button className="primary-button" disabled={saving || !croppedArea} onClick={() => void uploadAvatar()}><AppIcon name="upload" /> {saving ? "Yükleniyor…" : "Fotoğrafı kullan"}</button></div></section></div>}
       </section>
     </div>
   );

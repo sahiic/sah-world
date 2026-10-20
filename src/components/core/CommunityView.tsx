@@ -9,6 +9,8 @@ import { ownedRealtimeChannel } from "@/lib/ownedRealtimeChannel";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { ChatMessageRow, GroupRow } from "@/types/database";
 import { AppIcon } from "@/components/ui/AppIcon";
+import AvatarImage from "@/components/ui/AvatarImage";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 export type RosterMember = {
   user_id: string;
@@ -162,6 +164,7 @@ export default function CommunityView() {
     setJoinPreview(null);
     setError("");
   };
+  const dialogRef = useModalFocus<HTMLElement>(Boolean(dialog), closeDialog);
 
   const openDialog = (next: Exclude<DialogMode, null>) => {
     setError("");
@@ -364,7 +367,7 @@ export default function CommunityView() {
         </div>
       </header>
 
-      {(error || notice) && (
+      {!dialog && (error || notice) && (
         <div
           role="status"
           className={error ? "inline-alert error" : "inline-alert success"}
@@ -424,7 +427,7 @@ export default function CommunityView() {
             </button>
           </aside>
           {active && (
-            <main className="surface-card group-main">
+            <section className="surface-card group-main">
               <header className="group-hero">
                 <div className="group-avatar">
                   {active.name.slice(0, 2).toLocaleUpperCase("tr-TR")}
@@ -503,7 +506,7 @@ export default function CommunityView() {
                   endRef={endRef}
                 />
               )}
-            </main>
+            </section>
           )}
         </div>
       )}
@@ -516,6 +519,8 @@ export default function CommunityView() {
           }}
         >
           <section
+            ref={dialogRef}
+            tabIndex={-1}
             className="dialog-card community-dialog"
             role="dialog"
             aria-modal="true"
@@ -541,6 +546,7 @@ export default function CommunityView() {
                 ? "Adı ve amacı anlaşılır, sıcak ve özel bir topluluk oluştur."
                 : "Önce davet kodunu doğrular, katılmadan önce topluluk bilgilerini gösteririz."}
             </p>
+            {error && <div className="inline-alert error" role="alert"><p>{error}</p></div>}
             {dialog === "create" ? (
               <CreateGroupForm busy={busy === "create"} onSubmit={create} />
             ) : (

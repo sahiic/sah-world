@@ -2,6 +2,7 @@
 
 import { FocusBackdrop, FocusScenePicker } from "@/components/core/FocusAmbience";
 import SectionErrorBoundary from '@/components/core/SectionErrorBoundary';
+import SectionSkeleton from '@/components/ui/SectionSkeleton';
 import { useFocusDialog } from "@/hooks/useFocusDialog";
 import { useTimer } from "@/hooks/useTimer";
 import { useFocusStore } from "@/stores/focusStore";
@@ -17,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import dynamic from 'next/dynamic';
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import styles from "../focus.module.css";
 import AmbientSoundMixer from "./AmbientSoundMixer";
@@ -28,9 +29,12 @@ import NiyetCard from "./NiyetCard";
 import SessionConfig from "./SessionConfig";
 
 type FocusView = "session" | "history";
-const FocusAnalyticsPanel = dynamic(() => import('@/components/focus/FocusAnalyticsPanel'));
+const FocusAnalyticsPanel = dynamic(() => import('@/components/focus/FocusAnalyticsPanel'), {
+  loading: () => <SectionSkeleton shape="report" />,
+});
 
 export default function FocusExperience({ onExit }: { onExit?: () => void } = {}) {
+  const router = useRouter();
   const mode = useFocusStore((state) => state.mode);
   const isRunning = useFocusStore((state) => state.isRunning);
   const pauseTimer = useFocusStore((state) => state.pauseTimer);
@@ -101,18 +105,32 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
     }
   };
 
+  const exitFocus = async () => {
+    if (useFocusStore.getState().sessionStartTime && !window.confirm("Odak ekranından çıkmak istiyor musun? Oturumun bitirilmeyecek; ana sayfadaki küçük sayaçtan devam edebilirsin.")) return;
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+    } catch {
+      // Navigation stays available if the browser refuses the fullscreen API.
+    }
+    if (onExit) onExit();
+    else router.push("/?view=dashboard");
+  };
+
+  const Container = onExit ? "section" : "main";
+
   return (
-    <main data-focus-studio="sanctuary-v2" data-focus-release="quality-audit-v1" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
+    <Container aria-label="Odak stüdyosu" data-focus-studio="sanctuary-v2" data-focus-release="quality-audit-v1" className={`focus-root ${styles.focusPage} ${styles[`${mode}Page`]}`}>
       <FocusBackdrop backgroundId={backgroundId} />
       <header className={`focus-topbar ${styles.topbar}`}>
-        {onExit ? <button className={`focus-back-button ${styles.backLink}`} onClick={onExit} aria-label="Odak ekranını küçült"><ArrowLeft aria-hidden /><span>Geri</span></button> : <Link
-          href="/"
+        <button
+          type="button"
           className={`focus-back-button ${styles.backLink}`}
-          aria-label="SAHİ World ana sayfasına dön"
+          onClick={() => void exitFocus()}
+          aria-label="Odak modundan çık"
         >
           <ArrowLeft aria-hidden />
           <span>Geri</span>
-        </Link>}
+        </button>
 
         <nav className={`focus-view-nav ${styles.viewTabs}`} aria-label="Odak bölümü">
           <button
@@ -272,6 +290,6 @@ export default function FocusExperience({ onExit }: { onExit?: () => void } = {}
       {showNiyet && !isRunning && !pendingCompletedSession && (
         <NiyetCard onClose={() => setShowNiyet(false)} />
       )}
-    </main>
+    </Container>
   );
 }

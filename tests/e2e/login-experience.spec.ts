@@ -66,14 +66,15 @@ test('keyboard-style quote finishes with the qibla-aligned cardioid, loops, and 
   const typingDuration = Number(await animatedQuote.getAttribute('data-typing-duration-ms'));
   expect(characterCount).toBe(Array.from('İnsan yaratılış bilgeliğinikavradıkça sorumluluğununçemberini de genişletir.').length);
   expect(Number(await animatedQuote.getAttribute('data-typed-count'))).toBeLessThan(characterCount);
-  expect(await finalThread.evaluate(element => getComputedStyle(element).animationName.endsWith('drawThread'))).toBe(true);
+  // CSS Modules can place the generated hash before or after the local keyframe name.
+  expect(await finalThread.evaluate(element => /(?:^|_)drawThread(?:_|$)/.test(getComputedStyle(element).animationName))).toBe(true);
   const finalThreadTiming = await finalThread.evaluate(element => {
     const style = getComputedStyle(element);
     return parseFloat(style.animationDelay) + parseFloat(style.animationDuration);
   });
   await expect(animatedQuote).toHaveAttribute('data-typed-count', String(characterCount), { timeout: 5000 });
   expect(Math.abs(typingDuration - finalThreadTiming * 1000)).toBeLessThanOrEqual(1);
-  expect(await page.getByRole('figure').evaluate(element => getComputedStyle(element).animationName.endsWith('qiblaDrift'))).toBe(true);
+  expect(await page.getByRole('figure').evaluate(element => /(?:^|_)qiblaDrift(?:_|$)/.test(getComputedStyle(element).animationName))).toBe(true);
   await expect(page.getByTestId('login-reveal')).toHaveAttribute('data-replay', '2', { timeout: 6500 });
   expect(Number(await page.getByTestId('login-quote').getAttribute('data-typed-count'))).toBeLessThan(10);
   await expect(page.getByLabel('E-posta adresi', { exact: true })).toHaveValue('presentation@example.com');

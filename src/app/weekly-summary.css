@@ -171,8 +171,7 @@
   --highlight-bg: rgba(0, 155, 119, 0.06);
 }
 
-[data-theme="sah"][data-mode="dark"] .ws-card,
-[data-theme="sah"].dark .ws-card {
+[data-theme="dark"] .ws-card {
   --ws-accent: #34d399;
   --highlight-bg: rgba(52, 211, 153, 0.1);
   --hover-bg: rgba(255, 255, 255, 0.06);

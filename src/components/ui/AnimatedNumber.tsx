@@ -1,9 +1,9 @@
 'use client'
 
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 
-export function AnimatedNumber({ value, suffix = '', className = '' }: { value: number; suffix?: string; className?: string }) {
+export const AnimatedNumber = memo(function AnimatedNumber({ value, suffix = '', className = '' }: { value: number; suffix?: string; className?: string }) {
   const number = useMotionValue(value)
   const rounded = useTransform(number, (latest) => `${Math.round(latest).toLocaleString('tr-TR')}${suffix}`)
 
@@ -13,4 +13,4 @@ export function AnimatedNumber({ value, suffix = '', className = '' }: { value: 
   }, [number, value])
 
   return <motion.span className={className}>{rounded}</motion.span>
-}
+})

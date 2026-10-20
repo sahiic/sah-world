@@ -50,9 +50,9 @@ export default function ReportsDetailTabs({
     <section className="reports-details" aria-labelledby="reports-details-title">
       <header className="reports-section-heading">
         <div>
-          <span className="eyebrow">KATMAN 03 · DETAYLAR</span>
+          <span className="eyebrow">DETAYLAR</span>
           <h2 id="reports-details-title">Merak ettiğinde derine in.</h2>
-          <p>Detaylar ilk bakışta kapalıdır; ihtiyacın olan alanı aç.</p>
+          <p>Odak süreni, gelişimini ve önceliklerini keşfet.</p>
         </div>
       </header>
 

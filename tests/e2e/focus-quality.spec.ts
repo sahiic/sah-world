@@ -9,6 +9,35 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("leaving fullscreen restores the dashboard and keeps the active timer", async ({ page }) => {
+  await page.route('**/auth/v1/**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ external: { google: true } }),
+  }));
+  await page.route('**/rest/v1/**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: '[]',
+  }));
+  await page.goto('/?view=focus');
+  await page.getByRole('button', { name: 'DEV: Misafir görünümü' }).click();
+  await page.getByRole('button', { name: 'Zamanlayıcıyı başlat', exact: true }).click();
+  await page.getByRole('button', { name: 'Tam ekranı aç veya kapat' }).click();
+  await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(true);
+  page.once('dialog', dialog => dialog.dismiss());
+  await page.getByRole('button', { name: 'Odak modundan çık', exact: true }).click();
+  await expect(page.locator('[data-focus-studio]')).toBeVisible();
+  await expect(page.getByRole('main')).toHaveCount(1);
+  page.once('dialog', async dialog => {
+    expect(dialog.message()).toContain('Oturumun bitirilmeyecek');
+    await dialog.accept();
+  });
+  await page.getByRole('button', { name: 'Odak modundan çık', exact: true }).click();
+  await expect(page).toHaveURL(/view=dashboard/);
+  await expect(page.locator('.dashboard-view')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.fullscreenElement === null)).toBe(true);
+  const mini = page.getByRole('complementary', { name: 'Devam eden odak oturumu' });
+  await expect(mini).toBeVisible();
+  await expect(mini.getByRole('button', { name: 'Duraklat', exact: true })).toBeVisible();
+});
+
 test("session and sound library remain readable on compact screens", async ({ page }, testInfo) => {
   await page.setViewportSize(testInfo.project.name === "mobile" ? { width: 390, height: 700 } : { width: 1280, height: 720 });
   await page.goto("/focus");
