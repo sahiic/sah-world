@@ -1,6 +1,4 @@
-/* ============================================================
-   PROFILE VIEW + ACTIVITY HEATMAP
-   ============================================================ */
+
 
 .profile-view{display:flex;flex-direction:column;gap:28px;max-width:720px}
 
@@ -96,7 +94,7 @@
 }
 
 
-/* Light mode –  default (GitHub-like indigo) */
+/* Light mode – default (GitHub-like indigo) */
 .heatmap-cell.level-0 { fill: #ebedf0; }
 .heatmap-cell.level-1 { fill: #c7d2fe; }
 .heatmap-cell.level-2 { fill: #a5b4fc; }
@@ -160,26 +158,26 @@
 /* ============================================================
    DARK MODE
    ============================================================ */
-[data-theme="dark"] .profile-identity h2{color:var(--palette-indigo-50)}
+[data-theme="dark"] .profile-identity h2{color:#eef2ff}
 [data-theme="dark"] .profile-level-name{color:#e0e7ff}
-[data-theme="dark"] .profile-xp{color:var(--palette-slate-400)}
+[data-theme="dark"] .profile-xp{color:#8a95ad}
 [data-theme="dark"] .profile-xp-bar{background:rgba(199,210,254,.06)}
-[data-theme="dark"] .profile-xp-bar small{color:var(--palette-slate-400)}
+[data-theme="dark"] .profile-xp-bar small{color:#8a95ad}
 
 [data-theme="dark"] .profile-stat-card{
   background:rgba(20,27,47,.96);
   box-shadow:inset 0 0 0 1px rgba(199,210,254,.08)
 }
 [data-theme="dark"] .profile-stat-card .app-icon{color:#a5b4fc}
-[data-theme="dark"] .profile-stat-card strong{color:var(--palette-indigo-50)}
-[data-theme="dark"] .profile-stat-card small{color:var(--palette-slate-400)}
+[data-theme="dark"] .profile-stat-card strong{color:#eef2ff}
+[data-theme="dark"] .profile-stat-card small{color:#8a95ad}
 
-[data-theme="dark"] .profile-section h3{color:var(--palette-indigo-50)}
+[data-theme="dark"] .profile-section h3{color:#eef2ff}
 [data-theme="dark"] .profile-section h3 .app-icon{color:#a5b4fc}
 
 [data-theme="dark"] .profile-category-label{color:#e0e7ff}
 [data-theme="dark"] .profile-category-bar{background:rgba(199,210,254,.06)}
-[data-theme="dark"] .profile-category-count{color:var(--palette-slate-400)}
+[data-theme="dark"] .profile-category-count{color:#8a95ad}
 
 [data-theme="dark"] .heatmap-cell.level-0{fill:rgba(199,210,254,.06)}
 [data-theme="dark"] .heatmap-cell.level-1{fill:rgba(99,102,241,.25)}
@@ -187,9 +185,9 @@
 [data-theme="dark"] .heatmap-cell.level-3{fill:rgba(99,102,241,.65)}
 [data-theme="dark"] .heatmap-cell.level-4{fill:rgba(99,102,241,.85)}
 
-[data-theme="dark"] .heatmap-summary{color:var(--palette-slate-400)}
-[data-theme="dark"] .heatmap-summary strong{color:var(--palette-indigo-50)}
-[data-theme="dark"] .heatmap-legend small{color:var(--palette-slate-400)}
+[data-theme="dark"] .heatmap-summary{color:#8a95ad}
+[data-theme="dark"] .heatmap-summary strong{color:#eef2ff}
+[data-theme="dark"] .heatmap-legend small{color:#8a95ad}
 [data-theme="dark"] .heatmap-legend-cell.level-0{background:rgba(199,210,254,.06)}
 [data-theme="dark"] .heatmap-legend-cell.level-1{background:rgba(99,102,241,.25)}
 [data-theme="dark"] .heatmap-legend-cell.level-2{background:rgba(99,102,241,.45)}
@@ -199,9 +197,9 @@
 /* ============================================================
    SAH WORLD THEME
    ============================================================ */
-.core-app .profile-stat-card .app-icon{color:var(--palette-sah-emerald)}
-.core-app .profile-section h3 .app-icon{color:var(--palette-sah-emerald)}
-.core-app .profile-xp-fill{background:var(--palette-sah-emerald)}
+.core-app .profile-stat-card .app-icon{color:#009b77}
+.core-app .profile-section h3 .app-icon{color:#009b77}
+.core-app .profile-xp-fill{background:#009b77}
 
 .core-app .heatmap-cell.level-1{fill:rgba(0,155,119,.2)}
 .core-app .heatmap-cell.level-2{fill:rgba(0,155,119,.4)}

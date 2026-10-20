@@ -1,4 +1,3 @@
-
 @import "tailwindcss";
 @import "./_card-tokens.css";
 @import "./journal.css";
@@ -15,9 +14,9 @@
 @import "./data-export.css";
 @import "./profession-school.css";
 
-/* [data-theme="dark"] .mescidim-experience .page-heading h1 {
+[data-theme="dark"] .mescidim-experience .page-heading h1 {
   color: var(--ink-primary, #f8fafc);
-} */
+}
 /* Targeted dark-mode override for Mescidim section */
 /* [data-theme="dark"] .mescidim-experience .page-heading h1,
 [data-theme="dark"] [data-section="mescidim"] .page-heading h1 {
@@ -483,7 +482,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .profile-button>span { text-align: left; display:flex; flex-direction:column; min-width: 84px; }
 .profile-button strong { font-size: 12px; max-width: 108px; overflow:hidden; text-overflow:ellipsis; }
 .profile-button small { font-size: 9px; color:var(--core-muted); }
-.profile-button>i { font-style:normal; color:var(--core-muted); } */
+.profile-button>i { font-style:normal; color:var(--core-muted); }
 
 .profile-button {
   border: 0;
@@ -1018,7 +1017,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 @media(max-width:400px){.cardioid-motif{display:none}.login-story{min-height:300px}.login-story-copy{margin-bottom:24px}}
 @media(prefers-reduced-motion:reduce){.cardioid-threads{opacity:1!important;transition:none!important}.times-table-line{opacity:var(--thread-opacity)!important;transition:none!important}.cardioid-atmosphere,.tree-stage,.fidan-leaves>*,.delight-particles circle{animation:none!important}.delight-particles{display:none!important}.awareness-reading-progress i{transition:none}}
 
-/* Meslek ve Ahlak Okulu — guided micro-learning path */.is-locked{cursor:not-allowed}
+.is-locked{cursor:not-allowed}
 
 /* Journal writing styles live in journal.css; retain shared report/loading rules. */
 @keyframes skeletonMove{from{background-position:200% 0}to{background-position:-200% 0}}
@@ -2599,7 +2598,6 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 @media(max-width:720px){.reports-view-clean{gap:24px}.reports-page-heading .quiet-chip{display:none}.reports-hero{padding:22px;border-radius:22px}.reports-hero-metrics{grid-template-columns:1fr}.reports-hero-metrics article{min-height:92px}.reports-hero-metrics strong{font-size:36px}.reports-next-step{grid-template-columns:36px minmax(0,1fr)}.reports-next-icon{width:36px;height:36px}.reports-next-step button{grid-column:1/3;width:100%;justify-content:center}.reports-next-step p{white-space:normal}.reports-section-heading{align-items:flex-start}.reports-section-heading>span{display:none}.reports-weekly-grid{gap:16px}.reports-weekly-grid>article{padding:20px;border-radius:18px}.reports-week-days{gap:5px}.reports-week-days>div>span{min-height:68px}.reports-detail-trigger{grid-template-columns:40px minmax(0,1fr) 20px;padding:13px}.reports-detail-icon{width:40px;height:40px}.reports-detail-trigger>b{display:none}.reports-detail-panel{padding:18px}.reports-detail-panel .card-heading{align-items:flex-start;flex-direction:column}.reports-detail-panel .segment{width:100%}.reports-detail-panel .segment button{flex:1}.reports-detail-panel .focus-report-stats{grid-template-columns:1fr 1fr}.quadrant-progress article{grid-template-columns:100px minmax(0,1fr) 36px;gap:10px}.dashboard-weekly-insight{display:block}.dashboard-weekly-insight .insight-visual{width:auto;height:86px;min-height:0;margin:-4px -4px 18px}.dashboard-weekly-insight>.ghost-button{margin-top:10px}.dashboard-weekly-insight>.ethics-note{margin-top:14px}}
 @media(max-width:420px){.reports-hero{padding:18px}.reports-hero-copy h2{font-size:25px}.reports-hero-metrics article{padding:15px}.reports-hero-metrics article>span{width:42px;height:42px;flex-basis:42px}.reports-week-days>div>span{min-height:54px;border-radius:9px}.reports-week-days b{font-size:14px}.reports-week-days strong{font-size:8px}.reports-week-days small{font-size:7px}.reports-detail-panel .focus-report-stats{grid-template-columns:1fr}.reports-story-card{grid-template-columns:38px minmax(0,1fr)}.reports-card-icon{width:38px;height:38px}.reports-story-card footer{gap:5px}}
 
-/* Sync toast — global data-save failure notifications */
 .sync-toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:min(420px,calc(100vw - 32px))}
 .sync-toast{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--sync-toast-bg,#1c1c1a);color:var(--sync-toast-fg,#f5f5f3);box-shadow:0 8px 32px rgba(0,0,0,.28);font-size:13px;line-height:1.4}
 .sync-toast-icon{flex:0 0 28px;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(220,38,38,.18);color:#f87171;font-size:16px}
@@ -2624,7 +2622,6 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
   color: var(--ink-muted, #5a6578);
 }
 
-/* Theme overrides */
 [data-theme="dark"] .page-heading h1 {
   color: var(--ink-primary, #f8fafc);
 }
@@ -2638,14 +2635,7 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
 }
 
 
-/* ============================================================
-   Header feedback button — force icon + text to be visible
-   in both light and dark themes
-   ============================================================ */
 
-/* ============================================================
-   Header feedback — icon MUST be visible in light + dark
-   ============================================================ */
 
 .header-feedback {
   min-height: 40px !important;
@@ -2659,7 +2649,6 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
   justify-content: center !important;
   gap: 8px !important;
 
-  /* Light mode – dark grey text/icon on light surface */
   color: #4b5563 !important;
   background: rgba(255, 255, 255, 0.9) !important;
   box-shadow: inset 0 0 0 1px rgba(72, 86, 119, 0.14) !important;
@@ -2673,7 +2662,6 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
   background: #fff !important;
 }
 
-/* Force the icon to follow the button color */
 .header-feedback .app-icon,
 .header-feedback svg,
 .header-feedback svg path,
@@ -2686,7 +2674,6 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
   fill: currentColor !important;
 }
 
-/* Dark mode */
 [data-theme="dark"] .header-feedback {
   color: #c7d2fe !important;
   background: rgba(99, 102, 241, 0.14) !important;
@@ -2698,7 +2685,6 @@ body{background:var(--sah-surface);color:var(--sah-ink)}
   background: rgba(99, 102, 241, 0.28) !important;
 }
 
-/* Keep the label visible (the old rule was hiding it) */
 .header-feedback span {
   display: inline !important;
 }
