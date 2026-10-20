@@ -1,6 +1,6 @@
-import { useMemo } from "react";
 import type { ActivityEvent } from "@/lib/activity";
 import { dayKey } from "@/lib/activity";
+import { useMemo } from "react";
 
 const CELL = 13;
 const GAP = 4;
