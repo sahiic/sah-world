@@ -1,9 +1,9 @@
 "use client";
 import { AppIcon } from "@/components/ui/AppIcon";
 import AvatarImage from "@/components/ui/AvatarImage";
-import polish from "./SahAppPolish.module.css";
 import type { Profile } from "@/lib/supabase";
-import type { Dispatch, SetStateAction, RefObject, ReactNode } from "react";
+import type { Dispatch, ReactNode, RefObject, SetStateAction } from "react";
+import polish from "./SahAppPolish.module.css";
 
 type Props = {
   navigate: (view: string) => void;
@@ -86,6 +86,9 @@ export default function SahHeader({
         </button>
         {profileOpen && children}
       </div>
+      
     </header>
   );
 }
+
+

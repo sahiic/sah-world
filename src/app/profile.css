@@ -96,7 +96,7 @@
 }
 
 
-/* Light mode – default (GitHub-like indigo) */
+/* Light mode –  default (GitHub-like indigo) */
 .heatmap-cell.level-0 { fill: #ebedf0; }
 .heatmap-cell.level-1 { fill: #c7d2fe; }
 .heatmap-cell.level-2 { fill: #a5b4fc; }

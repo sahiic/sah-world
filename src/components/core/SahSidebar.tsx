@@ -1,15 +1,15 @@
 "use client";
+import { AppIcon } from "@/components/ui/AppIcon";
 import {
   createContext,
   useContext,
   useEffect,
   useState,
-  type ReactNode,
   type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
 } from "react";
-import { AppIcon } from "@/components/ui/AppIcon";
-import type { SectionKey } from "./SectionView";
 import polish from "./SahAppPolish.module.css";
+import type { SectionKey } from "./SectionView";
 
 export type ViewKey =
   | "dashboard"
@@ -209,6 +209,7 @@ export default function SahSidebar({
             }
           />
           <span className="nav-label">Menüyü daralt</span>
+
         </button>
       </div>
     </aside>
